@@ -406,6 +406,11 @@ func assignRelatedToItems(items []any, rel *Relationship, related map[string]*re
 			rec.Set(rel.Alias, out)
 			continue
 		}
+		if related[itemKey] == nil && !rel.IsList {
+			// relatedDataMap[itemKey] is undefined: JSON omits the key.
+			rec.Delete(rel.Alias)
+			continue
+		}
 		rec.Set(rel.Alias, related[itemKey].value(rel.IsList))
 	}
 }

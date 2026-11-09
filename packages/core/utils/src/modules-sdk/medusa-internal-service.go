@@ -379,3 +379,14 @@ func (s *InternalService) ReplaceManyToMany(ctx context.Context, ownerID any, re
 		return repo.ReplaceManyToMany(ctx, ownerID, relation, targetIDs)
 	})
 }
+
+// UpsertWithReplace mirrors upsertWithReplace(data, { relations }).
+func (s *InternalService) UpsertWithReplace(ctx context.Context, data []*dal.Record, relations []string) ([]*dal.Record, error) {
+	var out []*dal.Record
+	err := s.inTransaction(ctx, func(repo *dal.Repository) error {
+		var err error
+		out, err = repo.UpsertWithReplace(ctx, data, relations)
+		return err
+	})
+	return out, err
+}

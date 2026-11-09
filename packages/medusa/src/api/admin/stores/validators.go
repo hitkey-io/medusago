@@ -20,3 +20,20 @@ var AdminGetStoresParamsFields = zod.Object(
 var AdminGetStoresParams = utils.CreateFindParams(utils.FindParamsOptions{Limit: utils.Num(50), Offset: utils.Num(0)}).
 	Merge(AdminGetStoresParamsFields).
 	Merge(commonvalidators.ApplyAndAndOrOperators(AdminGetStoresParamsFields))
+
+// AdminUpdateStore mirrors AdminUpdateStore.
+var AdminUpdateStore = zod.Object(
+	zod.F("name", zod.String().Optional()),
+	zod.F("supported_currencies", zod.Array(zod.Object(
+		zod.F("currency_code", zod.String()),
+		zod.F("is_default", zod.Boolean().Optional()),
+		zod.F("is_tax_inclusive", zod.Boolean().Optional()),
+	)).Optional()),
+	zod.F("supported_locales", zod.Array(zod.Object(
+		zod.F("locale_code", zod.String()),
+	)).Optional()),
+	zod.F("default_sales_channel_id", zod.String().Nullish()),
+	zod.F("default_region_id", zod.String().Nullish()),
+	zod.F("default_location_id", zod.String().Nullish()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+)

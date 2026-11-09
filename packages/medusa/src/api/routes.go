@@ -63,6 +63,7 @@ import (
 	stocklocations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations"
 	stocklocationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores"
+	storeid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores/id_"
 	taxproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-providers"
 	taxrates "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-rates"
 	taxrateid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-rates/id_"
@@ -155,6 +156,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/regions/:id", Route: regionid.Route},
 		{Path: "/admin/sales-channels", Route: saleschannels.Route},
 		{Path: "/admin/stores", Route: stores.Route},
+		{Path: "/admin/stores/:id", Route: storeid.Route},
 		{Path: "/admin/users", Route: adminusers.Route},
 		{Path: "/admin/users/:id", Route: userid.Route},
 		{Path: "/admin/users/me", Route: me.Route},
