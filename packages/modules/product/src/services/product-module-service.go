@@ -33,7 +33,10 @@ func (s *ProductModuleService) ListBySuffix(ctx context.Context, suffix string, 
 	case "ProductVariants":
 		rows, _, err := s.listProductVariants(ctx, filters, config, false)
 		return rows, err
-	case "ProductTags", "ProductTypes", "ProductCollections", "ProductCategories":
+	case "ProductCategories":
+		rows, _, err := s.listCategories(ctx, withoutContext(filters), config, false)
+		return rows, err
+	case "ProductTags", "ProductTypes", "ProductCollections":
 		filters = withoutContext(filters)
 	}
 	return s.MedusaService.ListBySuffix(ctx, suffix, filters, config)
@@ -46,7 +49,9 @@ func (s *ProductModuleService) ListAndCountBySuffix(ctx context.Context, suffix 
 		return s.listProducts(ctx, filters, config, true)
 	case "ProductVariants":
 		return s.listProductVariants(ctx, filters, config, true)
-	case "ProductTags", "ProductTypes", "ProductCollections", "ProductCategories":
+	case "ProductCategories":
+		return s.listCategories(ctx, withoutContext(filters), config, true)
+	case "ProductTags", "ProductTypes", "ProductCollections":
 		filters = withoutContext(filters)
 	}
 	return s.MedusaService.ListAndCountBySuffix(ctx, suffix, filters, config)

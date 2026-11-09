@@ -1,0 +1,13 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "cats", "method": "GET", "bearer": "login", "path": "/admin/product-categories?order=name&fields=id,name" },
+  { "name": "c1", "method": "POST", "bearer": "login", "path": "/admin/product-categories?fields=id", "body": { "name": "Tops", "parent_category_id": "{{cats.product_categories.0.id}}" } },
+  { "name": "c2", "method": "POST", "bearer": "login", "path": "/admin/product-categories?fields=id", "body": { "name": "Tees", "parent_category_id": "{{c1.product_category.id}}", "rank": 0 } },
+  { "name": "c3", "method": "POST", "bearer": "login", "path": "/admin/product-categories?fields=id", "body": { "name": "Polos", "parent_category_id": "{{c1.product_category.id}}", "rank": 0 } },
+  { "name": "roots_desc", "method": "GET", "bearer": "login", "path": "/admin/product-categories?parent_category_id=null&include_descendants_tree=true&fields=id,name,rank,parent_category_id,*category_children" },
+  { "name": "roots_desc_default", "method": "GET", "bearer": "login", "path": "/admin/product-categories?parent_category_id=null&include_descendants_tree=true" },
+  { "name": "leaf_anc", "method": "GET", "bearer": "login", "path": "/admin/product-categories?handle=tees&include_ancestors_tree=true&fields=id,name,*parent_category" },
+  { "name": "one_both", "method": "GET", "bearer": "login", "path": "/admin/product-categories/{{c1.product_category.id}}?include_ancestors_tree=true&include_descendants_tree=true" },
+  { "name": "dashboard_list", "method": "GET", "bearer": "login", "path": "/admin/product-categories?limit=20&offset=0&fields=id,name,category_children,handle,is_internal,is_active&order=rank&parent_category_id=null&include_descendants_tree=true" },
+  { "name": "q", "method": "GET", "bearer": "login", "path": "/admin/product-categories?q=Te&fields=id,name" }
+]
