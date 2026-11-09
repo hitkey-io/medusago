@@ -1,0 +1,38 @@
+package totals
+
+import (
+	"encoding/json"
+	"os"
+	"testing"
+)
+
+// testdata/big-number-vectors.json was produced with the upstream BigNumber:
+// [input, raw.value, trimZeros(raw.value), JSON.stringify(bigNumber)].
+func TestBigNumberMatchesUpstream(t *testing.T) {
+	data, err := os.ReadFile("testdata/big-number-vectors.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var vectors [][4]any
+	if err := json.Unmarshal(data, &vectors); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, v := range vectors {
+		b, err := NewBigNumber(v[0])
+		if err != nil {
+			t.Errorf("%v: %v", v[0], err)
+			continue
+		}
+		if got := b.Raw().Value; got != v[1] {
+			t.Errorf("%#v raw: got %q, want %q", v[0], got, v[1])
+		}
+		if got := b.TrimmedRaw().Value; got != v[2] {
+			t.Errorf("%#v trimmed: got %q, want %q", v[0], got, v[2])
+		}
+		out, _ := json.Marshal(b)
+		if string(out) != v[3] {
+			t.Errorf("%#v json: got %s, want %s", v[0], out, v[3])
+		}
+	}
+}

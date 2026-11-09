@@ -3,6 +3,7 @@ module github.com/hitkey-io/medusago
 go 1.25.4
 
 require (
+	github.com/cockroachdb/apd/v3 v3.2.3
 	github.com/jackc/pgx/v5 v5.12.0
 	github.com/oklog/ulid/v2 v2.1.2
 )
