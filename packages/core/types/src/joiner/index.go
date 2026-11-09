@@ -163,6 +163,20 @@ type ModuleJoinerConfig struct {
 	PrimaryKeys          []string                   `json:"primaryKeys,omitempty"`
 	Relationships        []JoinerRelationship       `json:"relationships,omitempty"`
 	Extends              []JoinerExtension          `json:"extends,omitempty"`
+	ExtraDataFields      []string                   `json:"extraDataFields,omitempty"`
+}
+
+// MustParseModuleJoinerConfigs decodes a JSON array of joiner configs.
+func MustParseModuleJoinerConfigs(data string) []*ModuleJoinerConfig {
+	var raw []json.RawMessage
+	if err := json.Unmarshal([]byte(data), &raw); err != nil {
+		panic(fmt.Sprintf("invalid joiner configs: %v", err))
+	}
+	out := make([]*ModuleJoinerConfig, len(raw))
+	for i, r := range raw {
+		out[i] = MustParseModuleJoinerConfig(string(r))
+	}
+	return out
 }
 
 // MustParseModuleJoinerConfig decodes a JSON joiner config, rejecting unknown

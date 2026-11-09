@@ -64,4 +64,19 @@ exports.default = async function seed({ container }) {
   const [shirt] = await product.listProducts({ handle: "t-shirt" }, { relations: ["variants"] })
   const white = shirt.variants.find((v) => v.sku === "SHIRT-L-WHITE")
   await product.softDeleteProductVariants([white.id])
+
+  // Cross-module data: sales channels, a stock location and module links.
+  const salesChannel = container.resolve("sales_channel")
+  const stockLocation = container.resolve("stock_location")
+  const link = container.resolve("link")
+  const [defaultChannel] = await salesChannel.listSalesChannels({ name: "Default Sales Channel" })
+  const [online] = await salesChannel.createSalesChannels([{ name: "Online", description: "Web store" }])
+  const [warehouse] = await stockLocation.createStockLocations([{ name: "Warehouse" }])
+  const [pants] = await product.listProducts({ handle: "sweatpants" })
+  await link.create([
+    { product: { product_id: shirt.id }, sales_channel: { sales_channel_id: defaultChannel.id } },
+    { product: { product_id: shirt.id }, sales_channel: { sales_channel_id: online.id } },
+    { product: { product_id: pants.id }, sales_channel: { sales_channel_id: online.id } },
+    { sales_channel: { sales_channel_id: online.id }, stock_location: { stock_location_id: warehouse.id } },
+  ])
 }

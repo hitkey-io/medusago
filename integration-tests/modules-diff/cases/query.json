@@ -1,0 +1,14 @@
+[
+  { "name": "q.product.basic", "module": "query", "method": "graph", "args": [{ "entity": "product", "fields": ["id", "title", "handle"], "filters": { "handle": ["t-shirt", "sweatpants"] } }] },
+  { "name": "q.product.nested", "module": "query", "method": "graph", "args": [{ "entity": "product", "fields": ["handle", "variants.sku", "variants.options.value", "tags.value", "type.value"], "filters": { "handle": "t-shirt" } }] },
+  { "name": "q.product.star", "module": "query", "method": "graph", "args": [{ "entity": "product", "fields": ["*", "variants.*"], "filters": { "handle": "sweatpants" } }] },
+  { "name": "q.region.paginated", "module": "query", "method": "graph", "args": [{ "entity": "region", "fields": ["name", "currency_code"], "pagination": { "skip": 0, "take": 1, "order": { "name": "ASC" } } }] },
+  { "name": "q.product.page-2", "module": "query", "method": "graph", "args": [{ "entity": "product", "fields": ["handle"], "pagination": { "skip": 1, "take": 1, "order": { "handle": "ASC" } } }] },
+  { "name": "q.product.link", "module": "query", "method": "graph", "args": [{ "entity": "product", "fields": ["handle", "sales_channels.name"], "pagination": { "order": { "handle": "ASC" } } }] },
+  { "name": "q.channel.reverse-link", "module": "query", "method": "graph", "args": [{ "entity": "sales_channel", "fields": ["name", "products.handle", "stock_locations.name"] }] },
+  { "name": "q.store.readonly-link", "module": "query", "method": "graph", "args": [{ "entity": "store", "fields": ["name", "supported_currencies.currency_code", "supported_currencies.is_default", "supported_currencies.currency.name"] }] },
+  { "name": "q.api-key.link", "module": "query", "method": "graph", "args": [{ "entity": "api_key", "fields": ["title", "type", "sales_channels.name"] }] },
+  { "name": "q.product.cross-module-filter", "module": "query", "method": "graph", "args": [{ "entity": "product", "fields": ["handle"], "filters": { "sales_channels": { "name": "Online" } } }] },
+  { "name": "q.product.with-deleted", "module": "query", "method": "graph", "args": [{ "entity": "product", "fields": ["handle", "deleted_at"], "withDeleted": true, "pagination": { "order": { "handle": "ASC" } } }] },
+  { "name": "q.variant.to-product-link", "module": "query", "method": "graph", "args": [{ "entity": "variant", "fields": ["sku", "product.handle", "product.sales_channels.name"], "pagination": { "order": { "sku": "ASC" } } }] }
+]

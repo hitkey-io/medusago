@@ -69,6 +69,24 @@ func (s *MedusaService) Internal(className string) *InternalService {
 	return s.byName[className]
 }
 
+// ListBySuffix calls list<suffix>, the method Query uses to fetch data.
+func (s *MedusaService) ListBySuffix(ctx context.Context, suffix string, filters *dal.Record, config FindConfig) ([]*dal.Record, error) {
+	svc, ok := s.bySuffix[suffix]
+	if !ok {
+		return nil, fmt.Errorf("method list%s does not exist", suffix)
+	}
+	return svc.List(ctx, filters, config)
+}
+
+// ListAndCountBySuffix calls listAndCount<suffix>.
+func (s *MedusaService) ListAndCountBySuffix(ctx context.Context, suffix string, filters *dal.Record, config FindConfig) ([]*dal.Record, int, error) {
+	svc, ok := s.bySuffix[suffix]
+	if !ok {
+		return nil, 0, fmt.Errorf("method listAndCount%s does not exist", suffix)
+	}
+	return svc.ListAndCount(ctx, filters, config)
+}
+
 // mapCascade mirrors mapObjectTo over the soft deleted / restored entities.
 func (s *MedusaService) mapCascade(res *dal.CascadeResult) *dal.Record {
 	out := dal.NewRecord()

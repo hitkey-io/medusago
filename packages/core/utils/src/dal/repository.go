@@ -79,6 +79,7 @@ func hasDeletedAt(e *dml.Entity) bool {
 
 // Find mirrors repository.find.
 func (r *Repository) Find(ctx context.Context, opts FindOptions) ([]*Record, error) {
+	opts = r.pruneFindOptions(opts)
 	roots, idm, err := r.find(ctx, opts)
 	if err != nil {
 		return nil, err
@@ -121,6 +122,7 @@ func (r *Repository) count(ctx context.Context, opts FindOptions) (int, error) {
 }
 
 func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, identityMap, error) {
+	opts = r.pruneFindOptions(opts)
 	qb := newQueryBuilder(r.Schema, opts.WithDeleted)
 	where, err := qb.rootWhere(r.Entity, "e0", opts.Where)
 	if err != nil {
@@ -129,6 +131,29 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 	order, err := r.orderSQL(opts.Order, "e0")
 	if err != nil {
 		return nil, nil, err
+	}
+
+	// Like the BALANCED load strategy, populated to-one relations are LEFT
+	// JOINed in the root query (with the soft delete condition in the join).
+	// Their data is hydrated from the select-in queries below; the joins keep
+	// the root query (and so the order of rows with equal sort keys) the same
+	// as upstream.
+	tree := buildFieldTree(opts, r.relationPaths(opts))
+	toOneJoins, joinedColumns := r.toOneJoins(r.relationPaths(opts), tree, opts.WithDeleted)
+	if toOneJoins != "" {
+		qb.joins = append([]string{toOneJoins}, qb.joins...)
+	}
+	rootColumns := `"e0".*`
+	if !tree.all {
+		cols := selectedColumns(r.Entity, tree)
+		quoted := make([]string, len(cols))
+		for i, c := range cols {
+			quoted[i] = col("e0", c)
+		}
+		rootColumns = strings.Join(quoted, ", ")
+	}
+	if len(joinedColumns) > 0 {
+		rootColumns += ", " + strings.Join(joinedColumns, ", ")
 	}
 
 	table := quote(r.Entity.Meta.Collection)
@@ -163,7 +188,7 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 		sql = fmt.Sprintf(`select "e0".* from %s as "e0" where %s in (select %s from (select %s from %s as "e0"%s%s group by %s%s%s) as "e0")%s`,
 			table, pk, pk, pk, table, qb.joinSQL(), where, pk, innerOrder, paging, order)
 	} else {
-		sql = fmt.Sprintf(`select "e0".* from %s as "e0"%s%s%s%s`, table, qb.joinSQL(), where, order, paging)
+		sql = fmt.Sprintf(`select %s from %s as "e0"%s%s%s%s`, rootColumns, table, qb.joinSQL(), where, order, paging)
 	}
 
 	rows, err := queryRows(ctx, r.DB, sql, qb.args...)
@@ -186,6 +211,100 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 		return nil, nil, err
 	}
 	return roots, idm, nil
+}
+
+// toOneJoins builds the LEFT JOINs of the populated to-one relation chains
+// starting at the root.
+func (r *Repository) toOneJoins(paths []string, tree *fieldTree, withDeleted bool) (string, []string) {
+	var joins, columns []string
+	aliases := map[string]string{"": "e0"}
+	entities := map[string]*dml.Entity{"": r.Entity}
+	trees := map[string]*fieldTree{"": tree}
+	n := 0
+	for _, path := range paths {
+		parent, rel := "", path
+		if i := strings.LastIndex(path, "."); i >= 0 {
+			parent, rel = path[:i], path[i+1:]
+		}
+		parentAlias, ok := aliases[parent]
+		if !ok {
+			continue
+		}
+		j, err := r.Schema.ResolveJoin(entities[parent], rel)
+		if err != nil || j.Many || j.PivotTable != "" {
+			continue
+		}
+		if j.Relation.Kind == "1:1" && !j.Relation.Owner {
+			continue
+		}
+		n++
+		alias := fmt.Sprintf("t%d", n)
+		cond := fmt.Sprintf("%s = %s", col(parentAlias, j.SourceColumns[0]), col(alias, j.TargetColumns[0]))
+		if !withDeleted && hasDeletedAt(j.Target) {
+			cond += " and " + col(alias, "deleted_at") + " is null"
+		}
+		joins = append(joins, fmt.Sprintf("left join %s as %s on %s", quote(j.Target.Meta.Collection), quote(alias), cond))
+		aliases[path] = alias
+		entities[path] = j.Target
+		sub := trees[parent].children[rel]
+		if sub == nil {
+			sub = allFields
+		}
+		trees[path] = sub
+		// Like MikroORM, the joined entity columns are selected (aliased), which
+		// keeps the join in the plan.
+		for _, c := range selectedColumns(j.Target, sub) {
+			columns = append(columns, fmt.Sprintf("%s as %s", col(alias, c), quote(alias+"__"+c)))
+		}
+	}
+	return strings.Join(joins, " "), columns
+}
+
+// selectedColumns lists the columns MikroORM selects for an entity: every
+// persisted column without a field selection, otherwise the primary keys,
+// the selected properties (with the raw_ column of BigNumber fields) and the
+// foreign keys of populated relations.
+func selectedColumns(e *dml.Entity, tree *fieldTree) []string {
+	var out []string
+	seen := map[string]bool{}
+	add := func(c string) {
+		if !seen[c] {
+			seen[c] = true
+			out = append(out, c)
+		}
+	}
+	bigNumbers := bigNumberFields(e)
+	if tree == nil || tree.all {
+		for _, p := range e.Meta.Properties {
+			if (p.Persist != nil && !*p.Persist) || len(p.FieldNames) == 0 || p.Kind == "1:m" || p.Kind == "m:n" || (p.Kind == "1:1" && !p.Owner) {
+				continue
+			}
+			add(p.FieldNames[0])
+		}
+		return out
+	}
+	for _, pk := range e.Meta.PrimaryKey {
+		add(fieldColumn(e, pk))
+	}
+	for _, p := range e.Meta.Properties {
+		if len(p.FieldNames) == 0 || (p.Persist != nil && !*p.Persist) {
+			continue
+		}
+		if tree.fields[p.Name] {
+			add(p.FieldNames[0])
+			if bigNumbers[p.Name] {
+				add("raw_" + p.Name)
+			}
+		}
+	}
+	for rel := range tree.children {
+		if p, ok := e.MetaProperty(rel); ok && (p.Kind == "m:1" || (p.Kind == "1:1" && p.Owner)) {
+			for _, fn := range p.FieldNames {
+				add(fn)
+			}
+		}
+	}
+	return out
 }
 
 func (r *Repository) orderColumn(field, alias string) (string, error) {

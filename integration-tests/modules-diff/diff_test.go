@@ -22,10 +22,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
+	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
+	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/medusa/src/commands/db"
+	"github.com/hitkey-io/medusago/packages/medusa/src/loaders"
 	"github.com/hitkey-io/medusago/packages/medusa/src/modules"
 )
 
@@ -200,14 +203,50 @@ func normalize(v any, known map[string]bool, ids map[string]string) any {
 	}
 }
 
+// graphInput converts the query.graph argument.
+func graphInput(arg any) query.GraphInput {
+	in := query.GraphInput{}
+	r, _ := arg.(*dal.Record)
+	if r == nil {
+		return in
+	}
+	if v, ok := r.Get("entity"); ok {
+		in.Entity = fmt.Sprint(v)
+	}
+	if v, ok := r.Get("fields"); ok {
+		for _, f := range v.([]any) {
+			in.Fields = append(in.Fields, fmt.Sprint(f))
+		}
+	}
+	if v, ok := r.Get("filters"); ok {
+		in.Filters, _ = v.(*dal.Record)
+	}
+	if v, ok := r.Get("pagination"); ok {
+		in.Pagination, _ = v.(*dal.Record)
+	}
+	if v, ok := r.Get("withDeleted"); ok {
+		in.WithDeleted, _ = v.(bool)
+	}
+	return in
+}
+
 // run executes one case and returns it encoded like run-calls.js does.
-func run(ctx context.Context, svc *modulessdk.MedusaService, c testCase, outputs map[string]any) ([]byte, error) {
+func run(ctx context.Context, svc *modulessdk.MedusaService, q *query.Query, c testCase, outputs map[string]any) ([]byte, error) {
 	decoded, err := dal.DecodeOrderedJSON(c.Args)
 	if err != nil {
 		return nil, err
 	}
 	args, _ := resolveRefs(decoded, outputs).([]any)
-	result, err := svc.Call(ctx, c.Method, args)
+	var result any
+	if c.Module == "query" {
+		var arg any
+		if len(args) > 0 {
+			arg = args[0]
+		}
+		result, err = q.Graph(ctx, graphInput(arg), joiner.Options{})
+	} else {
+		result, err = svc.Call(ctx, c.Method, args)
+	}
 	if err != nil {
 		if me, ok := common.AsMedusaError(err); ok {
 			e := dal.NewRecord()
@@ -238,6 +277,8 @@ func encodeResult(v any) ([]byte, error) {
 			parts[i] = string(b)
 		}
 		return []byte("[" + strings.Join(parts, ",") + "]"), nil
+	case *query.GraphResult:
+		return t.MarshalJSON()
 	default:
 		return dal.MarshalValue(v)
 	}
@@ -354,11 +395,18 @@ func TestModulesMatchUpstream(t *testing.T) {
 
 		for _, c := range cases {
 			t.Run(c.Name, func(t *testing.T) {
-				svc, err := moduleService(pool, c.Module)
+				var svc *modulessdk.MedusaService
+				if c.Module != "query" {
+					svc, err = moduleService(pool, c.Module)
+					if err != nil {
+						t.Fatal(err)
+					}
+				}
+				q, err := loaders.NewDefaultQuery(pool)
 				if err != nil {
 					t.Fatal(err)
 				}
-				got, err := run(ctx, svc, c, outputs)
+				got, err := run(ctx, svc, q, c, outputs)
 				if err != nil {
 					t.Fatal(err)
 				}

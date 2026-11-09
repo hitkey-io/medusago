@@ -7,6 +7,7 @@ import (
 
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/dml"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/link"
 )
 
@@ -160,4 +161,32 @@ func (e *LinkEntity) CreateSchemaSQL() string {
 	}
 	b.WriteString("\n")
 	return b.String()
+}
+
+// ToDMLEntity describes the link table as a dml.Entity (resolved metadata
+// only) so it can be read with the generic repository. Like the MikroORM
+// entity upstream generates, the primary key is made of the foreign keys.
+func (e *LinkEntity) ToDMLEntity(className string) *dml.Entity {
+	ent := &dml.Entity{Name: className, TableName: e.TableName}
+	ent.Meta.ClassName = className
+	ent.Meta.Collection = e.TableName
+	for _, c := range e.Columns {
+		if c.Primary {
+			ent.Meta.PrimaryKey = append(ent.Meta.PrimaryKey, c.Name)
+		}
+		columnType := c.SQLType
+		if columnType == "varchar(255)" {
+			columnType = "text"
+		}
+		ent.Meta.Properties = append(ent.Meta.Properties, dml.MetaProperty{
+			Name:       c.Name,
+			Kind:       "scalar",
+			ColumnType: columnType,
+			FieldNames: []string{c.Name},
+			Nullable:   c.Nullable,
+			Primary:    c.Primary,
+		})
+		ent.Properties = append(ent.Properties, dml.Property{Name: c.Name, Field: &dml.Field{DataType: dml.DataType{Name: "text"}, Nullable: c.Nullable}})
+	}
+	return ent
 }
