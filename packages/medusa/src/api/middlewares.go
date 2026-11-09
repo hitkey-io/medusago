@@ -9,6 +9,7 @@ import (
 	currencies "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/currencies"
 	customergroups "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups"
 	admincustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers"
+	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
@@ -21,9 +22,12 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products"
 	refundreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
+	adminreservations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/reservations"
 	returnreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons"
 	saleschannels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels"
+	stocklocations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores"
+	taxregions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-regions"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth"
 )
@@ -49,6 +53,10 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, productcategories.Middlewares...)
 	out = append(out, configurations.LayoutConfigurationListRoutesMiddlewares...)
 	out = append(out, currencies.Middlewares...)
+	out = append(out, stocklocations.Middlewares...)
+	out = append(out, inventoryitems.Middlewares...)
+	out = append(out, adminreservations.Middlewares...)
+	out = append(out, taxregions.Middlewares...)
 	out = append(out, apikeys.Middlewares...)
 	out = append(out, admincustomers.Middlewares...)
 	out = append(out, customergroups.Middlewares...)

@@ -179,6 +179,7 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 		for i, c := range cols {
 			quoted[i] = col("e0", c)
 		}
+		quoted = append(quoted, formulaColumns(r.Entity.Meta.ClassName, "e0", tree)...)
 		rootColumns = strings.Join(quoted, ", ")
 	}
 	if len(joinedColumns) > 0 {
@@ -705,6 +706,13 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 	var collections []*dml.MetaProperty
 	for i := range e.Meta.Properties {
 		p := &e.Meta.Properties[i]
+		for _, f := range formulas[e.Meta.ClassName] {
+			if f.Before == p.Name && tree.fields[f.Property] {
+				if v, ok := inst.data[f.Property]; ok {
+					rec.Set(f.Property, formulaValue(v))
+				}
+			}
+		}
 		switch {
 		case p.Kind == "scalar":
 			if bigNumbers[p.Name] || !hydrated(p.Name) {
@@ -783,7 +791,9 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 		}
 	}
 	for _, p := range bigNumberProps {
-		if !bigNumbers[p.Name] || !hydrated(p.Name) {
+		computed := p.Field != nil && p.Field.Computed
+		// values set by entity hooks are serialized whatever the selection
+		if !bigNumbers[p.Name] || (!computed && !hydrated(p.Name)) {
 			continue
 		}
 		raw, ok := inst.data["raw_"+p.Name].(*Record)

@@ -1,0 +1,19 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "locations", "method": "GET", "bearer": "login", "path": "/admin/stock-locations" },
+  { "name": "locations_sc", "method": "GET", "bearer": "login", "path": "/admin/stock-locations?sales_channel_id=sc_none&fields=id,name" },
+  { "name": "locations_fields", "method": "GET", "bearer": "login", "path": "/admin/stock-locations?fields=id,name,*sales_channels,*fulfillment_sets" },
+  { "name": "location_missing", "method": "GET", "bearer": "login", "path": "/admin/stock-locations/sloc_missing" },
+  { "name": "items", "method": "GET", "bearer": "login", "path": "/admin/inventory-items?order=sku" },
+  { "name": "items_q", "method": "GET", "bearer": "login", "path": "/admin/inventory-items?q=SHIRT&fields=id,sku,title" },
+  { "name": "items_weight", "method": "GET", "bearer": "login", "path": "/admin/inventory-items?weight[$gte]=0&fields=id,sku" },
+  { "name": "items_bad", "method": "GET", "bearer": "login", "path": "/admin/inventory-items?foo=1" },
+  { "name": "items_variants", "method": "GET", "bearer": "login", "path": "/admin/inventory-items?order=sku&limit=2&fields=id,sku,*variants,variants.product.title" },
+  { "name": "item", "method": "GET", "bearer": "login", "path": "/admin/inventory-items/{{items.inventory_items.0.id}}" },
+  { "name": "item_missing", "method": "GET", "bearer": "login", "path": "/admin/inventory-items/iitem_missing" },
+  { "name": "item_levels", "method": "GET", "bearer": "login", "path": "/admin/inventory-items/{{items.inventory_items.0.id}}/location-levels" },
+  { "name": "reservations", "method": "GET", "bearer": "login", "path": "/admin/reservations" },
+  { "name": "reservation_missing", "method": "GET", "bearer": "login", "path": "/admin/reservations/resitem_missing" },
+  { "name": "tax_regions", "method": "GET", "bearer": "login", "path": "/admin/tax-regions" },
+  { "name": "tax_region_missing", "method": "GET", "bearer": "login", "path": "/admin/tax-regions/txreg_missing" }
+]

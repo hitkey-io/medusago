@@ -24,4 +24,18 @@ func ApplyEntityHooks() {
 	})
 }
 
-func init() { ApplyEntityHooks() }
+func init() {
+	ApplyEntityHooks()
+	applyFormulas()
+}
+
+// applyFormulas mirrors applyFormulas: the lazy reserved/stocked quantity
+// sums of an inventory item over its live levels.
+func applyFormulas() {
+	dal.RegisterFormula("InventoryItem", dal.Formula{Property: "reserved_quantity", Before: "created_at", SQL: func(item string) string {
+		return "SELECT SUM(reserved_quantity) FROM inventory_level il WHERE il.inventory_item_id = " + item + ".id AND il.deleted_at IS NULL"
+	}})
+	dal.RegisterFormula("InventoryItem", dal.Formula{Property: "stocked_quantity", Before: "created_at", SQL: func(item string) string {
+		return "SELECT SUM(stocked_quantity) FROM inventory_level il WHERE il.inventory_item_id = " + item + ".id AND il.deleted_at IS NULL"
+	}})
+}

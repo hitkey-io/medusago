@@ -23,6 +23,9 @@ func (r *Repository) isFieldPathResolvable(path string) bool {
 		}
 		prop, ok := current.MetaProperty(segment)
 		if !ok {
+			if _, isFormula := formulaOf(current.Meta.ClassName, segment); isFormula && isLast {
+				return true
+			}
 			return false
 		}
 		if !isLast {

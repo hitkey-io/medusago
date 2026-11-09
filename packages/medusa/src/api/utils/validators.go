@@ -3,6 +3,8 @@ package utils
 
 import (
 	"math"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
@@ -160,3 +162,30 @@ func StringOrStrings() *zod.Schema {
 func WithAdditionalData(schema *zod.Schema) *zod.Schema {
 	return schema.Extend(zod.F("additional_data", zod.Record(zod.String(), zod.Unknown()).Nullish()))
 }
+
+// ParseFloat mirrors JavaScript parseFloat for operator map values: the
+// longest numeric prefix of a string, NaN when there is none.
+func ParseFloat(v any) any {
+	s, ok := v.(string)
+	if !ok {
+		return v
+	}
+	s = strings.TrimLeft(s, " \t\n\r")
+	m := floatPrefix.FindString(s)
+	if m == "" {
+		return math.NaN()
+	}
+	if strings.HasSuffix(m, "Infinity") {
+		if strings.HasPrefix(m, "-") {
+			return math.Inf(-1)
+		}
+		return math.Inf(1)
+	}
+	f, err := strconv.ParseFloat(m, 64)
+	if err != nil {
+		return math.NaN()
+	}
+	return f
+}
+
+var floatPrefix = regexp.MustCompile(`^[+-]?(Infinity|(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?)`)

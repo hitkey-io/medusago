@@ -14,6 +14,9 @@ import (
 	admincustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers"
 	customerid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_"
 	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/feature-flags"
+	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
+	inventoryitemid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_"
+	inventorylevels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_/location-levels"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/zone_/configuration"
 	adminmodules "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/modules"
@@ -42,12 +45,18 @@ import (
 	refundreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons"
 	refundreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
+	adminreservations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/reservations"
+	reservationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/reservations/id_"
 	returnreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons"
 	returnreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons/id_"
 	saleschannels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels"
 	saleschannelid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_"
 	searchindexes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/search-indexes"
+	stocklocations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations"
+	stocklocationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores"
+	taxregions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-regions"
+	taxregionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-regions/id_"
 	adminusers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
 	userid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/me"
@@ -72,6 +81,15 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/customers/:id", Route: customerid.Route},
 		{Path: "/admin/currencies/:code", Route: currencycode.Route},
 		{Path: "/admin/feature-flags", Route: featureflags.Route},
+		{Path: "/admin/inventory-items", Route: inventoryitems.Route},
+		{Path: "/admin/inventory-items/:id", Route: inventoryitemid.Route},
+		{Path: "/admin/inventory-items/:id/location-levels", Route: inventorylevels.Route},
+		{Path: "/admin/reservations", Route: adminreservations.Route},
+		{Path: "/admin/reservations/:id", Route: reservationid.Route},
+		{Path: "/admin/stock-locations", Route: stocklocations.Route},
+		{Path: "/admin/stock-locations/:id", Route: stocklocationid.Route},
+		{Path: "/admin/tax-regions", Route: taxregions.Route},
+		{Path: "/admin/tax-regions/:id", Route: taxregionid.Route},
 		{Path: "/admin/refund-reasons", Route: refundreasons.Route},
 		{Path: "/admin/refund-reasons/:id", Route: refundreasonid.Route},
 		{Path: "/admin/return-reasons", Route: returnreasons.Route},
