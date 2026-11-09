@@ -291,6 +291,45 @@ func (r *Repository) assignFields(e *dml.Entity, data Row, input *Record, create
 		}
 	}
 
+	// Owning to-one relations that are not mapToPk (e.g. StockLocation.address
+	// with a persist:false address_id shadow): the FK comes from the
+	// relation (id or object) or from the shadow scalar.
+	for _, rel := range e.Meta.Properties {
+		if !isToOne(rel.Kind) || rel.MapToPk || len(rel.FieldNames) == 0 || (rel.Persist != nil && !*rel.Persist) {
+			continue
+		}
+		if rel.Kind == "1:1" && !rel.Owner {
+			continue
+		}
+		column := rel.FieldNames[0]
+		if _, set := data[column]; set {
+			continue
+		}
+		var value any
+		found := false
+		if v, ok := input.Get(rel.Name); ok {
+			found = true
+			if obj, isObj := v.(*Record); isObj {
+				value, _ = obj.Get("id")
+			} else {
+				value = v
+			}
+		} else {
+			for _, sh := range e.Meta.Properties {
+				if sh.Kind == "scalar" && sh.Persist != nil && !*sh.Persist && len(sh.FieldNames) > 0 && sh.FieldNames[0] == column {
+					if v, ok := input.Get(sh.Name); ok {
+						value, found = v, true
+					}
+				}
+			}
+		}
+		if found {
+			data[column] = value
+		} else if create && rel.Nullable {
+			data[column] = nil
+		}
+	}
+
 	now := Now()
 	if create {
 		if _, ok := e.MetaProperty("created_at"); ok {
@@ -365,6 +404,38 @@ func (r *Repository) Create(ctx context.Context, inputs []*Record) ([]*Record, e
 }
 
 func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, idm identityMap) (*instance, error) {
+	// Nested owning to-one objects without a primary key are new entities
+	// (MikroORM cascade persist): they are inserted first and referenced.
+	for _, rel := range e.Meta.Properties {
+		if (rel.Kind != "m:1" && !(rel.Kind == "1:1" && rel.Owner)) || len(rel.FieldNames) == 0 {
+			continue
+		}
+		v, ok := input.Get(rel.Name)
+		obj, isObj := v.(*Record)
+		if !ok || !isObj || obj == nil {
+			continue
+		}
+		if id, has := obj.Get("id"); has && id != nil && id != "" {
+			continue
+		}
+		target, err := r.Schema.Entity(rel.Entity)
+		if err != nil {
+			return nil, err
+		}
+		child, err := r.create(ctx, target, obj, idm)
+		if err != nil {
+			return nil, err
+		}
+		copyInput := NewRecord()
+		for _, k := range input.Keys() {
+			val, _ := input.Get(k)
+			copyInput.Set(k, val)
+		}
+		ref := NewRecord()
+		ref.Set("id", child.data[fieldColumn(target, "id")])
+		copyInput.Set(rel.Name, ref)
+		input = copyInput
+	}
 	data := Row{}
 	if err := r.assignFields(e, data, input, true); err != nil {
 		return nil, err

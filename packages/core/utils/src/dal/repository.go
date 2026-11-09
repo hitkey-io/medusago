@@ -687,6 +687,22 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 	hydrated := func(name string) bool {
 		return tree.all || tree.fields[name] || slices.Contains(e.Meta.PrimaryKey, name)
 	}
+	// fkHydrated reports whether the foreign key column of an owning
+	// to-one relation was selected (by its property or a shadow property).
+	fkHydrated := func(rel *dml.MetaProperty) bool {
+		if tree.all {
+			return true
+		}
+		if len(rel.FieldNames) == 0 || (rel.Kind == "1:1" && !rel.Owner) {
+			return true
+		}
+		for _, mp := range e.Meta.Properties {
+			if mp.Name != rel.Name && len(mp.FieldNames) > 0 && mp.FieldNames[0] == rel.FieldNames[0] && tree.fields[mp.Name] {
+				return true
+			}
+		}
+		return false
+	}
 	requiredFK := map[string]bool{}
 	for _, fk := range joinFK {
 		requiredFK[fk] = true
@@ -745,6 +761,12 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 				if err != nil {
 					return nil, err
 				}
+				if v == nil && p.Kind == "1:1" && !fkHydrated(p) {
+					// joined 1:1 without a match and without its foreign key
+					// selected: MikroORM never assigns the property (m:1
+					// relations always fetch their foreign key)
+					continue
+				}
 				rec.Set(p.Name, v)
 				continue
 			}
@@ -783,7 +805,12 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 	}
 
 	for _, p := range lateScalars {
-		rec.Set(p.Name, runtimeNumber(p.Type, inst.data[p.FieldNames[0]]))
+		v := inst.data[p.FieldNames[0]]
+		if v == nil {
+			// assigned from the relation, which is null
+			continue
+		}
+		rec.Set(p.Name, runtimeNumber(p.Type, v))
 	}
 
 	for _, p := range collections {

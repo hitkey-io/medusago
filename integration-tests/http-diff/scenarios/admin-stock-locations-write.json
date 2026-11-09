@@ -1,0 +1,19 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "create", "method": "POST", "bearer": "login", "path": "/admin/stock-locations", "body": { "name": "  London Hub ", "address": { "address_1": "1 Test Street", "city": "London", "country_code": "GB", "postal_code": "E1 1AA", "metadata": { "dock": 3 } }, "metadata": { "a": 1 } } },
+  { "name": "create_plain", "method": "POST", "bearer": "login", "path": "/admin/stock-locations?fields=id,name,address_id,*address", "body": { "name": "Paris" } },
+  { "name": "create_invalid", "method": "POST", "bearer": "login", "path": "/admin/stock-locations", "body": { "name": "X", "address": { "city": "Nowhere" } } },
+  { "name": "get", "method": "GET", "bearer": "login", "path": "/admin/stock-locations/{{create.stock_location.id}}?fields=*address,name" },
+  { "name": "update", "method": "POST", "bearer": "login", "path": "/admin/stock-locations/{{create.stock_location.id}}", "body": { "name": " London Main ", "address": { "address_1": "2 Test Street", "country_code": "gb", "city": null } } },
+  { "name": "update_no_address", "method": "POST", "bearer": "login", "path": "/admin/stock-locations/{{create_plain.stock_location.id}}?fields=id,name,address_id,*address", "body": { "address": { "address_1": "Rue 1", "country_code": "fr" }, "metadata": { "x": true } } },
+  { "name": "link_sc", "method": "POST", "bearer": "login", "path": "/admin/stock-locations/{{create.stock_location.id}}/sales-channels?fields=id,sales_channels.name", "body": { "add": ["sc_01M70XZZVJETKWXXT8RHV5DWRZ"] } },
+  { "name": "link_fp", "method": "POST", "bearer": "login", "path": "/admin/stock-locations/{{create.stock_location.id}}/fulfillment-providers?fields=id,fulfillment_providers.id", "body": { "add": ["manual_manual"] } },
+  { "name": "list_by_sc", "method": "GET", "bearer": "login", "path": "/admin/stock-locations?sales_channel_id=sc_01M70XZZVJETKWXXT8RHV5DWRZ&order=name&fields=name" },
+  { "name": "unlink_sc", "method": "POST", "bearer": "login", "path": "/admin/stock-locations/{{create.stock_location.id}}/sales-channels?fields=id,sales_channels.name", "body": { "remove": ["sc_01M70XZZVJETKWXXT8RHV5DWRZ"] } },
+  { "name": "unlink_fp", "method": "POST", "bearer": "login", "path": "/admin/stock-locations/{{create.stock_location.id}}/fulfillment-providers?fields=id,fulfillment_providers.id", "body": { "remove": ["manual_manual"] } },
+  { "name": "relink_sc", "method": "POST", "bearer": "login", "path": "/admin/stock-locations/{{create.stock_location.id}}/sales-channels?fields=id", "body": { "add": ["sc_01M70XZZVJETKWXXT8RHV5DWRZ"] } },
+  { "name": "delete", "method": "DELETE", "bearer": "login", "path": "/admin/stock-locations/{{create.stock_location.id}}" },
+  { "name": "get_deleted", "method": "GET", "bearer": "login", "path": "/admin/stock-locations/{{create.stock_location.id}}" },
+  { "name": "sc_locations", "method": "GET", "bearer": "login", "path": "/admin/sales-channels/sc_01M70XZZVJETKWXXT8RHV5DWRZ?fields=id,stock_locations.name" },
+  { "name": "list", "method": "GET", "bearer": "login", "path": "/admin/stock-locations?order=name&fields=name,*address" }
+]

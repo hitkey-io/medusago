@@ -182,3 +182,60 @@ var DetachProductsFromSalesChannelsStep = composer.CreateStep("detach-products-f
 		_, err := commonsteps.LinkOf(ctx.Container).Create(ctx.Context, links)
 		return err
 	})
+
+// LocationChannelLink is { sales_channel_id, location_id }.
+type LocationChannelLink struct {
+	SalesChannelID string
+	LocationID     string
+}
+
+func locationLinks(links []LocationChannelLink) []*dal.Record {
+	defs := make([]*dal.Record, len(links))
+	for i, l := range links {
+		defs[i] = modulessdk.NewLinkDefinition("sales_channel", "sales_channel_id", l.SalesChannelID, "stock_location", "stock_location_id", l.LocationID)
+	}
+	return defs
+}
+
+// AssociateLocationsWithSalesChannelsStep mirrors associateLocationsWithSalesChannelsStep.
+var AssociateLocationsWithSalesChannelsStep = composer.CreateStep("associate-locations-with-sales-channels-step",
+	func(ctx composer.StepExecutionContext, links []LocationChannelLink) (composer.StepResponse[[]*dal.Record], error) {
+		if len(links) == 0 {
+			return composer.NewStepResponse([]*dal.Record{}, any([]*dal.Record{})), nil
+		}
+		defs := locationLinks(links)
+		created, err := commonsteps.LinkOf(ctx.Container).Create(ctx.Context, defs)
+		if err != nil {
+			return composer.StepResponse[[]*dal.Record]{}, err
+		}
+		return composer.NewStepResponse(created, any(defs)), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		links, _ := data.([]*dal.Record)
+		if len(links) == 0 {
+			return nil
+		}
+		_, err := commonsteps.LinkOf(ctx.Container).Dismiss(ctx.Context, links)
+		return err
+	})
+
+// DetachLocationsFromSalesChannelsStep mirrors detachLocationsFromSalesChannelsStep.
+var DetachLocationsFromSalesChannelsStep = composer.CreateStep("detach-locations-from-sales-channels",
+	func(ctx composer.StepExecutionContext, links []LocationChannelLink) (composer.StepResponse[[]*dal.Record], error) {
+		if len(links) == 0 {
+			return composer.NewStepResponse([]*dal.Record{}, any([]*dal.Record{})), nil
+		}
+		defs := locationLinks(links)
+		if _, err := commonsteps.LinkOf(ctx.Container).Dismiss(ctx.Context, defs); err != nil {
+			return composer.StepResponse[[]*dal.Record]{}, err
+		}
+		return composer.NewStepResponse[[]*dal.Record](nil, any(defs)), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		links, _ := data.([]*dal.Record)
+		if len(links) == 0 {
+			return nil
+		}
+		_, err := commonsteps.LinkOf(ctx.Container).Create(ctx.Context, links)
+		return err
+	})

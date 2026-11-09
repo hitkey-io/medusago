@@ -63,6 +63,8 @@ import (
 	searchindexes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/search-indexes"
 	stocklocations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations"
 	stocklocationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations/id_"
+	stocklocationfp "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations/id_/fulfillment-providers"
+	stocklocationsc "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations/id_/sales-channels"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores"
 	storeid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores/id_"
 	taxproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-providers"
@@ -114,6 +116,8 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/reservations/:id", Route: reservationid.Route},
 		{Path: "/admin/stock-locations", Route: stocklocations.Route},
 		{Path: "/admin/stock-locations/:id", Route: stocklocationid.Route},
+		{Path: "/admin/stock-locations/:id/sales-channels", Route: stocklocationsc.Route},
+		{Path: "/admin/stock-locations/:id/fulfillment-providers", Route: stocklocationfp.Route},
 		{Path: "/admin/tax-regions", Route: taxregions.Route},
 		{Path: "/admin/tax-regions/:id", Route: taxregionid.Route},
 		{Path: "/admin/tax-rates", Route: taxrates.Route},
