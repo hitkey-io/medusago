@@ -15,3 +15,6 @@ func GenerateEntityID(idProperty, prefix string) string {
 	}
 	return prefix + "_" + id
 }
+
+// ULID mirrors ulid(): a new ULID string.
+func ULID() string { return ulid.Make().String() }

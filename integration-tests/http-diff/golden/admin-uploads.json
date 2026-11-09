@@ -1,0 +1,183 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNjM2MjgsImV4cCI6MTc5NDM1MDAyOH0.AssmzklrMkCYlUAi0yVSnvTpVbPbZiyphCKl14tPbc4"
+    }
+  },
+  "upload": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "1794263628580-hello.txt",
+          "url": "http://localhost:9000/static/1794263628580-hello.txt"
+        },
+        {
+          "id": "1794263628579-data.json",
+          "url": "http://localhost:9000/static/1794263628579-data.json"
+        }
+      ]
+    }
+  },
+  "upload_none": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "No files were uploaded"
+    }
+  },
+  "get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "file": {
+        "id": "1794263628580-hello.txt",
+        "url": "http://localhost:9000/static/1794263628580-hello.txt"
+      }
+    }
+  },
+  "get_fields": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "file": {
+        "id": "1794263628579-data.json"
+      }
+    }
+  },
+  "get_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "File with key missing.txt not found"
+    }
+  },
+  "static": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/plain; charset=UTF-8"
+    },
+    "body": "hello world"
+  },
+  "static_json": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=UTF-8"
+    },
+    "body": {
+      "a": 1
+    }
+  },
+  "static_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8"
+    },
+    "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot GET /static/missing.txt</pre>\n</body>\n</html>\n"
+  },
+  "presigned_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "code": "invalid_data",
+      "type": "invalid_data",
+      "message": "Invalid file type \"nope\""
+    }
+  },
+  "presigned_bad_body": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'mime_type' is required; Expected type: 'number' for field 'size', got: '1'"
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "1794263628580-hello.txt",
+      "object": "file",
+      "deleted": true
+    }
+  },
+  "get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "File with key 1794263628580-hello.txt not found"
+    }
+  },
+  "delete_again": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "1794263628580-hello.txt",
+      "object": "file",
+      "deleted": true
+    }
+  },
+  "delete_json": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "1794263628579-data.json",
+      "object": "file",
+      "deleted": true
+    }
+  }
+}

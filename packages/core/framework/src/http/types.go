@@ -68,6 +68,16 @@ type MedusaRequest struct {
 	Errors []any
 	// Locals holds values shared between middlewares.
 	Locals map[string]any
+	// Files mirrors req.files set by multer (nil = undefined).
+	Files []UploadedFile
+}
+
+// UploadedFile mirrors Express.Multer.File (memory storage).
+type UploadedFile struct {
+	FieldName    string
+	OriginalName string
+	MimeType     string
+	Buffer       []byte
 }
 
 // NewMedusaRequest wraps r.
@@ -154,6 +164,21 @@ func (r *MedusaResponse) OnEnd(fn func()) { r.afterEnd = append(r.afterEnd, fn) 
 // are flushed (hooks run) on first use.
 func (r *MedusaResponse) Writer() nethttp.ResponseWriter {
 	r.writeHeader(r.status)
+	return r.w
+}
+
+// Handoff runs the header hooks and returns the underlying writer without
+// writing the status: the caller (e.g. http.ServeContent) writes it.
+func (r *MedusaResponse) Handoff() nethttp.ResponseWriter {
+	if !r.headerSent {
+		hooks := r.beforeHeaders
+		r.beforeHeaders = nil
+		for i := len(hooks) - 1; i >= 0; i-- {
+			hooks[i]()
+		}
+		r.headerSent = true
+	}
+	r.finished = true
 	return r.w
 }
 

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log/slog"
 	nethttp "net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
@@ -194,6 +196,9 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 	}
 	// express loader
 	app.Use("/", medusahttp.SessionMiddleware(sessionOptions(cfg.ProjectConfig)))
+	if cwd, err := os.Getwd(); err == nil {
+		app.Use("/static", medusahttp.Static("/static", filepath.Join(cwd, "static")))
+	}
 	// start.ts registers the health check after the loaders; it is matched
 	// by path only, so its position does not change the routing.
 	medusahttp.LoadAPI(app, medusahttp.ApiLoaderOptions{

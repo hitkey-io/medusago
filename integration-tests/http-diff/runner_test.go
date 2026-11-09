@@ -13,9 +13,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
+	"net/textproto"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -44,7 +46,35 @@ type Step struct {
 	// Unordered lists body keys whose arrays upstream returns in a
 	// nondeterministic order: they are compared sorted.
 	Unordered []string `json:"unordered,omitempty"`
+	// Files sends a multipart/form-data body with these files.
+	Files []StepFile `json:"files,omitempty"`
 }
+
+// StepFile is one file of a multipart step.
+type StepFile struct {
+	Field   string `json:"field"`
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+	Content string `json:"content"`
+}
+
+// multipartBody builds the multipart/form-data body of the step files.
+func multipartBody(files []StepFile) (io.Reader, string) {
+	var buf bytes.Buffer
+	w := multipart.NewWriter(&buf)
+	for _, f := range files {
+		h := make(textproto.MIMEHeader)
+		h.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, f.Field, f.Name))
+		h.Set("Content-Type", f.Type)
+		part, _ := w.CreatePart(h)
+		_, _ = part.Write([]byte(f.Content))
+	}
+	_ = w.Close()
+	return &buf, w.FormDataContentType()
+}
+
+// fileTimestampRe matches the Date.now() prefix of local file keys.
+var fileTimestampRe = regexp.MustCompile(`\b1\d{12}-`)
 
 // sortUnordered sorts the listed body arrays by their JSON encoding.
 func sortUnordered(rec any, keys []string) any {
@@ -138,12 +168,19 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 		if len(step.Body) > 0 {
 			body = strings.NewReader(resolveRefs(string(step.Body), bodies, false))
 		}
+		contentType := ""
+		if len(step.Body) > 0 {
+			contentType = "application/json"
+		}
+		if len(step.Files) > 0 {
+			body, contentType = multipartBody(step.Files)
+		}
 		req, err := http.NewRequest(step.Method, baseURL+step.Path, body)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(step.Body) > 0 {
-			req.Header.Set("Content-Type", "application/json")
+		if contentType != "" {
+			req.Header.Set("Content-Type", contentType)
 		}
 		if step.Origin != "" {
 			req.Header.Set("Origin", step.Origin)
@@ -301,6 +338,7 @@ func newPlaceholders() *placeholders {
 }
 
 func (p *placeholders) of(s string) string {
+	s = fileTimestampRe.ReplaceAllString(s, "<ms>-")
 	gen, kind := isGenerated(s)
 	if !gen {
 		if kind == "" && len(s) > 30 {

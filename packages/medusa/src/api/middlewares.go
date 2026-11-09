@@ -39,6 +39,7 @@ import (
 	taxproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-providers"
 	taxrates "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-rates"
 	taxregions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-regions"
+	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/uploads"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
 	workflowsexecutions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth"
@@ -52,6 +53,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, regions.AdminRegionRoutesMiddlewares...)
 	out = append(out, users.AdminUserRoutesMiddlewares...)
 	out = append(out, invites.AdminInviteRoutesMiddlewares...)
+	out = append(out, uploads.Middlewares...)
 	out = append(out, stores.AdminStoreRoutesMiddlewares...)
 	out = append(out, products.AdminProductRoutesMiddlewares...)
 	out = append(out, productvariants.Middlewares...)

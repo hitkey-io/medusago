@@ -1,0 +1,17 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "upload", "method": "POST", "bearer": "login", "path": "/admin/uploads", "files": [ { "field": "files", "name": "hello.txt", "type": "text/plain", "content": "hello world" }, { "field": "files", "name": "data.json", "type": "application/json", "content": "{\"a\":1}" } ] },
+  { "name": "upload_none", "method": "POST", "bearer": "login", "path": "/admin/uploads", "body": {} },
+  { "name": "get", "method": "GET", "bearer": "login", "path": "/admin/uploads/{{upload.files.0.id}}" },
+  { "name": "get_fields", "method": "GET", "bearer": "login", "path": "/admin/uploads/{{upload.files.1.id}}?fields=id" },
+  { "name": "get_missing", "method": "GET", "bearer": "login", "path": "/admin/uploads/missing.txt" },
+  { "name": "static", "method": "GET", "path": "/static/{{upload.files.0.id}}" },
+  { "name": "static_json", "method": "GET", "path": "/static/{{upload.files.1.id}}" },
+  { "name": "static_missing", "method": "GET", "path": "/static/missing.txt" },
+  { "name": "presigned_invalid", "method": "POST", "bearer": "login", "path": "/admin/uploads/presigned-urls", "body": { "originalname": "x", "mime_type": "nope", "size": 1 } },
+  { "name": "presigned_bad_body", "method": "POST", "bearer": "login", "path": "/admin/uploads/presigned-urls", "body": { "originalname": "x", "size": "1" } },
+  { "name": "delete", "method": "DELETE", "bearer": "login", "path": "/admin/uploads/{{upload.files.0.id}}" },
+  { "name": "get_deleted", "method": "GET", "bearer": "login", "path": "/admin/uploads/{{upload.files.0.id}}" },
+  { "name": "delete_again", "method": "DELETE", "bearer": "login", "path": "/admin/uploads/{{upload.files.0.id}}" },
+  { "name": "delete_json", "method": "DELETE", "bearer": "login", "path": "/admin/uploads/{{upload.files.1.id}}" }
+]

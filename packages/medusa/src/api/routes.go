@@ -109,6 +109,9 @@ import (
 	taxraterule "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-rates/id_/rules/rule_id_"
 	taxregions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-regions"
 	taxregionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-regions/id_"
+	adminuploads "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/uploads"
+	uploadid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/uploads/id_"
+	uploadpresigned "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/uploads/presigned-urls"
 	adminusers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
 	userid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/id_"
 	userauthproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/id_/auth-providers"
@@ -236,6 +239,9 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/users/me", Route: me.Route},
 		{Path: "/admin/users/:id/auth-providers", Route: userauthproviders.Route},
 		{Path: "/admin/invites", Route: admininvites.Route},
+		{Path: "/admin/uploads", Route: adminuploads.Route},
+		{Path: "/admin/uploads/:id", Route: uploadid.Route},
+		{Path: "/admin/uploads/presigned-urls", Route: uploadpresigned.Route},
 		{Path: "/admin/invites/accept", Route: inviteaccept.Route},
 		{Path: "/admin/invites/:id", Route: inviteid.Route},
 		{Path: "/admin/invites/:id/resend", Route: inviteresend.Route},
