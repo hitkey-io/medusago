@@ -36,7 +36,7 @@ type Issue struct {
 	// Keys of unrecognized_keys issues.
 	Keys []string
 	// Errors of invalid_union issues: the issues of each option.
-	Errors [][]*Issue
+	Errors  [][]*Issue
 	Minimum any
 	Maximum any
 	Origin  string
