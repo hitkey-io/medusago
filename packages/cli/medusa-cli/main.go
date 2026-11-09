@@ -2,18 +2,22 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
 
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/medusa/src/commands"
+	"github.com/hitkey-io/medusago/packages/medusa/src/commands/db"
 )
 
 func usage() {
 	fmt.Fprintln(os.Stderr, "Usage: medusa <command> [options]")
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Commands:")
-	fmt.Fprintln(os.Stderr, "  start    Start the Medusa server")
+	fmt.Fprintln(os.Stderr, "  start        Start the Medusa server")
+	fmt.Fprintln(os.Stderr, "  db:migrate   Run the module migrations")
 }
 
 func main() {
@@ -33,6 +37,18 @@ func main() {
 		_ = fs.Parse(os.Args[2:])
 
 		if err := commands.Start(opts); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	case "db:migrate":
+		fs := flag.NewFlagSet("db:migrate", flag.ExitOnError)
+		opts := db.MigrateOptions{}
+		fs.BoolVar(&opts.SkipLinks, "skip-links", false, "Do not sync links")
+		fs.BoolVar(&opts.SkipScripts, "skip-scripts", false, "Do not run migration scripts")
+		_ = fs.Parse(os.Args[2:])
+
+		config := common.DefineConfig(common.InputConfig{})
+		if err := db.Migrate(context.Background(), config, opts); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}

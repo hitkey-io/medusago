@@ -1,0 +1,36 @@
+// Package modules mirrors @medusajs/medusa/src/modules: the modules and module
+// providers shipped with Medusa, addressable by their package name.
+package modules
+
+import modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
+
+// Registry maps "@medusajs/medusa/<name>" package names to their exports.
+var Registry = map[string]*modulessdk.ModuleExports{
+	"@medusajs/medusa/api-key":                  &ApiKey,
+	"@medusajs/medusa/auth":                     &Auth,
+	"@medusajs/medusa/cart":                     &Cart,
+	"@medusajs/medusa/currency":                 &Currency,
+	"@medusajs/medusa/customer":                 &Customer,
+	"@medusajs/medusa/fulfillment":              &Fulfillment,
+	"@medusajs/medusa/index-module":             &IndexModule,
+	"@medusajs/medusa/inventory":                &Inventory,
+	"@medusajs/medusa/notification":             &Notification,
+	"@medusajs/medusa/order":                    &Order,
+	"@medusajs/medusa/payment":                  &Payment,
+	"@medusajs/medusa/pricing":                  &Pricing,
+	"@medusajs/medusa/product":                  &Product,
+	"@medusajs/medusa/promotion":                &Promotion,
+	"@medusajs/medusa/locking-postgres":         &LockingPostgres,
+	"@medusajs/medusa/search-postgres":          &SearchPostgres,
+	"@medusajs/medusa/region":                   &Region,
+	"@medusajs/medusa/sales-channel":            &SalesChannel,
+	"@medusajs/medusa/search":                   &Search,
+	"@medusajs/medusa/settings":                 &Settings,
+	"@medusajs/medusa/stock-location":           &StockLocation,
+	"@medusajs/medusa/store":                    &Store,
+	"@medusajs/medusa/tax":                      &Tax,
+	"@medusajs/medusa/translation":              &Translation,
+	"@medusajs/medusa/user":                     &User,
+	"@medusajs/medusa/workflow-engine-inmemory": &WorkflowEngineInmemory,
+	"@medusajs/medusa/workflow-engine-redis":    &WorkflowEngineRedis,
+}
