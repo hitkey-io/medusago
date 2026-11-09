@@ -568,9 +568,18 @@ func (r *Repository) UpdateWith(ctx context.Context, opts FindOptions, dataFor f
 	return r.serialize(roots, idm, opts)
 }
 
-// applyUpdate assigns data to a loaded entity and writes the changed
-// columns (MikroORM only flushes dirty entities, refreshing updated_at).
+// applyUpdate assigns data to a loaded entity: scalar columns, then the
+// one-to-many collections given in data.
 func (r *Repository) applyUpdate(ctx context.Context, inst *instance, data *Record) error {
+	if err := r.applyScalarUpdate(ctx, inst, data); err != nil {
+		return err
+	}
+	return r.assignOneToManyCollections(ctx, inst, data)
+}
+
+// applyScalarUpdate writes the changed columns (MikroORM only flushes dirty
+// entities, refreshing updated_at).
+func (r *Repository) applyScalarUpdate(ctx context.Context, inst *instance, data *Record) error {
 	e := inst.entity
 	changed := Row{}
 	if err := r.assignFields(e, changed, data, false); err != nil {
@@ -875,4 +884,117 @@ func (r *Repository) ReplaceManyToMany(ctx context.Context, ownerID any, relatio
 		}
 	}
 	return nil
+}
+
+// assignOneToManyCollections mirrors assigning a hasMany collection on update:
+// DML hasMany relations have orphanRemoval, so children missing from the new
+// collection are deleted, items with an existing id are updated and the others
+// are created.
+func (r *Repository) assignOneToManyCollections(ctx context.Context, inst *instance, data *Record) error {
+	e := inst.entity
+	for _, mp := range e.Meta.Properties {
+		if mp.Kind != "1:m" {
+			continue
+		}
+		value, ok := data.Get(mp.Name)
+		if !ok || value == nil {
+			continue
+		}
+		var items []*Record
+		switch t := value.(type) {
+		case []any:
+			for _, x := range t {
+				if rec, ok := x.(*Record); ok {
+					items = append(items, rec)
+				}
+			}
+		case []*Record:
+			items = t
+		default:
+			continue
+		}
+		join, err := r.Schema.ResolveJoin(e, mp.Name)
+		if err != nil {
+			return err
+		}
+		target := join.Target
+		parentValue := inst.data[join.SourceColumns[0]]
+		fkColumn := join.TargetColumns[0]
+		softDelete := ""
+		if hasDeletedAt(target) {
+			softDelete = ` and "deleted_at" is null`
+		}
+		rows, err := QueryRows(ctx, r.DB, fmt.Sprintf("select * from %s where %s = $1%s", quote(target.Meta.Collection), quote(fkColumn), softDelete), parentValue)
+		if err != nil {
+			return MapDBError(err)
+		}
+		existing := map[string]Row{}
+		for _, row := range rows {
+			existing[fmt.Sprint(row["id"])] = row
+		}
+		keep := map[string]bool{}
+		for _, it := range items {
+			if id, ok := it.Get("id"); ok && id != nil {
+				keep[fmt.Sprint(id)] = true
+			}
+		}
+		var orphans []string
+		for _, row := range rows {
+			if id := fmt.Sprint(row["id"]); !keep[id] {
+				orphans = append(orphans, id)
+			}
+		}
+		if len(orphans) > 0 {
+			if err := r.exec(ctx, fmt.Sprintf("delete from %s where \"id\" = any($1)", quote(target.Meta.Collection)), orphans); err != nil {
+				return err
+			}
+		}
+		// MikroORM flushes the inserts before the updates (physical order).
+		idm := identityMap{}
+		var updates []func() error
+		for _, it := range items {
+			id, _ := it.Get("id")
+			if row, ok := existing[fmt.Sprint(id)]; ok && id != nil {
+				child := &instance{entity: target, data: row, relations: map[string]any{}}
+				item := it
+				updates = append(updates, func() error { return r.applyScalarUpdate(ctx, child, item) })
+				continue
+			}
+			n := NewRecord()
+			for _, k := range it.Keys() {
+				v, _ := it.Get(k)
+				n.Set(k, v)
+			}
+			setChildFK(target, n, fkColumn, parentValue)
+			if _, err := r.create(ctx, target, n, idm); err != nil {
+				return err
+			}
+		}
+		for _, u := range updates {
+			if err := u(); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// setChildFK sets the foreign key of a child input, by the property owning
+// the column.
+func setChildFK(target *dml.Entity, input *Record, column string, value any) {
+	for _, mp := range target.Meta.Properties {
+		if len(mp.FieldNames) > 0 && mp.FieldNames[0] == column && (mp.MapToPk || mp.Kind == "scalar") && (mp.Persist == nil || *mp.Persist) {
+			input.Set(mp.Name, value)
+			return
+		}
+	}
+	for _, mp := range target.Meta.Properties {
+		if len(mp.FieldNames) > 0 && mp.FieldNames[0] == column && (mp.Kind == "m:1" || mp.Kind == "1:1") {
+			ref := NewRecord()
+			ref.Set("id", value)
+			input.Set(mp.Name, ref)
+			return
+		}
+	}
+	input.Set(column, value)
 }

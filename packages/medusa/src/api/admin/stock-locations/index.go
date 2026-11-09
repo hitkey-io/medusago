@@ -77,6 +77,12 @@ var AdminUpdateStockLocation = zod.Object(
 	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
 )
 
+// AdminCreateStockLocationFulfillmentSet mirrors AdminCreateStockLocationFulfillmentSet.
+var AdminCreateStockLocationFulfillmentSet = zod.Object(
+	zod.F("name", zod.String()),
+	zod.F("type", zod.String()),
+).Strict()
+
 func mw(fns ...medusahttp.MiddlewareFunction) []medusahttp.MiddlewareFunction { return fns }
 
 var Middlewares = []medusahttp.MiddlewareRoute{
@@ -87,6 +93,7 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 	}},
 	{Methods: []string{"GET"}, Matcher: "/admin/stock-locations/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 	{Methods: []string{"POST"}, Matcher: "/admin/stock-locations/:id", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(AdminUpdateStockLocation)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig))},
+	{Methods: []string{"POST"}, Matcher: "/admin/stock-locations/:id/fulfillment-sets", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateStockLocationFulfillmentSet)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig))},
 	{Methods: []string{"POST"}, Matcher: "/admin/stock-locations/:id/sales-channels", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(utils.CreateLinkBody())), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig))},
 	{Methods: []string{"POST"}, Matcher: "/admin/stock-locations/:id/fulfillment-providers", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(utils.CreateLinkBody())), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig))},
 }

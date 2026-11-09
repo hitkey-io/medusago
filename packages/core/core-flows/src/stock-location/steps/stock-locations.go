@@ -4,6 +4,7 @@ package steps
 import (
 	"context"
 	"fmt"
+	modulessdk "github.com/hitkey-io/medusago/packages/core/modules-sdk/src"
 
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
@@ -175,4 +176,37 @@ var UpsertStockLocationAddressesStep = composer.CreateStep("upsert-stock-locatio
 			return err
 		}
 		return nil
+	})
+
+// LocationFulfillmentSets is { location_id, fulfillment_set_ids }.
+type LocationFulfillmentSets struct {
+	LocationID        string
+	FulfillmentSetIDs []any
+}
+
+// AssociateFulfillmentSetsWithLocationStep mirrors associateFulfillmentSetsWithLocationStep.
+var AssociateFulfillmentSetsWithLocationStep = composer.CreateStep("associate-fulfillment-sets-with-location-step",
+	func(ctx composer.StepExecutionContext, input []LocationFulfillmentSets) (composer.StepResponse[[]*dal.Record], error) {
+		if len(input) == 0 {
+			return composer.NewStepResponse([]*dal.Record{}, any([]*dal.Record{})), nil
+		}
+		var links []*dal.Record
+		for _, l := range input {
+			for _, id := range l.FulfillmentSetIDs {
+				links = append(links, modulessdk.NewLinkDefinition("stock_location", "stock_location_id", l.LocationID, "fulfillment", "fulfillment_set_id", id))
+			}
+		}
+		created, err := commonsteps.LinkOf(ctx.Container).Create(ctx.Context, links)
+		if err != nil {
+			return composer.StepResponse[[]*dal.Record]{}, err
+		}
+		return composer.NewStepResponse(created, any(links)), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		links, _ := data.([]*dal.Record)
+		if len(links) == 0 {
+			return nil
+		}
+		_, err := commonsteps.LinkOf(ctx.Container).Dismiss(ctx.Context, links)
+		return err
 	})

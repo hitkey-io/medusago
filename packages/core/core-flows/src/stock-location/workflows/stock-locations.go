@@ -3,6 +3,7 @@ package workflows
 
 import (
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
+	fulfillmentsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/fulfillment/steps"
 	saleschannelsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/sales-channel/steps"
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/stock-location/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
@@ -115,5 +116,27 @@ var LinkSalesChannelsToStockLocationWorkflow = composer.CreateWorkflow("link-sal
 			return nil, err
 		}
 		_, err := saleschannelsteps.DetachLocationsFromSalesChannelsStep.Run(e, toRemove)
+		return nil, err
+	})
+
+// CreateLocationFulfillmentSetInput mirrors CreateLocationFulfillmentSetWorkflowInputDTO.
+type CreateLocationFulfillmentSetInput struct {
+	LocationID string
+	Name       any
+	Type       any
+}
+
+// CreateLocationFulfillmentSetWorkflow mirrors createLocationFulfillmentSetWorkflow.
+var CreateLocationFulfillmentSetWorkflow = composer.CreateWorkflow("create-location-fulfillment-set",
+	func(e *composer.Execution, input CreateLocationFulfillmentSetInput) (any, error) {
+		d := dal.NewRecord()
+		d.Set("name", input.Name)
+		d.Set("type", input.Type)
+		created, err := fulfillmentsteps.CreateFulfillmentSets.Run(e, []*dal.Record{d})
+		if err != nil {
+			return nil, err
+		}
+		id, _ := created[0].Get("id")
+		_, err = steps.AssociateFulfillmentSetsWithLocationStep.Run(e, []steps.LocationFulfillmentSets{{LocationID: input.LocationID, FulfillmentSetIDs: []any{id}}})
 		return nil, err
 	})

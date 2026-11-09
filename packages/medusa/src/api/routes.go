@@ -20,6 +20,9 @@ import (
 	customeraddress "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_/addresses/address_id_"
 	customercustomergroups "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_/customer-groups"
 	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/feature-flags"
+	fulfillmentsetid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets/id_"
+	fulfillmentsetzones "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets/id_/service-zones"
+	fulfillmentsetzone "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets/id_/service-zones/zone_id_"
 	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
 	inventoryitemid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_"
 	inventorylevels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_/location-levels"
@@ -65,9 +68,12 @@ import (
 	saleschannelid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_"
 	saleschannelproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_/products"
 	searchindexes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/search-indexes"
+	shippingprofiles "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-profiles"
+	shippingprofileid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-profiles/id_"
 	stocklocations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations"
 	stocklocationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations/id_"
 	stocklocationfp "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations/id_/fulfillment-providers"
+	stocklocationfs "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations/id_/fulfillment-sets"
 	stocklocationsc "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations/id_/sales-channels"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores"
 	storeid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores/id_"
@@ -126,6 +132,12 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/stock-locations/:id", Route: stocklocationid.Route},
 		{Path: "/admin/stock-locations/:id/sales-channels", Route: stocklocationsc.Route},
 		{Path: "/admin/stock-locations/:id/fulfillment-providers", Route: stocklocationfp.Route},
+		{Path: "/admin/stock-locations/:id/fulfillment-sets", Route: stocklocationfs.Route},
+		{Path: "/admin/shipping-profiles", Route: shippingprofiles.Route},
+		{Path: "/admin/shipping-profiles/:id", Route: shippingprofileid.Route},
+		{Path: "/admin/fulfillment-sets/:id", Route: fulfillmentsetid.Route},
+		{Path: "/admin/fulfillment-sets/:id/service-zones", Route: fulfillmentsetzones.Route},
+		{Path: "/admin/fulfillment-sets/:id/service-zones/:zone_id", Route: fulfillmentsetzone.Route},
 		{Path: "/admin/tax-regions", Route: taxregions.Route},
 		{Path: "/admin/tax-regions/:id", Route: taxregionid.Route},
 		{Path: "/admin/tax-rates", Route: taxrates.Route},
