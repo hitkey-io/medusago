@@ -14,6 +14,39 @@ type HttpConfig struct {
 	AuthCors     string `json:"authCors" yaml:"authCors"`
 	JwtSecret    string `json:"jwtSecret" yaml:"jwtSecret"`
 	CookieSecret string `json:"cookieSecret" yaml:"cookieSecret"`
+	// JwtExpiresIn is a jsonwebtoken/ms duration ("1d", "10h", "60s") or a
+	// number of seconds.
+	JwtExpiresIn        string `json:"jwtExpiresIn" yaml:"jwtExpiresIn"`
+	StoreRelationsLimit int    `json:"storeRelationsLimit" yaml:"storeRelationsLimit"`
+	// AuthMethodsPerActor lists the auth providers allowed per actor type.
+	AuthMethodsPerActor map[string][]string `json:"authMethodsPerActor" yaml:"authMethodsPerActor"`
+	// RequireActorAssociation, per auth provider.
+	RequireActorAssociation map[string]bool `json:"requireActorAssociation" yaml:"requireActorAssociation"`
+	RestrictedFields        struct {
+		Store []string `json:"store" yaml:"store"`
+	} `json:"restrictedFields" yaml:"restrictedFields"`
+}
+
+// SessionOptions mirrors projectConfig.sessionOptions.
+type SessionOptions struct {
+	Name              string `json:"name" yaml:"name"`
+	Resave            *bool  `json:"resave" yaml:"resave"`
+	Rolling           *bool  `json:"rolling" yaml:"rolling"`
+	SaveUninitialized *bool  `json:"saveUninitialized" yaml:"saveUninitialized"`
+	Secret            string `json:"secret" yaml:"secret"`
+	// Ttl is the session cookie maxAge in milliseconds.
+	Ttl *int64 `json:"ttl" yaml:"ttl"`
+}
+
+// CookieOptions mirrors projectConfig.cookieOptions (express-session cookie
+// options, spread over the defaults).
+type CookieOptions struct {
+	Secure   *bool  `json:"secure" yaml:"secure"`
+	SameSite any    `json:"sameSite" yaml:"sameSite"`
+	Domain   string `json:"domain" yaml:"domain"`
+	Path     string `json:"path" yaml:"path"`
+	HttpOnly *bool  `json:"httpOnly" yaml:"httpOnly"`
+	MaxAge   *int64 `json:"maxAge" yaml:"maxAge"`
 }
 
 // ProjectConfig mirrors projectConfig from medusa-config.
@@ -21,6 +54,10 @@ type ProjectConfig struct {
 	DatabaseURL string     `json:"databaseUrl" yaml:"databaseUrl"`
 	RedisURL    string     `json:"redisUrl" yaml:"redisUrl"`
 	HTTP        HttpConfig `json:"http" yaml:"http"`
+	// RedisPrefix prefixes the Redis keys (sessions: <prefix>sess:<sid>).
+	RedisPrefix    string          `json:"redisPrefix" yaml:"redisPrefix"`
+	SessionOptions *SessionOptions `json:"sessionOptions" yaml:"sessionOptions"`
+	CookieOptions  *CookieOptions  `json:"cookieOptions" yaml:"cookieOptions"`
 }
 
 // ModuleProviderConfig is a provider registered on a module.
@@ -68,13 +105,28 @@ func DefineConfig(input InputConfig) ConfigModule {
 		pc.HTTP.CookieSecret = envOr("COOKIE_SECRET", "supersecret")
 	}
 	if pc.HTTP.StoreCors == "" {
-		pc.HTTP.StoreCors = os.Getenv("STORE_CORS")
+		pc.HTTP.StoreCors = envOr("STORE_CORS", defaultStoreCors)
 	}
 	if pc.HTTP.AdminCors == "" {
-		pc.HTTP.AdminCors = os.Getenv("ADMIN_CORS")
+		pc.HTTP.AdminCors = envOr("ADMIN_CORS", defaultAdminCors)
 	}
 	if pc.HTTP.AuthCors == "" {
-		pc.HTTP.AuthCors = os.Getenv("AUTH_CORS")
+		pc.HTTP.AuthCors = envOr("AUTH_CORS", defaultAdminCors)
+	}
+	if pc.HTTP.JwtExpiresIn == "" {
+		pc.HTTP.JwtExpiresIn = "1d"
+	}
+	if pc.HTTP.StoreRelationsLimit == 0 {
+		pc.HTTP.StoreRelationsLimit = 3
+	}
+	if pc.HTTP.RestrictedFields.Store == nil {
+		pc.HTTP.RestrictedFields.Store = DefaultStoreRestrictedFields
+	}
+	if pc.HTTP.AuthMethodsPerActor == nil {
+		pc.HTTP.AuthMethodsPerActor = map[string][]string{}
+	}
+	if pc.HTTP.AuthMethodsPerActor["user"] == nil {
+		pc.HTTP.AuthMethodsPerActor["user"] = []string{"emailpass"}
 	}
 
 	modules := defaultModules()
@@ -94,6 +146,11 @@ func DefineConfig(input InputConfig) ConfigModule {
 
 	return ConfigModule{ProjectConfig: pc, Modules: modules}
 }
+
+const (
+	defaultStoreCors = "http://localhost:8000"
+	defaultAdminCors = "http://localhost:7000,http://localhost:7001,http://localhost:5173"
+)
 
 func envOr(key, fallback string) string {
 	if v := os.Getenv(key); v != "" {
@@ -153,3 +210,12 @@ func defaultModules() []ModuleConfig {
 		}),
 	}
 }
+
+// DefaultStoreRestrictedFields mirrors DEFAULT_STORE_RESTRICTED_FIELDS.
+var DefaultStoreRestrictedFields = []string{"order", "orders"}
+
+// IsProduction mirrors isProduction: NODE_ENV=production.
+func IsProduction() bool { return os.Getenv("NODE_ENV") == "production" }
+
+// IsStaging mirrors the NODE_ENV=staging check of the express loader.
+func IsStaging() bool { return os.Getenv("NODE_ENV") == "staging" }

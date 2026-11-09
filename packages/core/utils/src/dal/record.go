@@ -70,7 +70,7 @@ func (r *Record) MarshalJSON() ([]byte, error) {
 		if i > 0 {
 			b.WriteByte(',')
 		}
-		kb, _ := json.Marshal(k)
+		kb, _ := jsonMarshal(k)
 		b.Write(kb)
 		b.WriteByte(':')
 		vb, err := MarshalValue(r.values[k])
@@ -87,7 +87,7 @@ func (r *Record) MarshalJSON() ([]byte, error) {
 func MarshalValue(v any) ([]byte, error) {
 	switch t := v.(type) {
 	case time.Time:
-		return json.Marshal(FormatJSDate(t))
+		return jsonMarshal(FormatJSDate(t))
 	case []*Record:
 		var b bytes.Buffer
 		b.WriteByte('[')
@@ -104,8 +104,19 @@ func MarshalValue(v any) ([]byte, error) {
 		b.WriteByte(']')
 		return b.Bytes(), nil
 	default:
-		return json.Marshal(v)
+		return jsonMarshal(v)
 	}
+}
+
+// jsonMarshal is json.Marshal without HTML escaping, like JSON.stringify.
+func jsonMarshal(v any) ([]byte, error) {
+	var b bytes.Buffer
+	enc := json.NewEncoder(&b)
+	enc.SetEscapeHTML(false)
+	if err := enc.Encode(v); err != nil {
+		return nil, err
+	}
+	return bytes.TrimSuffix(b.Bytes(), []byte("\n")), nil
 }
 
 // FormatJSDate formats a time like Date.prototype.toISOString.

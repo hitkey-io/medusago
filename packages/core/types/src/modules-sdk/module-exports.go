@@ -24,6 +24,33 @@ type ModuleExports struct {
 	Loaders []Loader
 	// ProviderIdentifier is the static identifier of a module provider.
 	ProviderIdentifier string
+	// Service builds the module service (nil: the generic MedusaService
+	// over Models).
+	Service func(opts ServiceOptions) (any, error)
+	// NewProvider builds a module provider instance from its options.
+	NewProvider func(opts ProviderOptions) (any, error)
+}
+
+// Resolver resolves container registrations.
+type Resolver interface {
+	Resolve(key string) any
+}
+
+// ServiceOptions is what a module service constructor receives.
+type ServiceOptions struct {
+	DB        dal.Querier
+	Providers []ProviderInstance
+	Options   map[string]any
+	Logger    *slog.Logger
+	Container Resolver
+}
+
+// ProviderOptions is what a module provider constructor receives.
+type ProviderOptions struct {
+	ID        string
+	Options   map[string]any
+	Logger    *slog.Logger
+	Container Resolver
 }
 
 // ProviderInstance is a module provider registered from the configuration.
@@ -31,6 +58,9 @@ type ProviderInstance struct {
 	Identifier string
 	ID         string
 	Options    map[string]any
+	// Instance is the provider built by its NewProvider (nil when the
+	// provider package has none).
+	Instance any
 }
 
 // LoaderOptions mirrors LoaderOptions: what a module loader receives.

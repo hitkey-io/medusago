@@ -45,7 +45,17 @@ func (r *GraphResult) MarshalJSON() ([]byte, error) {
 
 // Graph mirrors query.graph.
 func (q *Query) Graph(ctx context.Context, in GraphInput, opts joiner.Options) (*GraphResult, error) {
-	remote := ToRemoteQuery(in, q.configs)
+	return q.run(ctx, ToRemoteQuery(in, q.configs), opts)
+}
+
+// RemoteQuery mirrors the legacy remoteQuery(remoteQueryObjectFromString(...))
+// call: the result carries metadata when the query is paginated (rows +
+// metadata upstream), otherwise only the data.
+func (q *Query) RemoteQuery(ctx context.Context, obj *dal.Record) (*GraphResult, error) {
+	return q.run(ctx, obj, joiner.Options{})
+}
+
+func (q *Query) run(ctx context.Context, remote *dal.Record, opts joiner.Options) (*GraphResult, error) {
 	jq := ToRemoteJoinerQuery(remote)
 	serviceConfig := q.catalog.GetServiceConfig(jq.Service, jq.Alias, "")
 	if serviceConfig == nil {

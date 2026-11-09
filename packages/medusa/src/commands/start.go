@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
+	"github.com/hitkey-io/medusago/packages/medusa/src/loaders"
 	"log/slog"
 	"net"
 	"net/http"
@@ -16,22 +18,9 @@ import (
 
 // StartOptions mirrors the options accepted by `medusa start`.
 type StartOptions struct {
-	Host string
-	Port int
-}
-
-// NewApp builds the HTTP handler served by `medusa start`.
-func NewApp() http.Handler {
-	mux := http.NewServeMux()
-
-	// Health check endpoint, registered the same way as in start.ts.
-	mux.HandleFunc("GET /health", func(w http.ResponseWriter, _ *http.Request) {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("OK"))
-	})
-
-	return mux
+	Host   string
+	Port   int
+	Config config.ConfigModule
 }
 
 // Start runs the HTTP server until the process receives SIGINT/SIGTERM.
@@ -43,9 +32,15 @@ func Start(opts StartOptions) error {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
+	app, err := loaders.Initialize(ctx, opts.Config)
+	if err != nil {
+		return err
+	}
+	defer app.Shutdown()
+
 	server := &http.Server{
 		Addr:              net.JoinHostPort(opts.Host, strconv.Itoa(opts.Port)),
-		Handler:           NewApp(),
+		Handler:           app.Handler,
 		ReadHeaderTimeout: 10 * time.Second,
 	}
 

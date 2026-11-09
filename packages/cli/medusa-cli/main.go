@@ -36,6 +36,7 @@ func main() {
 		fs.IntVar(&opts.Port, "port", 9000, "Set port")
 		_ = fs.Parse(os.Args[2:])
 
+		opts.Config = config.DefineConfig(config.InputConfig{})
 		if err := commands.Start(opts); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)

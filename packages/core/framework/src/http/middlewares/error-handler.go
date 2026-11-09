@@ -7,7 +7,9 @@ import (
 	"log/slog"
 	"net/http"
 
+	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
 const (
@@ -21,6 +23,24 @@ type ErrorBody struct {
 	Code    string `json:"code,omitempty"`
 	Type    string `json:"type"`
 	Message string `json:"message"`
+	// MessageFirst renders {message, type}: the body of http-errors errors.
+	MessageFirst bool `json:"-"`
+}
+
+// MarshalJSON keeps the key order of the upstream body objects.
+func (b ErrorBody) MarshalJSON() ([]byte, error) {
+	r := dal.NewRecord()
+	if b.MessageFirst {
+		r.Set("message", b.Message)
+		r.Set("type", b.Type)
+		return r.MarshalJSON()
+	}
+	if b.Code != "" {
+		r.Set("code", b.Code)
+	}
+	r.Set("type", b.Type)
+	r.Set("message", b.Message)
+	return r.MarshalJSON()
 }
 
 // ErrorHttpResponse mirrors ErrorHttpResponse from error-handler.ts.
@@ -49,7 +69,7 @@ func GetHttpResponseFromError(err error) ErrorHttpResponse {
 		}
 		return ErrorHttpResponse{
 			StatusCode: httpErr.StatusCode,
-			Body:       ErrorBody{Message: msg, Type: mapStatusCodeToErrorType(httpErr.StatusCode)},
+			Body:       ErrorBody{Message: msg, Type: mapStatusCodeToErrorType(httpErr.StatusCode), MessageFirst: true},
 		}
 	}
 
@@ -117,9 +137,13 @@ func HandleError(w http.ResponseWriter, r *http.Request, err error) {
 
 // WriteJSON writes v as a JSON response with the given status code.
 func WriteJSON(w http.ResponseWriter, status int, v any) {
+	raw, err := dal.MarshalValue(v)
+	if err != nil {
+		raw, _ = json.Marshal(v)
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
-	_ = json.NewEncoder(w).Encode(v)
+	_, _ = w.Write(raw)
 }
 
 func mapStatusCodeToErrorType(statusCode int) string {
@@ -136,5 +160,18 @@ func mapStatusCodeToErrorType(statusCode int) string {
 		return common.MedusaErrorTypes.CONFLICT
 	default:
 		return "unknown_error"
+	}
+}
+
+// ErrorHandler mirrors errorHandler(): the core Express error middleware.
+func ErrorHandler() medusahttp.ErrorHandlerFunction {
+	return func(err error, req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, _ medusahttp.NextFunction) {
+		r := GetHttpResponseFromError(err)
+		if r.StatusCode >= 500 {
+			slog.Error("request failed", "path", req.Path(), "status", r.StatusCode, "error", err)
+		} else {
+			slog.Info(err.Error())
+		}
+		_ = res.Status(r.StatusCode).JSON(r.Body)
 	}
 }

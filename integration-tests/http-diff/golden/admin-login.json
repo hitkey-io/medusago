@@ -1,0 +1,493 @@
+{
+  "providers": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "providers": [
+        {
+          "id": "emailpass",
+          "identifier": "emailpass",
+          "display_name": "Email/Password Authentication",
+          "flow": "credentials"
+        }
+      ]
+    }
+  },
+  "login_wrong_password": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Invalid email or password"
+    }
+  },
+  "login_unknown_email": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Invalid email or password"
+    }
+  },
+  "login_invalid_body": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Password should be a string"
+    }
+  },
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBLNzEwNU1DV1JZVzIyV0YzMlRDRVQiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBLNzExVFpQNFRBRFM0OFEyWDRYNTEiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwSzcxMDVNQ1dSWVcyMldGMzJUQ0VUIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNDI4NTQsImV4cCI6MTc5NDMyOTI1NH0.L2j8ban6fm7MT-G1YWKYBlroNDE8SSIWNamaGMpwclA"
+    }
+  },
+  "me_unauthenticated": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "message": "Unauthorized"
+    }
+  },
+  "preflight_session": {
+    "status": 204,
+    "headers": {
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+      "Access-Control-Allow-Headers": "authorization,content-type",
+      "Vary": "Origin, Access-Control-Request-Headers"
+    },
+    "body": null
+  },
+  "session": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "set_cookie": [
+      "connect.sid=\u003cvalue\u003e; Path=/; Expires=\u003cdate\u003e; HttpOnly"
+    ],
+    "body": {
+      "user": {
+        "actor_id": "user_01M70K7105MCWRYW22WF32TCET",
+        "actor_type": "user",
+        "auth_identity_id": "authid_01M70K711TZP4TADS48Q2X4X51",
+        "auth_provider": "emailpass",
+        "mfa_enabled": false,
+        "mfa_challenge_completed_at": null,
+        "app_metadata": {
+          "user_id": "user_01M70K7105MCWRYW22WF32TCET"
+        },
+        "user_metadata": {},
+        "iat": 1794242854,
+        "exp": 1794329254
+      }
+    }
+  },
+  "preflight_admin": {
+    "status": 204,
+    "headers": {
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+      "Vary": "Origin, Access-Control-Request-Headers"
+    },
+    "body": null
+  },
+  "modules": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "modules": [
+        {
+          "key": "cache"
+        },
+        {
+          "key": "event_bus"
+        },
+        {
+          "key": "locking"
+        },
+        {
+          "key": "search"
+        },
+        {
+          "key": "stock_location"
+        },
+        {
+          "key": "inventory"
+        },
+        {
+          "key": "product"
+        },
+        {
+          "key": "pricing"
+        },
+        {
+          "key": "promotion"
+        },
+        {
+          "key": "customer"
+        },
+        {
+          "key": "sales_channel"
+        },
+        {
+          "key": "cart"
+        },
+        {
+          "key": "api_key"
+        },
+        {
+          "key": "store"
+        },
+        {
+          "key": "settings"
+        },
+        {
+          "key": "order"
+        },
+        {
+          "key": "user"
+        },
+        {
+          "key": "workflows"
+        },
+        {
+          "key": "auth"
+        },
+        {
+          "key": "file"
+        },
+        {
+          "key": "currency"
+        },
+        {
+          "key": "region"
+        },
+        {
+          "key": "notification"
+        },
+        {
+          "key": "fulfillment"
+        },
+        {
+          "key": "tax"
+        },
+        {
+          "key": "payment"
+        }
+      ]
+    }
+  },
+  "me": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "user": {
+        "id": "user_01M70K7105MCWRYW22WF32TCET",
+        "first_name": null,
+        "last_name": null,
+        "email": "admin@medusa-test.com",
+        "avatar_url": null,
+        "metadata": null,
+        "created_at": "2026-11-09T16:45:41.253Z",
+        "updated_at": "2026-11-09T16:45:41.253Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "sidebar_layout": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "personal_configuration": null,
+      "default_configuration": null,
+      "active_scope": "default"
+    }
+  },
+  "stores": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stores": [
+        {
+          "id": "store_01M70K70ZABSYMRKF841MER443",
+          "name": "Medusa Store",
+          "default_sales_channel_id": "sc_01M70K70YTVMCZQSZVN0YC3A5H",
+          "default_region_id": null,
+          "default_location_id": null,
+          "metadata": null,
+          "created_at": "2026-11-09T16:45:41.221Z",
+          "updated_at": "2026-11-09T16:45:41.221Z",
+          "supported_currencies": [
+            {
+              "id": "stocur_01M70K70ZCV050JPM10TACC5ZQ",
+              "currency_code": "eur",
+              "is_default": true,
+              "store_id": "store_01M70K70ZABSYMRKF841MER443",
+              "created_at": "2026-11-09T16:45:41.221Z",
+              "updated_at": "2026-11-09T16:45:41.221Z",
+              "deleted_at": null,
+              "currency": {
+                "code": "eur",
+                "symbol": "€",
+                "symbol_native": "€",
+                "name": "Euro",
+                "decimal_digits": 2,
+                "raw_rounding": {
+                  "value": "0",
+                  "precision": 20
+                },
+                "created_at": "2026-11-09T15:25:03.921Z",
+                "updated_at": "2026-11-09T15:25:03.921Z",
+                "deleted_at": null,
+                "rounding": 0
+              }
+            }
+          ]
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "layout_configurations": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "layout_configurations": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 1
+    }
+  },
+  "notifications": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "notifications": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 1
+    }
+  },
+  "topbar_layout": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "personal_configuration": null,
+      "default_configuration": null,
+      "active_scope": "default"
+    }
+  },
+  "regions": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "regions": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 1000
+    }
+  },
+  "sales_channels": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "sales_channels": [
+        {
+          "id": "sc_01M70K70YTVMCZQSZVN0YC3A5H",
+          "name": "Default Sales Channel"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 1000
+    }
+  },
+  "orders": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "orders": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "order_list_layout": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "personal_configuration": null,
+      "default_configuration": null,
+      "active_scope": "default"
+    }
+  },
+  "me_bearer": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "user": {
+        "id": "user_01M70K7105MCWRYW22WF32TCET",
+        "first_name": null,
+        "last_name": null,
+        "email": "admin@medusa-test.com",
+        "avatar_url": null,
+        "metadata": null,
+        "created_at": "2026-11-09T16:45:41.253Z",
+        "updated_at": "2026-11-09T16:45:41.253Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "me_bad_bearer": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "message": "Unauthorized"
+    }
+  },
+  "logout": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "set_cookie": [
+      "connect.sid=\u003cvalue\u003e; Path=/; Expires=\u003cdate\u003e"
+    ],
+    "body": {
+      "success": true
+    }
+  },
+  "me_after_logout": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Origin": "http://localhost:5173",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "message": "Unauthorized"
+    }
+  },
+  "health": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8"
+    },
+    "body": "OK"
+  },
+  "unknown_route": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8"
+    },
+    "body": "\u003c!DOCTYPE html\u003e\n\u003chtml lang=\"en\"\u003e\n\u003chead\u003e\n\u003cmeta charset=\"utf-8\"\u003e\n\u003ctitle\u003eError\u003c/title\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cpre\u003eCannot GET /admin/does-not-exist\u003c/pre\u003e\n\u003c/body\u003e\n\u003c/html\u003e\n"
+  }
+}
