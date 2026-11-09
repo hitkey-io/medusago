@@ -129,6 +129,7 @@ type Execution struct {
 	mu            sync.Mutex
 	// errors mirrors transaction.getErrors(INVOKE).
 	errors []error
+	hooks  *hookRegistry
 }
 
 // Context returns the run context.
@@ -285,7 +286,7 @@ func (w *Workflow[I, O]) Run(ctx context.Context, c Container, input I, opts ...
 	if o.EventGroupID == "" {
 		o.EventGroupID = ulid.Make().String()
 	}
-	e := &Execution{ctx: ctx, container: c, workflowID: w.ID, transactionID: o.TransactionID, eventGroupID: o.EventGroupID}
+	e := &Execution{ctx: ctx, container: c, workflowID: w.ID, transactionID: o.TransactionID, eventGroupID: o.EventGroupID, hooks: w.hooks}
 	out, err := w.execute(e, input)
 	bus, _ := c.Resolve(utilsmodulessdk.EVENT_BUS).(EventBus)
 	if err != nil {
@@ -331,7 +332,7 @@ func (w *Workflow[I, O]) execute(e *Execution, input I) (O, error) {
 // within the parent execution (same container, event group) and is
 // compensated as a unit when the parent fails.
 func (w *Workflow[I, O]) RunAsStep(parent *Execution, input I) (O, error) {
-	e := &Execution{ctx: parent.ctx, container: parent.container, workflowID: w.ID, transactionID: parent.transactionID, eventGroupID: parent.eventGroupID}
+	e := &Execution{ctx: parent.ctx, container: parent.container, workflowID: w.ID, transactionID: parent.transactionID, eventGroupID: parent.eventGroupID, hooks: w.hooks}
 	out, err := w.execute(e, input)
 	if err != nil {
 		parent.mu.Lock()

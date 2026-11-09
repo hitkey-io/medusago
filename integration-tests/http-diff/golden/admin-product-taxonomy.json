@@ -1,0 +1,576 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBSOEEyQVNHRDZZRkpGWlhaNTc2RTIiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBSOEE0U0tHVjA0RktGOEtLOTBRODQiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwUjhBMkFTR0Q2WUZKRlpYWjU3NkUyIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNTA2ODgsImV4cCI6MTc5NDMzNzA4OH0.OoCTv8H_0hn6c3Lhhgm_gWxr2QfxDPoRnETt5Ju6TCU"
+    }
+  },
+  "type_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_type": {
+        "id": "ptyp_01M70TSHK6KRNT6M49PCGNWGQ5",
+        "value": "Outerwear",
+        "external_id": null,
+        "created_at": "2026-11-09T18:58:08.103Z",
+        "updated_at": "2026-11-09T18:58:08.103Z",
+        "metadata": {
+          "a": 1
+        }
+      }
+    }
+  },
+  "type_create_fields": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_type": {
+        "value": "Footwear",
+        "id": "ptyp_01M70TSHKRJ1YCS6ZDJ6XQCT5Q"
+      }
+    }
+  },
+  "type_create_bad": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Expected type: 'string' for field 'value', got: '5'"
+    }
+  },
+  "type_create_unknown": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'handle'"
+    }
+  },
+  "type_get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_type": {
+        "id": "ptyp_01M70TSHK6KRNT6M49PCGNWGQ5",
+        "value": "Outerwear",
+        "external_id": null,
+        "created_at": "2026-11-09T18:58:08.103Z",
+        "updated_at": "2026-11-09T18:58:08.103Z",
+        "metadata": {
+          "a": 1
+        }
+      }
+    }
+  },
+  "type_get_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "type_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_type": {
+        "id": "ptyp_01M70TSHK6KRNT6M49PCGNWGQ5",
+        "value": "Outer",
+        "external_id": null,
+        "created_at": "2026-11-09T18:58:08.103Z",
+        "updated_at": "2026-11-09T18:58:08.143Z",
+        "metadata": {
+          "a": 1,
+          "b": 2
+        }
+      }
+    }
+  },
+  "type_update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Product type with id \"ptyp_missing\" not found"
+    }
+  },
+  "type_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "ptyp_01M70TSHK6KRNT6M49PCGNWGQ5",
+      "object": "product_type",
+      "deleted": true
+    }
+  },
+  "type_get_deleted": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "type_delete_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "ptyp_missing",
+      "object": "product_type",
+      "deleted": true
+    }
+  },
+  "types_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_types": [
+        {
+          "id": "ptyp_01M70R87RFQNY1DP7WNEEZJ7CR",
+          "value": "Apparel",
+          "external_id": null,
+          "created_at": "2026-11-09T18:13:43.823Z",
+          "updated_at": "2026-11-09T18:13:43.823Z",
+          "metadata": null
+        },
+        {
+          "id": "ptyp_01M70TSHKRJ1YCS6ZDJ6XQCT5Q",
+          "value": "Footwear",
+          "external_id": "ext-1",
+          "created_at": "2026-11-09T18:58:08.120Z",
+          "updated_at": "2026-11-09T18:58:08.120Z",
+          "metadata": null
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 10
+    }
+  },
+  "tag_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_tag": {
+        "id": "ptag_01M70TSHNEXTG5K0KYSEN9AGVK",
+        "value": "eco",
+        "external_id": null,
+        "created_at": "2026-11-09T18:58:08.174Z",
+        "updated_at": "2026-11-09T18:58:08.174Z",
+        "metadata": null
+      }
+    }
+  },
+  "tag_get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_tag": {
+        "id": "ptag_01M70TSHNEXTG5K0KYSEN9AGVK",
+        "value": "eco",
+        "external_id": null,
+        "created_at": "2026-11-09T18:58:08.174Z",
+        "updated_at": "2026-11-09T18:58:08.174Z",
+        "metadata": null
+      }
+    }
+  },
+  "tag_get_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "tag_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_tag": {
+        "id": "ptag_01M70TSHNEXTG5K0KYSEN9AGVK",
+        "value": "eco-friendly",
+        "external_id": null,
+        "created_at": "2026-11-09T18:58:08.174Z",
+        "updated_at": "2026-11-09T18:58:08.190Z",
+        "metadata": null
+      }
+    }
+  },
+  "tag_update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Product tag with id \"ptag_missing\" not found"
+    }
+  },
+  "tag_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "ptag_01M70TSHNEXTG5K0KYSEN9AGVK",
+      "object": "product_tag",
+      "deleted": true
+    }
+  },
+  "tags_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_tags": [
+        {
+          "id": "ptag_01M70R87RV1M5TEEB36QDDHJ44",
+          "value": "cotton",
+          "external_id": null,
+          "created_at": "2026-11-09T18:13:43.835Z",
+          "updated_at": "2026-11-09T18:13:43.835Z",
+          "metadata": null
+        },
+        {
+          "id": "ptag_01M70R87RVG1VB1TM3W4BFM6MP",
+          "value": "sale",
+          "external_id": null,
+          "created_at": "2026-11-09T18:13:43.835Z",
+          "updated_at": "2026-11-09T18:13:43.835Z",
+          "metadata": null
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M70R87SKTYART5PD889MB0FM",
+          "title": "Draft Hoodie"
+        },
+        {
+          "id": "prod_01M70R87SKP6VQ44C7XYGTN8SH",
+          "title": "Medusa Sweatpants"
+        },
+        {
+          "id": "prod_01M70R87SK516NGY096588K13N",
+          "title": "Medusa T-Shirt"
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "col_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "collection": {
+        "id": "pcol_01M70TSHPP350968P9RPZF0NY7",
+        "title": "Spring Sale_2026 Big",
+        "handle": "spring-sale-2026-big",
+        "external_id": null,
+        "created_at": "2026-11-09T18:58:08.213Z",
+        "updated_at": "2026-11-09T18:58:08.213Z",
+        "metadata": null
+      }
+    }
+  },
+  "col_create_handle": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "collection": {
+        "id": "pcol_01M70TSHPY366CW7DSAPEJ7SV8",
+        "title": "Autumn",
+        "handle": "autumn-26",
+        "external_id": null,
+        "created_at": "2026-11-09T18:58:08.222Z",
+        "updated_at": "2026-11-09T18:58:08.222Z",
+        "metadata": {
+          "x": true
+        }
+      }
+    }
+  },
+  "col_create_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Product collection with handle: autumn-26, already exists."
+    }
+  },
+  "col_create_unknown": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'product_ids'"
+    }
+  },
+  "col_get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "collection": {
+        "id": "pcol_01M70TSHPP350968P9RPZF0NY7",
+        "title": "Spring Sale_2026 Big",
+        "handle": "spring-sale-2026-big",
+        "external_id": null,
+        "created_at": "2026-11-09T18:58:08.213Z",
+        "updated_at": "2026-11-09T18:58:08.213Z",
+        "metadata": null,
+        "products": []
+      }
+    }
+  },
+  "col_get_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "col_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "collection": {
+        "id": "pcol_01M70TSHPP350968P9RPZF0NY7",
+        "title": "Spring",
+        "handle": "spring",
+        "external_id": null,
+        "created_at": "2026-11-09T18:58:08.213Z",
+        "updated_at": "2026-11-09T18:58:08.254Z",
+        "metadata": null
+      }
+    }
+  },
+  "col_update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Collection with id \"pcol_missing\" not found"
+    }
+  },
+  "col_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "pcol_01M70TSHPY366CW7DSAPEJ7SV8",
+      "object": "collection",
+      "deleted": true
+    }
+  },
+  "cols_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "collections": [
+        {
+          "id": "pcol_01M70TSHPP350968P9RPZF0NY7",
+          "title": "Spring",
+          "handle": "spring",
+          "external_id": null,
+          "created_at": "2026-11-09T18:58:08.213Z",
+          "updated_at": "2026-11-09T18:58:08.254Z",
+          "metadata": null,
+          "products": []
+        },
+        {
+          "id": "pcol_01M70R87RNPCK33T7G6F25TW4K",
+          "title": "Summer",
+          "handle": "summer",
+          "external_id": null,
+          "created_at": "2026-11-09T18:13:43.828Z",
+          "updated_at": "2026-11-09T18:13:43.828Z",
+          "metadata": null,
+          "products": [
+            {
+              "id": "prod_01M70R87SK516NGY096588K13N",
+              "title": "Medusa T-Shirt",
+              "handle": "t-shirt",
+              "subtitle": null,
+              "description": "A comfortable cotton t-shirt",
+              "is_giftcard": false,
+              "status": "published",
+              "thumbnail": "https://example.com/shirt-front.png",
+              "weight": 400,
+              "length": null,
+              "height": null,
+              "width": null,
+              "origin_country": null,
+              "hs_code": null,
+              "mid_code": null,
+              "material": null,
+              "discountable": true,
+              "external_id": null,
+              "metadata": {
+                "featured": true
+              },
+              "type_id": "ptyp_01M70R87RFQNY1DP7WNEEZJ7CR",
+              "type": {
+                "id": "ptyp_01M70R87RFQNY1DP7WNEEZJ7CR"
+              },
+              "collection_id": "pcol_01M70R87RNPCK33T7G6F25TW4K",
+              "created_at": "2026-11-09T18:13:43.862Z",
+              "updated_at": "2026-11-09T18:13:43.862Z",
+              "deleted_at": null
+            },
+            {
+              "id": "prod_01M70R87SKP6VQ44C7XYGTN8SH",
+              "title": "Medusa Sweatpants",
+              "handle": "sweatpants",
+              "subtitle": null,
+              "description": null,
+              "is_giftcard": false,
+              "status": "published",
+              "thumbnail": null,
+              "weight": null,
+              "length": null,
+              "height": null,
+              "width": null,
+              "origin_country": null,
+              "hs_code": null,
+              "mid_code": null,
+              "material": null,
+              "discountable": true,
+              "external_id": null,
+              "metadata": null,
+              "type_id": null,
+              "type": null,
+              "collection_id": "pcol_01M70R87RNPCK33T7G6F25TW4K",
+              "created_at": "2026-11-09T18:13:43.862Z",
+              "updated_at": "2026-11-09T18:13:43.862Z",
+              "deleted_at": null
+            }
+          ]
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 10
+    }
+  }
+}

@@ -33,6 +33,7 @@ func NewDefaultQueryAndLink(db dal.Querier, registered map[string]any) (*query.Q
 	}
 	linkServices := map[string]*services.LinkModuleService{}
 	svcs := map[string]query.ModuleService{}
+	moduleServices := map[string]any{}
 	for _, cfg := range modulessdk.DefaultJoinerConfigs {
 		if cfg.IsReadOnlyLink || cfg.ServiceName == "" {
 			continue
@@ -59,6 +60,7 @@ func NewDefaultQueryAndLink(db dal.Querier, registered map[string]any) (*query.Q
 		}
 		if s, ok := registered[cfg.ServiceName].(query.SuffixLister); ok {
 			svcs[cfg.ServiceName] = query.MedusaServiceAdapter{Service: s}
+			moduleServices[cfg.ServiceName] = s
 			continue
 		}
 		exp, ok := modules.Registry[utilsmodulessdk.MODULE_PACKAGE_NAMES[cfg.ServiceName]]
@@ -74,10 +76,11 @@ func NewDefaultQueryAndLink(db dal.Querier, registered map[string]any) (*query.Q
 			}
 		}
 		svcs[cfg.ServiceName] = query.MedusaServiceAdapter{Service: svc}
+		moduleServices[cfg.ServiceName] = svc
 	}
 	q, err := query.New(modulessdk.DefaultJoinerConfigs, joiner.RelationMap(modulessdk.DefaultRelationMap), svcs)
 	if err != nil {
 		return nil, nil, err
 	}
-	return q, modulessdk.NewLink(linkServices), nil
+	return q, modulessdk.NewLink(modulessdk.DefaultJoinerConfigs, linkServices, moduleServices), nil
 }

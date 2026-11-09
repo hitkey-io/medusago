@@ -37,3 +37,20 @@ func (w *Workflow[I, O]) CreateHook(e *Execution, name string, input any) error 
 	_, err := step.Run(e, input)
 	return err
 }
+
+// CreateHook mirrors createHook(name, input) for the workflow being
+// executed (the body does not need a reference to its workflow).
+func CreateHook(e *Execution, name string, input any) error {
+	if e.hooks == nil {
+		return nil
+	}
+	e.hooks.mu.RLock()
+	h, ok := e.hooks.handlers[name]
+	e.hooks.mu.RUnlock()
+	if !ok {
+		return nil
+	}
+	step := CreateStep(e.workflowID+"."+name, h.invoke, h.compensate)
+	_, err := step.Run(e, input)
+	return err
+}

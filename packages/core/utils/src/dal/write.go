@@ -719,6 +719,9 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 	now := Now()
 	for _, e := range order {
 		insts := touched[e]
+		if len(insts) == 0 {
+			continue
+		}
 		var args []any
 		args = append(args, deletedAt, now)
 		ph := make([]string, len(insts))

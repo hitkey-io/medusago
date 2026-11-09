@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -14,21 +15,36 @@ import (
 // Link mirrors Link (remoteLink / ContainerRegistrationKeys.LINK): it
 // creates and dismisses links between modules through the link modules.
 type Link struct {
-	pairs    map[string]*services.LinkModuleService
-	services map[string]*services.LinkModuleService
+	pairs         map[string]*services.LinkModuleService
+	services      map[string]*services.LinkModuleService
+	modules       map[string]any
+	moduleConfigs map[string]*joiner.ModuleJoinerConfig
+	relations     map[string]map[string][]cascadeRelationship
+	relationOrder []string
 }
 
-// NewLink builds Link over the link module services (keyed by service
-// name).
-func NewLink(linkServices map[string]*services.LinkModuleService) *Link {
-	l := &Link{pairs: map[string]*services.LinkModuleService{}, services: linkServices}
-	for _, svc := range linkServices {
-		cfg := svc.Config
-		if cfg.IsReadOnlyLink || len(cfg.Relationships) != 2 {
+// NewLink builds Link over the joiner configs (in load order), the link
+// module services (keyed by service name) and the module services (keyed
+// by module key, used for cascades).
+func NewLink(configs []*joiner.ModuleJoinerConfig, linkServices map[string]*services.LinkModuleService, moduleServices map[string]any) *Link {
+	l := &Link{pairs: map[string]*services.LinkModuleService{}, services: linkServices, modules: moduleServices, moduleConfigs: map[string]*joiner.ModuleJoinerConfig{}}
+	for _, cfg := range configs {
+		if cfg.IsReadOnlyLink || cfg.ServiceName == "" {
 			continue
 		}
-		p, f := cfg.Relationships[0], cfg.Relationships[1]
-		l.pairs[strings.Join([]string{p.ServiceName, p.ForeignKey, f.ServiceName, f.ForeignKey}, "-")] = svc
+		if cfg.IsLink {
+			svc := linkServices[cfg.ServiceName]
+			if svc == nil {
+				continue
+			}
+			if len(svc.Config.Relationships) == 2 {
+				p, f := svc.Config.Relationships[0], svc.Config.Relationships[1]
+				l.pairs[strings.Join([]string{p.ServiceName, p.ForeignKey, f.ServiceName, f.ForeignKey}, "-")] = svc
+			}
+		} else {
+			l.moduleConfigs[cfg.ServiceName] = cfg
+		}
+		l.addModule(cfg, cfg.ServiceName)
 	}
 	return l
 }

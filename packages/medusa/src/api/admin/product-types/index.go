@@ -33,11 +33,13 @@ var AdminGetProductTypesParamsFields = zod.Object(
 var AdminGetProductTypesParams = utils.CreateFindParams(utils.FindParamsOptions{Limit: utils.Num(10), Offset: utils.Num(0)}).
 	Merge(AdminGetProductTypesParamsFields).Merge(commonvalidators.ApplyAndAndOrOperators(AdminGetProductTypesParamsFields))
 
-// Middlewares mirrors adminProductTypeRoutesMiddlewares (GET routes).
+// Middlewares mirrors the route middlewares (authorize entries are Enterprise and skipped).
 var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/product-types", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetProductTypesParams, ListConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/product-types/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/product-types", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateProductType)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/product-types/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminUpdateProductType)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 }
 
 // Route is route.ts.
-var Route = medusahttp.Route{GET: httputils.RemoteQueryListRoute("product_type", "product_types")}
+var Route = medusahttp.Route{GET: httputils.RemoteQueryListRoute("product_type", "product_types"), POST: POST}

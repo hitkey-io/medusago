@@ -152,3 +152,102 @@ func (s *LinkModuleService) Dismiss(ctx context.Context, pairs [][2]any) ([]*dal
 	}
 	return out, nil
 }
+
+// setDeletedAt mirrors softDelete / restore of the link repository: the
+// links matching any of the filters ({ key: values } with $in semantics)
+// get deleted_at (and updated_at) set; restore only touches deleted rows,
+// soft delete only live ones. It returns the affected rows.
+func (s *LinkModuleService) setDeletedAt(ctx context.Context, filters []*dal.Record, restore bool) ([]dal.Row, error) {
+	var args []any
+	var ors []string
+	for _, f := range filters {
+		var ands []string
+		for _, k := range f.Keys() {
+			v, _ := f.Get(k)
+			vals, ok := v.([]any)
+			if !ok {
+				vals = []any{v}
+			}
+			strs := make([]string, len(vals))
+			for i, x := range vals {
+				strs[i] = fmt.Sprint(x)
+			}
+			args = append(args, strs)
+			ands = append(ands, fmt.Sprintf("%s = any($%d)", quote(k), len(args)))
+		}
+		if len(ands) > 0 {
+			ors = append(ors, "("+strings.Join(ands, " and ")+")")
+		}
+	}
+	if len(ors) == 0 {
+		return nil, nil
+	}
+	now := dal.Now()
+	args = append(args, now)
+	var value, cond string
+	if restore {
+		value, cond = "null", `"deleted_at" is not null`
+	} else {
+		value, cond = fmt.Sprintf("$%d", len(args)), `"deleted_at" is null`
+	}
+	sql := fmt.Sprintf(`update %s set "deleted_at" = %s, "updated_at" = $%d where (%s) and %s returning *`,
+		quote(s.repository.Entity.Meta.Collection), value, len(args), strings.Join(ors, " or "), cond)
+	rows, err := dal.QueryRows(ctx, s.repository.DB, sql, args...)
+	if err != nil {
+		return nil, dal.MapDBError(err)
+	}
+	return rows, nil
+}
+
+// mapLinkableKeys mirrors mapObjectTo over the LinkModel rows with the
+// mapping { pk: pk, foreignKey: foreignKey }, picking returnLinkableKeys.
+func (s *LinkModuleService) mapLinkableKeys(rows []dal.Row, pick []string) *dal.Record {
+	out := dal.NewRecord()
+	if len(rows) == 0 {
+		return out
+	}
+	primary := strings.Join(strings.Split(s.Config.Relationships[0].ForeignKey, ","), ",")
+	foreign := s.Config.Relationships[1].ForeignKey
+	picked := func(k string) bool {
+		if len(pick) == 0 {
+			return true
+		}
+		for _, p := range pick {
+			if p == k {
+				return true
+			}
+		}
+		return false
+	}
+	for _, k := range []string{primary, foreign} {
+		if !picked(k) {
+			continue
+		}
+		values := []any{}
+		for _, r := range rows {
+			if v, ok := r[k]; ok && v != nil && v != "" {
+				values = append(values, v)
+			}
+		}
+		out.Set(k, values)
+	}
+	return out
+}
+
+// SoftDelete mirrors softDelete(data, { returnLinkableKeys }).
+func (s *LinkModuleService) SoftDelete(ctx context.Context, filters []*dal.Record, returnLinkableKeys []string) (*dal.Record, error) {
+	rows, err := s.setDeletedAt(ctx, filters, false)
+	if err != nil {
+		return nil, err
+	}
+	return s.mapLinkableKeys(rows, returnLinkableKeys), nil
+}
+
+// Restore mirrors restore(data, { returnLinkableKeys }).
+func (s *LinkModuleService) Restore(ctx context.Context, filters []*dal.Record, returnLinkableKeys []string) (*dal.Record, error) {
+	rows, err := s.setDeletedAt(ctx, filters, true)
+	if err != nil {
+		return nil, err
+	}
+	return s.mapLinkableKeys(rows, returnLinkableKeys), nil
+}

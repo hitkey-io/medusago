@@ -33,11 +33,13 @@ var AdminGetProductTagsParamsFields = zod.Object(
 var AdminGetProductTagsParams = utils.CreateFindParams(utils.FindParamsOptions{Limit: utils.Num(20), Offset: utils.Num(0)}).
 	Merge(AdminGetProductTagsParamsFields).Merge(commonvalidators.ApplyAndAndOrOperators(AdminGetProductTagsParamsFields))
 
-// Middlewares mirrors adminProductTagRoutesMiddlewares (GET routes).
+// Middlewares mirrors adminProductTagRoutesMiddlewares (authorize entries are Enterprise and skipped).
 var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/product-tags", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetProductTagsParams, ListConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/product-tags/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/product-tags", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateProductTag)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/product-tags/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminUpdateProductTag)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 }
 
 // Route is route.ts.
-var Route = medusahttp.Route{GET: httputils.RefetchListRoute("product_tag", "product_tags")}
+var Route = medusahttp.Route{GET: httputils.RefetchListRoute("product_tag", "product_tags"), POST: POST}

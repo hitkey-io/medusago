@@ -119,3 +119,24 @@ func init() {
 		return CreateProductsWorkflow.CreateHook(e, "productsCreated", input)
 	}
 }
+
+// idEvents mirrors rows.map((v) => ({ id: v.id })).
+func idEvents(rows []*dal.Record) []any {
+	out := make([]any, len(rows))
+	for i, r := range rows {
+		ev := dal.NewRecord()
+		id, _ := r.Get("id")
+		ev.Set("id", id)
+		out[i] = ev
+	}
+	return out
+}
+
+// deleteInput builds { [module]: { [key]: ids } }.
+func deleteInput(module, key string, ids []any) *dal.Record {
+	inner := dal.NewRecord()
+	inner.Set(key, ids)
+	out := dal.NewRecord()
+	out.Set(module, inner)
+	return out
+}
