@@ -1,0 +1,22 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "create_pk", "method": "POST", "bearer": "login", "path": "/admin/api-keys", "body": { "title": "Storefront", "type": "publishable" } },
+  { "name": "create_sk", "method": "POST", "bearer": "login", "path": "/admin/api-keys", "body": { "title": "Backend", "type": "secret" } },
+  { "name": "create_invalid", "method": "POST", "bearer": "login", "path": "/admin/api-keys", "body": { "title": "x", "type": "other" } },
+  { "name": "get_pk", "method": "GET", "bearer": "login", "path": "/admin/api-keys/{{create_pk.api_key.id}}" },
+  { "name": "get_sk", "method": "GET", "bearer": "login", "path": "/admin/api-keys/{{create_sk.api_key.id}}" },
+  { "name": "list", "method": "GET", "bearer": "login", "path": "/admin/api-keys?order=title&fields=title,type,token,redacted" },
+  { "name": "update", "method": "POST", "bearer": "login", "path": "/admin/api-keys/{{create_pk.api_key.id}}?fields=id,title", "body": { "title": "Web store" } },
+  { "name": "link", "method": "POST", "bearer": "login", "path": "/admin/api-keys/{{create_pk.api_key.id}}/sales-channels?fields=id,sales_channels.name", "body": { "add": ["sc_01M70XZZVJETKWXXT8RHV5DWRZ"] } },
+  { "name": "link_bad_channel", "method": "POST", "bearer": "login", "path": "/admin/api-keys/{{create_pk.api_key.id}}/sales-channels", "body": { "add": ["sc_missing"] } },
+  { "name": "link_secret", "method": "POST", "bearer": "login", "path": "/admin/api-keys/{{create_sk.api_key.id}}/sales-channels", "body": { "add": ["sc_01M70XZZVJETKWXXT8RHV5DWRZ"] } },
+  { "name": "link_missing", "method": "POST", "bearer": "login", "path": "/admin/api-keys/apk_missing/sales-channels", "body": { "add": [] } },
+  { "name": "unlink", "method": "POST", "bearer": "login", "path": "/admin/api-keys/{{create_pk.api_key.id}}/sales-channels?fields=id,sales_channels.name", "body": { "remove": ["sc_01M70XZZVJETKWXXT8RHV5DWRZ"] } },
+  { "name": "delete_unrevoked", "method": "DELETE", "bearer": "login", "path": "/admin/api-keys/{{create_pk.api_key.id}}" },
+  { "name": "revoke", "method": "POST", "bearer": "login", "path": "/admin/api-keys/{{create_sk.api_key.id}}/revoke?fields=id,revoked_by", "body": {} },
+  { "name": "revoke_again", "method": "POST", "bearer": "login", "path": "/admin/api-keys/{{create_sk.api_key.id}}/revoke", "body": {} },
+  { "name": "revoke_pk", "method": "POST", "bearer": "login", "path": "/admin/api-keys/{{create_pk.api_key.id}}/revoke?fields=id,revoked_by", "body": {} },
+  { "name": "delete", "method": "DELETE", "bearer": "login", "path": "/admin/api-keys/{{create_sk.api_key.id}}" },
+  { "name": "get_deleted", "method": "GET", "bearer": "login", "path": "/admin/api-keys/{{create_sk.api_key.id}}" },
+  { "name": "list_after", "method": "GET", "bearer": "login", "path": "/admin/api-keys?order=title&fields=title,type" }
+]

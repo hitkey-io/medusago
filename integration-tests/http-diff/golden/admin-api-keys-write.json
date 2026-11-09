@@ -1,0 +1,343 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNTkyMjcsImV4cCI6MTc5NDM0NTYyN30.WBDILl1C2ULWhxNVYEi4-o0p06fvOCe9Ng2IY91C_jU"
+    }
+  },
+  "create_pk": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M712Y4KSFRK3S1AP8Q0ZYRRT",
+        "token": "pk_c2da4acfb8b10900c3bc89f0b4ca7f14f07d767cd5f739e03ae0b7b91f7e9481",
+        "redacted": "pk_c2d***481",
+        "title": "Storefront",
+        "type": "publishable",
+        "last_used_at": null,
+        "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "revoked_by": null,
+        "revoked_at": null,
+        "created_at": "2026-11-09T21:20:27.257Z",
+        "updated_at": "2026-11-09T21:20:27.257Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "create_sk": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M712Y4MX5SCQ04A0925J19YY",
+        "token": "sk_99f14c914700da47d3745344a7f8e71b1f147782528573e250d4d2cb619e3b50",
+        "redacted": "sk_99f***b50",
+        "title": "Backend",
+        "type": "secret",
+        "last_used_at": null,
+        "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "revoked_by": null,
+        "revoked_at": null,
+        "created_at": "2026-11-09T21:20:27.293Z",
+        "updated_at": "2026-11-09T21:20:27.293Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Expected: 'publishable, secret' for field 'type', but got: 'other'"
+    }
+  },
+  "get_pk": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M712Y4KSFRK3S1AP8Q0ZYRRT",
+        "title": "Storefront",
+        "token": "pk_c2da4acfb8b10900c3bc89f0b4ca7f14f07d767cd5f739e03ae0b7b91f7e9481",
+        "redacted": "pk_c2d***481",
+        "type": "publishable",
+        "last_used_at": null,
+        "updated_at": "2026-11-09T21:20:27.257Z",
+        "created_at": "2026-11-09T21:20:27.257Z",
+        "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "revoked_at": null,
+        "revoked_by": null,
+        "sales_channels": []
+      }
+    }
+  },
+  "get_sk": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M712Y4MX5SCQ04A0925J19YY",
+        "title": "Backend",
+        "token": "",
+        "redacted": "sk_99f***b50",
+        "type": "secret",
+        "last_used_at": null,
+        "updated_at": "2026-11-09T21:20:27.293Z",
+        "created_at": "2026-11-09T21:20:27.293Z",
+        "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "revoked_at": null,
+        "revoked_by": null,
+        "sales_channels": []
+      }
+    }
+  },
+  "list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_keys": [
+        {
+          "title": "Backend",
+          "type": "secret",
+          "token": "",
+          "redacted": "sk_99f***b50",
+          "id": "apk_01M712Y4MX5SCQ04A0925J19YY"
+        },
+        {
+          "title": "Default Publishable API Key",
+          "type": "publishable",
+          "token": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a",
+          "redacted": "pk_aff***29a",
+          "id": "apk_01M70XZZWDHQHGNDB9HA88KZM6"
+        },
+        {
+          "title": "Storefront",
+          "type": "publishable",
+          "token": "pk_c2da4acfb8b10900c3bc89f0b4ca7f14f07d767cd5f739e03ae0b7b91f7e9481",
+          "redacted": "pk_c2d***481",
+          "id": "apk_01M712Y4KSFRK3S1AP8Q0ZYRRT"
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M712Y4KSFRK3S1AP8Q0ZYRRT",
+        "title": "Web store"
+      }
+    }
+  },
+  "link": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M712Y4KSFRK3S1AP8Q0ZYRRT",
+        "sales_channels": [
+          {
+            "name": "Default Sales Channel",
+            "id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ"
+          }
+        ]
+      }
+    }
+  },
+  "link_bad_channel": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Sales channels with IDs sc_missing do not exist"
+    }
+  },
+  "link_secret": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Sales channels can only be associated with publishable API keys"
+    }
+  },
+  "link_missing": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "code": "unknown_error",
+      "type": "unknown_error",
+      "message": "An unknown error occurred."
+    }
+  },
+  "unlink": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M712Y4KSFRK3S1AP8Q0ZYRRT",
+        "sales_channels": []
+      }
+    }
+  },
+  "delete_unrevoked": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Cannot delete api keys that are not revoked - apk_01M712Y4KSFRK3S1AP8Q0ZYRRT"
+    }
+  },
+  "revoke": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M712Y4MX5SCQ04A0925J19YY",
+        "revoked_by": "user_01M70Y01SPRY6AWYTJKZK9YEES"
+      }
+    }
+  },
+  "revoke_again": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "There are 1 secret keys that are already revoked."
+    }
+  },
+  "revoke_pk": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M712Y4KSFRK3S1AP8Q0ZYRRT",
+        "revoked_by": "user_01M70Y01SPRY6AWYTJKZK9YEES"
+      }
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "apk_01M712Y4MX5SCQ04A0925J19YY",
+      "object": "api_key",
+      "deleted": true
+    }
+  },
+  "get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "API Key with id: apk_01M712Y4MX5SCQ04A0925J19YY was not found"
+    }
+  },
+  "list_after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_keys": [
+        {
+          "title": "Default Publishable API Key",
+          "type": "publishable",
+          "id": "apk_01M70XZZWDHQHGNDB9HA88KZM6"
+        },
+        {
+          "title": "Web store",
+          "type": "publishable",
+          "id": "apk_01M712Y4KSFRK3S1AP8Q0ZYRRT"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 20
+    }
+  }
+}

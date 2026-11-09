@@ -81,11 +81,23 @@ var (
 	dateRe = regexp.MustCompile(`^(\d{4}-\d\d-\d\d)T(\d\d:\d\d:\d\d)(?:\.(\d{3}))?Z$`)
 )
 
+// API key tokens (random) and their redacted form.
+var (
+	apiTokenRe      = regexp.MustCompile(`^(pk|sk)_[0-9a-f]{64}$`)
+	redactedTokenRe = regexp.MustCompile(`^(pk|sk)_[0-9a-f]{3}\*\*\*[0-9a-f]{3}$`)
+)
+
 // isGenerated reports whether a string is an id or a timestamp produced
 // during the scenario (absent from seed.sql).
 func isGenerated(s string) (bool, string) {
 	if idRe.MatchString(s) {
 		return !strings.Contains(seedText, "'"+s+"'"), "id"
+	}
+	if apiTokenRe.MatchString(s) {
+		return !strings.Contains(seedText, "'"+s+"'"), "token"
+	}
+	if redactedTokenRe.MatchString(s) {
+		return !strings.Contains(seedText, "'"+s+"'"), "redacted"
 	}
 	if m := dateRe.FindStringSubmatch(s); m != nil {
 		ms := strings.TrimRight(m[3], "0")

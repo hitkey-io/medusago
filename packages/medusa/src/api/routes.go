@@ -4,6 +4,8 @@ import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	apikeys "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys"
 	apikeyid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys/id_"
+	apikeyrevoke "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys/id_/revoke"
+	apikeysc "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys/id_/sales-channels"
 	admincampaigns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/campaigns"
 	campaignid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/campaigns/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections"
@@ -110,6 +112,8 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/collections/:id/products", Route: collectionproducts.Route},
 		{Path: "/admin/api-keys", Route: apikeys.Route},
 		{Path: "/admin/api-keys/:id", Route: apikeyid.Route},
+		{Path: "/admin/api-keys/:id/revoke", Route: apikeyrevoke.Route},
+		{Path: "/admin/api-keys/:id/sales-channels", Route: apikeysc.Route},
 		{Path: "/admin/campaigns", Route: admincampaigns.Route},
 		{Path: "/admin/campaigns/:id", Route: campaignid.Route},
 		{Path: "/admin/currencies", Route: currencies.Route},
