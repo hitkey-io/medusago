@@ -480,6 +480,7 @@ var allFields = &fieldTree{all: true, fields: map[string]bool{}, children: map[s
 //   - an unpopulated reference is serialized as {pk}, or fully when the
 //     entity is initialized in the identity map; uninitialized collections
 //     are omitted.
+//
 // joinFK lists the foreign key columns selected to join this entity to its
 // parent; they are always part of the hydrated data.
 func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents []string, joinFK []string, idm identityMap) (*Record, error) {
