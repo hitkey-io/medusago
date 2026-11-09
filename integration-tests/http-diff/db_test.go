@@ -1,0 +1,99 @@
+package httpdiff
+
+import (
+	"context"
+	"fmt"
+	"net/url"
+	"os"
+	"regexp"
+	"strings"
+	"testing"
+
+	"github.com/jackc/pgx/v5"
+
+	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
+	"github.com/hitkey-io/medusago/packages/medusa/src/commands/db"
+)
+
+// setupDatabase creates a database migrated by the Go implementation and
+// loads seed.sql (the data of the reference database) into it. The schema
+// is identical to the one Node creates, so the result equals record.sh's
+// databases.
+func setupDatabase(t *testing.T, name string) string {
+	t.Helper()
+	admin := os.Getenv("MEDUSA_TEST_PG_ADMIN_URL")
+	if admin == "" {
+		t.Skip("MEDUSA_TEST_PG_ADMIN_URL is not set (e.g. postgres://postgres:postgres@localhost:54329/postgres)")
+	}
+	ctx := context.Background()
+	conn, err := pgx.Connect(ctx, admin)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, sql := range []string{"drop database if exists " + name + " with (force)", "create database " + name} {
+		if _, err := conn.Exec(ctx, sql); err != nil {
+			t.Fatal(err)
+		}
+	}
+	conn.Close(ctx)
+
+	u, _ := url.Parse(admin)
+	u.Path = "/" + name
+	dbURL := u.String()
+	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{DatabaseURL: dbURL}})
+	if err := db.Migrate(ctx, cfg, db.MigrateOptions{}); err != nil {
+		t.Fatal(err)
+	}
+	c, err := pgx.Connect(ctx, dbURL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close(ctx)
+	if _, err := c.Exec(ctx, `
+    DO $$ DECLARE t text; BEGIN
+      FOR t IN SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+        AND tablename NOT IN ('mikro_orm_migrations', 'script_migrations', 'link_module_migrations')
+      LOOP EXECUTE format('TRUNCATE %I CASCADE', t); END LOOP;
+    END $$;`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := c.Exec(ctx, seedSQL(t), pgx.QueryExecModeSimpleProtocol); err != nil {
+		t.Fatal(fmt.Errorf("loading seed.sql: %w", err))
+	}
+	return dbURL
+}
+
+var seedText string
+
+func seedSQL(t *testing.T) string {
+	if seedText == "" {
+		raw, err := os.ReadFile("seed.sql")
+		if err != nil {
+			t.Fatal(err)
+		}
+		seedText = string(raw)
+	}
+	return seedText
+}
+
+var (
+	idRe   = regexp.MustCompile(`^(?:[a-z_]+_)?[0-9A-HJKMNP-TV-Z]{26}$`)
+	dateRe = regexp.MustCompile(`^(\d{4}-\d\d-\d\d)T(\d\d:\d\d:\d\d)(?:\.(\d{3}))?Z$`)
+)
+
+// isGenerated reports whether a string is an id or a timestamp produced
+// during the scenario (absent from seed.sql).
+func isGenerated(s string) (bool, string) {
+	if idRe.MatchString(s) {
+		return !strings.Contains(seedText, "'"+s+"'"), "id"
+	}
+	if m := dateRe.FindStringSubmatch(s); m != nil {
+		ms := strings.TrimRight(m[3], "0")
+		pg := m[1] + " " + m[2]
+		if ms != "" {
+			pg += "." + ms
+		}
+		return !strings.Contains(seedText, "'"+pg+"+00'"), "date"
+	}
+	return false, ""
+}

@@ -11,4 +11,8 @@ var AdminUserRoutesMiddlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/users", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetUsersParams, ListTransformQueryConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/users/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetUserParams, RetrieveTransformQueryConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/users/me", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetUserParams, RetrieveTransformQueryConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/users/me", Middlewares: []medusahttp.MiddlewareFunction{
+		httputils.ValidateAndTransformBody(httputils.Schema(AdminUpdateUser)),
+		httputils.ValidateAndTransformQuery(AdminGetUserParams, RetrieveTransformQueryConfig),
+	}},
 }

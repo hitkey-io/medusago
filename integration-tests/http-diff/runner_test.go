@@ -8,19 +8,23 @@ package httpdiff
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"testing"
 
+	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	"github.com/hitkey-io/medusago/packages/medusa/src/loaders"
 )
 
 // Step is one request of a scenario.
@@ -35,6 +39,37 @@ type Step struct {
 	Bearer string `json:"bearer,omitempty"`
 	// NoCookies sends the request without the scenario cookie jar.
 	NoCookies bool `json:"nocookies,omitempty"`
+	// Unordered lists body keys whose arrays upstream returns in a
+	// nondeterministic order: they are compared sorted.
+	Unordered []string `json:"unordered,omitempty"`
+}
+
+// sortUnordered sorts the listed body arrays by their JSON encoding.
+func sortUnordered(rec any, keys []string) any {
+	r, ok := rec.(*dal.Record)
+	if !ok || len(keys) == 0 {
+		return rec
+	}
+	body, _ := r.Get("body")
+	b, ok := body.(*dal.Record)
+	if !ok {
+		return rec
+	}
+	for _, k := range keys {
+		v, _ := b.Get(k)
+		arr, ok := v.([]any)
+		if !ok {
+			continue
+		}
+		sorted := append([]any{}, arr...)
+		sort.SliceStable(sorted, func(i, j int) bool {
+			a, _ := dal.MarshalValue(sorted[i])
+			c, _ := dal.MarshalValue(sorted[j])
+			return string(a) < string(c)
+		})
+		b.Set(k, sorted)
+	}
+	return rec
 }
 
 // recordedHeaders are compared between implementations.
@@ -168,8 +203,7 @@ func TestRecord(t *testing.T) {
 	if base == "" {
 		t.Skip("MEDUSA_HTTP_RECORD_URL is not set")
 	}
-	files, _ := filepath.Glob("scenarios/*.json")
-	for _, file := range files {
+	for _, file := range scenarioFiles() {
 		steps := loadScenario(t, file)
 		results := runScenario(t, base, steps)
 		ordered := dal.NewRecord()
@@ -209,8 +243,61 @@ func TestRecord(t *testing.T) {
 
 var _ = encode
 
+// placeholders maps generated values to stable names within a scenario.
+type placeholders struct {
+	names map[string]string
+	count map[string]int
+}
+
+func newPlaceholders() *placeholders {
+	return &placeholders{names: map[string]string{}, count: map[string]int{}}
+}
+
+func (p *placeholders) of(s string) string {
+	gen, kind := isGenerated(s)
+	if !gen {
+		return s
+	}
+	if n, ok := p.names[s]; ok {
+		return n
+	}
+	p.count[kind]++
+	n := fmt.Sprintf("<%s %d>", kind, p.count[kind])
+	p.names[s] = n
+	return n
+}
+
 // normalize masks the values that differ between runs: JWT timestamps
-// (iat/exp) and tokens (replaced by their decoded, masked payload).
+// (iat/exp), tokens (replaced by their decoded, masked payload) and ids and
+// timestamps generated during the scenario.
+func (p *placeholders) normalize(v any) any {
+	switch t := v.(type) {
+	case string:
+		return p.of(t)
+	case *dal.Record:
+		out := dal.NewRecord()
+		for _, k := range t.Keys() {
+			x, _ := t.Get(k)
+			switch {
+			case k == "iat" || k == "exp":
+				out.Set(k, "<timestamp>")
+			case k == "token":
+				out.Set(k, p.decodeToken(x))
+			default:
+				out.Set(k, p.normalize(x))
+			}
+		}
+		return out
+	case []any:
+		out := make([]any, len(t))
+		for i, x := range t {
+			out[i] = p.normalize(x)
+		}
+		return out
+	}
+	return v
+}
+
 func normalize(v any) any {
 	switch t := v.(type) {
 	case *dal.Record:
@@ -235,6 +322,25 @@ func normalize(v any) any {
 		return out
 	}
 	return v
+}
+
+func (p *placeholders) decodeToken(v any) any {
+	s, ok := v.(string)
+	if !ok {
+		return v
+	}
+	parts := strings.Split(s, ".")
+	if len(parts) != 3 {
+		return "<invalid token>"
+	}
+	h, _ := base64.RawURLEncoding.DecodeString(parts[0])
+	pl, _ := base64.RawURLEncoding.DecodeString(parts[1])
+	hv, _ := dal.DecodeOrderedJSON(h)
+	pv, _ := dal.DecodeOrderedJSON(pl)
+	out := dal.NewRecord()
+	out.Set("header", hv)
+	out.Set("payload", p.normalize(pv))
+	return out
 }
 
 func decodeToken(v any) any {
@@ -284,36 +390,75 @@ func pretty(v any) string {
 	return b.String()
 }
 
-// TestMatchUpstream runs the scenarios against MEDUSA_HTTP_TARGET_URL and
-// compares every response (status, headers, cookies, body with its key
-// order) with the golden responses.
-func TestMatchUpstream(t *testing.T) {
-	base := os.Getenv("MEDUSA_HTTP_TARGET_URL")
-	if base == "" {
-		t.Skip("MEDUSA_HTTP_TARGET_URL is not set")
-	}
+// scenarioFiles lists the scenarios, filtered by MEDUSA_HTTP_SCENARIO.
+func scenarioFiles() []string {
 	files, _ := filepath.Glob("scenarios/*.json")
-	for _, file := range files {
-		steps := loadScenario(t, file)
-		raw, err := os.ReadFile(filepath.Join("golden", filepath.Base(file)))
-		if err != nil {
-			t.Fatal(err)
+	if only := os.Getenv("MEDUSA_HTTP_SCENARIO"); only != "" {
+		var out []string
+		for _, f := range files {
+			if strings.TrimSuffix(filepath.Base(f), ".json") == only {
+				out = append(out, f)
+			}
 		}
-		gv, err := dal.DecodeOrderedJSON(raw)
-		if err != nil {
-			t.Fatal(err)
-		}
-		golden := gv.(*dal.Record)
-		results := runScenario(t, base, steps)
-		for _, s := range steps {
-			t.Run(strings.TrimSuffix(filepath.Base(file), ".json")+"/"+s.Name, func(t *testing.T) {
+		return out
+	}
+	return files
+}
+
+// goServer starts the Go application on a fresh database holding seed.sql.
+func goServer(t *testing.T, scenario string) string {
+	t.Helper()
+	if base := os.Getenv("MEDUSA_HTTP_TARGET_URL"); base != "" {
+		return base
+	}
+	dbURL := setupDatabase(t, "medusa_http_go_"+strings.ReplaceAll(scenario, "-", "_"))
+	// Same CORS settings as record.sh passes to upstream.
+	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{
+		DatabaseURL: dbURL,
+		HTTP:        config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
+	}})
+	app, err := loaders.Initialize(context.Background(), cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	srv := httptest.NewServer(app.Handler)
+	t.Cleanup(func() {
+		srv.Close()
+		app.Shutdown()
+	})
+	return srv.URL
+}
+
+// TestMatchUpstream runs every scenario against the Go application (each on
+// a fresh database, or against MEDUSA_HTTP_TARGET_URL) and compares every
+// response (status, headers, cookies, body with its key order) with the
+// golden responses recorded from upstream by record.sh.
+func TestMatchUpstream(t *testing.T) {
+	for _, file := range scenarioFiles() {
+		name := strings.TrimSuffix(filepath.Base(file), ".json")
+		t.Run(name, func(t *testing.T) {
+			steps := loadScenario(t, file)
+			raw, err := os.ReadFile(filepath.Join("golden", filepath.Base(file)))
+			if err != nil {
+				t.Fatal(err)
+			}
+			gv, err := dal.DecodeOrderedJSON(raw)
+			if err != nil {
+				t.Fatal(err)
+			}
+			golden := gv.(*dal.Record)
+			seedSQL(t)
+			base := goServer(t, name)
+			results := runScenario(t, base, steps)
+			wantP, gotP := newPlaceholders(), newPlaceholders()
+			for _, s := range steps {
 				want, _ := golden.Get(s.Name)
-				w := pretty(normalize(want))
-				g := pretty(normalize(asRecord(results[s.Name])))
+				w := pretty(wantP.normalize(sortUnordered(want, s.Unordered)))
+				g := pretty(gotP.normalize(sortUnordered(asRecord(results[s.Name]), s.Unordered)))
 				if w != g {
-					t.Errorf("mismatch\n--- want\n%s\n--- got\n%s", w, g)
+					t.Errorf("%s: mismatch\n--- want\n%s\n--- got\n%s", s.Name, w, g)
 				}
-			})
-		}
+			}
+		})
 	}
 }

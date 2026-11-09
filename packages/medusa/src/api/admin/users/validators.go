@@ -19,3 +19,11 @@ var AdminGetUsersParams = utils.CreateFindParams(utils.FindParamsOptions{Offset:
 	zod.F("first_name", zod.String().Nullish()),
 	zod.F("last_name", zod.String().Nullish()),
 ))
+
+// AdminUpdateUser mirrors AdminUpdateUser.
+var AdminUpdateUser = zod.Object(
+	zod.F("first_name", zod.String().Nullish()),
+	zod.F("last_name", zod.String().Nullish()),
+	zod.F("avatar_url", zod.String().Nullish()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish().Optional()),
+)

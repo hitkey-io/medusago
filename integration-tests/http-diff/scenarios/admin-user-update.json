@@ -1,0 +1,11 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "update_me", "method": "POST", "path": "/admin/users/me", "bearer": "login", "body": { "first_name": "Ada", "last_name": "Lovelace", "metadata": { "team": "core", "level": 3 } } },
+  { "name": "update_me_fields", "method": "POST", "path": "/admin/users/me?fields=id,first_name,metadata", "bearer": "login", "body": { "avatar_url": "https://example.com/a.png", "metadata": { "team": "", "extra": true } } },
+  { "name": "update_me_null", "method": "POST", "path": "/admin/users/me", "bearer": "login", "body": { "last_name": null } },
+  { "name": "update_me_unknown_field", "method": "POST", "path": "/admin/users/me", "bearer": "login", "body": { "first_name": "X", "email": "x@y.z" } },
+  { "name": "update_me_wrong_type", "method": "POST", "path": "/admin/users/me", "bearer": "login", "body": { "first_name": 42, "metadata": "nope" } },
+  { "name": "update_me_bad_fields", "method": "POST", "path": "/admin/users/me?fields=id&limit=x", "bearer": "login", "body": {} },
+  { "name": "update_me_unauthenticated", "method": "POST", "path": "/admin/users/me", "body": { "first_name": "X" } },
+  { "name": "me", "method": "GET", "path": "/admin/users/me", "bearer": "login" }
+]

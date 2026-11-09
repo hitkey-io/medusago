@@ -51,8 +51,12 @@ func (q *Query) Graph(ctx context.Context, in GraphInput, opts joiner.Options) (
 // RemoteQuery mirrors the legacy remoteQuery(remoteQueryObjectFromString(...))
 // call: the result carries metadata when the query is paginated (rows +
 // metadata upstream), otherwise only the data.
-func (q *Query) RemoteQuery(ctx context.Context, obj *dal.Record) (*GraphResult, error) {
-	return q.run(ctx, obj, joiner.Options{})
+func (q *Query) RemoteQuery(ctx context.Context, obj *dal.Record, opts ...joiner.Options) (*GraphResult, error) {
+	var o joiner.Options
+	if len(opts) > 0 {
+		o = opts[0]
+	}
+	return q.run(ctx, obj, o)
 }
 
 func (q *Query) run(ctx context.Context, remote *dal.Record, opts joiner.Options) (*GraphResult, error) {
