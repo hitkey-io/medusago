@@ -1,0 +1,17 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "product", "method": "GET", "bearer": "login", "path": "/admin/products?handle=t-shirt&fields=id,images.id,images.url" },
+  { "name": "v0", "method": "GET", "bearer": "login", "path": "/admin/product-variants?sku=SHIRT-S-BLACK&fields=id" },
+  { "name": "v1", "method": "GET", "bearer": "login", "path": "/admin/product-variants?sku=SHIRT-M-WHITE&fields=id" },
+  { "name": "image_variants_add", "method": "POST", "bearer": "login", "path": "/admin/products/{{product.products.0.id}}/images/{{product.products.0.images.0.id}}/variants/batch", "body": { "add": ["{{v0.variants.0.id}}", "{{v1.variants.0.id}}"] } },
+  { "name": "v0_images", "method": "GET", "bearer": "login", "path": "/admin/products/{{product.products.0.id}}/variants/{{v0.variants.0.id}}?fields=id,images.url" },
+  { "name": "set_thumb", "method": "POST", "bearer": "login", "path": "/admin/products/{{product.products.0.id}}/variants/{{v1.variants.0.id}}?fields=id", "body": { "thumbnail": "https://example.com/shirt-front.png" } },
+  { "name": "variant_images", "method": "POST", "bearer": "login", "path": "/admin/products/{{product.products.0.id}}/variants/{{v1.variants.0.id}}/images/batch", "body": { "add": ["{{product.products.0.images.1.id}}"], "remove": ["{{product.products.0.images.0.id}}"] } },
+  { "name": "v1_after", "method": "GET", "bearer": "login", "path": "/admin/products/{{product.products.0.id}}/variants/{{v1.variants.0.id}}?fields=id,thumbnail,images.url" },
+  { "name": "set_thumb_v0", "method": "POST", "bearer": "login", "path": "/admin/products/{{product.products.0.id}}/variants/{{v0.variants.0.id}}?fields=id", "body": { "thumbnail": "https://example.com/shirt-front.png" } },
+  { "name": "image_variants_remove", "method": "POST", "bearer": "login", "path": "/admin/products/{{product.products.0.id}}/images/{{product.products.0.images.0.id}}/variants/batch", "body": { "remove": ["{{v0.variants.0.id}}"] } },
+  { "name": "v0_after", "method": "GET", "bearer": "login", "path": "/admin/products/{{product.products.0.id}}/variants/{{v0.variants.0.id}}?fields=id,thumbnail,images.url" },
+  { "name": "empty", "method": "POST", "bearer": "login", "path": "/admin/products/{{product.products.0.id}}/variants/{{v0.variants.0.id}}/images/batch", "body": {} },
+  { "name": "invalid", "method": "POST", "bearer": "login", "path": "/admin/products/{{product.products.0.id}}/variants/{{v0.variants.0.id}}/images/batch", "body": { "add": "x" } },
+  { "name": "duplicate", "method": "POST", "bearer": "login", "path": "/admin/products/{{product.products.0.id}}/variants/{{v1.variants.0.id}}/images/batch", "body": { "add": ["{{product.products.0.images.1.id}}"] } }
+]

@@ -66,12 +66,14 @@ import (
 	productvariantslist "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-variants"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products"
 	productid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_"
+	imagevariantsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/images/image_id_/variants/batch"
 	productoptionsroute "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/options"
 	productoptionsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/options/batch"
 	productvariantsroute "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants"
 	productvariantsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/batch"
 	variantinventorybatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/inventory-items/batch"
 	productvariantid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/variant_id_"
+	variantimagesbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/variant_id_/images/batch"
 	variantinventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/variant_id_/inventory-items"
 	variantinventoryitem "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/variant_id_/inventory-items/inventory_item_id_"
 	adminpromotions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions"
@@ -232,6 +234,8 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/products/:id/variants/:variant_id/inventory-items", Route: variantinventoryitems.Route},
 		{Path: "/admin/products/:id/variants/:variant_id/inventory-items/:inventory_item_id", Route: variantinventoryitem.Route},
 		{Path: "/admin/products/:id/variants/inventory-items/batch", Route: variantinventorybatch.Route},
+		{Path: "/admin/products/:id/images/:image_id/variants/batch", Route: imagevariantsbatch.Route},
+		{Path: "/admin/products/:id/variants/:variant_id/images/batch", Route: variantimagesbatch.Route},
 		{Path: "/admin/sales-channels/:id", Route: saleschannelid.Route},
 		{Path: "/admin/sales-channels/:id/products", Route: saleschannelproducts.Route},
 		{Path: "/admin/layouts/:zone/configuration", Route: configuration.Route},

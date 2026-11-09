@@ -64,8 +64,40 @@ var VariantInventoryMiddlewares = []medusahttp.MiddlewareRoute{
 	)},
 }
 
+// AdminBatchImageVariant mirrors AdminBatchImageVariant (and
+// AdminBatchVariantImages, the same shape).
+var AdminBatchImageVariant = zod.Object(
+	zod.F("add", zod.Array(zod.String()).Optional()),
+	zod.F("remove", zod.Array(zod.String()).Optional()),
+)
+
 func init() {
 	AdminProductRoutesMiddlewares = append(AdminProductRoutesMiddlewares, VariantInventoryMiddlewares...)
+	AdminProductRoutesMiddlewares = append(AdminProductRoutesMiddlewares,
+		medusahttp.MiddlewareRoute{Methods: []string{"POST"}, Matcher: "/admin/products/:id/images/:image_id/variants/batch", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(AdminBatchImageVariant)))},
+		medusahttp.MiddlewareRoute{Methods: []string{"POST"}, Matcher: "/admin/products/:id/variants/:variant_id/images/batch", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(AdminBatchImageVariant)))},
+	)
+}
+
+// BatchImagesRoute builds the POST handler of the image batch routes.
+func BatchImagesRoute(param string, run func(ctx context.Context, scope medusahttp.MedusaContainer, id any, add, remove []any) ([]any, []any, error)) medusahttp.RouteHandler {
+	return func(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+		var add, remove []any
+		if body, ok := req.ValidatedBody.(*dal.Record); ok {
+			a, _ := body.Get("add")
+			r, _ := body.Get("remove")
+			add, _ = a.([]any)
+			remove, _ = r.([]any)
+		}
+		added, removed, err := run(req.Ctx(), req.Scope, req.Params[param], add, remove)
+		if err != nil {
+			return err
+		}
+		out := dal.NewRecord()
+		out.Set("added", added)
+		out.Set("removed", removed)
+		return res.Status(200).JSON(out)
+	}
 }
 
 // RefetchVariant mirrors refetchVariant.
