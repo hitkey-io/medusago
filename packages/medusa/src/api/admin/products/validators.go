@@ -196,3 +196,10 @@ var AdminCreateProductVariant = utils.WithAdditionalData(CreateProductVariant)
 
 // AdminUpdateProductVariant mirrors AdminUpdateProductVariant.
 var AdminUpdateProductVariant = utils.WithAdditionalData(UpdateProductVariant)
+
+// AdminBatchUpdateProductVariant mirrors AdminBatchUpdateProductVariant.
+var AdminBatchUpdateProductVariant = UpdateProductVariant.Extend(zod.F("id", zod.String()))
+
+// AdminBatchProductVariantsBody mirrors
+// createBatchBody(CreateProductVariant, AdminBatchUpdateProductVariant).
+var AdminBatchProductVariantsBody = utils.CreateBatchBody(CreateProductVariant, AdminBatchUpdateProductVariant, nil)

@@ -1,0 +1,15 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "create_p", "method": "POST", "bearer": "login", "path": "/admin/products?fields=id", "body": { "title": "Batch lab", "options": [{ "title": "Size", "values": ["S", "M", "L"] }], "variants": [{ "title": "S", "sku": "B-S", "options": { "Size": "S" }, "prices": [{ "amount": 10, "currency_code": "eur" }] }, { "title": "M", "sku": "B-M", "options": { "Size": "M" }, "prices": [{ "amount": 20, "currency_code": "eur" }] }] } },
+  { "name": "variants", "method": "GET", "bearer": "login", "path": "/admin/products/{{create_p.product.id}}/variants?order=sku&fields=id,title,*prices" },
+  { "name": "batch", "method": "POST", "bearer": "login", "path": "/admin/products/{{create_p.product.id}}/variants/batch", "body": {
+      "create": [{ "title": "L", "sku": "B-L", "options": { "Size": "L" }, "prices": [{ "amount": 30, "currency_code": "eur" }] }],
+      "update": [{ "id": "{{variants.variants.0.id}}", "title": "Small", "prices": [{ "id": "{{variants.variants.0.prices.0.id}}", "amount": 11, "currency_code": "eur" }, { "amount": 13, "currency_code": "usd" }] }],
+      "delete": ["{{variants.variants.1.id}}"]
+  } },
+  { "name": "batch_fields", "method": "POST", "bearer": "login", "path": "/admin/products/{{create_p.product.id}}/variants/batch?fields=id,title", "body": { "update": [{ "id": "{{variants.variants.0.id}}", "manage_inventory": false }] } },
+  { "name": "batch_empty", "method": "POST", "bearer": "login", "path": "/admin/products/{{create_p.product.id}}/variants/batch", "body": {} },
+  { "name": "batch_update_no_id", "method": "POST", "bearer": "login", "path": "/admin/products/{{create_p.product.id}}/variants/batch", "body": { "update": [{ "title": "x" }] } },
+  { "name": "batch_update_missing", "method": "POST", "bearer": "login", "path": "/admin/products/{{create_p.product.id}}/variants/batch", "body": { "update": [{ "id": "variant_missing", "title": "x" }] } },
+  { "name": "final", "method": "GET", "bearer": "login", "path": "/admin/products/{{create_p.product.id}}/variants?order=sku&fields=id,title,sku,manage_inventory,*prices,*options,inventory_quantity" }
+]

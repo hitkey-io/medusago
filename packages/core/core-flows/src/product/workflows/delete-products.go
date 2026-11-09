@@ -34,8 +34,8 @@ var DeleteProductsWorkflow = composer.CreateWorkflow("delete-products",
 		filters := dal.NewRecord()
 		filters.Set("id", input.IDs)
 		res, err := commonsteps.UseQueryGraphStep.Config("query-products-with-options-step", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{GraphInput: query.GraphInput{
-			Entity: "product",
-			Fields: []string{"id", "variants.id", "variants.manage_inventory", "variants.inventory.id", "variants.inventory.variants.id", "options.id", "options.is_exclusive"},
+			Entity:  "product",
+			Fields:  []string{"id", "variants.id", "variants.manage_inventory", "variants.inventory.id", "variants.inventory.variants.id", "options.id", "options.is_exclusive"},
 			Filters: filters,
 		}})
 		if err != nil {
