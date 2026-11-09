@@ -203,3 +203,37 @@ var AdminBatchUpdateProductVariant = UpdateProductVariant.Extend(zod.F("id", zod
 // AdminBatchProductVariantsBody mirrors
 // createBatchBody(CreateProductVariant, AdminBatchUpdateProductVariant).
 var AdminBatchProductVariantsBody = utils.CreateBatchBody(CreateProductVariant, AdminBatchUpdateProductVariant, nil)
+
+// AdminGetProductOptionsParamsFields mirrors AdminGetProductOptionsParamsFields.
+var AdminGetProductOptionsParamsFields = zod.Object(
+	zod.F("q", zod.String().Optional()),
+	zod.F("id", utils.StringOrStrings().Optional()),
+	zod.F("title", zod.String().Optional()),
+	zod.F("created_at", operatorMap().Optional()),
+	zod.F("updated_at", operatorMap().Optional()),
+	zod.F("deleted_at", operatorMap().Optional()),
+)
+
+// AdminGetProductOptionsParams mirrors AdminGetProductOptionsParams.
+var AdminGetProductOptionsParams = utils.CreateFindParams(utils.FindParamsOptions{Offset: utils.Num(0), Limit: utils.Num(50)}).
+	Merge(AdminGetProductOptionsParamsFields).Merge(commonvalidators.ApplyAndAndOrOperators(AdminGetProductOptionsParamsFields))
+
+// AdminLinkProductOptionWithValues mirrors AdminLinkProductOptionWithValues.
+var AdminLinkProductOptionWithValues = zod.Object(
+	zod.F("id", zod.String()),
+	zod.F("value_ids", zod.Array(zod.String())),
+)
+
+// AdminUpdateProductOptionValues mirrors AdminUpdateProductOptionValues.
+var AdminUpdateProductOptionValues = zod.Object(
+	zod.F("product_option_id", zod.String()),
+	zod.F("add", zod.Array(zod.Union(zod.String(), zod.Object(zod.F("value", zod.String())).Strict())).Optional()),
+	zod.F("remove", zod.Array(zod.String()).Optional()),
+)
+
+// AdminLinkProductOptions mirrors AdminLinkProductOptions.
+var AdminLinkProductOptions = zod.Object(
+	zod.F("add", zod.Array(zod.Union(zod.String(), AdminCreateProductOption, AdminLinkProductOptionWithValues)).Optional()),
+	zod.F("remove", zod.Array(zod.String()).Optional()),
+	zod.F("update", zod.Array(AdminUpdateProductOptionValues).Optional()),
+)

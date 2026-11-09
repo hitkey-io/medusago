@@ -13,6 +13,7 @@ import (
 	pricepreferences "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-preferences"
 	productcategories "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories"
 	productoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-options"
+	productoptionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-options/id_"
 	producttags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-tags"
 	producttagid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-tags/id_"
 	producttypes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-types"
@@ -20,6 +21,8 @@ import (
 	productvariantslist "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-variants"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products"
 	productid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_"
+	productoptionsroute "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/options"
+	productoptionsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/options/batch"
 	productvariantsroute "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants"
 	productvariantsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/batch"
 	productvariantid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/variant_id_"
@@ -43,6 +46,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/price-preferences", Route: pricepreferences.Route},
 		{Path: "/admin/product-categories", Route: productcategories.Route},
 		{Path: "/admin/product-options", Route: productoptions.Route},
+		{Path: "/admin/product-options/:id", Route: productoptionid.Route},
 		{Path: "/admin/product-tags", Route: producttags.Route},
 		{Path: "/admin/product-tags/:id", Route: producttagid.Route},
 		{Path: "/admin/product-types", Route: producttypes.Route},
@@ -50,6 +54,8 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/product-variants", Route: productvariantslist.Route},
 		{Path: "/admin/products", Route: products.Route},
 		{Path: "/admin/products/:id", Route: productid.Route},
+		{Path: "/admin/products/:id/options", Route: productoptionsroute.Route},
+		{Path: "/admin/products/:id/options/batch", Route: productoptionsbatch.Route},
 		{Path: "/admin/products/:id/variants", Route: productvariantsroute.Route},
 		{Path: "/admin/products/:id/variants/batch", Route: productvariantsbatch.Route},
 		{Path: "/admin/products/:id/variants/:variant_id", Route: productvariantid.Route},
