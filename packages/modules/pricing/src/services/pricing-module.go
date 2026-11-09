@@ -4,6 +4,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 
@@ -36,10 +37,86 @@ func normalizePriceSetConfig(config utilsmodulessdk.FindConfig) utilsmodulessdk.
 	return config
 }
 
+// setupCalculatedPriceConfig mirrors setupCalculatedPriceConfig_: the
+// pricing context of the filters, when the virtual calculated_price
+// relation is requested (removed from the config).
+func setupCalculatedPriceConfig(filters *dal.Record, config utilsmodulessdk.FindConfig) (*dal.Record, utilsmodulessdk.FindConfig, *dal.Record, bool) {
+	var pricingContext *dal.Record
+	if filters != nil && filters.Has("context") {
+		v, _ := filters.Get("context")
+		pricingContext, _ = v.(*dal.Record)
+		out := dal.NewRecord()
+		for _, k := range filters.Keys() {
+			if k == "context" {
+				continue
+			}
+			x, _ := filters.Get(k)
+			out.Set(k, x)
+		}
+		filters = out
+	}
+	idx := slices.Index(config.Relations, "calculated_price")
+	if idx < 0 {
+		return filters, config, nil, false
+	}
+	config.Relations = append(append([]string{}, config.Relations[:idx]...), config.Relations[idx+1:]...)
+	if config.Select != nil {
+		var sel []string
+		for _, f := range config.Select {
+			if f == "calculated_price" || strings.HasPrefix(f, "calculated_price.") {
+				continue
+			}
+			sel = append(sel, f)
+		}
+		if sel == nil {
+			sel = []string{}
+		}
+		config.Select = sel
+	}
+	if pricingContext == nil {
+		pricingContext = dal.NewRecord()
+	}
+	return filters, config, pricingContext, true
+}
+
+func (s *PricingModuleService) attachCalculatedPrices(ctx context.Context, sets []*dal.Record, pricingContext *dal.Record) error {
+	if len(sets) == 0 {
+		return nil
+	}
+	ids := make([]any, len(sets))
+	for i, ps := range sets {
+		ids[i] = get(ps, "id")
+	}
+	prices, err := s.CalculatePrices(ctx, ids, pricingContext)
+	if err != nil {
+		return err
+	}
+	byID := map[string]*dal.Record{}
+	for _, p := range prices {
+		byID[fmt.Sprint(get(p, "id"))] = p
+	}
+	for _, ps := range sets {
+		if p := byID[fmt.Sprint(get(ps, "id"))]; p != nil {
+			ps.Set("calculated_price", p)
+		} else {
+			ps.Set("calculated_price", nil)
+		}
+	}
+	return nil
+}
+
 // ListBySuffix dispatches list<suffix> to the overridden methods.
 func (s *PricingModuleService) ListBySuffix(ctx context.Context, suffix string, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, error) {
 	if suffix == "PriceSets" {
 		config = normalizePriceSetConfig(config)
+		var pricingContext *dal.Record
+		var calc bool
+		filters, config, pricingContext, calc = setupCalculatedPriceConfig(filters, config)
+		sets, err := s.MedusaService.ListBySuffix(ctx, suffix, filters, config)
+		if err != nil || !calc {
+			return sets, err
+		}
+		return sets, s.attachCalculatedPrices(ctx, sets, pricingContext)
 	}
 	return s.MedusaService.ListBySuffix(ctx, suffix, filters, config)
 }
@@ -48,6 +125,14 @@ func (s *PricingModuleService) ListBySuffix(ctx context.Context, suffix string, 
 func (s *PricingModuleService) ListAndCountBySuffix(ctx context.Context, suffix string, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, int, error) {
 	if suffix == "PriceSets" {
 		config = normalizePriceSetConfig(config)
+		var pricingContext *dal.Record
+		var calc bool
+		filters, config, pricingContext, calc = setupCalculatedPriceConfig(filters, config)
+		sets, count, err := s.MedusaService.ListAndCountBySuffix(ctx, suffix, filters, config)
+		if err != nil || !calc {
+			return sets, count, err
+		}
+		return sets, count, s.attachCalculatedPrices(ctx, sets, pricingContext)
 	}
 	return s.MedusaService.ListAndCountBySuffix(ctx, suffix, filters, config)
 }

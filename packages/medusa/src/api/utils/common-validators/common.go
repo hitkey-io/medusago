@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
 // ApplyAndAndOrOperators mirrors applyAndAndOrOperators.
@@ -40,4 +41,39 @@ func AddressPayload() *zod.Schema {
 		zod.F("postal_code", zod.String().Nullish()),
 		zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
 	).Strict()
+}
+
+// RecursivelyNormalizeSchema mirrors recursivelyNormalizeSchema: the
+// transform also applies to every $and / $or entry.
+func RecursivelyNormalizeSchema(transform func(any) (any, error)) func(any) (any, error) {
+	return func(v any) (any, error) {
+		out, err := transform(v)
+		if err != nil {
+			return nil, err
+		}
+		r, ok := out.(*dal.Record)
+		if !ok {
+			return out, nil
+		}
+		for _, key := range r.Keys() {
+			if key != "$and" && key != "$or" {
+				continue
+			}
+			x, _ := r.Get(key)
+			list, ok := x.([]any)
+			if !ok {
+				continue
+			}
+			mapped := make([]any, len(list))
+			for i, item := range list {
+				m, err := transform(item)
+				if err != nil {
+					return nil, err
+				}
+				mapped[i] = m
+			}
+			r.Set(key, mapped)
+		}
+		return r, nil
+	}
 }

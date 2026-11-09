@@ -235,7 +235,7 @@ func (a *App) ServeHTTP(w nethttp.ResponseWriter, r *nethttp.Request) {
 				continue
 			}
 			if l.method != "" {
-				handles := l.method == method || (method == "HEAD" && l.method == "GET")
+				handles := l.method == method || l.method == "ALL" || (method == "HEAD" && l.method == "GET")
 				if !handles {
 					if method == "OPTIONS" {
 						addOption(l.method)

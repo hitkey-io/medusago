@@ -44,6 +44,18 @@ type instance struct {
 	data      Row
 	relations map[string]any // *instance, []*instance or nil
 	created   bool
+	// sel is the field selection the instance was loaded with (nil: every
+	// field); a reference found in the identity map serializes these.
+	sel *fieldTree
+}
+
+func (inst *instance) selectFields(t *fieldTree) {
+	if t == nil {
+		t = allFields
+	}
+	if inst.sel == nil || t.all {
+		inst.sel = t
+	}
 }
 
 type identityMap map[string]*instance
@@ -77,6 +89,25 @@ func (m identityMap) get(e *dml.Entity, row Row) *instance {
 	runOnInit(e.Meta.ClassName, row)
 	m[key] = inst
 	return inst
+}
+
+type sharedIdentityMapKey struct{}
+
+// WithSharedIdentityMap returns a context whose finds share one identity
+// map, like the queries of one MikroORM entity manager (a service method
+// decorated with @InjectManager).
+func WithSharedIdentityMap(ctx context.Context) context.Context {
+	if _, ok := ctx.Value(sharedIdentityMapKey{}).(identityMap); ok {
+		return ctx
+	}
+	return context.WithValue(ctx, sharedIdentityMapKey{}, identityMap{})
+}
+
+func sharedIdentityMap(ctx context.Context) identityMap {
+	if m, ok := ctx.Value(sharedIdentityMapKey{}).(identityMap); ok {
+		return m
+	}
+	return identityMap{}
 }
 
 func (m identityMap) lookup(e *dml.Entity, pk any) (*instance, bool) {
@@ -229,11 +260,12 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 		return nil, nil, err
 	}
 
-	idm := identityMap{}
+	idm := sharedIdentityMap(ctx)
 	var roots []*instance
 	seen := map[*instance]bool{}
 	for _, row := range rows {
 		inst := idm.get(r.Entity, row)
+		inst.selectFields(tree)
 		if !seen[inst] {
 			seen[inst] = true
 			roots = append(roots, inst)
@@ -432,6 +464,9 @@ func (r *Repository) populate(ctx context.Context, roots []*instance, idm identi
 		children, err := r.loadRelationSelecting(ctx, parents, relation, idm, withDeleted, relationOrder[path], tree.at(path), populateWhere[path])
 		if err != nil {
 			return fmt.Errorf("populate %s: %w", path, err)
+		}
+		for _, c := range children {
+			c.selectFields(tree.at(path))
 		}
 		byPath[path] = children
 	}
@@ -811,7 +846,11 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 				return nil, err
 			}
 			if loaded, ok := idm.lookup(target, fk); ok {
-				ref, err := r.serializeInstance(loaded, allFields, childParents, nil, idm)
+				sel := loaded.sel
+				if sel == nil {
+					sel = allFields
+				}
+				ref, err := r.serializeInstance(loaded, sel, childParents, nil, idm)
 				if err != nil {
 					return nil, err
 				}

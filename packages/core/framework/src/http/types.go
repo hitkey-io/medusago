@@ -58,11 +58,15 @@ type MedusaRequest struct {
 	FilterableFields  *dal.Record
 	Allowed           []string
 	// Disallowed mirrors req.disallowed (nil = undefined).
-	Disallowed              []string
-	RestrictedFields        []string
-	StoreRelationsLimit     int
-	PublishableKeyContext   *dal.Record
-	Locale                  string
+	Disallowed            []string
+	RestrictedFields      []string
+	StoreRelationsLimit   int
+	PublishableKeyContext *dal.Record
+	Locale                string
+	// PricingContext / TaxContext mirror req.pricingContext and
+	// req.taxContext (store routes).
+	PricingContext          *dal.Record
+	TaxContext              *dal.Record
 	AdditionalDataValidator any
 	// Errors mirrors req.errors (wrapHandler answers 400 when set).
 	Errors []any

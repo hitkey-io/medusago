@@ -136,6 +136,11 @@ import (
 	storecollectionid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections/id_"
 	storecurrencies "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies"
 	storecurrencycode "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies/code_"
+	storecustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers"
+	storecustomerme "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me"
+	storecustomeraddresses "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses"
+	storecustomeraddress "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses/address_id_"
+	storepaymentproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-providers"
 	storecategories "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-categories"
 	storecategoryid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-categories/id_"
 	storeoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-options"
@@ -144,6 +149,10 @@ import (
 	storetagid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-tags/id_"
 	storetypes "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-types"
 	storetypeid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-types/id_"
+	storevariants "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-variants"
+	storevariantid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-variants/id_"
+	storeproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/store/products"
+	storeproductid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/products/id_"
 	storeregions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/regions"
 	storeregionid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/regions/id_"
 	storereasons "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons"
@@ -270,6 +279,15 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/users/:id/auth-providers", Route: userauthproviders.Route},
 		{Path: "/admin/invites", Route: admininvites.Route},
 		{Path: "/admin/uploads", Route: adminuploads.Route},
+		{Path: "/store/customers", Route: storecustomers.Route},
+		{Path: "/store/customers/me", Route: storecustomerme.Route},
+		{Path: "/store/customers/me/addresses", Route: storecustomeraddresses.Route},
+		{Path: "/store/customers/me/addresses/:address_id", Route: storecustomeraddress.Route},
+		{Path: "/store/payment-providers", Route: storepaymentproviders.Route},
+		{Path: "/store/product-variants", Route: storevariants.Route},
+		{Path: "/store/product-variants/:id", Route: storevariantid.Route},
+		{Path: "/store/products", Route: storeproducts.Route},
+		{Path: "/store/products/:id", Route: storeproductid.Route},
 		{Path: "/store/regions", Route: storeregions.Route},
 		{Path: "/store/regions/:id", Route: storeregionid.Route},
 		{Path: "/store/currencies", Route: storecurrencies.Route},

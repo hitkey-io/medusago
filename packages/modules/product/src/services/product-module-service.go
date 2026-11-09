@@ -349,6 +349,8 @@ func (s *ProductModuleService) listProductVariants(ctx context.Context, filters 
 	loadImages := slices.Contains(config.Relations, "images")
 	if loadImages {
 		config.Relations = append(append([]string{}, config.Relations...), "product.images")
+		// the images are listed with the same entity manager
+		ctx = dal.WithSharedIdentityMap(ctx)
 	}
 	svc := s.Internal("ProductVariant")
 	var rows []*dal.Record

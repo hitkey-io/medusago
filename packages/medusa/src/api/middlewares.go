@@ -45,10 +45,14 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth"
 	storecollectionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections"
 	storecurrenciesmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies"
+	storecustomersmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers"
+	storepaymentprovidersmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-providers"
 	storecategoriesmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-categories"
 	storeoptionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-options"
 	storetagsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-tags"
 	storetypesmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-types"
+	storevariantsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-variants"
+	storeproductsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/products"
 	storeregionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/regions"
 	storereasonsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons"
 )
@@ -62,6 +66,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, users.AdminUserRoutesMiddlewares...)
 	out = append(out, invites.AdminInviteRoutesMiddlewares...)
 	out = append(out, uploads.Middlewares...)
+	out = append(out, storecustomersmw.Middlewares...)
 	out = append(out, storeregionsmw.Middlewares...)
 	out = append(out, storecurrenciesmw.Middlewares...)
 	out = append(out, storecollectionsmw.Middlewares...)
@@ -70,6 +75,9 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, storetypesmw.Middlewares...)
 	out = append(out, storereasonsmw.Middlewares...)
 	out = append(out, storeoptionsmw.Middlewares...)
+	out = append(out, storepaymentprovidersmw.Middlewares...)
+	out = append(out, storeproductsmw.Middlewares...)
+	out = append(out, storevariantsmw.Middlewares...)
 	out = append(out, stores.AdminStoreRoutesMiddlewares...)
 	out = append(out, products.AdminProductRoutesMiddlewares...)
 	out = append(out, productvariants.Middlewares...)
