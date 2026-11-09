@@ -45,6 +45,8 @@ func main() {
 		opts := db.MigrateOptions{}
 		fs.BoolVar(&opts.SkipLinks, "skip-links", false, "Do not sync links")
 		fs.BoolVar(&opts.SkipScripts, "skip-scripts", false, "Do not run migration scripts")
+		fs.BoolVar(&opts.ExecuteAllLinks, "execute-all-links", false, "Apply all link changes, including dropping tables of removed links")
+		fs.BoolVar(&opts.ExecuteSafeLinks, "execute-safe-links", false, "Apply only safe link changes")
 		_ = fs.Parse(os.Args[2:])
 
 		config := common.DefineConfig(common.InputConfig{})

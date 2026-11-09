@@ -15,8 +15,10 @@ import (
 
 // MigrateOptions mirrors the flags of `medusa db:migrate`.
 type MigrateOptions struct {
-	SkipLinks   bool
-	SkipScripts bool
+	SkipLinks        bool
+	SkipScripts      bool
+	ExecuteAllLinks  bool
+	ExecuteSafeLinks bool
 }
 
 // moduleMigrations is the migration set of one enabled module: the module's
@@ -78,5 +80,11 @@ func Migrate(ctx context.Context, config common.ConfigModule, opts MigrateOption
 	}
 
 	slog.Info("Migrations completed")
+
+	if !opts.SkipLinks {
+		if err := SyncLinks(ctx, pool, SyncLinksOptions{ExecuteAll: opts.ExecuteAllLinks, ExecuteSafe: opts.ExecuteSafeLinks}); err != nil {
+			return err
+		}
+	}
 	return nil
 }
