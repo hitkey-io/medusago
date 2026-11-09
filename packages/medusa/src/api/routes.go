@@ -51,6 +51,7 @@ import (
 	refundreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons"
 	refundreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
+	regionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions/id_"
 	adminreservations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/reservations"
 	reservationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/reservations/id_"
 	returnreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons"
@@ -139,6 +140,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/notifications", Route: notifications.Route},
 		{Path: "/admin/orders", Route: orders.Route},
 		{Path: "/admin/regions", Route: regions.Route},
+		{Path: "/admin/regions/:id", Route: regionid.Route},
 		{Path: "/admin/sales-channels", Route: saleschannels.Route},
 		{Path: "/admin/stores", Route: stores.Route},
 		{Path: "/admin/users", Route: adminusers.Route},

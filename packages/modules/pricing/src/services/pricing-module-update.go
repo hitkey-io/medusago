@@ -248,3 +248,79 @@ func (s *PricingModuleService) updatePriceSets(ctx context.Context, data []*dal.
 	sf.Set("id", ids)
 	return s.Internal("PriceSet").List(ctx, sf, normalizePriceSetConfig(utilsmodulessdk.FindConfig{Relations: []string{"prices", "prices.price_rules"}}))
 }
+
+// CreatePricePreferences mirrors createPricePreferences (is_tax_inclusive
+// defaults to false).
+func (s *PricingModuleService) CreatePricePreferences(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	in := make([]*dal.Record, len(data))
+	for i, d := range data {
+		r := dal.NewRecord()
+		for _, k := range d.Keys() {
+			v, _ := d.Get(k)
+			r.Set(k, v)
+		}
+		if v, _ := r.Get("is_tax_inclusive"); v == nil {
+			r.Set("is_tax_inclusive", false)
+		}
+		in[i] = r
+	}
+	return s.Internal("PricePreference").Create(ctx, in)
+}
+
+// UpdatePricePreferences mirrors updatePricePreferences(idOrSelector, data).
+func (s *PricingModuleService) UpdatePricePreferences(ctx context.Context, idOrSelector any, data *dal.Record) ([]*dal.Record, error) {
+	var input []any
+	if id, ok := idOrSelector.(string); ok {
+		if _, err := s.Internal("PricePreference").Retrieve(ctx, id, utilsmodulessdk.FindConfig{}); err != nil {
+			return nil, err
+		}
+		input = []any{withID(id, data)}
+	} else {
+		sel, _ := idOrSelector.(*dal.Record)
+		rows, err := s.Internal("PricePreference").List(ctx, sel, utilsmodulessdk.FindConfig{})
+		if err != nil {
+			return nil, err
+		}
+		for _, r := range rows {
+			id, _ := r.Get("id")
+			input = append(input, withID(id, data))
+		}
+	}
+	if len(input) == 0 {
+		return []*dal.Record{}, nil
+	}
+	res, err := s.Internal("PricePreference").Update(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	return listOf(res), nil
+}
+
+// UpsertPricePreferences mirrors upsertPricePreferences.
+func (s *PricingModuleService) UpsertPricePreferences(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	var forCreate []*dal.Record
+	var forUpdate []any
+	for _, d := range data {
+		if id, _ := d.Get("id"); id != nil && id != "" {
+			forUpdate = append(forUpdate, d)
+		} else {
+			forCreate = append(forCreate, d)
+		}
+	}
+	var out []*dal.Record
+	if len(forCreate) > 0 {
+		c, err := s.CreatePricePreferences(ctx, forCreate)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, c...)
+	}
+	if len(forUpdate) > 0 {
+		res, err := s.Internal("PricePreference").Update(ctx, forUpdate)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, listOf(res)...)
+	}
+	return out, nil
+}

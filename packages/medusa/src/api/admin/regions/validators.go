@@ -24,3 +24,25 @@ var AdminGetRegionsParamsFields = zod.Object(
 var AdminGetRegionsParams = utils.CreateFindParams(utils.FindParamsOptions{Limit: utils.Num(50), Offset: utils.Num(0)}).
 	Merge(AdminGetRegionsParamsFields).
 	Merge(commonvalidators.ApplyAndAndOrOperators(AdminGetRegionsParamsFields))
+
+// AdminCreateRegion mirrors AdminCreateRegion.
+var AdminCreateRegion = zod.Object(
+	zod.F("name", zod.String()),
+	zod.F("currency_code", zod.String()),
+	zod.F("countries", zod.Array(zod.String()).Optional()),
+	zod.F("automatic_taxes", zod.Boolean().Optional()),
+	zod.F("is_tax_inclusive", zod.Boolean().Optional()),
+	zod.F("payment_providers", zod.Array(zod.String()).Optional()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+).Strict()
+
+// AdminUpdateRegion mirrors AdminUpdateRegion.
+var AdminUpdateRegion = zod.Object(
+	zod.F("name", zod.String().Optional()),
+	zod.F("currency_code", zod.String().Optional()),
+	zod.F("countries", zod.Array(zod.String()).Optional()),
+	zod.F("automatic_taxes", zod.Boolean().Optional()),
+	zod.F("is_tax_inclusive", zod.Boolean().Optional()),
+	zod.F("payment_providers", zod.Array(zod.String()).Optional()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+).Strict()

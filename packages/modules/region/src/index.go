@@ -6,6 +6,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/modules/region/src/loaders"
 	"github.com/hitkey-io/medusago/packages/modules/region/src/migrations"
 	"github.com/hitkey-io/medusago/packages/modules/region/src/models"
+	"github.com/hitkey-io/medusago/packages/modules/region/src/services"
 )
 
 // Module is the module definition.
@@ -14,4 +15,7 @@ var Module = modulessdk.ModuleExports{
 	Models:       models.All,
 	JoinerConfig: JoinerConfig,
 	Loaders:      []modulessdk.Loader{loaders.Defaults},
+	Service: func(opts modulessdk.ServiceOptions) (any, error) {
+		return services.NewRegionModuleService(opts, JoinerConfig)
+	},
 }
