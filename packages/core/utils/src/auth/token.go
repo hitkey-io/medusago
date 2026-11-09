@@ -192,3 +192,33 @@ func VerifyJwtToken(token, secret string) (*dal.Record, error) {
 	}
 	return payload, nil
 }
+
+// GenerateJwtTokenWithID mirrors jsonwebtoken.sign(payload, secret, {
+// expiresIn: <seconds as a number>, jwtid }): iat, exp then jti.
+func GenerateJwtTokenWithID(payload *dal.Record, secret, expiresInSeconds, jwtID string) (string, error) {
+	secs, err := strconv.ParseInt(expiresInSeconds, 10, 64)
+	if err != nil {
+		return "", err
+	}
+	iat := Now().Unix()
+	p := dal.NewRecord()
+	for _, k := range payload.Keys() {
+		v, _ := payload.Get(k)
+		p.Set(k, v)
+	}
+	p.Set("iat", float64(iat))
+	p.Set("exp", float64(iat+secs))
+	p.Set("jti", jwtID)
+	header := dal.NewRecord()
+	header.Set("alg", "HS256")
+	header.Set("typ", "JWT")
+	hb, _ := header.MarshalJSON()
+	pb, err := p.MarshalJSON()
+	if err != nil {
+		return "", err
+	}
+	signingInput := base64.RawURLEncoding.EncodeToString(hb) + "." + base64.RawURLEncoding.EncodeToString(pb)
+	h, _ := hmacFor("HS256", secret)
+	h.Write([]byte(signingInput))
+	return signingInput + "." + base64.RawURLEncoding.EncodeToString(h.Sum(nil)), nil
+}

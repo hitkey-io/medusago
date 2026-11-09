@@ -339,7 +339,7 @@ func (p *placeholders) normalize(v any) any {
 		for _, k := range t.Keys() {
 			x, _ := t.Get(k)
 			switch {
-			case k == "iat" || k == "exp":
+			case k == "iat" || k == "exp" || k == "jti":
 				out.Set(k, "<timestamp>")
 			case k == "token":
 				out.Set(k, p.decodeToken(x))
@@ -365,7 +365,7 @@ func normalize(v any) any {
 		for _, k := range t.Keys() {
 			x, _ := t.Get(k)
 			switch {
-			case k == "iat" || k == "exp":
+			case k == "iat" || k == "exp" || k == "jti":
 				out.Set(k, "<timestamp>")
 			case k == "token":
 				out.Set(k, decodeToken(x))

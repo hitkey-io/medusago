@@ -10,8 +10,12 @@ import (
 // UpdateUsersStepID mirrors updateUsersStepId.
 const UpdateUsersStepID = "update-users-step"
 
+type internalProvider interface {
+	Internal(className string) *utilsmodulessdk.InternalService
+}
+
 func userService(c composer.Container) *utilsmodulessdk.InternalService {
-	return c.Resolve(utilsmodulessdk.USER).(*utilsmodulessdk.MedusaService).Internal("User")
+	return c.Resolve(utilsmodulessdk.USER).(internalProvider).Internal("User")
 }
 
 // UpdateUsersStep mirrors updateUsersStep.

@@ -1,0 +1,521 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNjA0MjMsImV4cCI6MTc5NDM0NjgyM30.-NMnTXNrMiw6Er2QB149yUm_JXiFDfNNFN3iJNujVo8"
+    }
+  },
+  "me": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "user": {
+        "id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "email": "admin@medusa-test.com"
+      }
+    }
+  },
+  "create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invite": {
+        "id": "invite_01M7142MFGSFDTF2JS4X9VT1QG",
+        "email": "new.admin@example.test",
+        "accepted": false,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Imludml0ZV8wMU03MTQyTUZHU0ZEVEYySlM0WDlWVDFRRyIsImVtYWlsIjoibmV3LmFkbWluQGV4YW1wbGUudGVzdCIsImlhdCI6MTc5NDI2MDQyMywiZXhwIjoxNzk0MzQ2ODIzLCJqdGkiOiJhZDYyNmMzMS01MDcyLTRmZmMtOTM3NS1jMzhmYjMyNGY5ZTcifQ.YwxI74rIA5rycc9L5tRB6HKe2nIIeRgu1hPsA0QYkxU",
+        "expires_at": "2026-11-10T21:40:23.152Z",
+        "metadata": {
+          "team": "ops"
+        },
+        "created_at": "2026-11-09T21:40:23.153Z",
+        "updated_at": "2026-11-09T21:40:23.153Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "create_existing_user": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "User account for following email(s) already exist: admin@medusa-test.com"
+    }
+  },
+  "create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'name'"
+    }
+  },
+  "create_second": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invite": {
+        "id": "invite_01M7142MGEZR44ZZ1BXMPR4DHG",
+        "email": "second@example.test"
+      }
+    }
+  },
+  "list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invites": [
+        {
+          "email": "new.admin@example.test",
+          "accepted": false,
+          "metadata": {
+            "team": "ops"
+          },
+          "id": "invite_01M7142MFGSFDTF2JS4X9VT1QG"
+        },
+        {
+          "email": "second@example.test",
+          "accepted": false,
+          "metadata": null,
+          "id": "invite_01M7142MGEZR44ZZ1BXMPR4DHG"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "list_filtered": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invites": [
+        {
+          "email": "second@example.test",
+          "id": "invite_01M7142MGEZR44ZZ1BXMPR4DHG"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invite": {
+        "id": "invite_01M7142MFGSFDTF2JS4X9VT1QG",
+        "email": "new.admin@example.test",
+        "accepted": false,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Imludml0ZV8wMU03MTQyTUZHU0ZEVEYySlM0WDlWVDFRRyIsImVtYWlsIjoibmV3LmFkbWluQGV4YW1wbGUudGVzdCIsImlhdCI6MTc5NDI2MDQyMywiZXhwIjoxNzk0MzQ2ODIzLCJqdGkiOiJhZDYyNmMzMS01MDcyLTRmZmMtOTM3NS1jMzhmYjMyNGY5ZTcifQ.YwxI74rIA5rycc9L5tRB6HKe2nIIeRgu1hPsA0QYkxU",
+        "expires_at": "2026-11-10T21:40:23.152Z",
+        "metadata": {
+          "team": "ops"
+        },
+        "created_at": "2026-11-09T21:40:23.153Z",
+        "updated_at": "2026-11-09T21:40:23.153Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "get_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Invite with id: invite_missing was not found"
+    }
+  },
+  "resend": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invite": {
+        "id": "invite_01M7142MFGSFDTF2JS4X9VT1QG",
+        "email": "new.admin@example.test",
+        "accepted": false,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Imludml0ZV8wMU03MTQyTUZHU0ZEVEYySlM0WDlWVDFRRyIsImVtYWlsIjoibmV3LmFkbWluQGV4YW1wbGUudGVzdCIsImlhdCI6MTc5NDI2MDQyMywiZXhwIjoxNzk0MzQ2ODIzLCJqdGkiOiI0NDBhM2U0NS0zMTVlLTQ3YmQtOGQ2Ny01OWQwMGJmOWIyMDkifQ.525UfMbp6ZCWmP3w_8lPjVuTfXquNJDeDVxkWzwnPR0",
+        "expires_at": "2026-11-10T21:40:23.203Z",
+        "metadata": {
+          "team": "ops"
+        },
+        "created_at": "2026-11-09T21:40:23.153Z",
+        "updated_at": "2026-11-09T21:40:23.204Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "resend_missing": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "The following invites do not exist: invite_missing"
+    }
+  },
+  "register": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6IiIsImFjdG9yX3R5cGUiOiJ1c2VyIiwiYXV0aF9pZGVudGl0eV9pZCI6ImF1dGhpZF8wMU03MTQyTUpWNDBSUThTMlowTjUxUkZBRCIsImF1dGhfcHJvdmlkZXIiOiJlbWFpbHBhc3MiLCJtZmFfZW5hYmxlZCI6ZmFsc2UsIm1mYV9jaGFsbGVuZ2VfY29tcGxldGVkX2F0IjpudWxsLCJhcHBfbWV0YWRhdGEiOnt9LCJ1c2VyX21ldGFkYXRhIjp7fSwiaWF0IjoxNzk0MjYwNDIzLCJleHAiOjE3OTQzNDY4MjN9.X6HtAtSOmCy8xfX2YZAJ-CteTdqRYenfoUQwWqXXRpM"
+    }
+  },
+  "accept_authenticated": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "The user is already authenticated and cannot accept an invite."
+    }
+  },
+  "accept_old_token": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "message": "Unauthorized"
+    }
+  },
+  "accept_no_token": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'token' is required"
+    }
+  },
+  "accept_invalid_body": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'foo'"
+    }
+  },
+  "accept": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "user": {
+        "id": "user_01M7142MKGEST14JTW8FSY0ADM",
+        "first_name": "New",
+        "last_name": "Admin",
+        "email": "new.admin@example.test",
+        "avatar_url": null,
+        "metadata": null,
+        "created_at": "2026-11-09T21:40:23.280Z",
+        "updated_at": "2026-11-09T21:40:23.280Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "accept_again": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "message": "Unauthorized"
+    }
+  },
+  "list_after_accept": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invites": [
+        {
+          "email": "second@example.test",
+          "id": "invite_01M7142MGEZR44ZZ1BXMPR4DHG"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "new_login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzE0Mk1LR0VTVDE0SlRXOEZTWTBBRE0iLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzE0Mk1KVjQwUlE4UzJaME41MVJGQUQiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcxNDJNS0dFU1QxNEpUVzhGU1kwQURNIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNjA0MjMsImV4cCI6MTc5NDM0NjgyM30.1PkatCei3wImhMfDjyau824rbbdmsnyryRUj6EE4IbY"
+    }
+  },
+  "new_me": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "user": {
+        "id": "user_01M7142MKGEST14JTW8FSY0ADM",
+        "first_name": "New",
+        "last_name": "Admin",
+        "email": "new.admin@example.test",
+        "avatar_url": null,
+        "metadata": null,
+        "created_at": "2026-11-09T21:40:23.280Z",
+        "updated_at": "2026-11-09T21:40:23.280Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "users": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "users": [
+        {
+          "email": "admin@medusa-test.com",
+          "first_name": null,
+          "last_name": null,
+          "id": "user_01M70Y01SPRY6AWYTJKZK9YEES"
+        },
+        {
+          "email": "new.admin@example.test",
+          "first_name": "New",
+          "last_name": "Admin",
+          "id": "user_01M7142MKGEST14JTW8FSY0ADM"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "providers": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "providers": [
+        "emailpass"
+      ]
+    }
+  },
+  "update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "user": {
+        "id": "user_01M7142MKGEST14JTW8FSY0ADM",
+        "first_name": "Renamed",
+        "last_name": "Admin",
+        "email": "new.admin@example.test",
+        "avatar_url": null,
+        "metadata": {
+          "a": 1
+        },
+        "created_at": "2026-11-09T21:40:23.280Z",
+        "updated_at": "2026-11-09T21:40:23.351Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "update_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'email'"
+    }
+  },
+  "delete_self": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "A user cannot delete itself"
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "user_01M7142MKGEST14JTW8FSY0ADM",
+      "object": "user",
+      "deleted": true
+    }
+  },
+  "get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "User with id: user_01M7142MKGEST14JTW8FSY0ADM was not found"
+    }
+  },
+  "providers_after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "providers": []
+    }
+  },
+  "deleted_login": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Invalid email or password"
+    }
+  },
+  "delete_invite": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "invite_01M7142MGEZR44ZZ1BXMPR4DHG",
+      "object": "invite",
+      "deleted": true
+    }
+  },
+  "get_deleted_invite": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Invite with id: invite_01M7142MGEZR44ZZ1BXMPR4DHG was not found"
+    }
+  },
+  "list_final": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invites": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}

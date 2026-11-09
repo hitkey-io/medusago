@@ -33,6 +33,10 @@ import (
 	inventorylevelbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_/location-levels/batch"
 	inventorylevelloc "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_/location-levels/location_id_"
 	inventorylevelsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/location-levels/batch"
+	admininvites "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/invites"
+	inviteaccept "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/invites/accept"
+	inviteid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/invites/id_"
+	inviteresend "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/invites/id_/resend"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/zone_/configuration"
 	adminmodules "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/modules"
@@ -97,10 +101,12 @@ import (
 	taxregionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-regions/id_"
 	adminusers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
 	userid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/id_"
+	userauthproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/id_/auth-providers"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/me"
 	workflowsexecutions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions"
 	workflowexecutionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_"
+	authregister "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_/register"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/providers"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/session"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/token/refresh"
@@ -208,7 +214,13 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/users", Route: adminusers.Route},
 		{Path: "/admin/users/:id", Route: userid.Route},
 		{Path: "/admin/users/me", Route: me.Route},
+		{Path: "/admin/users/:id/auth-providers", Route: userauthproviders.Route},
+		{Path: "/admin/invites", Route: admininvites.Route},
+		{Path: "/admin/invites/accept", Route: inviteaccept.Route},
+		{Path: "/admin/invites/:id", Route: inviteid.Route},
+		{Path: "/admin/invites/:id/resend", Route: inviteresend.Route},
 		{Path: "/auth/:actor_type/:auth_provider", Route: auth_provider_.Route},
+		{Path: "/auth/:actor_type/:auth_provider/register", Route: authregister.Route},
 		{Path: "/auth/:actor_type/providers", Route: providers.Route},
 		{Path: "/auth/session", Route: session.Route},
 		{Path: "/cloud/auth", Route: cloudauth.Route},

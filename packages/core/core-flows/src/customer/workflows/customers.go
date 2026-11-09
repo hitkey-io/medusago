@@ -3,12 +3,12 @@ package workflows
 
 import (
 	"fmt"
+	authsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/auth/steps"
 
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/customer/steps"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
-	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 )
 
@@ -158,95 +158,6 @@ var getCustomerAuthIdentityStep = composer.CreateStep("get-customer-auth-identit
 		return composer.NewStepResponse(identities[0]), nil
 	}, nil)
 
-type appMetadataInput struct {
-	ID    any
-	Key   string
-	Value any
-}
-
-type appMetadataCompensation struct {
-	id       any
-	key      string
-	value    any
-	oldValue any
-	hadOld   bool
-}
-
-func authService(c composer.Container) commonsteps.ModuleService {
-	return commonsteps.ModuleOf(c, utilsmodulessdk.AUTH)
-}
-
-func setAppMetadata(ctx composer.StepExecutionContext, id any, mutate func(m *dal.Record)) error {
-	svc := authService(ctx.Container)
-	identity, err := svc.Internal("AuthIdentity").Retrieve(ctx.Context, id, utilsmodulessdk.FindConfig{})
-	if err != nil {
-		return err
-	}
-	meta, _ := identity.Get("app_metadata")
-	m, _ := meta.(*dal.Record)
-	if m == nil {
-		m = dal.NewRecord()
-	}
-	mutate(m)
-	u := dal.NewRecord()
-	u.Set("id", id)
-	u.Set("app_metadata", m)
-	_, err = commonsteps.UpdateRecords(ctx.Context, svc, "AuthIdentity", []any{u})
-	return err
-}
-
-// setAuthAppMetadataStep mirrors setAuthAppMetadataStep.
-var setAuthAppMetadataStep = composer.CreateStep("set-auth-app-metadata",
-	func(ctx composer.StepExecutionContext, in appMetadataInput) (composer.StepResponse[any], error) {
-		comp := appMetadataCompensation{id: in.ID, key: in.Key, value: in.Value}
-		err := setAppMetadata(ctx, in.ID, func(m *dal.Record) {
-			comp.oldValue, comp.hadOld = m.Get(in.Key)
-			m.Set(in.Key, in.Value)
-		})
-		if err != nil {
-			return composer.StepResponse[any]{}, err
-		}
-		return composer.NewStepResponse[any](nil, any(comp)), nil
-	},
-	func(ctx composer.StepExecutionContext, data any) error {
-		c, ok := data.(appMetadataCompensation)
-		if !ok {
-			return nil
-		}
-		return setAppMetadata(ctx, c.id, func(m *dal.Record) {
-			if c.value == nil {
-				m.Set(c.key, c.oldValue)
-			} else {
-				m.Delete(c.key)
-			}
-		})
-	})
-
-// deleteAuthIdentityStep mirrors deleteAuthIdentityStep (hard delete; the
-// compensation recreates the identities with their provider identities).
-var deleteAuthIdentityStep = composer.CreateStep("delete-auth-identity",
-	func(ctx composer.StepExecutionContext, id any) (composer.StepResponse[any], error) {
-		svc := authService(ctx.Container)
-		f := dal.NewRecord()
-		f.Set("id", []any{id})
-		prev, err := svc.ListBySuffix(ctx.Context, "AuthIdentities", f, utilsmodulessdk.FindConfig{Relations: []string{"provider_identities"}})
-		if err != nil {
-			return composer.StepResponse[any]{}, err
-		}
-		if _, err := svc.Internal("AuthIdentity").Delete(ctx.Context, []any{id}); err != nil {
-			return composer.StepResponse[any]{}, err
-		}
-		return composer.NewStepResponse[any](nil, any(prev)), nil
-	},
-	func(ctx composer.StepExecutionContext, data any) error {
-		prev, _ := data.([]*dal.Record)
-		if len(prev) == 0 {
-			return nil
-		}
-		_, err := authService(ctx.Container).Internal("AuthIdentity").Create(ctx.Context, prev)
-		return err
-	})
-
 // RemoveCustomerAccountWorkflow mirrors removeCustomerAccountWorkflow.
 var RemoveCustomerAccountWorkflow = composer.CreateWorkflow("remove-customer-account",
 	func(e *composer.Execution, customerID string) (string, error) {
@@ -307,9 +218,9 @@ var RemoveCustomerAccountWorkflow = composer.CreateWorkflow("remove-customer-acc
 		}
 		id, _ := identity.Get("id")
 		if keep {
-			_, err = setAuthAppMetadataStep.Run(e, appMetadataInput{ID: id, Key: "customer_id", Value: nil})
+			_, err = authsteps.SetAuthAppMetadataStep.Run(e, authsteps.SetAuthAppMetadataStepInput{AuthIdentityID: id, ActorType: "customer", Value: nil})
 		} else {
-			_, err = deleteAuthIdentityStep.Run(e, id)
+			_, err = authsteps.DeleteAuthIdentityStep.Run(e, []any{id})
 		}
 		if err != nil {
 			return "", fmt.Errorf("%w", err)
