@@ -1,0 +1,865 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNjMzMTcsImV4cCI6MTc5NDM0OTcxN30.kqxcdltvd8TYaONWp5P8jZ0GpR32kYxZYkP7Nnw3WIM"
+    }
+  },
+  "promos": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotions": [
+        {
+          "id": "promo_01M70Y004QW5J7N985738V4B04",
+          "code": "FREESHIP"
+        },
+        {
+          "id": "promo_01M70Y004QE6QZSQKF5H2R3MM6",
+          "code": "SPRING10"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "spring_rules": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "rules": [
+        {
+          "id": "prorul_01M70Y004Q0MFSRMX1KWQF9JRA",
+          "value": "customer.groups.id",
+          "label": "Customer Group",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ],
+          "attribute": "customer.groups.id",
+          "operator": "in",
+          "values": [
+            {
+              "value": "cusgroup_01M70Y003SH12AE4CE5D82VTQ4",
+              "label": "VIP"
+            }
+          ],
+          "attribute_label": "Customer Group",
+          "operator_label": "In"
+        }
+      ]
+    }
+  },
+  "spring_target_rules": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "rules": [
+        {
+          "id": "prorul_01M70Y004RF7KKHB5A03NCR6KH",
+          "value": "items.product.id",
+          "label": "Product",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ],
+          "description": null,
+          "attribute": "items.product.id",
+          "operator": "in",
+          "created_at": "2026-11-09T19:54:05.336Z",
+          "updated_at": "2026-11-09T19:54:05.336Z",
+          "deleted_at": null,
+          "values": [
+            {
+              "value": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+              "label": "Medusa T-Shirt"
+            }
+          ],
+          "attribute_label": "Product",
+          "operator_label": "In"
+        }
+      ]
+    }
+  },
+  "spring_buy_rules": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "rules": []
+    }
+  },
+  "freeship_rules": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "rules": [
+        {
+          "label": "Currency Code",
+          "field_type": "select",
+          "required": true,
+          "disguised": true,
+          "hydrate": true,
+          "operators": [
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            }
+          ],
+          "attribute": "currency_code",
+          "attribute_label": "Currency Code",
+          "operator": "eq",
+          "operator_label": "Equals",
+          "values": [
+            {
+              "value": "eur",
+              "label": "Euro"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "freeship_target_rules": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "rules": []
+    }
+  },
+  "bad_type": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid param rule_type (bad-type)"
+    }
+  },
+  "missing_promotion": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "rules": [
+        {
+          "label": "Quantity of items promotion will apply to",
+          "field_type": "number",
+          "required": true,
+          "disguised": true,
+          "operators": [
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            }
+          ],
+          "attribute": "apply_to_quantity",
+          "attribute_label": "Quantity of items promotion will apply to",
+          "operator": "eq",
+          "operator_label": "Equals"
+        }
+      ]
+    }
+  },
+  "attrs_rules_fixed": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "attributes": [
+        {
+          "id": "customer_group",
+          "value": "customer.groups.id",
+          "label": "Customer Group",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "region",
+          "value": "region.id",
+          "label": "Region",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "country",
+          "value": "shipping_address.country_code",
+          "label": "Country",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "sales_channel",
+          "value": "sales_channel_id",
+          "label": "Sales Channel",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "currency_code",
+          "value": "currency_code",
+          "label": "Currency Code",
+          "field_type": "select",
+          "required": true,
+          "disguised": true,
+          "hydrate": true,
+          "operators": [
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "attrs_rules": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "attributes": [
+        {
+          "id": "customer_group",
+          "value": "customer.groups.id",
+          "label": "Customer Group",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "region",
+          "value": "region.id",
+          "label": "Region",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "country",
+          "value": "shipping_address.country_code",
+          "label": "Country",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "sales_channel",
+          "value": "sales_channel_id",
+          "label": "Sales Channel",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "currency_code",
+          "value": "currency_code",
+          "label": "Currency Code",
+          "field_type": "select",
+          "required": false,
+          "disguised": true,
+          "hydrate": true,
+          "operators": [
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "attrs_target_buyget_shipping": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "attributes": [
+        {
+          "id": "shipping_option_type",
+          "value": "shipping_methods.shipping_option.shipping_option_type_id",
+          "label": "Shipping Option Type",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "apply_to_quantity",
+          "value": "apply_to_quantity",
+          "label": "Quantity of items promotion will apply to",
+          "field_type": "number",
+          "required": true,
+          "disguised": true,
+          "operators": [
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "attrs_buy_buyget": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "attributes": [
+        {
+          "id": "product",
+          "value": "items.product.id",
+          "label": "Product",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "product_category",
+          "value": "items.product.categories.id",
+          "label": "Product Category",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "product_collection",
+          "value": "items.product.collection_id",
+          "label": "Product Collection",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "product_type",
+          "value": "items.product.type_id",
+          "label": "Product Type",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "product_tag",
+          "value": "items.product.tags.id",
+          "label": "Product Tag",
+          "required": false,
+          "field_type": "multiselect",
+          "operators": [
+            {
+              "id": "in",
+              "value": "in",
+              "label": "In"
+            },
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            },
+            {
+              "id": "ne",
+              "value": "ne",
+              "label": "Not In"
+            }
+          ]
+        },
+        {
+          "id": "buy_rules_min_quantity",
+          "value": "buy_rules_min_quantity",
+          "label": "Minimum quantity of items",
+          "field_type": "number",
+          "required": true,
+          "disguised": true,
+          "operators": [
+            {
+              "id": "eq",
+              "value": "eq",
+              "label": "Equals"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "attrs_bad": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid param rule_type (nope)"
+    }
+  },
+  "values_currency": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "values": [
+        {
+          "label": "United Arab Emirates Dirham",
+          "value": "aed"
+        },
+        {
+          "label": "Afghan Afghani",
+          "value": "afn"
+        },
+        {
+          "label": "Albanian Lek",
+          "value": "all"
+        }
+      ],
+      "count": 128,
+      "offset": 0,
+      "limit": 3
+    }
+  },
+  "values_currency_value": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "values": [
+        {
+          "label": "Euro",
+          "value": "eur"
+        },
+        {
+          "label": "US Dollar",
+          "value": "usd"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "values_groups": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "values": [
+        {
+          "label": "VIP",
+          "value": "cusgroup_01M70Y003SH12AE4CE5D82VTQ4"
+        },
+        {
+          "label": "Wholesale",
+          "value": "cusgroup_01M70Y003WEJZTTJ1JT1J4YW8W"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "values_products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "values": [
+        {
+          "label": "Medusa T-Shirt",
+          "value": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "values_countries": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "values": [
+        {
+          "label": "Germany",
+          "value": "de"
+        },
+        {
+          "label": "France",
+          "value": "fr"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "values_region": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "values": [
+        {
+          "label": "Europe",
+          "value": "reg_01M70XZZXEGXRXTCSXMSQJ4FC9"
+        },
+        {
+          "label": "United States",
+          "value": "reg_01M70XZZXEVGVSAJJZV0JE97QY"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "values_bad_attribute": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid rule attribute - product"
+    }
+  },
+  "values_shipping_types": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "values": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "values_no_config": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid rule attribute - buy_rules_min_quantity"
+    }
+  }
+}

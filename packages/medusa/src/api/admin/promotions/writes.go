@@ -159,6 +159,29 @@ func batchBody() medusahttp.MiddlewareFunction {
 	return httputils.ValidateAndTransformBody(httputils.Schema(utils.CreateBatchBody(AdminCreatePromotionRule, AdminUpdatePromotionRule, nil)))
 }
 
+// AdminGetPromotionRuleParams mirrors AdminGetPromotionRuleParams.
+var AdminGetPromotionRuleParams = zod.Object(
+	zod.F("promotion_type", zod.String().Optional()),
+	zod.F("application_method_type", zod.String().Optional()),
+	zod.F("application_method_target_type", zod.String().Optional()),
+)
+
+// AdminGetPromotionRuleTypeParams mirrors AdminGetPromotionRuleTypeParams.
+var AdminGetPromotionRuleTypeParams = utils.CreateSelectParams().Merge(AdminGetPromotionRuleParams)
+
+// AdminGetPromotionsRuleValueParams mirrors AdminGetPromotionsRuleValueParams.
+var AdminGetPromotionsRuleValueParams = utils.CreateFindParams(utils.FindParamsOptions{Limit: utils.Num(100), Offset: utils.Num(0)}).Merge(zod.Object(
+	zod.F("q", zod.String().Optional()),
+	zod.F("value", utils.StringOrStrings().Optional()),
+	zod.F("application_method_target_type", zod.String().Optional()),
+))
+
+// Rule query configs.
+var (
+	ListRuleConfig      = httputils.QueryConfig{Defaults: DefaultAdminPromotionRuleFields, IsList: true}
+	ListRuleValueConfig = httputils.QueryConfig{Defaults: []string{}, Allowed: []string{}, IsList: true}
+)
+
 // WriteMiddlewares mirrors the write entries of
 // adminPromotionRoutesMiddlewares (authorize is RBAC and not ported).
 var WriteMiddlewares = []medusahttp.MiddlewareRoute{
@@ -170,9 +193,12 @@ var WriteMiddlewares = []medusahttp.MiddlewareRoute{
 		httputils.ValidateAndTransformBody(httputils.Schema(AdminUpdatePromotion)),
 		httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig),
 	)},
+	{Methods: []string{"GET"}, Matcher: "/admin/promotions/:id/:rule_type", Middlewares: mw(httputils.ValidateAndTransformQuery(AdminGetPromotionRuleTypeParams, RetrieveConfig))},
 	{Methods: []string{"POST"}, Matcher: "/admin/promotions/:id/rules/batch", Middlewares: mw(batchBody(), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveRuleConfig))},
 	{Methods: []string{"POST"}, Matcher: "/admin/promotions/:id/target-rules/batch", Middlewares: mw(batchBody(), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveRuleConfig))},
 	{Methods: []string{"POST"}, Matcher: "/admin/promotions/:id/buy-rules/batch", Middlewares: mw(batchBody(), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveRuleConfig))},
+	{Methods: []string{"GET"}, Matcher: "/admin/promotions/rule-value-options/:rule_type/:rule_attribute_id", Middlewares: mw(httputils.ValidateAndTransformQuery(AdminGetPromotionsRuleValueParams, ListRuleValueConfig))},
+	{Methods: []string{"GET"}, Matcher: "/admin/promotions/rule-attribute-options/:rule_type", Middlewares: mw(httputils.ValidateAndTransformQuery(AdminGetPromotionRuleParams, ListRuleConfig))},
 }
 
 func init() {

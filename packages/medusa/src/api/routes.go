@@ -72,8 +72,11 @@ import (
 	adminpromotions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions"
 	promotionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/id_"
 	promotionbuyrulesbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/id_/buy-rules/batch"
+	promotionruletype "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/id_/rule_type_"
 	promotionrulesbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/id_/rules/batch"
 	promotiontargetrulesbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/id_/target-rules/batch"
+	promotionruleattributes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/rule-attribute-options/rule_type_"
+	promotionrulevalues "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/rule-value-options/rule_type_/rule_attribute_id_"
 	refundreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons"
 	refundreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
@@ -141,6 +144,9 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/price-lists/:id/products", Route: pricelistproducts.Route},
 		{Path: "/admin/promotions", Route: adminpromotions.Route},
 		{Path: "/admin/promotions/:id", Route: promotionid.Route},
+		{Path: "/admin/promotions/:id/:rule_type", Route: promotionruletype.Route},
+		{Path: "/admin/promotions/rule-attribute-options/:rule_type", Route: promotionruleattributes.Route},
+		{Path: "/admin/promotions/rule-value-options/:rule_type/:rule_attribute_id", Route: promotionrulevalues.Route},
 		{Path: "/admin/promotions/:id/rules/batch", Route: promotionrulesbatch.Route},
 		{Path: "/admin/promotions/:id/target-rules/batch", Route: promotiontargetrulesbatch.Route},
 		{Path: "/admin/promotions/:id/buy-rules/batch", Route: promotionbuyrulesbatch.Route},
