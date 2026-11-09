@@ -85,6 +85,10 @@ type Schema struct {
 	inner   *Schema
 	options []*Schema
 	checks  []func(p *payload)
+
+	// refiners re-apply the refinements of an object when it is rebuilt by
+	// strict/passthrough/strip (zod 4 keeps an object's checks there).
+	refiners []func(*Schema) *Schema
 }
 
 // Parse mirrors schema.parse: the output or a *ZodError.
@@ -378,13 +382,22 @@ func (s *Schema) objectShape() *dal.Record {
 }
 
 // Strict mirrors object.strict().
-func (s *Schema) Strict() *Schema { return newObject(s.objectShape(), "strict") }
+func (s *Schema) Strict() *Schema { return s.reapply(newObject(s.objectShape(), "strict")) }
+
+func (s *Schema) reapply(o *Schema) *Schema {
+	for _, r := range s.refiners {
+		o = r(o)
+	}
+	return o
+}
 
 // Passthrough mirrors object.passthrough().
-func (s *Schema) Passthrough() *Schema { return newObject(s.objectShape(), "passthrough") }
+func (s *Schema) Passthrough() *Schema {
+	return s.reapply(newObject(s.objectShape(), "passthrough"))
+}
 
 // Strip mirrors object.strip().
-func (s *Schema) Strip() *Schema { return newObject(s.objectShape(), "strip") }
+func (s *Schema) Strip() *Schema { return s.reapply(newObject(s.objectShape(), "strip")) }
 
 // IsObject reports whether the schema is an object (has .strict()).
 func (s *Schema) IsObject() bool { return s.kind == "object" }
@@ -619,6 +632,7 @@ func (s *Schema) Refine(fn func(v any) bool, message string) *Schema {
 			p.issues = append(p.issues, &Issue{Code: "custom", Message: message, Continue: true})
 		}
 	}
+	c.refiners = append(append([]func(*Schema) *Schema{}, s.refiners...), func(o *Schema) *Schema { return o.Refine(fn, message) })
 	return c
 }
 
@@ -639,6 +653,7 @@ func (s *Schema) SuperRefine(fn func(v any, add func(*Issue))) *Schema {
 			p.issues = append(p.issues, i)
 		})
 	}
+	c.refiners = append(append([]func(*Schema) *Schema{}, s.refiners...), func(o *Schema) *Schema { return o.SuperRefine(fn) })
 	return c
 }
 

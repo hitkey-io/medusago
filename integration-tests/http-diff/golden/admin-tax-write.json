@@ -1,0 +1,812 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNTU3MjMsImV4cCI6MTc5NDM0MjEyM30.6NHRKoPvx5Nk4ILpO1nsC98hpJTFb6XM-g59-IuMxH8"
+    }
+  },
+  "providers": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_providers": [
+        {
+          "id": "tp_system",
+          "is_enabled": true
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "providers_fields": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_providers": [
+        {
+          "id": "tp_system"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "region_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_region": {
+        "id": "txreg_01M70ZK6QFDA46BMPFZN17E87N",
+        "country_code": "gb",
+        "province_code": null,
+        "parent_id": null,
+        "provider_id": "tp_system",
+        "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "created_at": "2026-11-09T20:22:03.247Z",
+        "updated_at": "2026-11-09T20:22:03.247Z",
+        "deleted_at": null,
+        "metadata": {
+          "a": 1
+        },
+        "children": [],
+        "parent": null,
+        "tax_rates": [
+          {
+            "id": "txr_01M70ZK6R41QX2SAN6AGGZ7HTS",
+            "rate": 20,
+            "code": "VAT",
+            "name": "Standard VAT",
+            "is_default": true,
+            "is_combinable": false,
+            "tax_region_id": "txreg_01M70ZK6QFDA46BMPFZN17E87N",
+            "metadata": {
+              "k": "v"
+            },
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "created_at": "2026-11-09T20:22:03.268Z",
+            "updated_at": "2026-11-09T20:22:03.268Z",
+            "deleted_at": null,
+            "rules": []
+          }
+        ]
+      }
+    }
+  },
+  "region_no_provider": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Provider is required when creating a non-province tax region."
+    }
+  },
+  "region_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Tax region with country_code: gb, already exists."
+    }
+  },
+  "province_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_region": {
+        "id": "txreg_01M70ZK6S85AZT08DHHKRV0HBC",
+        "country_code": "gb",
+        "province_code": "gb-sct",
+        "parent_id": "txreg_01M70ZK6QFDA46BMPFZN17E87N",
+        "tax_rates": [
+          {
+            "id": "txr_01M70ZK6SBXN30WD4MKKTZS39M",
+            "rate": null,
+            "code": "SCT",
+            "name": "Scottish",
+            "is_default": true,
+            "is_combinable": true,
+            "tax_region_id": "txreg_01M70ZK6S85AZT08DHHKRV0HBC",
+            "metadata": null,
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "created_at": "2026-11-09T20:22:03.307Z",
+            "updated_at": "2026-11-09T20:22:03.307Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "province_missing_parent": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Province region must belong to a parent region. You are trying to create a province region with (country: gb, province: gb-wls) but parent does not exist"
+    }
+  },
+  "province_wrong_country": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Province region must belong to a parent region with the same country code. You are trying to create a province region with (country: fr, province: fr-idf) but parent expects (country: gb)"
+    }
+  },
+  "region_get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_region": {
+        "id": "txreg_01M70ZK6QFDA46BMPFZN17E87N",
+        "country_code": "gb",
+        "province_code": null,
+        "parent_id": null,
+        "provider_id": "tp_system",
+        "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "created_at": "2026-11-09T20:22:03.247Z",
+        "updated_at": "2026-11-09T20:22:03.247Z",
+        "deleted_at": null,
+        "metadata": {
+          "a": 1
+        },
+        "children": [
+          {
+            "id": "txreg_01M70ZK6S85AZT08DHHKRV0HBC",
+            "country_code": "gb",
+            "province_code": "gb-sct",
+            "metadata": null,
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "provider_id": null,
+            "provider": null,
+            "parent_id": "txreg_01M70ZK6QFDA46BMPFZN17E87N",
+            "created_at": "2026-11-09T20:22:03.304Z",
+            "updated_at": "2026-11-09T20:22:03.304Z",
+            "deleted_at": null,
+            "tax_rates": [
+              {
+                "id": "txr_01M70ZK6SBXN30WD4MKKTZS39M",
+                "rate": null,
+                "code": "SCT",
+                "name": "Scottish",
+                "is_default": true,
+                "is_combinable": true,
+                "tax_region_id": "txreg_01M70ZK6S85AZT08DHHKRV0HBC",
+                "metadata": null,
+                "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+                "created_at": "2026-11-09T20:22:03.307Z",
+                "updated_at": "2026-11-09T20:22:03.307Z",
+                "deleted_at": null,
+                "rules": []
+              }
+            ]
+          }
+        ],
+        "parent": null,
+        "tax_rates": [
+          {
+            "id": "txr_01M70ZK6R41QX2SAN6AGGZ7HTS",
+            "rate": 20,
+            "code": "VAT",
+            "name": "Standard VAT",
+            "is_default": true,
+            "is_combinable": false,
+            "tax_region_id": "txreg_01M70ZK6QFDA46BMPFZN17E87N",
+            "metadata": {
+              "k": "v"
+            },
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "created_at": "2026-11-09T20:22:03.268Z",
+            "updated_at": "2026-11-09T20:22:03.268Z",
+            "deleted_at": null,
+            "rules": []
+          }
+        ]
+      }
+    }
+  },
+  "region_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_region": {
+        "id": "txreg_01M70ZK6S85AZT08DHHKRV0HBC",
+        "province_code": "gb-sco",
+        "metadata": {
+          "x": 1
+        }
+      }
+    }
+  },
+  "region_update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "TaxRegion with id \"txreg_missing\" not found"
+    }
+  },
+  "region_update_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'country_code'"
+    }
+  },
+  "rate_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_rate": {
+        "id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+        "name": "Reduced",
+        "code": "RED",
+        "rate": 5,
+        "tax_region_id": "txreg_01M70ZK6QFDA46BMPFZN17E87N",
+        "is_default": false,
+        "is_combinable": false,
+        "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "created_at": "2026-11-09T20:22:03.352Z",
+        "updated_at": "2026-11-09T20:22:03.352Z",
+        "deleted_at": null,
+        "metadata": null,
+        "tax_region": {
+          "id": "txreg_01M70ZK6QFDA46BMPFZN17E87N",
+          "country_code": "gb",
+          "province_code": null,
+          "metadata": {
+            "a": 1
+          },
+          "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+          "provider_id": "tp_system",
+          "provider": {
+            "id": "tp_system"
+          },
+          "parent_id": null,
+          "parent": null,
+          "created_at": "2026-11-09T20:22:03.247Z",
+          "updated_at": "2026-11-09T20:22:03.247Z",
+          "deleted_at": null
+        },
+        "rules": [
+          {
+            "id": "txrule_01M70ZK6TR73DP5384H37SW3TM",
+            "metadata": null,
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "tax_rate_id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+            "reference": "product",
+            "reference_id": "prod_a",
+            "created_at": "2026-11-09T20:22:03.352Z",
+            "updated_at": "2026-11-09T20:22:03.352Z",
+            "deleted_at": null
+          },
+          {
+            "id": "txrule_01M70ZK6TRGBEB4SQ3HDPZJ2VD",
+            "metadata": null,
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "tax_rate_id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+            "reference": "product_type",
+            "reference_id": "ptyp_food",
+            "created_at": "2026-11-09T20:22:03.352Z",
+            "updated_at": "2026-11-09T20:22:03.352Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "rate_create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Expected type: 'number' for field 'rate', got: '5'; Field 'code' is required; Field 'name' is required"
+    }
+  },
+  "rate_create_dup_default": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Tax rate with tax_region_id: txreg_01M70ZK6QFDA46BMPFZN17E87N, already exists."
+    }
+  },
+  "rate_get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_rate": {
+        "id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+        "name": "Reduced",
+        "code": "RED",
+        "rate": 5,
+        "tax_region_id": "txreg_01M70ZK6QFDA46BMPFZN17E87N",
+        "is_default": false,
+        "is_combinable": false,
+        "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "created_at": "2026-11-09T20:22:03.352Z",
+        "updated_at": "2026-11-09T20:22:03.352Z",
+        "deleted_at": null,
+        "metadata": null,
+        "tax_region": {
+          "id": "txreg_01M70ZK6QFDA46BMPFZN17E87N",
+          "country_code": "gb",
+          "province_code": null,
+          "metadata": {
+            "a": 1
+          },
+          "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+          "provider_id": "tp_system",
+          "provider": {
+            "id": "tp_system"
+          },
+          "parent_id": null,
+          "parent": null,
+          "created_at": "2026-11-09T20:22:03.247Z",
+          "updated_at": "2026-11-09T20:22:03.247Z",
+          "deleted_at": null
+        },
+        "rules": [
+          {
+            "id": "txrule_01M70ZK6TR73DP5384H37SW3TM",
+            "metadata": null,
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "tax_rate_id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+            "reference": "product",
+            "reference_id": "prod_a",
+            "created_at": "2026-11-09T20:22:03.352Z",
+            "updated_at": "2026-11-09T20:22:03.352Z",
+            "deleted_at": null
+          },
+          {
+            "id": "txrule_01M70ZK6TRGBEB4SQ3HDPZJ2VD",
+            "metadata": null,
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "tax_rate_id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+            "reference": "product_type",
+            "reference_id": "ptyp_food",
+            "created_at": "2026-11-09T20:22:03.352Z",
+            "updated_at": "2026-11-09T20:22:03.352Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "rate_get_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "rates_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_rates": [
+        {
+          "code": "RED",
+          "rate": 5,
+          "is_default": false,
+          "id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+          "rules": [
+            {
+              "id": "txrule_01M70ZK6TRGBEB4SQ3HDPZJ2VD",
+              "metadata": null,
+              "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+              "tax_rate_id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+              "reference": "product_type",
+              "reference_id": "ptyp_food",
+              "created_at": "2026-11-09T20:22:03.352Z",
+              "updated_at": "2026-11-09T20:22:03.352Z",
+              "deleted_at": null
+            },
+            {
+              "id": "txrule_01M70ZK6TR73DP5384H37SW3TM",
+              "metadata": null,
+              "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+              "tax_rate_id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+              "reference": "product",
+              "reference_id": "prod_a",
+              "created_at": "2026-11-09T20:22:03.352Z",
+              "updated_at": "2026-11-09T20:22:03.352Z",
+              "deleted_at": null
+            }
+          ]
+        },
+        {
+          "code": "VAT",
+          "rate": 20,
+          "is_default": true,
+          "id": "txr_01M70ZK6R41QX2SAN6AGGZ7HTS",
+          "rules": []
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "rates_list_default": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_rates": [
+        {
+          "code": "VAT",
+          "id": "txr_01M70ZK6R41QX2SAN6AGGZ7HTS"
+        },
+        {
+          "code": "SCT",
+          "id": "txr_01M70ZK6SBXN30WD4MKKTZS39M"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "rate_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_rate": {
+        "id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+        "rate": 7.5,
+        "name": "Reduced 2",
+        "rules": [
+          {
+            "id": "txrule_01M70ZK6TR73DP5384H37SW3TM",
+            "metadata": null,
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "tax_rate_id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+            "reference": "product",
+            "reference_id": "prod_a",
+            "created_at": "2026-11-09T20:22:03.352Z",
+            "updated_at": "2026-11-09T20:22:03.352Z",
+            "deleted_at": null
+          },
+          {
+            "id": "txrule_01M70ZK6TRGBEB4SQ3HDPZJ2VD",
+            "metadata": null,
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "tax_rate_id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+            "reference": "product_type",
+            "reference_id": "ptyp_food",
+            "created_at": "2026-11-09T20:22:03.352Z",
+            "updated_at": "2026-11-09T20:22:03.352Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "rate_update_rules": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_rate": {
+        "id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+        "rate": 7.5,
+        "rules": [
+          {
+            "id": "txrule_01M70ZK6WMEKPC9MXVFT89AH69",
+            "metadata": null,
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "tax_rate_id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+            "reference": "product",
+            "reference_id": "prod_b",
+            "created_at": "2026-11-09T20:22:03.412Z",
+            "updated_at": "2026-11-09T20:22:03.412Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "rate_update_rules_empty": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_rate": {
+        "id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+        "rules": []
+      }
+    }
+  },
+  "rate_update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Tax rate with id \"txr_missing\" not found"
+    }
+  },
+  "rule_add": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_rate": {
+        "id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+        "rules": [
+          {
+            "id": "txrule_01M70ZK6X941KRWX9H7KGXXNDG",
+            "metadata": null,
+            "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+            "tax_rate_id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+            "reference": "shipping_option",
+            "reference_id": "so_1",
+            "created_at": "2026-11-09T20:22:03.433Z",
+            "updated_at": "2026-11-09T20:22:03.433Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "rule_add_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Tax rate rule with tax_rate_id: txr_01M70ZK6TRHWC46NXBGRPAASNV, reference_id: so_1, already exists."
+    }
+  },
+  "rule_add_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'reference_id' is required"
+    }
+  },
+  "rule_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "txrule_01M70ZK6X941KRWX9H7KGXXNDG",
+      "object": "tax_rate_rule",
+      "deleted": true,
+      "parent": {
+        "id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+        "rules": []
+      }
+    }
+  },
+  "rule_delete_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "txrule_missing",
+      "object": "tax_rate_rule",
+      "deleted": true,
+      "parent": {
+        "id": "txr_01M70ZK6TRHWC46NXBGRPAASNV"
+      }
+    }
+  },
+  "rate_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "txr_01M70ZK6TRHWC46NXBGRPAASNV",
+      "object": "tax_rate",
+      "deleted": true
+    }
+  },
+  "rate_get_deleted": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "region_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "txreg_01M70ZK6QFDA46BMPFZN17E87N",
+      "object": "tax_region",
+      "deleted": true
+    }
+  },
+  "region_get_deleted": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "region_recreate": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_region": {
+        "country_code": "gb",
+        "province_code": null,
+        "id": "txreg_01M70ZK6YYTWDV43WFFTPC9Q3E",
+        "tax_rates": []
+      }
+    }
+  },
+  "regions_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "tax_regions": [
+        {
+          "country_code": "de",
+          "province_code": null,
+          "provider_id": "tp_system",
+          "id": "txreg_01M70XZZXY15K5GWC7KF2EE9T4"
+        },
+        {
+          "country_code": "fr",
+          "province_code": null,
+          "provider_id": "tp_system",
+          "id": "txreg_01M70XZZXYSQ0Z3Z7VE99TTKJQ"
+        },
+        {
+          "country_code": "gb",
+          "province_code": null,
+          "provider_id": "tp_system",
+          "id": "txreg_01M70ZK6YYTWDV43WFFTPC9Q3E"
+        },
+        {
+          "country_code": "it",
+          "province_code": null,
+          "provider_id": "tp_system",
+          "id": "txreg_01M70XZZXY2AKX6K8J671RYNCQ"
+        },
+        {
+          "country_code": "us",
+          "province_code": null,
+          "provider_id": "tp_system",
+          "id": "txreg_01M70XZZXY4QD82JM3WBK4KMZF"
+        }
+      ],
+      "count": 5,
+      "offset": 0,
+      "limit": 20
+    }
+  }
+}
