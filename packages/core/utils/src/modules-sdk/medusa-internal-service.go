@@ -354,3 +354,17 @@ func (s *InternalService) Restore(ctx context.Context, ids any) (*dal.CascadeRes
 	})
 	return res, err
 }
+
+// Upsert mirrors upsert.
+func (s *InternalService) Upsert(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	if len(data) == 0 {
+		return []*dal.Record{}, nil
+	}
+	var out []*dal.Record
+	err := s.inTransaction(ctx, func(repo *dal.Repository) error {
+		var err error
+		out, err = repo.Upsert(ctx, data)
+		return err
+	})
+	return out, err
+}

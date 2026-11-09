@@ -190,3 +190,14 @@ func abs(n int) int {
 	}
 	return n
 }
+
+// JSNumberToPrecision mirrors Number.prototype.toPrecision for a float64
+// (exact, correctly rounded digits; exponential when the exponent is < -6 or
+// >= sd), without trimming zeros.
+func JSNumberToPrecision(f float64, sd int) string {
+	var d apd.Decimal
+	if _, _, err := d.SetString(strconv.FormatFloat(f, 'e', sd-1, 64)); err != nil {
+		return strconv.FormatFloat(f, 'g', -1, 64)
+	}
+	return toPrecision(&d, sd)
+}

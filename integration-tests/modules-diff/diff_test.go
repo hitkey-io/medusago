@@ -72,6 +72,16 @@ func setupDatabase(t *testing.T, name string) *pgxpool.Pool {
 	}
 	t.Cleanup(pool.Close)
 
+	// Same as generate.sh: keep the schema and the migration tracking
+	// tables, replace the data with seed.sql.
+	if _, err := pool.Exec(ctx, `
+    DO $$ DECLARE t text; BEGIN
+      FOR t IN SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+        AND tablename NOT IN ('mikro_orm_migrations', 'script_migrations', 'link_module_migrations')
+      LOOP EXECUTE format('TRUNCATE %I CASCADE', t); END LOOP;
+    END $$;`); err != nil {
+		t.Fatal(err)
+	}
 	seed, err := os.ReadFile("seed.sql")
 	if err != nil {
 		t.Fatal(err)

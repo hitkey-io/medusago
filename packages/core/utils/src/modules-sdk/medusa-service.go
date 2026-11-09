@@ -63,6 +63,12 @@ func Pluralize(word string) string {
 	}
 }
 
+// Internal returns the internal service of a model, like the
+// <model>Service_ properties of upstream module services.
+func (s *MedusaService) Internal(className string) *InternalService {
+	return s.byName[className]
+}
+
 // mapCascade mirrors mapObjectTo over the soft deleted / restored entities.
 func (s *MedusaService) mapCascade(res *dal.CascadeResult) *dal.Record {
 	out := dal.NewRecord()
@@ -85,7 +91,7 @@ func (s *MedusaService) mapCascade(res *dal.CascadeResult) *dal.Record {
 	return out
 }
 
-var methodPrefixes = []string{"listAndCount", "list", "retrieve", "create", "update", "delete", "softDelete", "restore"}
+var methodPrefixes = []string{"listAndCount", "list", "retrieve", "create", "update", "upsert", "delete", "softDelete", "restore"}
 
 // Call invokes a generated method by name with JSON-like arguments
 // (decoded with dal.DecodeOrderedJSON).
@@ -135,7 +141,7 @@ func (s *MedusaService) Call(ctx context.Context, method string, args []any) (an
 			}
 			filters, _ := arg(0).(*dal.Record)
 			return svc.List(ctx, filters, config)
-		case "create":
+		case "create", "upsert":
 			input := arg(0)
 			var items []*dal.Record
 			list, isList := input.([]any)
@@ -147,7 +153,11 @@ func (s *MedusaService) Call(ctx context.Context, method string, args []any) (an
 					items = append(items, rec)
 				}
 			}
-			created, err := svc.Create(ctx, items)
+			create := svc.Create
+			if prefix == "upsert" {
+				create = svc.Upsert
+			}
+			created, err := create(ctx, items)
 			if err != nil {
 				return nil, err
 			}

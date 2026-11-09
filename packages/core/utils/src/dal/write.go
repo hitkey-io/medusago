@@ -105,6 +105,26 @@ func (r *Repository) exec(ctx context.Context, sql string, args ...any) error {
 	return nil
 }
 
+// columnValue converts a value for a column: arrays go to Postgres array
+// columns as arrays, other structured values as JSON.
+func columnValue(e *dml.Entity, column string, v any) (any, error) {
+	if list, ok := v.([]any); ok {
+		for _, p := range e.Meta.Properties {
+			if len(p.FieldNames) == 0 || p.FieldNames[0] != column {
+				continue
+			}
+			if strings.HasSuffix(p.ColumnType, "[]") || p.Type == "ArrayType" || p.Type == "string[]" {
+				out := make([]string, len(list))
+				for i, x := range list {
+					out[i] = fmt.Sprint(x)
+				}
+				return out, nil
+			}
+		}
+	}
+	return sqlValue(v)
+}
+
 // sqlValue converts a record value into a query argument.
 func sqlValue(v any) (any, error) {
 	switch t := v.(type) {
@@ -288,7 +308,7 @@ func (r *Repository) insertRow(ctx context.Context, e *dml.Entity, data Row) err
 		if !ok || slices.Contains(cols, quote(column)) {
 			continue
 		}
-		arg, err := sqlValue(v)
+		arg, err := columnValue(e, column, v)
 		if err != nil {
 			return err
 		}
@@ -445,48 +465,120 @@ func (r *Repository) UpdateWith(ctx context.Context, opts FindOptions, dataFor f
 		if data == nil {
 			continue
 		}
-		changed := Row{}
-		if err := r.assignFields(r.Entity, changed, data, false); err != nil {
+		if err := r.applyUpdate(ctx, inst, data); err != nil {
 			return nil, err
-		}
-		var sets []string
-		var args []any
-		for column, v := range changed {
-			if sameValue(inst.data[column], v) {
-				delete(changed, column)
-				continue
-			}
-		}
-		if len(changed) > 0 {
-			if _, ok := r.Entity.MetaProperty("updated_at"); ok {
-				changed["updated_at"] = Now()
-			}
-			columns := make([]string, 0, len(changed))
-			for c := range changed {
-				columns = append(columns, c)
-			}
-			slices.Sort(columns)
-			for _, c := range columns {
-				arg, err := sqlValue(changed[c])
-				if err != nil {
-					return nil, err
-				}
-				args = append(args, arg)
-				sets = append(sets, fmt.Sprintf("%s = $%d", quote(c), len(args)))
-				inst.data[c] = changed[c]
-			}
-			var where []string
-			for _, pk := range r.Entity.Meta.PrimaryKey {
-				args = append(args, inst.data[pk])
-				where = append(where, fmt.Sprintf("%s = $%d", quote(fieldColumn(r.Entity, pk)), len(args)))
-			}
-			sql := fmt.Sprintf("update %s set %s where %s", quote(r.Entity.Meta.Collection), strings.Join(sets, ", "), strings.Join(where, " and "))
-			if err := r.exec(ctx, sql, args...); err != nil {
-				return nil, err
-			}
 		}
 	}
 	return r.serialize(roots, idm, opts)
+}
+
+// applyUpdate assigns data to a loaded entity and writes the changed
+// columns (MikroORM only flushes dirty entities, refreshing updated_at).
+func (r *Repository) applyUpdate(ctx context.Context, inst *instance, data *Record) error {
+	e := inst.entity
+	changed := Row{}
+	if err := r.assignFields(e, changed, data, false); err != nil {
+		return err
+	}
+	for column, v := range changed {
+		if sameValue(inst.data[column], v) {
+			delete(changed, column)
+		}
+	}
+	if len(changed) == 0 {
+		return nil
+	}
+	if _, ok := e.MetaProperty("updated_at"); ok {
+		changed["updated_at"] = Now()
+	}
+	columns := make([]string, 0, len(changed))
+	for c := range changed {
+		columns = append(columns, c)
+	}
+	slices.Sort(columns)
+	var sets []string
+	var args []any
+	for _, c := range columns {
+		arg, err := columnValue(e, c, changed[c])
+		if err != nil {
+			return err
+		}
+		args = append(args, arg)
+		sets = append(sets, fmt.Sprintf("%s = $%d", quote(c), len(args)))
+		inst.data[c] = changed[c]
+	}
+	var where []string
+	for _, pk := range e.Meta.PrimaryKey {
+		args = append(args, inst.data[pk])
+		where = append(where, fmt.Sprintf("%s = $%d", quote(fieldColumn(e, pk)), len(args)))
+	}
+	sql := fmt.Sprintf("update %s set %s where %s", quote(e.Meta.Collection), strings.Join(sets, ", "), strings.Join(where, " and "))
+	return r.exec(ctx, sql, args...)
+}
+
+// Upsert mirrors repository.upsert: existing entities (by primary key, not
+// soft deleted) are updated, the others created; created entities are
+// returned first.
+func (r *Repository) Upsert(ctx context.Context, data []*Record) ([]*Record, error) {
+	pks := r.Entity.Meta.PrimaryKey
+	if len(pks) != 1 {
+		return nil, fmt.Errorf("upsert of %s: composite primary keys are not supported yet", r.Entity.Meta.ClassName)
+	}
+	pk := pks[0]
+	var values []any
+	for _, d := range data {
+		if v, ok := d.Get(pk); ok && v != nil && v != "" {
+			values = append(values, v)
+		}
+	}
+	existing := map[string]*instance{}
+	idm := identityMap{}
+	if len(values) > 0 {
+		where := NewRecord()
+		where.Set(pk, values)
+		roots, found, err := r.find(ctx, FindOptions{Where: where})
+		if err != nil {
+			return nil, err
+		}
+		idm = found
+		for _, inst := range roots {
+			existing[fmt.Sprint(inst.data[fieldColumn(r.Entity, pk)])] = inst
+		}
+	}
+
+	var created, updated []*instance
+	for _, d := range data {
+		v, _ := d.Get(pk)
+		if inst, ok := existing[fmt.Sprint(v)]; ok && v != nil {
+			if err := r.applyUpdate(ctx, inst, d); err != nil {
+				return nil, err
+			}
+			updated = append(updated, inst)
+			continue
+		}
+		inst, err := r.create(ctx, r.Entity, d, idm)
+		if err != nil {
+			return nil, err
+		}
+		created = append(created, inst)
+	}
+
+	out := make([]*Record, 0, len(created)+len(updated))
+	for _, inst := range created {
+		rec, err := r.serializeCreated(inst, idm)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, rec)
+	}
+	if len(updated) > 0 {
+		recs, err := r.serialize(updated, idm, FindOptions{})
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, recs...)
+	}
+	return out, nil
 }
 
 func sameValue(a, b any) bool {

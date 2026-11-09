@@ -36,3 +36,20 @@ func TestBigNumberMatchesUpstream(t *testing.T) {
 		}
 	}
 }
+
+func TestJSNumberToPrecision(t *testing.T) {
+	// Values produced by Number(x).toPrecision(20) in Node.js.
+	cases := map[float64]string{
+		3:     "3.0000000000000000000",
+		0.1:   "0.10000000000000000555",
+		12.5:  "12.500000000000000000",
+		0:     "0.0000000000000000000",
+		1e21:  "1.0000000000000000000e+21",
+		-2.25: "-2.2500000000000000000",
+	}
+	for in, want := range cases {
+		if got := JSNumberToPrecision(in, 20); got != want {
+			t.Errorf("JSNumberToPrecision(%v) = %q, want %q", in, got, want)
+		}
+	}
+}

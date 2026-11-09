@@ -3,6 +3,7 @@ package currency
 
 import (
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
+	"github.com/hitkey-io/medusago/packages/modules/currency/src/loaders"
 	"github.com/hitkey-io/medusago/packages/modules/currency/src/migrations"
 	"github.com/hitkey-io/medusago/packages/modules/currency/src/models"
 )
@@ -12,4 +13,5 @@ var Module = modulessdk.ModuleExports{
 	Migrations:   migrations.Migrations,
 	Models:       models.All,
 	JoinerConfig: JoinerConfig,
+	Loaders:      []modulessdk.Loader{loaders.InitialData},
 }
