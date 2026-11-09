@@ -212,6 +212,8 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 		BaseRestrictedFields: cfg.ProjectConfig.HTTP.RestrictedFields.Store,
 		StoreRelationsLimit:  cfg.ProjectConfig.HTTP.StoreRelationsLimit,
 		CoreErrorHandler:     middlewares.ErrorHandler(),
+		StorePublishableKey:  middlewares.EnsurePublishableApiKey,
+		StoreLocale:          middlewares.ApplyLocale,
 	})
 	app.Handle("GET", "/health", func(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, _ medusahttp.NextFunction) error {
 		res.Status(200).Send("OK")

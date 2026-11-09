@@ -4,6 +4,7 @@ package services
 import (
 	"context"
 	"slices"
+	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
@@ -34,10 +35,11 @@ func (s *ProductModuleService) ListBySuffix(ctx context.Context, suffix string, 
 		rows, _, err := s.listProductVariants(ctx, filters, config, false)
 		return rows, err
 	case "ProductCategories":
-		rows, _, err := s.listCategories(ctx, withoutContext(filters), config, false)
+		filters, config = applyPublishedProductsContext(filters, config)
+		rows, _, err := s.listCategories(ctx, filters, config, false)
 		return rows, err
 	case "ProductTags", "ProductTypes", "ProductCollections":
-		filters = withoutContext(filters)
+		filters, config = applyPublishedProductsContext(filters, config)
 	}
 	return s.MedusaService.ListBySuffix(ctx, suffix, filters, config)
 }
@@ -50,15 +52,60 @@ func (s *ProductModuleService) ListAndCountBySuffix(ctx context.Context, suffix 
 	case "ProductVariants":
 		return s.listProductVariants(ctx, filters, config, true)
 	case "ProductCategories":
-		return s.listCategories(ctx, withoutContext(filters), config, true)
+		filters, config = applyPublishedProductsContext(filters, config)
+		return s.listCategories(ctx, filters, config, true)
 	case "ProductTags", "ProductTypes", "ProductCollections":
-		filters = withoutContext(filters)
+		filters, config = applyPublishedProductsContext(filters, config)
 	}
 	return s.MedusaService.ListAndCountBySuffix(ctx, suffix, filters, config)
 }
 
-// withoutContext mirrors extractPublishedProductsContext (the published
-// products populateWhere is not supported yet).
+// applyPublishedProductsContext mirrors applyPublishedProductsContext: a
+// { products: { published: true } } context restricts the populated
+// products relations to published products.
+func applyPublishedProductsContext(filters *dal.Record, config utilsmodulessdk.FindConfig) (*dal.Record, utilsmodulessdk.FindConfig) {
+	if filters == nil || !filters.Has("context") {
+		return filters, config
+	}
+	ctxValue, _ := filters.Get("context")
+	filters = withoutContext(filters)
+	published := false
+	if c, ok := ctxValue.(*dal.Record); ok {
+		if p, ok := c.Get("products"); ok {
+			if pr, ok := p.(*dal.Record); ok {
+				v, _ := pr.Get("published")
+				published = v != nil && v != false && v != "" && v != float64(0)
+			}
+		}
+	}
+	if !published {
+		return filters, config
+	}
+	where := map[string]*dal.Record{}
+	for k, v := range config.PopulateWhere {
+		where[k] = v
+	}
+	for _, rel := range config.Relations {
+		segments := strings.Split(rel, ".")
+		at := slices.Index(segments, "products")
+		if at < 0 {
+			continue
+		}
+		path := strings.Join(segments[:at+1], ".")
+		w := where[path]
+		if w == nil {
+			w = dal.NewRecord()
+		}
+		w.Set("status", "published")
+		where[path] = w
+	}
+	if len(where) > 0 {
+		config.PopulateWhere = where
+	}
+	return filters, config
+}
+
+// withoutContext mirrors extractPublishedProductsContext's filters.
 func withoutContext(filters *dal.Record) *dal.Record {
 	if filters == nil || !filters.Has("context") {
 		return filters

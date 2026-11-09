@@ -137,6 +137,10 @@ func (f *ModuleDataFetcher) Fetch(ctx context.Context, expand *joiner.ExpandProp
 			}
 		case "withDeleted":
 			config.WithDeleted, _ = a.Value.(bool)
+		case "context":
+			if a.Value != nil {
+				filters.Set("context", a.Value)
+			}
 		}
 	}
 	// Filters of nested relations (args other than the root prefix).

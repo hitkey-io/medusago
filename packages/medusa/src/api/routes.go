@@ -132,6 +132,22 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/session"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/token/refresh"
 	cloudauth "github.com/hitkey-io/medusago/packages/medusa/src/api/cloud/auth"
+	storecollections "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections"
+	storecollectionid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections/id_"
+	storecurrencies "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies"
+	storecurrencycode "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies/code_"
+	storecategories "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-categories"
+	storecategoryid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-categories/id_"
+	storeoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-options"
+	storeoptionid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-options/id_"
+	storetags "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-tags"
+	storetagid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-tags/id_"
+	storetypes "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-types"
+	storetypeid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-types/id_"
+	storeregions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/regions"
+	storeregionid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/regions/id_"
+	storereasons "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons"
+	storereasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons/id_"
 )
 
 // Routes lists the route files by URL path (the file tree of src/api).
@@ -254,6 +270,22 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/users/:id/auth-providers", Route: userauthproviders.Route},
 		{Path: "/admin/invites", Route: admininvites.Route},
 		{Path: "/admin/uploads", Route: adminuploads.Route},
+		{Path: "/store/regions", Route: storeregions.Route},
+		{Path: "/store/regions/:id", Route: storeregionid.Route},
+		{Path: "/store/currencies", Route: storecurrencies.Route},
+		{Path: "/store/currencies/:code", Route: storecurrencycode.Route},
+		{Path: "/store/collections", Route: storecollections.Route},
+		{Path: "/store/collections/:id", Route: storecollectionid.Route},
+		{Path: "/store/product-categories", Route: storecategories.Route},
+		{Path: "/store/product-categories/:id", Route: storecategoryid.Route},
+		{Path: "/store/product-tags", Route: storetags.Route},
+		{Path: "/store/product-tags/:id", Route: storetagid.Route},
+		{Path: "/store/product-types", Route: storetypes.Route},
+		{Path: "/store/product-types/:id", Route: storetypeid.Route},
+		{Path: "/store/return-reasons", Route: storereasons.Route},
+		{Path: "/store/return-reasons/:id", Route: storereasonid.Route},
+		{Path: "/store/product-options", Route: storeoptions.Route},
+		{Path: "/store/product-options/:id", Route: storeoptionid.Route},
 		{Path: "/admin/notifications/:id", Route: notificationid.Route},
 		{Path: "/admin/plugins", Route: adminplugins.Route},
 		{Path: "/admin/uploads/:id", Route: uploadid.Route},

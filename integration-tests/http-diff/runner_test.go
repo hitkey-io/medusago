@@ -186,7 +186,7 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 			req.Header.Set("Origin", step.Origin)
 		}
 		for k, v := range step.Headers {
-			req.Header.Set(k, v)
+			req.Header.Set(k, resolveRefs(v, bodies, true))
 		}
 		if step.Bearer != "" {
 			req.Header.Set("Authorization", "Bearer "+tokens[step.Bearer])

@@ -106,6 +106,7 @@ func sortCategoriesByRank(cats []*dal.Record) []*dal.Record {
 // buildCategoriesTree mirrors buildProductCategoriesWithTree.
 func (s *ProductModuleService) buildCategoriesTree(ctx context.Context, descendants, ancestors bool, cats []*dal.Record, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, error) {
 	shouldPopulateParent := false
+	filteredByParent := filters != nil && filters.Has("parent_category_id")
 	var relations []string
 	for _, r := range config.Relations {
 		if r == "parent_category" {
@@ -210,8 +211,10 @@ func (s *ProductModuleService) buildCategoriesTree(ctx context.Context, descenda
 		if level == 0 {
 			if !ancestors && !shouldPopulateParent {
 				c.Delete("parent_category")
-			} else if p, ok := c.Get("parent_category"); ok && p == nil {
-				// a null parent is not serialized
+			} else if p, ok := c.Get("parent_category"); ok && p == nil && (!shouldPopulateParent || filteredByParent) {
+				// a null populated parent is serialized, except when the
+				// roots were filtered by parent_category_id (observed
+				// upstream behaviour)
 				c.Delete("parent_category")
 			}
 			return c

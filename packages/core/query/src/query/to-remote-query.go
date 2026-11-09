@@ -22,6 +22,74 @@ type GraphInput struct {
 	Filters     *dal.Record
 	Pagination  *dal.Record
 	WithDeleted bool
+	// Context mirrors the query context: QueryContext records (see
+	// QueryContext) at the entity level or under relation keys.
+	Context *dal.Record
+}
+
+const queryContextType = "QueryContext"
+
+// QueryContext mirrors QueryContext(value): a record marked as a query
+// context.
+func QueryContext(value *dal.Record) *dal.Record {
+	out := dal.NewRecord()
+	out.Set("__type", queryContextType)
+	if value != nil {
+		for _, k := range value.Keys() {
+			v, _ := value.Get(k)
+			out.Set(k, v)
+		}
+	}
+	return out
+}
+
+func isQueryContext(v any) bool {
+	r, ok := v.(*dal.Record)
+	if !ok {
+		return false
+	}
+	t, _ := r.Get("__type")
+	return t == queryContextType
+}
+
+// processNestedContext mirrors processNestedObjects of toRemoteQuery.
+func processNestedContext(target *dal.Record, source *dal.Record, topLevel bool, withDeleted bool) {
+	for _, key := range source.Keys() {
+		var src any = source
+		if !topLevel {
+			src, _ = source.Get(key)
+		}
+		rec, isObj := src.(*dal.Record)
+		if !isObj {
+			target.Set(key, src)
+			continue
+		}
+		if isQueryContext(rec) {
+			normalized := dal.NewRecord()
+			for _, k := range rec.Keys() {
+				if k == "__type" {
+					continue
+				}
+				v, _ := rec.Get(k)
+				normalized.Set(k, v)
+			}
+			t := target
+			if !topLevel {
+				t = child(target, key)
+			}
+			args := child(t, argsKey)
+			args.Set("context", normalized)
+			if withDeleted {
+				args.Set("withDeleted", true)
+			}
+			continue
+		}
+		next := target
+		if !topLevel {
+			next = child(target, key)
+		}
+		processNestedContext(next, rec, false, withDeleted)
+	}
 }
 
 func child(r *dal.Record, key string) *dal.Record {
@@ -47,6 +115,9 @@ func ToRemoteQuery(in GraphInput, joinerConfigs []*typesjoiner.ModuleJoinerConfi
 	entry := dal.NewRecord()
 	entry.Set(fieldsKey, []string{})
 	query.Set(in.Entity, entry)
+	if in.Context != nil {
+		processNestedContext(entry, in.Context, true, in.WithDeleted)
+	}
 
 	for _, field := range in.Fields {
 		if !strings.Contains(field, ".") {
