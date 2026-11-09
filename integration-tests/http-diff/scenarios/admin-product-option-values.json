@@ -1,0 +1,16 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "opt", "method": "POST", "bearer": "login", "path": "/admin/product-options", "body": { "title": "Shade", "values": ["Light"], "is_exclusive": false } },
+  { "name": "opt_more", "method": "POST", "bearer": "login", "path": "/admin/product-options/{{opt.product_option.id}}?fields=id,*values", "body": { "values": ["Light", "Dark"] } },
+  { "name": "values", "method": "GET", "bearer": "login", "path": "/admin/product-options/{{opt.product_option.id}}/values?order=value" },
+  { "name": "values_q", "method": "GET", "bearer": "login", "path": "/admin/product-options/{{opt.product_option.id}}/values?value=Dark&fields=id,value" },
+  { "name": "value_get", "method": "GET", "bearer": "login", "path": "/admin/product-options/{{opt.product_option.id}}/values/{{values.product_option_values.0.id}}" },
+  { "name": "value_get_wrong", "method": "GET", "bearer": "login", "path": "/admin/product-options/opt_other/values/{{values.product_option_values.0.id}}" },
+  { "name": "value_update", "method": "POST", "bearer": "login", "path": "/admin/product-options/{{opt.product_option.id}}/values/{{values.product_option_values.0.id}}", "body": { "value": "Very dark", "metadata": { "hex": "#000" } } },
+  { "name": "value_update_bad", "method": "POST", "bearer": "login", "path": "/admin/product-options/{{opt.product_option.id}}/values/{{values.product_option_values.0.id}}", "body": { "rank": 1 } },
+  { "name": "p", "method": "POST", "bearer": "login", "path": "/admin/products?fields=id", "body": { "title": "Shade lab", "options": [{ "id": "{{opt.product_option.id}}", "value_ids": ["{{values.product_option_values.1.id}}"] }] } },
+  { "name": "value_delete_linked", "method": "DELETE", "bearer": "login", "path": "/admin/product-options/{{opt.product_option.id}}/values/{{values.product_option_values.1.id}}" },
+  { "name": "value_delete", "method": "DELETE", "bearer": "login", "path": "/admin/product-options/{{opt.product_option.id}}/values/{{values.product_option_values.0.id}}" },
+  { "name": "value_delete_again", "method": "DELETE", "bearer": "login", "path": "/admin/product-options/{{opt.product_option.id}}/values/{{values.product_option_values.0.id}}" },
+  { "name": "values_after", "method": "GET", "bearer": "login", "path": "/admin/product-options/{{opt.product_option.id}}/values?order=value&with_deleted=true" }
+]

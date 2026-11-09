@@ -14,6 +14,8 @@ import (
 	productcategories "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories"
 	productoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-options"
 	productoptionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-options/id_"
+	productoptionvalues "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-options/id_/values"
+	productoptionvalueid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-options/id_/values/value_id_"
 	producttags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-tags"
 	producttagid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-tags/id_"
 	producttypes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-types"
@@ -47,6 +49,8 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/product-categories", Route: productcategories.Route},
 		{Path: "/admin/product-options", Route: productoptions.Route},
 		{Path: "/admin/product-options/:id", Route: productoptionid.Route},
+		{Path: "/admin/product-options/:id/values", Route: productoptionvalues.Route},
+		{Path: "/admin/product-options/:id/values/:value_id", Route: productoptionvalueid.Route},
 		{Path: "/admin/product-tags", Route: producttags.Route},
 		{Path: "/admin/product-tags/:id", Route: producttagid.Route},
 		{Path: "/admin/product-types", Route: producttypes.Route},

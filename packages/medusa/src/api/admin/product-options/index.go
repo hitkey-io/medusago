@@ -42,6 +42,7 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/product-options/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 	{Methods: []string{"POST"}, Matcher: "/admin/product-options", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateProductOption)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 	{Methods: []string{"POST"}, Matcher: "/admin/product-options/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminUpdateProductOption)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
+	ValueMiddlewares[0], ValueMiddlewares[1], ValueMiddlewares[2],
 }
 
 // Route is route.ts.
@@ -102,4 +103,40 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 		return err
 	}
 	return Respond(res, "product_option", o)
+}
+
+// DefaultAdminProductOptionValuesFields mirrors defaultAdminProductOptionValuesFields.
+var DefaultAdminProductOptionValuesFields = []string{"id", "value", "rank", "option_id", "created_at", "updated_at", "metadata"}
+
+// Value query configs.
+var (
+	RetrieveValueConfig = httputils.QueryConfig{Defaults: DefaultAdminProductOptionValuesFields, Entity: "product_option_value"}
+	ListValueConfig     = httputils.QueryConfig{Defaults: DefaultAdminProductOptionValuesFields, DefaultLimit: 20, IsList: true, Entity: "product_option_value"}
+)
+
+// AdminGetProductOptionValuesParamsFields mirrors AdminGetProductOptionValuesParamsFields.
+var AdminGetProductOptionValuesParamsFields = zod.Object(
+	zod.F("q", zod.String().Optional()),
+	zod.F("id", utils.StringOrStrings().Optional()),
+	zod.F("value", utils.StringOrStrings().Optional()),
+	zod.F("created_at", utils.CreateOperatorMap(nil, nil).Optional()),
+	zod.F("updated_at", utils.CreateOperatorMap(nil, nil).Optional()),
+	zod.F("deleted_at", utils.CreateOperatorMap(nil, nil).Optional()),
+)
+
+// AdminGetProductOptionValuesParams mirrors AdminGetProductOptionValuesParams.
+var AdminGetProductOptionValuesParams = utils.CreateFindParams(utils.FindParamsOptions{Limit: utils.Num(20), Offset: utils.Num(0)}).
+	Merge(AdminGetProductOptionValuesParamsFields).Merge(commonvalidators.ApplyAndAndOrOperators(AdminGetProductOptionValuesParamsFields))
+
+// AdminUpdateProductOptionValue mirrors AdminUpdateProductOptionValue.
+var AdminUpdateProductOptionValue = zod.Object(
+	zod.F("value", zod.String().Optional()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+).Strict()
+
+// ValueMiddlewares are the value routes of adminProductOptionRoutesMiddlewares.
+var ValueMiddlewares = []medusahttp.MiddlewareRoute{
+	{Methods: []string{"GET"}, Matcher: "/admin/product-options/:id/values", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetProductOptionValuesParams, ListValueConfig)}},
+	{Methods: []string{"GET"}, Matcher: "/admin/product-options/:id/values/:value_id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveValueConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/product-options/:id/values/:value_id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminUpdateProductOptionValue)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveValueConfig)}},
 }

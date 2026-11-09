@@ -791,3 +791,31 @@ func (s *ProductModuleService) normalizeProductOptionValueUpdates(ctx context.Co
 }
 
 var _ = common.NewMedusaError
+
+// UpdateProductOptionValues mirrors updateProductOptionValues(id, data).
+func (s *ProductModuleService) UpdateProductOptionValues(ctx context.Context, id string, data *dal.Record) (*dal.Record, error) {
+	if _, err := s.Internal("ProductOptionValue").Retrieve(ctx, id, utilsmodulessdk.FindConfig{}); err != nil {
+		return nil, err
+	}
+	res, err := s.Internal("ProductOptionValue").Update(ctx, []any{withID(id, data)})
+	if err != nil {
+		return nil, err
+	}
+	rows := records(res)
+	if len(rows) == 0 {
+		return nil, nil
+	}
+	return rows[0], nil
+}
+
+// SoftDeleteProductOptionValues mirrors softDeleteProductOptionValues.
+func (s *ProductModuleService) SoftDeleteProductOptionValues(ctx context.Context, ids []any) error {
+	return s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
+		t := &ProductModuleService{MedusaService: tx, db: tx.DB()}
+		if err := t.validateOptionValuesNotAssociatedWithProducts(ctx, ids); err != nil {
+			return err
+		}
+		_, err := t.Internal("ProductOptionValue").SoftDelete(ctx, ids)
+		return err
+	})
+}
