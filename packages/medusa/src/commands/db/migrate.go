@@ -8,7 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/migrations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/modules"
 )
@@ -28,9 +28,9 @@ type moduleMigrations struct {
 	sets [][]migrations.Migration
 }
 
-func resolveMigrations(config common.ConfigModule) ([]moduleMigrations, error) {
+func resolveMigrations(cfg config.ConfigModule) ([]moduleMigrations, error) {
 	var result []moduleMigrations
-	for _, mc := range config.Modules {
+	for _, mc := range cfg.Modules {
 		if mc.Disable {
 			continue
 		}
@@ -49,12 +49,12 @@ func resolveMigrations(config common.ConfigModule) ([]moduleMigrations, error) {
 }
 
 // Migrate runs the migrations of all enabled modules and their providers.
-func Migrate(ctx context.Context, config common.ConfigModule, opts MigrateOptions) error {
-	if config.ProjectConfig.DatabaseURL == "" {
+func Migrate(ctx context.Context, cfg config.ConfigModule, opts MigrateOptions) error {
+	if cfg.ProjectConfig.DatabaseURL == "" {
 		return fmt.Errorf("databaseUrl is not configured (set DATABASE_URL)")
 	}
 
-	pool, err := pgxpool.New(ctx, config.ProjectConfig.DatabaseURL)
+	pool, err := pgxpool.New(ctx, cfg.ProjectConfig.DatabaseURL)
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func Migrate(ctx context.Context, config common.ConfigModule, opts MigrateOption
 
 	slog.Info("Running migrations...")
 
-	resolved, err := resolveMigrations(config)
+	resolved, err := resolveMigrations(cfg)
 	if err != nil {
 		return err
 	}

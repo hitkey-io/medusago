@@ -1,0 +1,28 @@
+[
+  { "name": "currency.list.take-order", "module": "currency", "method": "listCurrencies", "args": [{}, { "take": 3, "order": { "code": "ASC" } }] },
+  { "name": "currency.listAndCount.in-select", "module": "currency", "method": "listAndCountCurrencies", "args": [{ "code": ["usd", "eur", "gbp"] }, { "select": ["code", "name"], "order": { "code": "DESC" } }] },
+  { "name": "currency.list.ilike", "module": "currency", "method": "listCurrencies", "args": [{ "name": { "$ilike": "%dollar%" } }, { "select": ["code", "name"], "order": { "code": "ASC" } }] },
+  { "name": "currency.list.q", "module": "currency", "method": "listCurrencies", "args": [{ "q": "euro" }, { "select": ["code", "name"], "order": { "code": "ASC" } }] },
+  { "name": "currency.retrieve", "module": "currency", "method": "retrieveCurrency", "args": ["usd"] },
+  { "name": "currency.retrieve.not-found", "module": "currency", "method": "retrieveCurrency", "args": ["xxx"] },
+
+  { "name": "region.list.countries", "module": "region", "method": "listRegions", "args": [{}, { "relations": ["countries"], "order": { "name": "ASC" } }] },
+  { "name": "region.list.default", "module": "region", "method": "listRegions", "args": [{}] },
+  { "name": "region.list.with-deleted", "module": "region", "method": "listRegions", "args": [{}, { "withDeleted": true, "select": ["name", "deleted_at"], "order": { "name": "ASC" } }] },
+  { "name": "region.listAndCount.page", "module": "region", "method": "listAndCountRegions", "args": [{ "currency_code": { "$in": ["eur", "usd"] } }, { "take": 1, "skip": 1, "order": { "name": "ASC" } }] },
+  { "name": "region.list.relation-filter", "module": "region", "method": "listRegions", "args": [{ "countries": { "iso_2": "fr" } }, { "select": ["name"] }] },
+  { "name": "region.list.select-nested", "module": "region", "method": "listRegions", "args": [{ "name": "Europe" }, { "select": ["name", "metadata", "countries.iso_2", "countries.display_name"], "relations": ["countries"] }] },
+
+  { "name": "product.list.default-fields", "module": "product", "method": "listProducts", "args": [{}, { "order": { "title": "ASC" } }] },
+  { "name": "product.list.all-relations", "module": "product", "method": "listProducts", "args": [{}, { "relations": ["variants", "variants.options", "options", "options.values", "tags", "type", "collection", "categories", "images"], "order": { "title": "ASC" } }] },
+  { "name": "product.listAndCount.status", "module": "product", "method": "listAndCountProducts", "args": [{ "status": "published" }, { "select": ["id", "title", "handle"], "take": 10 }] },
+  { "name": "product.list.tag-filter-with-deleted", "module": "product", "method": "listProducts", "args": [{ "tags": { "value": "sale" } }, { "select": ["handle"], "withDeleted": true, "order": { "handle": "ASC" } }] },
+  { "name": "product.list.variant-filter", "module": "product", "method": "listProducts", "args": [{ "variants": { "sku": { "$like": "SHIRT%" } } }, { "select": ["handle"] }] },
+  { "name": "product.list.or", "module": "product", "method": "listProducts", "args": [{ "$or": [{ "handle": "t-shirt" }, { "handle": "sweatpants" }] }, { "select": ["handle"], "order": { "handle": "DESC" } }] },
+  { "name": "product.list.ilike-ne", "module": "product", "method": "listProducts", "args": [{ "title": { "$ilike": "%medusa%" }, "status": { "$ne": "draft" } }, { "select": ["handle"] }] },
+  { "name": "product.list.q", "module": "product", "method": "listProducts", "args": [{ "q": "cotton" }, { "select": ["handle"] }] },
+  { "name": "product.retrieve.not-found", "module": "product", "method": "retrieveProduct", "args": ["prod_missing"] },
+  { "name": "variant.list.with-product", "module": "product", "method": "listProductVariants", "args": [{}, { "select": ["sku", "title", "product.handle"], "relations": ["product"], "order": { "variant_rank": "ASC" } }] },
+  { "name": "variant.list.with-deleted", "module": "product", "method": "listProductVariants", "args": [{}, { "withDeleted": true, "select": ["sku", "deleted_at"], "order": { "sku": "ASC" } }] },
+  { "name": "category.list.tree", "module": "product", "method": "listProductCategories", "args": [{}, { "relations": ["parent_category", "category_children"], "order": { "name": "ASC" } }] }
+]

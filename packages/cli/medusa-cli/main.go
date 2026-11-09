@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
 	"github.com/hitkey-io/medusago/packages/medusa/src/commands"
 	"github.com/hitkey-io/medusago/packages/medusa/src/commands/db"
 )
@@ -49,8 +49,8 @@ func main() {
 		fs.BoolVar(&opts.ExecuteSafeLinks, "execute-safe-links", false, "Apply only safe link changes")
 		_ = fs.Parse(os.Args[2:])
 
-		config := common.DefineConfig(common.InputConfig{})
-		if err := db.Migrate(context.Background(), config, opts); err != nil {
+		cfg := config.DefineConfig(config.InputConfig{})
+		if err := db.Migrate(context.Background(), cfg, opts); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}

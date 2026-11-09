@@ -1,4 +1,5 @@
-package common
+// Package config mirrors @medusajs/framework/src/config.
+package config
 
 import (
 	"os"
