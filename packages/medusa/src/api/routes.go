@@ -72,6 +72,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/providers"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/session"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/token/refresh"
+	cloudauth "github.com/hitkey-io/medusago/packages/medusa/src/api/cloud/auth"
 )
 
 // Routes lists the route files by URL path (the file tree of src/api).
@@ -146,6 +147,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/auth/:actor_type/:auth_provider", Route: auth_provider_.Route},
 		{Path: "/auth/:actor_type/providers", Route: providers.Route},
 		{Path: "/auth/session", Route: session.Route},
+		{Path: "/cloud/auth", Route: cloudauth.Route},
 		{Path: "/auth/token/refresh", Route: refresh.Route},
 	}
 }
