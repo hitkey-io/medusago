@@ -163,6 +163,18 @@ func (q *queryBuilder) property(e *dml.Entity, alias, key string, value any, pat
 		return q.where(target, targetAlias, obj, path+"."+key)
 	}
 
+	// A collection relation filtered by a value (ids or an operator map)
+	// filters on the related primary key, like MikroORM.
+	if isRelation && (prop.Kind == "m:n" || prop.Kind == "1:m") {
+		targetAlias, target, err := q.joinRelation(e, alias, key, path)
+		if err != nil {
+			return "", err
+		}
+		pk := NewRecord()
+		pk.Set(target.Meta.PrimaryKey[0], value)
+		return q.where(target, targetAlias, pk, path+"."+key)
+	}
+
 	column := ""
 	if len(prop.FieldNames) > 0 {
 		column = col(alias, prop.FieldNames[0])

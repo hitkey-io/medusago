@@ -2,11 +2,17 @@ package api
 
 import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	apikeys "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys"
+	apikeyid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections"
 	collectionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections/id_"
 	collectionproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections/id_/products"
 	currencies "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/currencies"
 	currencycode "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/currencies/code_"
+	customergroups "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups"
+	customergroupid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups/id_"
+	admincustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers"
+	customerid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_"
 	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/feature-flags"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/zone_/configuration"
@@ -42,6 +48,8 @@ import (
 	saleschannelid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_"
 	searchindexes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/search-indexes"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores"
+	adminusers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
+	userid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/me"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/providers"
@@ -55,7 +63,13 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/collections", Route: collections.Route},
 		{Path: "/admin/collections/:id", Route: collectionid.Route},
 		{Path: "/admin/collections/:id/products", Route: collectionproducts.Route},
+		{Path: "/admin/api-keys", Route: apikeys.Route},
+		{Path: "/admin/api-keys/:id", Route: apikeyid.Route},
 		{Path: "/admin/currencies", Route: currencies.Route},
+		{Path: "/admin/customer-groups", Route: customergroups.Route},
+		{Path: "/admin/customer-groups/:id", Route: customergroupid.Route},
+		{Path: "/admin/customers", Route: admincustomers.Route},
+		{Path: "/admin/customers/:id", Route: customerid.Route},
 		{Path: "/admin/currencies/:code", Route: currencycode.Route},
 		{Path: "/admin/feature-flags", Route: featureflags.Route},
 		{Path: "/admin/refund-reasons", Route: refundreasons.Route},
@@ -92,6 +106,8 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/regions", Route: regions.Route},
 		{Path: "/admin/sales-channels", Route: saleschannels.Route},
 		{Path: "/admin/stores", Route: stores.Route},
+		{Path: "/admin/users", Route: adminusers.Route},
+		{Path: "/admin/users/:id", Route: userid.Route},
 		{Path: "/admin/users/me", Route: me.Route},
 		{Path: "/auth/:actor_type/:auth_provider", Route: auth_provider_.Route},
 		{Path: "/auth/:actor_type/providers", Route: providers.Route},

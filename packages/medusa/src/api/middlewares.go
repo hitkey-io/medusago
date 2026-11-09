@@ -4,8 +4,11 @@ package api
 
 import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	apikeys "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections"
 	currencies "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/currencies"
+	customergroups "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups"
+	admincustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
@@ -46,6 +49,9 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, productcategories.Middlewares...)
 	out = append(out, configurations.LayoutConfigurationListRoutesMiddlewares...)
 	out = append(out, currencies.Middlewares...)
+	out = append(out, apikeys.Middlewares...)
+	out = append(out, admincustomers.Middlewares...)
+	out = append(out, customergroups.Middlewares...)
 	out = append(out, returnreasons.Middlewares...)
 	out = append(out, refundreasons.Middlewares...)
 	return out

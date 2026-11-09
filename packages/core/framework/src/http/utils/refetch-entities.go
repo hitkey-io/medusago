@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"fmt"
 
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
@@ -148,5 +149,40 @@ func RefetchListRoute(entity, key string) medusahttp.RouteHandler {
 			return err
 		}
 		return res.JSON(ListResponse(key, r))
+	}
+}
+
+// RemoteQueryFirst mirrors (await remoteQuery(remoteQueryObjectFromString({
+// entryPoint, variables: { filters }, fields })))[0] (nil when missing).
+func RemoteQueryFirst(ctx context.Context, scope medusahttp.MedusaContainer, entryPoint string, filters *dal.Record, fields []string) (any, error) {
+	vars := dal.NewRecord()
+	vars.Set("filters", filters)
+	r, err := RemoteQueryList(ctx, scope, entryPoint, vars, fields)
+	if err != nil {
+		return nil, err
+	}
+	if len(r.Data) == 0 {
+		return nil, nil
+	}
+	return r.Data[0], nil
+}
+
+// RemoteQueryRetrieveRoute builds the GET handler of the retrieve routes
+// written as remoteQuery({ entryPoint, variables: { filters: { id } } })[0]
+// that throw NOT_FOUND with notFound (a format with the id) when missing.
+func RemoteQueryRetrieveRoute(entryPoint, key, notFound string) medusahttp.RouteHandler {
+	return func(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+		f := dal.NewRecord()
+		f.Set("id", req.Params["id"])
+		v, err := RemoteQueryFirst(req.Ctx(), req.Scope, entryPoint, f, req.QueryConfig.Fields)
+		if err != nil {
+			return err
+		}
+		if v == nil {
+			return common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, fmt.Sprintf(notFound, req.Params["id"]))
+		}
+		out := dal.NewRecord()
+		out.Set(key, v)
+		return res.Status(200).JSON(out)
 	}
 }

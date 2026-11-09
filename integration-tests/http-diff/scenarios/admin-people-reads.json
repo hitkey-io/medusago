@@ -1,0 +1,17 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "users", "method": "GET", "bearer": "login", "path": "/admin/users" },
+  { "name": "users_q", "method": "GET", "bearer": "login", "path": "/admin/users?q=admin&fields=id,email" },
+  { "name": "user", "method": "GET", "bearer": "login", "path": "/admin/users/{{users.users.0.id}}" },
+  { "name": "user_me", "method": "GET", "bearer": "login", "path": "/admin/users/me?fields=id" },
+  { "name": "user_missing", "method": "GET", "bearer": "login", "path": "/admin/users/user_missing" },
+  { "name": "api_keys", "method": "GET", "bearer": "login", "path": "/admin/api-keys" },
+  { "name": "api_keys_pub", "method": "GET", "bearer": "login", "path": "/admin/api-keys?type=publishable&fields=id,title,type" },
+  { "name": "api_keys_badtype", "method": "GET", "bearer": "login", "path": "/admin/api-keys?type=foo" },
+  { "name": "api_key_missing", "method": "GET", "bearer": "login", "path": "/admin/api-keys/apk_missing" },
+  { "name": "customers", "method": "GET", "bearer": "login", "path": "/admin/customers" },
+  { "name": "customers_filters", "method": "GET", "bearer": "login", "path": "/admin/customers?has_account=true&groups[]=cusgroup_x&fields=id,email,*groups" },
+  { "name": "customer_missing", "method": "GET", "bearer": "login", "path": "/admin/customers/cus_missing" },
+  { "name": "customer_groups", "method": "GET", "bearer": "login", "path": "/admin/customer-groups" },
+  { "name": "customer_group_missing", "method": "GET", "bearer": "login", "path": "/admin/customer-groups/cusgroup_missing" }
+]
