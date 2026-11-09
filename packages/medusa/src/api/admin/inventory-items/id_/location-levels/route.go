@@ -2,9 +2,11 @@
 package locationlevels
 
 import (
+	"github.com/hitkey-io/medusago/packages/core/core-flows/src/inventory/workflows"
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
 )
 
 // GET mirrors GET.
@@ -25,4 +27,19 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 }
 
 // Route is the route file.
-var Route = medusahttp.Route{GET: GET}
+// POST mirrors POST.
+func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+	body, _ := req.ValidatedBody.(*dal.Record)
+	in := dal.NewRecord()
+	for _, k := range body.Keys() {
+		v, _ := body.Get(k)
+		in.Set(k, v)
+	}
+	in.Set("inventory_item_id", req.Params["id"])
+	if _, err := workflows.CreateInventoryLevelsWorkflow.Run(req.Ctx(), req.Scope, []*dal.Record{in}); err != nil {
+		return err
+	}
+	return inventoryitems.Respond(req, res, req.Params["id"])
+}
+
+var Route = medusahttp.Route{GET: GET, POST: POST}

@@ -3,6 +3,8 @@ package id_
 
 import (
 	"fmt"
+	"github.com/hitkey-io/medusago/packages/core/core-flows/src/inventory/workflows"
+	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
 
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
@@ -44,4 +46,32 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 }
 
 // Route is the route file.
-var Route = medusahttp.Route{GET: GET}
+// POST mirrors POST.
+func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+	body, _ := req.ValidatedBody.(*dal.Record)
+	in := dal.NewRecord()
+	in.Set("id", req.Params["id"])
+	for _, k := range body.Keys() {
+		v, _ := body.Get(k)
+		in.Set(k, v)
+	}
+	if _, err := workflows.UpdateInventoryItemsWorkflow.Run(req.Ctx(), req.Scope, []*dal.Record{in}); err != nil {
+		return err
+	}
+	return inventoryitems.Respond(req, res, req.Params["id"])
+}
+
+// DELETE mirrors DELETE.
+func DELETE(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+	id := req.Params["id"]
+	if _, err := workflows.DeleteInventoryItemWorkflow.Run(req.Ctx(), req.Scope, []any{id}); err != nil {
+		return err
+	}
+	out := dal.NewRecord()
+	out.Set("id", id)
+	out.Set("object", "inventory_item")
+	out.Set("deleted", true)
+	return res.Status(200).JSON(out)
+}
+
+var Route = medusahttp.Route{GET: GET, POST: POST, DELETE: DELETE}

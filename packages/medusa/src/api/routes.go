@@ -30,6 +30,9 @@ import (
 	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
 	inventoryitemid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_"
 	inventorylevels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_/location-levels"
+	inventorylevelbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_/location-levels/batch"
+	inventorylevelloc "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_/location-levels/location_id_"
+	inventorylevelsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/location-levels/batch"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/zone_/configuration"
 	adminmodules "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/modules"
@@ -136,6 +139,9 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/inventory-items", Route: inventoryitems.Route},
 		{Path: "/admin/inventory-items/:id", Route: inventoryitemid.Route},
 		{Path: "/admin/inventory-items/:id/location-levels", Route: inventorylevels.Route},
+		{Path: "/admin/inventory-items/:id/location-levels/batch", Route: inventorylevelbatch.Route},
+		{Path: "/admin/inventory-items/:id/location-levels/:location_id", Route: inventorylevelloc.Route},
+		{Path: "/admin/inventory-items/location-levels/batch", Route: inventorylevelsbatch.Route},
 		{Path: "/admin/reservations", Route: adminreservations.Route},
 		{Path: "/admin/reservations/:id", Route: reservationid.Route},
 		{Path: "/admin/stock-locations", Route: stocklocations.Route},

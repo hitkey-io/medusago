@@ -1,0 +1,514 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNTk2MjgsImV4cCI6MTc5NDM0NjAyOH0.nY8wN0LclZOtIvDul5Wn87S43yJFYIqKU7LMs7ROqWo"
+    }
+  },
+  "locations": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_locations": [
+        {
+          "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "loc2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M713ACD72XSTNTH6VH4FZA6G"
+      }
+    }
+  },
+  "create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_item": {
+        "id": "iitem_01M713ACDM7NSDBARV126NJ0NR",
+        "sku": "INV-1",
+        "title": "Widget",
+        "description": null,
+        "thumbnail": null,
+        "origin_country": null,
+        "hs_code": null,
+        "requires_shipping": true,
+        "mid_code": null,
+        "material": null,
+        "unit_of_measure": null,
+        "weight": 10,
+        "length": null,
+        "height": null,
+        "width": null,
+        "metadata": {
+          "a": 1
+        },
+        "reserved_quantity": 0,
+        "stocked_quantity": 5,
+        "created_at": "2026-11-09T21:27:08.468Z",
+        "updated_at": "2026-11-09T21:27:08.468Z",
+        "location_levels": [
+          {
+            "id": "ilev_01M713ACDVMW04G7GER3STJ40A",
+            "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+            "metadata": null,
+            "inventory_item_id": "iitem_01M713ACDM7NSDBARV126NJ0NR",
+            "raw_stocked_quantity": {
+              "value": "5",
+              "precision": 20
+            },
+            "raw_reserved_quantity": {
+              "value": "0",
+              "precision": 20
+            },
+            "raw_incoming_quantity": {
+              "value": "2",
+              "precision": 20
+            },
+            "created_at": "2026-11-09T21:27:08.475Z",
+            "updated_at": "2026-11-09T21:27:08.475Z",
+            "deleted_at": null,
+            "available_quantity": 5,
+            "stocked_quantity": 5,
+            "reserved_quantity": 0,
+            "incoming_quantity": 2
+          }
+        ]
+      }
+    }
+  },
+  "create_bad_location": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Stock locations with ids: sloc_missing was not found"
+    }
+  },
+  "create_negative": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Value for field 'location_levels, 0, stocked_quantity' too small, expected at least: '0'"
+    }
+  },
+  "create_dup_sku": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Inventory item with sku: INV-1, already exists."
+    }
+  },
+  "get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_item": {
+        "id": "iitem_01M713ACDM7NSDBARV126NJ0NR",
+        "sku": "INV-1",
+        "title": "Widget",
+        "description": null,
+        "thumbnail": null,
+        "origin_country": null,
+        "hs_code": null,
+        "requires_shipping": true,
+        "mid_code": null,
+        "material": null,
+        "unit_of_measure": null,
+        "weight": 10,
+        "length": null,
+        "height": null,
+        "width": null,
+        "metadata": {
+          "a": 1
+        },
+        "reserved_quantity": 0,
+        "stocked_quantity": 5,
+        "created_at": "2026-11-09T21:27:08.468Z",
+        "updated_at": "2026-11-09T21:27:08.468Z",
+        "location_levels": [
+          {
+            "id": "ilev_01M713ACDVMW04G7GER3STJ40A",
+            "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+            "metadata": null,
+            "inventory_item_id": "iitem_01M713ACDM7NSDBARV126NJ0NR",
+            "raw_stocked_quantity": {
+              "value": "5",
+              "precision": 20
+            },
+            "raw_reserved_quantity": {
+              "value": "0",
+              "precision": 20
+            },
+            "raw_incoming_quantity": {
+              "value": "2",
+              "precision": 20
+            },
+            "created_at": "2026-11-09T21:27:08.475Z",
+            "updated_at": "2026-11-09T21:27:08.475Z",
+            "deleted_at": null,
+            "available_quantity": 5,
+            "stocked_quantity": 5,
+            "reserved_quantity": 0,
+            "incoming_quantity": 2
+          }
+        ]
+      }
+    }
+  },
+  "update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_item": {
+        "id": "iitem_01M713ACDM7NSDBARV126NJ0NR",
+        "sku": "INV-1",
+        "title": "Widget 2",
+        "description": null,
+        "thumbnail": null,
+        "origin_country": null,
+        "hs_code": null,
+        "requires_shipping": true,
+        "mid_code": null,
+        "material": null,
+        "unit_of_measure": null,
+        "weight": null,
+        "length": null,
+        "height": null,
+        "width": null,
+        "metadata": {
+          "a": 1,
+          "b": 2
+        },
+        "reserved_quantity": 0,
+        "stocked_quantity": 5,
+        "created_at": "2026-11-09T21:27:08.468Z",
+        "updated_at": "2026-11-09T21:27:08.528Z",
+        "location_levels": [
+          {
+            "id": "ilev_01M713ACDVMW04G7GER3STJ40A",
+            "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+            "metadata": null,
+            "inventory_item_id": "iitem_01M713ACDM7NSDBARV126NJ0NR",
+            "raw_stocked_quantity": {
+              "value": "5",
+              "precision": 20
+            },
+            "raw_reserved_quantity": {
+              "value": "0",
+              "precision": 20
+            },
+            "raw_incoming_quantity": {
+              "value": "2",
+              "precision": 20
+            },
+            "created_at": "2026-11-09T21:27:08.475Z",
+            "updated_at": "2026-11-09T21:27:08.475Z",
+            "deleted_at": null,
+            "available_quantity": 5,
+            "stocked_quantity": 5,
+            "reserved_quantity": 0,
+            "incoming_quantity": 2
+          }
+        ]
+      }
+    }
+  },
+  "level_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_item": {
+        "id": "iitem_01M713ACDM7NSDBARV126NJ0NR",
+        "location_levels": [
+          {
+            "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+            "stocked_quantity": 5
+          },
+          {
+            "location_id": "sloc_01M713ACD72XSTNTH6VH4FZA6G",
+            "stocked_quantity": 3
+          }
+        ]
+      }
+    }
+  },
+  "level_create_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Inventory level with inventory_item_id: iitem_01M713ACDM7NSDBARV126NJ0NR, location_id: sloc_01M713ACD72XSTNTH6VH4FZA6G, already exists."
+    }
+  },
+  "level_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_item": {
+        "id": "iitem_01M713ACDM7NSDBARV126NJ0NR",
+        "stocked_quantity": 12,
+        "location_levels": [
+          {
+            "stocked_quantity": 5,
+            "incoming_quantity": 2
+          },
+          {
+            "stocked_quantity": 7,
+            "incoming_quantity": 1
+          }
+        ]
+      }
+    }
+  },
+  "level_update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Item iitem_01M713ACDM7NSDBARV126NJ0NR is not stocked at location sloc_missing"
+    }
+  },
+  "levels_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_levels": [
+        {
+          "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+          "stocked_quantity": 5,
+          "id": "ilev_01M713ACDVMW04G7GER3STJ40A"
+        },
+        {
+          "location_id": "sloc_01M713ACD72XSTNTH6VH4FZA6G",
+          "stocked_quantity": 7,
+          "id": "ilev_01M713ACFT5W5CHHYBF0YF4DPE"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "batch_delete_stocked": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Cannot remove Inventory Levels for sloc_01M70XZZY3P5TA8QCJV5KPJCKX because there are stocked items at the locations. Use force flag to delete anyway."
+    }
+  },
+  "batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [],
+      "updated": [
+        {
+          "id": "ilev_01M713ACDVMW04G7GER3STJ40A",
+          "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+          "metadata": null,
+          "inventory_item_id": "iitem_01M713ACDM7NSDBARV126NJ0NR",
+          "inventory_item": {
+            "id": "iitem_01M713ACDM7NSDBARV126NJ0NR",
+            "reserved_quantity": null,
+            "stocked_quantity": null
+          },
+          "raw_stocked_quantity": {
+            "value": "9",
+            "precision": 20
+          },
+          "raw_reserved_quantity": {
+            "value": "0",
+            "precision": 20
+          },
+          "raw_incoming_quantity": {
+            "value": "2",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T21:27:08.475Z",
+          "updated_at": "2026-11-09T21:27:08.582Z",
+          "deleted_at": null,
+          "available_quantity": 5,
+          "stocked_quantity": 9,
+          "reserved_quantity": 0,
+          "incoming_quantity": 2
+        }
+      ],
+      "deleted": [
+        "ilev_01M713ACFT5W5CHHYBF0YF4DPE"
+      ]
+    }
+  },
+  "level_delete": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Cannot remove Inventory Levels for sloc_01M70XZZY3P5TA8QCJV5KPJCKX because there are stocked items at the locations. Use force flag to delete anyway."
+    }
+  },
+  "level_delete_missing": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Cannot remove Inventory Levels for sloc_01M70XZZY3P5TA8QCJV5KPJCKX because there are stocked items at the locations. Use force flag to delete anyway."
+    }
+  },
+  "global_batch": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Inventory level with inventory_item_id: iitem_01M713ACDM7NSDBARV126NJ0NR, location_id: sloc_01M70XZZY3P5TA8QCJV5KPJCKX, already exists."
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "iitem_01M713ACDM7NSDBARV126NJ0NR",
+      "object": "inventory_item",
+      "deleted": true
+    }
+  },
+  "get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Inventory item with id: iitem_01M713ACDM7NSDBARV126NJ0NR was not found"
+    }
+  },
+  "list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_items": [
+        {
+          "sku": "PANTS-L",
+          "title": "L",
+          "id": "iitem_01M70Y000RWHQWDA346PAVDVTB"
+        },
+        {
+          "sku": "SHIRT-M-WHITE",
+          "title": "M / White",
+          "id": "iitem_01M70Y000RZ502C3BB7AG00VH9"
+        },
+        {
+          "sku": "SHIRT-S-BLACK",
+          "title": "S / Black",
+          "id": "iitem_01M70Y000R77AV02RWX3KTV1ZY"
+        },
+        {
+          "sku": null,
+          "title": "Default",
+          "id": "iitem_01M70Y000R2AMXZA0THMKM80BA"
+        }
+      ],
+      "count": 4,
+      "offset": 0,
+      "limit": 20
+    }
+  }
+}

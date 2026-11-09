@@ -794,6 +794,10 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 			} else {
 				ref := NewRecord()
 				ref.Set(target.Meta.PrimaryKey[0], fk)
+				// formula properties of a reference are initialized to null
+				for _, f := range formulas[target.Meta.ClassName] {
+					ref.Set(f.Property, nil)
+				}
 				rec.Set(p.Name, ref)
 			}
 
