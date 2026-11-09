@@ -265,3 +265,8 @@ func NewLinkDefinition(moduleA, keyA string, valueA any, moduleB, keyB string, v
 	l.Set(moduleB, b)
 	return l
 }
+
+// GetLinkModule mirrors getLinkModule(moduleA, keyA, moduleB, keyB).
+func (l *Link) GetLinkModule(moduleA, keyA, moduleB, keyB string) *services.LinkModuleService {
+	return l.pairs[strings.Join([]string{moduleA, keyA, moduleB, keyB}, "-")]
+}

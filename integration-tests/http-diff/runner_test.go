@@ -288,6 +288,8 @@ func TestRecord(t *testing.T) {
 
 var _ = encode
 
+var embeddedIDRe = regexp.MustCompile(`[a-z]+_[0-9A-HJKMNP-TV-Z]{26}`)
+
 // placeholders maps generated values to stable names within a scenario.
 type placeholders struct {
 	names map[string]string
@@ -301,6 +303,15 @@ func newPlaceholders() *placeholders {
 func (p *placeholders) of(s string) string {
 	gen, kind := isGenerated(s)
 	if !gen {
+		if kind == "" && len(s) > 30 {
+			// generated ids inside messages
+			return embeddedIDRe.ReplaceAllStringFunc(s, func(id string) string {
+				if g, k := isGenerated(id); g && k == "id" {
+					return p.of(id)
+				}
+				return id
+			})
+		}
 		return s
 	}
 	if kind == "date" {

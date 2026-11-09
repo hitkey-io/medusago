@@ -36,3 +36,6 @@ var (
 	RetrieveProductQueryConfig = httputils.QueryConfig{Defaults: DefaultAdminProductFields, Entity: "product"}
 	ListProductQueryConfig     = httputils.QueryConfig{Defaults: DefaultAdminProductFields, DefaultLimit: 50, IsList: true, Entity: "product"}
 )
+
+// RetrieveVariantConfig mirrors retrieveVariantConfig.
+var RetrieveVariantConfig = httputils.QueryConfig{Defaults: DefaultAdminProductsVariantFields, Entity: "product_variant"}

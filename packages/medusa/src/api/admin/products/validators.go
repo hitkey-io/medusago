@@ -187,3 +187,12 @@ var UpdateProduct = zod.Object(
 
 // AdminUpdateProduct mirrors AdminUpdateProduct.
 var AdminUpdateProduct = utils.WithAdditionalData(UpdateProduct)
+
+// AdminGetProductVariantParams mirrors AdminGetProductVariantParams.
+var AdminGetProductVariantParams = utils.CreateSelectParams()
+
+// AdminCreateProductVariant mirrors AdminCreateProductVariant.
+var AdminCreateProductVariant = utils.WithAdditionalData(CreateProductVariant)
+
+// AdminUpdateProductVariant mirrors AdminUpdateProductVariant.
+var AdminUpdateProductVariant = utils.WithAdditionalData(UpdateProductVariant)

@@ -705,6 +705,54 @@ func (s *ProductModuleService) createVariants(ctx context.Context, data []*dal.R
 	if err != nil {
 		return nil, err
 	}
+	withOptions, err := s.assignOptionsToVariants(data, existing, optionsByProduct, valueIDsByProduct)
+	if err != nil {
+		return nil, err
+	}
+	return s.Internal("ProductVariant").Create(ctx, withOptions)
+}
+
+// loadOptionsAndValuesByProductID mirrors loadOptionsAndValuesByProductId_.
+func (s *ProductModuleService) loadOptionsAndValuesByProductID(ctx context.Context, productIDs []any) (map[string][]*dal.Record, map[string]map[string]bool, error) {
+	pf := dal.NewRecord()
+	pf.Set("id", productIDs)
+	f := dal.NewRecord()
+	f.Set("products", pf)
+	options, err := s.Internal("ProductOption").List(ctx, f, utilsmodulessdk.FindConfig{Relations: []string{"values"}})
+	if err != nil {
+		return nil, nil, err
+	}
+	byID := map[string]*dal.Record{}
+	for _, o := range options {
+		byID[strOf(o, "id")] = o
+	}
+	rows, err := dal.QueryRows(ctx, s.db, `select "product_id", "product_option_id" from "product_product_option" where "product_id" = any($1) and "deleted_at" is null`, toStrings(productIDs))
+	if err != nil {
+		return nil, nil, err
+	}
+	optionsByProduct := map[string][]*dal.Record{}
+	seen := map[string]bool{}
+	for _, r := range rows {
+		pid, oid := fmt.Sprint(r["product_id"]), fmt.Sprint(r["product_option_id"])
+		if seen[pid+oid] {
+			continue
+		}
+		seen[pid+oid] = true
+		if o := byID[oid]; o != nil {
+			optionsByProduct[pid] = append(optionsByProduct[pid], o)
+		}
+	}
+	values, err := s.getOptionValueIDsByProductIDs(ctx, productIDs)
+	if err != nil {
+		return nil, nil, err
+	}
+	return optionsByProduct, values, nil
+}
+
+// assignOptionsToVariants mirrors assignOptionsToVariants and
+// checkIfVariantWithOptionsAlreadyExists: options { title: value } become
+// option value references.
+func (s *ProductModuleService) assignOptionsToVariants(data []*dal.Record, existing []*dal.Record, optionsByProduct map[string][]*dal.Record, valueIDsByProduct map[string]map[string]bool) ([]*dal.Record, error) {
 	withOptions := make([]*dal.Record, len(data))
 	for i, v := range data {
 		vo := recordOf(func() any { x, _ := v.Get("options"); return x }())
@@ -759,6 +807,9 @@ func (s *ProductModuleService) createVariants(ctx context.Context, data []*dal.R
 			if strOf(ev, "product_id") != strOf(v, "product_id") {
 				continue
 			}
+			if id := strOf(v, "id"); id != "" && id == strOf(ev, "id") {
+				continue
+			}
 			eo, _ := ev.Get("options")
 			have := map[string]bool{}
 			for _, x := range list(eo) {
@@ -776,42 +827,5 @@ func (s *ProductModuleService) createVariants(ctx context.Context, data []*dal.R
 			}
 		}
 	}
-	return s.Internal("ProductVariant").Create(ctx, withOptions)
-}
-
-// loadOptionsAndValuesByProductID mirrors loadOptionsAndValuesByProductId_.
-func (s *ProductModuleService) loadOptionsAndValuesByProductID(ctx context.Context, productIDs []any) (map[string][]*dal.Record, map[string]map[string]bool, error) {
-	pf := dal.NewRecord()
-	pf.Set("id", productIDs)
-	f := dal.NewRecord()
-	f.Set("products", pf)
-	options, err := s.Internal("ProductOption").List(ctx, f, utilsmodulessdk.FindConfig{Relations: []string{"values"}})
-	if err != nil {
-		return nil, nil, err
-	}
-	byID := map[string]*dal.Record{}
-	for _, o := range options {
-		byID[strOf(o, "id")] = o
-	}
-	rows, err := dal.QueryRows(ctx, s.db, `select "product_id", "product_option_id" from "product_product_option" where "product_id" = any($1) and "deleted_at" is null`, toStrings(productIDs))
-	if err != nil {
-		return nil, nil, err
-	}
-	optionsByProduct := map[string][]*dal.Record{}
-	seen := map[string]bool{}
-	for _, r := range rows {
-		pid, oid := fmt.Sprint(r["product_id"]), fmt.Sprint(r["product_option_id"])
-		if seen[pid+oid] {
-			continue
-		}
-		seen[pid+oid] = true
-		if o := byID[oid]; o != nil {
-			optionsByProduct[pid] = append(optionsByProduct[pid], o)
-		}
-	}
-	values, err := s.getOptionValueIDsByProductIDs(ctx, productIDs)
-	if err != nil {
-		return nil, nil, err
-	}
-	return optionsByProduct, values, nil
+	return withOptions, nil
 }
