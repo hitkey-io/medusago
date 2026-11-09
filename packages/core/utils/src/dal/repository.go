@@ -100,6 +100,9 @@ func (r *Repository) Find(ctx context.Context, opts FindOptions) ([]*Record, err
 	if err != nil {
 		return nil, err
 	}
+	if err := r.loadInverseOneToOneRefs(ctx, idm); err != nil {
+		return nil, err
+	}
 	return r.serialize(roots, idm, opts)
 }
 
@@ -704,6 +707,7 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 	}
 
 	var collections []*dml.MetaProperty
+	var lateScalars []*dml.MetaProperty
 	for i := range e.Meta.Properties {
 		p := &e.Meta.Properties[i]
 		for _, f := range formulas[e.Meta.ClassName] {
@@ -716,6 +720,12 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 		switch {
 		case p.Kind == "scalar":
 			if bigNumbers[p.Name] || !hydrated(p.Name) {
+				continue
+			}
+			if p.Persist != nil && !*p.Persist {
+				// the shadow foreign key of a 1:1 owner is assigned after
+				// hydration: it follows the hydrated properties
+				lateScalars = append(lateScalars, p)
 				continue
 			}
 			rec.Set(p.Name, runtimeNumber(p.Type, inst.data[p.FieldNames[0]]))
@@ -742,6 +752,9 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 				continue
 			}
 			fk := inst.data[p.FieldNames[0]]
+			if p.Kind == "1:1" && !p.Owner {
+				fk = inst.data[inverseRefKey(p.Name)]
+			}
 			if fk == nil {
 				rec.Set(p.Name, nil)
 				continue
@@ -767,6 +780,10 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 				collections = append(collections, p)
 			}
 		}
+	}
+
+	for _, p := range lateScalars {
+		rec.Set(p.Name, runtimeNumber(p.Type, inst.data[p.FieldNames[0]]))
 	}
 
 	for _, p := range collections {

@@ -5,6 +5,7 @@ package api
 import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	apikeys "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys"
+	admincampaigns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/campaigns"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections"
 	currencies "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/currencies"
 	customergroups "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups"
@@ -13,6 +14,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
+	pricelists "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists"
 	pricepreferences "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-preferences"
 	productcategories "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories"
 	productoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-options"
@@ -20,6 +22,7 @@ import (
 	producttypes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-types"
 	productvariants "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-variants"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products"
+	adminpromotions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions"
 	refundreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
 	adminreservations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/reservations"
@@ -29,6 +32,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores"
 	taxregions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-regions"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
+	workflowsexecutions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth"
 )
 
@@ -53,6 +57,10 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, productcategories.Middlewares...)
 	out = append(out, configurations.LayoutConfigurationListRoutesMiddlewares...)
 	out = append(out, currencies.Middlewares...)
+	out = append(out, pricelists.Middlewares...)
+	out = append(out, adminpromotions.Middlewares...)
+	out = append(out, admincampaigns.Middlewares...)
+	out = append(out, workflowsexecutions.Middlewares...)
 	out = append(out, stocklocations.Middlewares...)
 	out = append(out, inventoryitems.Middlewares...)
 	out = append(out, adminreservations.Middlewares...)

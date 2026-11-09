@@ -1,0 +1,904 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNTQwNzQsImV4cCI6MTc5NDM0MDQ3NH0.BWXAj8s94uV3FpLhQNZUR7ow4pMhxeOmovZpOac3fzI"
+    }
+  },
+  "customers": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customers": [
+        {
+          "id": "cus_01M70Y003N4TVNV8JPF1N2GRXK",
+          "company_name": "Acme Test",
+          "first_name": "Alice",
+          "last_name": "Tester",
+          "email": "alice@example.test",
+          "phone": "000",
+          "metadata": null,
+          "has_account": false,
+          "created_by": null,
+          "created_at": "2026-11-09T19:54:05.301Z",
+          "updated_at": "2026-11-09T19:54:05.301Z",
+          "deleted_at": null
+        },
+        {
+          "id": "cus_01M70Y003N2BPNAJHE2AMKBPKR",
+          "company_name": null,
+          "first_name": "Bob",
+          "last_name": "Sample",
+          "email": "bob@example.test",
+          "phone": null,
+          "metadata": {
+            "tier": "gold"
+          },
+          "has_account": false,
+          "created_by": null,
+          "created_at": "2026-11-09T19:54:05.301Z",
+          "updated_at": "2026-11-09T19:54:05.301Z",
+          "deleted_at": null
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "customers_groups": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customers": [
+        {
+          "id": "cus_01M70Y003N4TVNV8JPF1N2GRXK",
+          "email": "alice@example.test",
+          "groups": [
+            {
+              "id": "cusgroup_01M70Y003SH12AE4CE5D82VTQ4",
+              "name": "VIP",
+              "metadata": {
+                "level": 1
+              },
+              "created_by": null,
+              "created_at": "2026-11-09T19:54:05.305Z",
+              "updated_at": "2026-11-09T19:54:05.305Z",
+              "deleted_at": null
+            }
+          ],
+          "addresses": [
+            {
+              "id": "cuaddr_01M70Y0047474ZJVH7PKRR8ETV",
+              "address_name": "Home",
+              "is_default_shipping": true,
+              "is_default_billing": false,
+              "company": null,
+              "first_name": "Alice",
+              "last_name": "Tester",
+              "address_1": "1 Test Street",
+              "address_2": null,
+              "city": "Testville",
+              "country_code": "de",
+              "province": null,
+              "postal_code": "00000",
+              "phone": null,
+              "metadata": null,
+              "customer_id": "cus_01M70Y003N4TVNV8JPF1N2GRXK",
+              "created_at": "2026-11-09T19:54:05.319Z",
+              "updated_at": "2026-11-09T19:54:05.319Z",
+              "deleted_at": null
+            }
+          ]
+        },
+        {
+          "id": "cus_01M70Y003N2BPNAJHE2AMKBPKR",
+          "email": "bob@example.test",
+          "groups": [],
+          "addresses": []
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "customers_q": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customers": [
+        {
+          "id": "cus_01M70Y003N4TVNV8JPF1N2GRXK",
+          "email": "alice@example.test"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "customers_in_group": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customers": [
+        {
+          "id": "cus_01M70Y003N4TVNV8JPF1N2GRXK",
+          "email": "alice@example.test"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "customer": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customer": {
+        "email": "alice@example.test",
+        "id": "cus_01M70Y003N4TVNV8JPF1N2GRXK",
+        "groups": [
+          {
+            "id": "cusgroup_01M70Y003SH12AE4CE5D82VTQ4",
+            "name": "VIP",
+            "metadata": {
+              "level": 1
+            },
+            "created_by": null,
+            "created_at": "2026-11-09T19:54:05.305Z",
+            "updated_at": "2026-11-09T19:54:05.305Z",
+            "deleted_at": null
+          }
+        ],
+        "addresses": [
+          {
+            "id": "cuaddr_01M70Y0047474ZJVH7PKRR8ETV",
+            "address_name": "Home",
+            "is_default_shipping": true,
+            "is_default_billing": false,
+            "company": null,
+            "first_name": "Alice",
+            "last_name": "Tester",
+            "address_1": "1 Test Street",
+            "address_2": null,
+            "city": "Testville",
+            "country_code": "de",
+            "province": null,
+            "postal_code": "00000",
+            "phone": null,
+            "metadata": null,
+            "customer_id": "cus_01M70Y003N4TVNV8JPF1N2GRXK",
+            "created_at": "2026-11-09T19:54:05.319Z",
+            "updated_at": "2026-11-09T19:54:05.319Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "customer_groups": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customer_groups": [
+        {
+          "id": "cusgroup_01M70Y003SH12AE4CE5D82VTQ4",
+          "name": "VIP",
+          "created_by": null,
+          "created_at": "2026-11-09T19:54:05.305Z",
+          "updated_at": "2026-11-09T19:54:05.305Z",
+          "deleted_at": null,
+          "metadata": {
+            "level": 1
+          }
+        },
+        {
+          "id": "cusgroup_01M70Y003WEJZTTJ1JT1J4YW8W",
+          "name": "Wholesale",
+          "created_by": null,
+          "created_at": "2026-11-09T19:54:05.308Z",
+          "updated_at": "2026-11-09T19:54:05.308Z",
+          "deleted_at": null,
+          "metadata": null
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "customer_groups_customers": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customer_groups": [
+        {
+          "id": "cusgroup_01M70Y003SH12AE4CE5D82VTQ4",
+          "name": "VIP",
+          "customers": [
+            {
+              "id": "cus_01M70Y003N4TVNV8JPF1N2GRXK",
+              "company_name": "Acme Test",
+              "first_name": "Alice",
+              "last_name": "Tester",
+              "email": "alice@example.test",
+              "phone": "000",
+              "has_account": false,
+              "metadata": null,
+              "created_by": null,
+              "created_at": "2026-11-09T19:54:05.301Z",
+              "updated_at": "2026-11-09T19:54:05.301Z",
+              "deleted_at": null
+            }
+          ]
+        },
+        {
+          "id": "cusgroup_01M70Y003WEJZTTJ1JT1J4YW8W",
+          "name": "Wholesale",
+          "customers": []
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "customer_group": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customer_group": {
+        "id": "cusgroup_01M70Y003WEJZTTJ1JT1J4YW8W",
+        "name": "Wholesale",
+        "created_by": null,
+        "created_at": "2026-11-09T19:54:05.308Z",
+        "updated_at": "2026-11-09T19:54:05.308Z",
+        "deleted_at": null,
+        "metadata": null
+      }
+    }
+  },
+  "campaigns": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaigns": [
+        {
+          "id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+          "name": "Spring campaign",
+          "description": "Seed campaign",
+          "campaign_identifier": "SPRING",
+          "starts_at": null,
+          "ends_at": null,
+          "created_at": "2026-11-09T19:54:05.324Z",
+          "updated_at": "2026-11-09T19:54:05.324Z",
+          "deleted_at": null,
+          "budget": {
+            "id": "probudg_01M70Y004CPY3CW8MHVFNYCVWH",
+            "type": "spend",
+            "currency_code": "eur",
+            "attribute": null,
+            "raw_limit": {
+              "value": "1000",
+              "precision": 20
+            },
+            "raw_used": {
+              "value": "0",
+              "precision": 20
+            },
+            "created_at": "2026-11-09T19:54:05.324Z",
+            "updated_at": "2026-11-09T19:54:05.324Z",
+            "deleted_at": null,
+            "campaign_id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+            "limit": 1000,
+            "used": 0
+          }
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "campaign": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "name": "Spring campaign",
+        "id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+        "promotions": [
+          {
+            "id": "promo_01M70Y004QE6QZSQKF5H2R3MM6",
+            "code": "SPRING10",
+            "is_automatic": false,
+            "is_tax_inclusive": false,
+            "limit": null,
+            "used": 0,
+            "type": "standard",
+            "status": "active",
+            "campaign_id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+            "application_method": {
+              "id": "proappmet_01M70Y004RS5V2CMFXZ0P24D6K"
+            },
+            "metadata": null,
+            "created_at": "2026-11-09T19:54:05.336Z",
+            "updated_at": "2026-11-09T19:54:05.336Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "promotions": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotions": [
+        {
+          "id": "promo_01M70Y004QW5J7N985738V4B04",
+          "code": "FREESHIP",
+          "is_automatic": true,
+          "is_tax_inclusive": false,
+          "type": "standard",
+          "limit": null,
+          "used": 0,
+          "status": "draft",
+          "created_at": "2026-11-09T19:54:05.336Z",
+          "updated_at": "2026-11-09T19:54:05.336Z",
+          "deleted_at": null,
+          "metadata": null,
+          "campaign_id": null,
+          "application_method": {
+            "id": "proappmet_01M70Y004RXVN5P4CF6Q34KXC0",
+            "currency_code": "eur",
+            "max_quantity": null,
+            "apply_to_quantity": null,
+            "buy_rules_min_quantity": null,
+            "type": "fixed",
+            "target_type": "shipping_methods",
+            "allocation": "across",
+            "raw_value": {
+              "value": "5",
+              "precision": 20
+            },
+            "created_at": "2026-11-09T19:54:05.336Z",
+            "updated_at": "2026-11-09T19:54:05.336Z",
+            "deleted_at": null,
+            "promotion_id": "promo_01M70Y004QW5J7N985738V4B04",
+            "target_rules": [],
+            "buy_rules": [],
+            "value": 5
+          },
+          "rules": [],
+          "campaign": null
+        },
+        {
+          "id": "promo_01M70Y004QE6QZSQKF5H2R3MM6",
+          "code": "SPRING10",
+          "is_automatic": false,
+          "is_tax_inclusive": false,
+          "type": "standard",
+          "limit": null,
+          "used": 0,
+          "status": "active",
+          "created_at": "2026-11-09T19:54:05.336Z",
+          "updated_at": "2026-11-09T19:54:05.336Z",
+          "deleted_at": null,
+          "metadata": null,
+          "campaign_id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+          "application_method": {
+            "id": "proappmet_01M70Y004RS5V2CMFXZ0P24D6K",
+            "currency_code": null,
+            "max_quantity": 2,
+            "apply_to_quantity": null,
+            "buy_rules_min_quantity": null,
+            "type": "percentage",
+            "target_type": "items",
+            "allocation": "each",
+            "raw_value": {
+              "value": "10",
+              "precision": 20
+            },
+            "created_at": "2026-11-09T19:54:05.336Z",
+            "updated_at": "2026-11-09T19:54:05.336Z",
+            "deleted_at": null,
+            "promotion_id": "promo_01M70Y004QE6QZSQKF5H2R3MM6",
+            "target_rules": [
+              {
+                "id": "prorul_01M70Y004RF7KKHB5A03NCR6KH",
+                "description": null,
+                "attribute": "items.product.id",
+                "operator": "in",
+                "created_at": "2026-11-09T19:54:05.336Z",
+                "updated_at": "2026-11-09T19:54:05.336Z",
+                "deleted_at": null,
+                "values": [
+                  {
+                    "value": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+                  }
+                ]
+              }
+            ],
+            "buy_rules": [],
+            "value": 10
+          },
+          "rules": [
+            {
+              "id": "prorul_01M70Y004Q0MFSRMX1KWQF9JRA",
+              "attribute": "customer.groups.id",
+              "operator": "in",
+              "values": [
+                {
+                  "value": "cusgroup_01M70Y003SH12AE4CE5D82VTQ4"
+                }
+              ]
+            }
+          ],
+          "campaign": {
+            "id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+            "name": "Spring campaign",
+            "description": "Seed campaign",
+            "campaign_identifier": "SPRING",
+            "starts_at": null,
+            "ends_at": null,
+            "budget": {
+              "id": "probudg_01M70Y004CPY3CW8MHVFNYCVWH",
+              "type": "spend",
+              "currency_code": "eur",
+              "attribute": null,
+              "raw_limit": {
+                "value": "1000",
+                "precision": 20
+              },
+              "raw_used": {
+                "value": "0",
+                "precision": 20
+              },
+              "created_at": "2026-11-09T19:54:05.324Z",
+              "updated_at": "2026-11-09T19:54:05.324Z",
+              "deleted_at": null,
+              "campaign_id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+              "limit": 1000,
+              "used": 0
+            },
+            "created_at": "2026-11-09T19:54:05.324Z",
+            "updated_at": "2026-11-09T19:54:05.324Z",
+            "deleted_at": null
+          }
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "promotions_q": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotions": [
+        {
+          "id": "promo_01M70Y004QE6QZSQKF5H2R3MM6",
+          "code": "SPRING10"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "promotion_by_code": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M70Y004QE6QZSQKF5H2R3MM6",
+        "code": "SPRING10",
+        "is_automatic": false,
+        "is_tax_inclusive": false,
+        "type": "standard",
+        "limit": null,
+        "used": 0,
+        "status": "active",
+        "created_at": "2026-11-09T19:54:05.336Z",
+        "updated_at": "2026-11-09T19:54:05.336Z",
+        "deleted_at": null,
+        "metadata": null,
+        "campaign_id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+        "application_method": {
+          "id": "proappmet_01M70Y004RS5V2CMFXZ0P24D6K",
+          "currency_code": null,
+          "max_quantity": 2,
+          "apply_to_quantity": null,
+          "buy_rules_min_quantity": null,
+          "type": "percentage",
+          "target_type": "items",
+          "allocation": "each",
+          "raw_value": {
+            "value": "10",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T19:54:05.336Z",
+          "updated_at": "2026-11-09T19:54:05.336Z",
+          "deleted_at": null,
+          "promotion_id": "promo_01M70Y004QE6QZSQKF5H2R3MM6",
+          "target_rules": [
+            {
+              "id": "prorul_01M70Y004RF7KKHB5A03NCR6KH",
+              "description": null,
+              "attribute": "items.product.id",
+              "operator": "in",
+              "created_at": "2026-11-09T19:54:05.336Z",
+              "updated_at": "2026-11-09T19:54:05.336Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "value": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+                }
+              ]
+            }
+          ],
+          "buy_rules": [],
+          "value": 10
+        },
+        "rules": [
+          {
+            "id": "prorul_01M70Y004Q0MFSRMX1KWQF9JRA",
+            "attribute": "customer.groups.id",
+            "operator": "in",
+            "values": [
+              {
+                "value": "cusgroup_01M70Y003SH12AE4CE5D82VTQ4"
+              }
+            ]
+          }
+        ],
+        "campaign": {
+          "id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+          "name": "Spring campaign",
+          "description": "Seed campaign",
+          "campaign_identifier": "SPRING",
+          "starts_at": null,
+          "ends_at": null,
+          "budget": {
+            "id": "probudg_01M70Y004CPY3CW8MHVFNYCVWH",
+            "type": "spend",
+            "currency_code": "eur",
+            "attribute": null,
+            "raw_limit": {
+              "value": "1000",
+              "precision": 20
+            },
+            "raw_used": {
+              "value": "0",
+              "precision": 20
+            },
+            "created_at": "2026-11-09T19:54:05.324Z",
+            "updated_at": "2026-11-09T19:54:05.324Z",
+            "deleted_at": null,
+            "campaign_id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+            "limit": 1000,
+            "used": 0
+          },
+          "created_at": "2026-11-09T19:54:05.324Z",
+          "updated_at": "2026-11-09T19:54:05.324Z",
+          "deleted_at": null
+        }
+      }
+    }
+  },
+  "promotion_by_id": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M70Y004QW5J7N985738V4B04",
+        "code": "FREESHIP"
+      }
+    }
+  },
+  "promotion_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Promotion with id or code: NOPE was not found"
+    }
+  },
+  "price_lists": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_lists": [
+        {
+          "id": "plist_01M70Y005ES9QYND13694YMGSM",
+          "type": "override",
+          "description": "No prices",
+          "title": "Draft list",
+          "status": "draft",
+          "starts_at": null,
+          "ends_at": null,
+          "created_at": "2026-11-09T19:54:05.358Z",
+          "updated_at": "2026-11-09T19:54:05.358Z",
+          "deleted_at": null,
+          "metadata": null,
+          "rules": {}
+        },
+        {
+          "id": "plist_01M70Y005EFK37ETVJY7H2GSCA",
+          "type": "sale",
+          "description": "Seed price list",
+          "title": "VIP prices",
+          "status": "active",
+          "starts_at": null,
+          "ends_at": null,
+          "created_at": "2026-11-09T19:54:05.358Z",
+          "updated_at": "2026-11-09T19:54:05.358Z",
+          "deleted_at": null,
+          "metadata": null,
+          "rules": {
+            "customer.groups.id": [
+              "cusgroup_01M70Y003SH12AE4CE5D82VTQ4"
+            ]
+          }
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "price_lists_prices": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_lists": [
+        {
+          "id": "plist_01M70Y005ES9QYND13694YMGSM",
+          "title": "Draft list",
+          "prices": []
+        },
+        {
+          "id": "plist_01M70Y005EFK37ETVJY7H2GSCA",
+          "title": "VIP prices",
+          "prices": [
+            {
+              "id": "price_01M70Y005DJ7YX0G85JA4YC01F",
+              "title": null,
+              "currency_code": "eur",
+              "rules_count": 0,
+              "price_set_id": "pset_01M70Y0015MA0SFAPP1T4VPVDE",
+              "price_list_id": "plist_01M70Y005EFK37ETVJY7H2GSCA",
+              "raw_amount": {
+                "value": "15",
+                "precision": 20
+              },
+              "raw_min_quantity": null,
+              "raw_max_quantity": null,
+              "created_at": "2026-11-09T19:54:05.358Z",
+              "updated_at": "2026-11-09T19:54:05.358Z",
+              "deleted_at": null,
+              "amount": 15,
+              "min_quantity": null,
+              "max_quantity": null,
+              "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+              "rules": {}
+            },
+            {
+              "id": "price_01M70Y005DB5M36K22EQZEADWQ",
+              "title": null,
+              "currency_code": "eur",
+              "rules_count": 0,
+              "price_set_id": "pset_01M70Y0015WAMJ741KRV0MC7H5",
+              "price_list_id": "plist_01M70Y005EFK37ETVJY7H2GSCA",
+              "raw_amount": {
+                "value": "16",
+                "precision": 20
+              },
+              "raw_min_quantity": null,
+              "raw_max_quantity": null,
+              "created_at": "2026-11-09T19:54:05.358Z",
+              "updated_at": "2026-11-09T19:54:05.358Z",
+              "deleted_at": null,
+              "amount": 16,
+              "min_quantity": null,
+              "max_quantity": null,
+              "variant_id": "variant_01M70Y000GR2HDG6AHJXMDD8MS",
+              "rules": {}
+            }
+          ]
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "price_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_list": {
+        "id": "plist_01M70Y005EFK37ETVJY7H2GSCA",
+        "type": "sale",
+        "description": "Seed price list",
+        "title": "VIP prices",
+        "status": "active",
+        "starts_at": null,
+        "ends_at": null,
+        "created_at": "2026-11-09T19:54:05.358Z",
+        "updated_at": "2026-11-09T19:54:05.358Z",
+        "deleted_at": null,
+        "metadata": null,
+        "rules": {
+          "customer.groups.id": [
+            "cusgroup_01M70Y003SH12AE4CE5D82VTQ4"
+          ]
+        }
+      }
+    }
+  },
+  "price_list_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Price list with id: plist_missing was not found"
+    }
+  },
+  "return_reasons": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "return_reasons": [
+        {
+          "id": "rr_01M70Y005PFSMW073Q9K01TS49",
+          "value": "damaged",
+          "label": "Damaged",
+          "parent_return_reason_id": null,
+          "description": "Arrived damaged",
+          "created_at": "2026-11-09T19:54:05.366Z",
+          "updated_at": "2026-11-09T19:54:05.366Z",
+          "deleted_at": null
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "return_reason": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "return_reason": {
+        "id": "rr_01M70Y005PFSMW073Q9K01TS49",
+        "value": "damaged",
+        "label": "Damaged",
+        "parent_return_reason_id": null,
+        "description": "Arrived damaged",
+        "created_at": "2026-11-09T19:54:05.366Z",
+        "updated_at": "2026-11-09T19:54:05.366Z",
+        "deleted_at": null,
+        "parent_return_reason": null,
+        "return_reason_children": []
+      }
+    }
+  },
+  "workflows": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_executions": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "workflow_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  }
+}

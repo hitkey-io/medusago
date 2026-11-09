@@ -4,6 +4,8 @@ import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	apikeys "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys"
 	apikeyid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys/id_"
+	admincampaigns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/campaigns"
+	campaignid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/campaigns/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections"
 	collectionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections/id_"
 	collectionproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections/id_/products"
@@ -22,6 +24,8 @@ import (
 	adminmodules "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/modules"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
+	pricelists "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists"
+	pricelistid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists/id_"
 	pricepreferences "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-preferences"
 	productcategories "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories"
 	categoryid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories/id_"
@@ -42,6 +46,8 @@ import (
 	productvariantsroute "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants"
 	productvariantsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/batch"
 	productvariantid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/variant_id_"
+	adminpromotions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions"
+	promotionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/id_"
 	refundreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons"
 	refundreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
@@ -60,6 +66,8 @@ import (
 	adminusers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
 	userid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/me"
+	workflowsexecutions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions"
+	workflowexecutionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/providers"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/session"
@@ -74,7 +82,15 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/collections/:id/products", Route: collectionproducts.Route},
 		{Path: "/admin/api-keys", Route: apikeys.Route},
 		{Path: "/admin/api-keys/:id", Route: apikeyid.Route},
+		{Path: "/admin/campaigns", Route: admincampaigns.Route},
+		{Path: "/admin/campaigns/:id", Route: campaignid.Route},
 		{Path: "/admin/currencies", Route: currencies.Route},
+		{Path: "/admin/price-lists", Route: pricelists.Route},
+		{Path: "/admin/price-lists/:id", Route: pricelistid.Route},
+		{Path: "/admin/promotions", Route: adminpromotions.Route},
+		{Path: "/admin/promotions/:id", Route: promotionid.Route},
+		{Path: "/admin/workflows-executions", Route: workflowsexecutions.Route},
+		{Path: "/admin/workflows-executions/:id", Route: workflowexecutionid.Route},
 		{Path: "/admin/customer-groups", Route: customergroups.Route},
 		{Path: "/admin/customer-groups/:id", Route: customergroupid.Route},
 		{Path: "/admin/customers", Route: admincustomers.Route},

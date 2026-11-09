@@ -17,6 +17,14 @@ const {
   createInventoryLevelsWorkflow,
   deleteProductsWorkflow,
   updateStoresWorkflow,
+  createCustomersWorkflow,
+  createCustomerGroupsWorkflow,
+  linkCustomersToCustomerGroupWorkflow,
+  createCustomerAddressesWorkflow,
+  createCampaignsWorkflow,
+  createPromotionsWorkflow,
+  createPriceListsWorkflow,
+  createReturnReasonsWorkflow,
 } = req("@medusajs/medusa/core-flows")
 
 exports.default = async function seed({ container }) {
@@ -195,4 +203,85 @@ exports.default = async function seed({ container }) {
   })
 
   await deleteProductsWorkflow(container).run({ input: { ids: [products[3].id] } })
+
+  // Customers, groups and addresses (fictional test data).
+  const { result: [alice, bob] } = await createCustomersWorkflow(container).run({
+    input: {
+      customersData: [
+        { email: "alice@example.test", first_name: "Alice", last_name: "Tester", company_name: "Acme Test", phone: "000" },
+        { email: "bob@example.test", first_name: "Bob", last_name: "Sample", metadata: { tier: "gold" } },
+      ],
+    },
+  })
+  const { result: [vip] } = await createCustomerGroupsWorkflow(container).run({
+    input: { customersData: [{ name: "VIP", metadata: { level: 1 } }] },
+  })
+  await createCustomerGroupsWorkflow(container).run({ input: { customersData: [{ name: "Wholesale" }] } })
+  await linkCustomersToCustomerGroupWorkflow(container).run({ input: { id: vip.id, add: [alice.id] } })
+  await createCustomerAddressesWorkflow(container).run({
+    input: {
+      addresses: [
+        { customer_id: alice.id, address_name: "Home", first_name: "Alice", last_name: "Tester", address_1: "1 Test Street", city: "Testville", country_code: "de", postal_code: "00000", is_default_shipping: true },
+      ],
+    },
+  })
+
+  // Campaign, promotions.
+  const { result: [campaign] } = await createCampaignsWorkflow(container).run({
+    input: {
+      campaignsData: [
+        { name: "Spring campaign", campaign_identifier: "SPRING", description: "Seed campaign", budget: { type: "spend", limit: 1000, currency_code: "eur" } },
+      ],
+    },
+  })
+  await createPromotionsWorkflow(container).run({
+    input: {
+      promotionsData: [
+        {
+          code: "SPRING10",
+          type: "standard",
+          status: "active",
+          campaign_id: campaign.id,
+          application_method: {
+            type: "percentage",
+            target_type: "items",
+            allocation: "each",
+            value: 10,
+            max_quantity: 2,
+            target_rules: [{ attribute: "items.product.id", operator: "in", values: [products[0].id] }],
+          },
+          rules: [{ attribute: "customer.groups.id", operator: "in", values: [vip.id] }],
+        },
+        {
+          code: "FREESHIP",
+          type: "standard",
+          status: "draft",
+          is_automatic: true,
+          application_method: { type: "fixed", target_type: "shipping_methods", allocation: "across", value: 5, currency_code: "eur" },
+        },
+      ],
+    },
+  })
+
+  // Price list with prices for the shirt variants.
+  const { data: variants } = await query.graph({ entity: "product_variant", fields: ["id", "sku"], filters: { sku: ["SHIRT-S-BLACK", "SHIRT-M-WHITE"] } })
+  await createPriceListsWorkflow(container).run({
+    input: {
+      price_lists_data: [
+        {
+          title: "VIP prices",
+          description: "Seed price list",
+          type: "sale",
+          status: "active",
+          rules: { "customer.groups.id": [vip.id] },
+          prices: variants.map((v, n) => ({ variant_id: v.id, amount: 15 + n, currency_code: "eur" })),
+        },
+        { title: "Draft list", description: "No prices", type: "override", status: "draft" },
+      ],
+    },
+  })
+
+  await createReturnReasonsWorkflow(container).run({
+    input: { data: [{ value: "damaged", label: "Damaged", description: "Arrived damaged" }] },
+  })
 }

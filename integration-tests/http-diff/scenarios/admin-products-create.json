@@ -1,37 +1,349 @@
 [
-  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
-  { "name": "refs", "method": "GET", "bearer": "login", "path": "/admin/products?handle=t-shirt&fields=id,*shipping_profile,*tags,*categories,*sales_channels" },
-  { "name": "regions", "method": "GET", "bearer": "login", "path": "/admin/regions?fields=id,name&order=name" },
-  { "name": "create_full", "method": "POST", "bearer": "login", "path": "/admin/products", "body": {
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "refs",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products?handle=t-shirt&fields=id,*shipping_profile,*tags,*categories,*sales_channels"
+  },
+  {
+    "name": "regions",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/regions?fields=id,name&order=name"
+  },
+  {
+    "name": "create_full",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products",
+    "body": {
       "title": "Linen Shirt",
       "subtitle": "Summer edition",
       "description": "Light linen shirt",
       "status": "published",
-      "images": [{ "url": "https://example.com/linen-1.png" }, { "url": "https://example.com/linen-2.png" }],
+      "images": [
+        {
+          "url": "https://example.com/linen-1.png"
+        },
+        {
+          "url": "https://example.com/linen-2.png"
+        }
+      ],
       "weight": 250,
       "material": "linen",
-      "metadata": { "season": "summer" },
+      "metadata": {
+        "season": "summer"
+      },
       "shipping_profile_id": "{{refs.products.0.shipping_profile.id}}",
-      "sales_channels": [{ "id": "{{refs.products.0.sales_channels.0.id}}" }],
-      "tags": [{ "id": "{{refs.products.0.tags.0.id}}" }],
-      "categories": [{ "id": "{{refs.products.0.categories.0.id}}" }],
-      "options": [{ "title": "Size", "values": ["S", "M", "L"] }, { "title": "Color", "values": ["Blue", "White"] }],
+      "sales_channels": [
+        {
+          "id": "{{refs.products.0.sales_channels.0.id}}"
+        }
+      ],
+      "tags": [
+        {
+          "id": "{{refs.products.0.tags.0.id}}"
+        }
+      ],
+      "categories": [
+        {
+          "id": "{{refs.products.0.categories.0.id}}"
+        }
+      ],
+      "options": [
+        {
+          "title": "Size",
+          "values": [
+            "S",
+            "M",
+            "L"
+          ]
+        }
+      ],
       "variants": [
-        { "title": "S / Blue", "sku": "LINEN-S-BLUE", "options": { "Size": "S", "Color": "Blue" }, "prices": [{ "amount": 49.5, "currency_code": "EUR" }, { "amount": 55, "currency_code": "usd" }, { "amount": 45, "currency_code": "eur", "rules": { "region_id": "{{regions.regions.0.id}}" } }] },
-        { "title": "M / White", "sku": "LINEN-M-WHITE", "manage_inventory": false, "allow_backorder": true, "options": { "Size": "M", "Color": "White" }, "prices": [{ "amount": 52, "currency_code": "eur", "min_quantity": 2, "max_quantity": 10 }] }
+        {
+          "title": "S / Blue",
+          "sku": "LINEN-S-BLUE",
+          "options": {
+            "Size": "S"
+          },
+          "prices": [
+            {
+              "amount": 49.5,
+              "currency_code": "EUR"
+            },
+            {
+              "amount": 55,
+              "currency_code": "usd"
+            },
+            {
+              "amount": 45,
+              "currency_code": "eur",
+              "rules": {
+                "region_id": "{{regions.regions.0.id}}"
+              }
+            }
+          ]
+        }
       ]
-  } },
-  { "name": "created_detail", "method": "GET", "bearer": "login", "path": "/admin/products/{{create_full.product.id}}" },
-  { "name": "created_variants", "method": "GET", "bearer": "login", "path": "/admin/products/{{create_full.product.id}}/variants?order=variant_rank&fields=title,sku,*options,inventory_quantity,manage_inventory,*inventory_items" },
-  { "name": "create_minimal", "method": "POST", "bearer": "login", "path": "/admin/products?fields=id,title,handle,status,thumbnail,*options,*options.values,*variants", "body": { "title": "Café Crème Mug!", "options": [{ "title": "Default", "values": ["Default"] }] } },
-  { "name": "create_no_options", "method": "POST", "bearer": "login", "path": "/admin/products", "body": { "title": "No options" } },
-  { "name": "create_bad_handle", "method": "POST", "bearer": "login", "path": "/admin/products", "body": { "title": "Bad", "handle": "Bad Handle", "options": [{ "title": "A", "values": ["x"] }] } },
-  { "name": "create_unknown_field", "method": "POST", "bearer": "login", "path": "/admin/products", "body": { "title": "X", "foo": 1, "options": [{ "title": "A", "values": ["x"] }] } },
-  { "name": "create_missing_title", "method": "POST", "bearer": "login", "path": "/admin/products", "body": { "options": [{ "title": "A", "values": ["x"] }] } },
-  { "name": "create_duplicate_handle", "method": "POST", "bearer": "login", "path": "/admin/products", "body": { "title": "Dup", "handle": "t-shirt", "options": [{ "title": "A", "values": ["x"] }] } },
-  { "name": "create_variant_missing_option", "method": "POST", "bearer": "login", "path": "/admin/products", "body": { "title": "VM", "options": [{ "title": "Size", "values": ["S"] }, { "title": "Color", "values": ["Red"] }], "variants": [{ "title": "S", "options": { "Size": "S" }, "prices": [] }] } },
-  { "name": "create_bad_option_value", "method": "POST", "bearer": "login", "path": "/admin/products", "body": { "title": "BV", "options": [{ "title": "Size", "values": ["S"] }], "variants": [{ "title": "XL", "options": { "Size": "XL" }, "prices": [] }] } },
-  { "name": "create_missing_tag", "method": "POST", "bearer": "login", "path": "/admin/products", "body": { "title": "MT", "tags": [{ "id": "ptag_missing" }], "options": [{ "title": "A", "values": ["x"] }] } },
-  { "name": "create_bad_inventory_item", "method": "POST", "bearer": "login", "path": "/admin/products", "body": { "title": "BI", "options": [{ "title": "A", "values": ["x"] }], "variants": [{ "title": "x", "options": { "A": "x" }, "prices": [], "inventory_items": [{ "inventory_item_id": "iitem_missing", "required_quantity": 1 }] }] } },
-  { "name": "list_after", "method": "GET", "bearer": "login", "path": "/admin/products?order=title&fields=id,title,handle,status" }
+    }
+  },
+  {
+    "name": "add_second_variant",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/{{create_full.product.id}}/variants?fields=id",
+    "body": {
+      "title": "M / White",
+      "sku": "LINEN-M-WHITE",
+      "manage_inventory": false,
+      "allow_backorder": true,
+      "options": {
+        "Size": "M"
+      },
+      "prices": [
+        {
+          "amount": 52,
+          "currency_code": "eur",
+          "min_quantity": 2,
+          "max_quantity": 10
+        }
+      ]
+    }
+  },
+  {
+    "name": "created_detail",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products/{{create_full.product.id}}"
+  },
+  {
+    "name": "created_variants",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products/{{create_full.product.id}}/variants?order=variant_rank&fields=title,sku,*options,inventory_quantity,manage_inventory,*inventory_items"
+  },
+  {
+    "name": "create_minimal",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products?fields=id,title,handle,status,thumbnail,*options,*options.values,*variants",
+    "body": {
+      "title": "Café Crème Mug!",
+      "options": [
+        {
+          "title": "Default",
+          "values": [
+            "Default"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "create_no_options",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products",
+    "body": {
+      "title": "No options"
+    }
+  },
+  {
+    "name": "create_bad_handle",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products",
+    "body": {
+      "title": "Bad",
+      "handle": "Bad Handle",
+      "options": [
+        {
+          "title": "A",
+          "values": [
+            "x"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "create_unknown_field",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products",
+    "body": {
+      "title": "X",
+      "foo": 1,
+      "options": [
+        {
+          "title": "A",
+          "values": [
+            "x"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "create_missing_title",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products",
+    "body": {
+      "options": [
+        {
+          "title": "A",
+          "values": [
+            "x"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "create_duplicate_handle",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products",
+    "body": {
+      "title": "Dup",
+      "handle": "t-shirt",
+      "options": [
+        {
+          "title": "A",
+          "values": [
+            "x"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "create_variant_missing_option",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products",
+    "body": {
+      "title": "VM",
+      "options": [
+        {
+          "title": "Size",
+          "values": [
+            "S"
+          ]
+        },
+        {
+          "title": "Color",
+          "values": [
+            "Red"
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "title": "S",
+          "options": {
+            "Size": "S"
+          },
+          "prices": []
+        }
+      ]
+    }
+  },
+  {
+    "name": "create_bad_option_value",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products",
+    "body": {
+      "title": "BV",
+      "options": [
+        {
+          "title": "Size",
+          "values": [
+            "S"
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "title": "XL",
+          "options": {
+            "Size": "XL"
+          },
+          "prices": []
+        }
+      ]
+    }
+  },
+  {
+    "name": "create_missing_tag",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products",
+    "body": {
+      "title": "MT",
+      "tags": [
+        {
+          "id": "ptag_missing"
+        }
+      ],
+      "options": [
+        {
+          "title": "A",
+          "values": [
+            "x"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "create_bad_inventory_item",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products",
+    "body": {
+      "title": "BI",
+      "options": [
+        {
+          "title": "A",
+          "values": [
+            "x"
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "title": "x",
+          "options": {
+            "A": "x"
+          },
+          "prices": [],
+          "inventory_items": [
+            {
+              "inventory_item_id": "iitem_missing",
+              "required_quantity": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "list_after",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products?order=title&fields=id,title,handle,status"
+  }
 ]
