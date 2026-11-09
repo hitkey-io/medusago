@@ -40,6 +40,7 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/collections/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 	{Methods: []string{"POST"}, Matcher: "/admin/collections", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateCollection)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 	{Methods: []string{"POST"}, Matcher: "/admin/collections/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminUpdateCollection)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/collections/:id/products", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(utils.CreateLinkBody())), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 }
 
 // Route is route.ts.

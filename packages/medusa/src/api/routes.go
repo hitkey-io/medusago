@@ -4,6 +4,7 @@ import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections"
 	collectionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections/id_"
+	collectionproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections/id_/products"
 	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/feature-flags"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/zone_/configuration"
@@ -12,6 +13,8 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
 	pricepreferences "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-preferences"
 	productcategories "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories"
+	categoryid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories/id_"
+	categoryproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories/id_/products"
 	productoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-options"
 	productoptionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-options/id_"
 	productoptionvalues "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-options/id_/values"
@@ -44,9 +47,12 @@ func Routes() []medusahttp.RouteFile {
 	return []medusahttp.RouteFile{
 		{Path: "/admin/collections", Route: collections.Route},
 		{Path: "/admin/collections/:id", Route: collectionid.Route},
+		{Path: "/admin/collections/:id/products", Route: collectionproducts.Route},
 		{Path: "/admin/feature-flags", Route: featureflags.Route},
 		{Path: "/admin/price-preferences", Route: pricepreferences.Route},
 		{Path: "/admin/product-categories", Route: productcategories.Route},
+		{Path: "/admin/product-categories/:id", Route: categoryid.Route},
+		{Path: "/admin/product-categories/:id/products", Route: categoryproducts.Route},
 		{Path: "/admin/product-options", Route: productoptions.Route},
 		{Path: "/admin/product-options/:id", Route: productoptionid.Route},
 		{Path: "/admin/product-options/:id/values", Route: productoptionvalues.Route},

@@ -60,9 +60,47 @@ func getFilterableFields(r *dal.Record) *dal.Record {
 			continue
 		}
 		v, _ := r.Get(k)
-		out.Set(k, v)
+		if zod.IsUndefined(v) {
+			continue
+		}
+		out.Set(k, removeUndefinedDeeply(v))
 	}
 	return out
+}
+
+// removeUndefinedDeeply mirrors removeUndefinedDeeply of
+// removeUndefinedProperties: "null" strings become null.
+func removeUndefinedDeeply(v any) any {
+	switch t := v.(type) {
+	case string:
+		if t == "null" {
+			return nil
+		}
+		return t
+	case []any:
+		out := make([]any, 0, len(t))
+		for _, x := range t {
+			if zod.IsUndefined(x) {
+				continue
+			}
+			out = append(out, removeUndefinedDeeply(x))
+		}
+		return out
+	case *dal.Record:
+		if t == nil {
+			return t
+		}
+		out := dal.NewRecord()
+		for _, k := range t.Keys() {
+			x, _ := t.Get(k)
+			if zod.IsUndefined(x) {
+				continue
+			}
+			out.Set(k, removeUndefinedDeeply(x))
+		}
+		return out
+	}
+	return v
 }
 
 // GetRelationsDepth mirrors getRelationsDepth.

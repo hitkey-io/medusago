@@ -1,0 +1,691 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBSOEEyQVNHRDZZRkpGWlhaNTc2RTIiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBSOEE0U0tHVjA0RktGOEtLOTBRODQiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwUjhBMkFTR0Q2WUZKRlpYWjU3NkUyIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNTI1MDksImV4cCI6MTc5NDMzODkwOX0.Ioky06iMDLTYDsTPK9j_t4pnXR2UXYhIumAe_A6Sm3I"
+    }
+  },
+  "cats": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_categories": [
+        {
+          "id": "pcat_01M70R87S2X3RC5JAV2YHBTMVG",
+          "name": "Clothing",
+          "rank": 0,
+          "parent_category_id": null,
+          "mpath": "pcat_01M70R87S2X3RC5JAV2YHBTMVG"
+        },
+        {
+          "id": "pcat_01M70R87S9F01XXPJKVT94MKHA",
+          "name": "Shirts",
+          "rank": 0,
+          "parent_category_id": "pcat_01M70R87S2X3RC5JAV2YHBTMVG",
+          "mpath": "pcat_01M70R87S2X3RC5JAV2YHBTMVG.pcat_01M70R87S9F01XXPJKVT94MKHA"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M70R87SKTYART5PD889MB0FM",
+          "title": "Draft Hoodie"
+        },
+        {
+          "id": "prod_01M70R87SKP6VQ44C7XYGTN8SH",
+          "title": "Medusa Sweatpants"
+        },
+        {
+          "id": "prod_01M70R87SK516NGY096588K13N",
+          "title": "Medusa T-Shirt"
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "root_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_category": {
+        "id": "pcat_01M70WH4EEJSY9JY12W7TG0N4D",
+        "name": "Outdoor Gear",
+        "handle": "outdoor-gear",
+        "rank": 1,
+        "mpath": "pcat_01M70WH4EEJSY9JY12W7TG0N4D",
+        "parent_category_id": null
+      }
+    }
+  },
+  "root_b": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_category": {
+        "id": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9",
+        "name": "Accessories",
+        "handle": "accessories",
+        "rank": 0,
+        "mpath": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9"
+      }
+    }
+  },
+  "child_a1": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_category": {
+        "id": "pcat_01M70WH4FVSJ311H13M1YDDSSR",
+        "name": "Tents",
+        "rank": 0,
+        "mpath": "pcat_01M70WH4EEJSY9JY12W7TG0N4D.pcat_01M70WH4FVSJ311H13M1YDDSSR",
+        "parent_category_id": "pcat_01M70WH4EEJSY9JY12W7TG0N4D",
+        "parent_category": {
+          "id": "pcat_01M70WH4EEJSY9JY12W7TG0N4D",
+          "name": "Outdoor Gear",
+          "description": "",
+          "handle": "outdoor-gear",
+          "mpath": "pcat_01M70WH4EEJSY9JY12W7TG0N4D",
+          "is_active": false,
+          "is_internal": false,
+          "rank": 2,
+          "external_id": null,
+          "metadata": null,
+          "parent_category_id": null,
+          "created_at": "2026-11-09T19:28:29.646Z",
+          "updated_at": "2026-11-09T19:28:29.679Z",
+          "deleted_at": null
+        }
+      }
+    }
+  },
+  "child_a2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_category": {
+        "id": "pcat_01M70WH4G7GGT0EMBWAJEK60JW",
+        "name": "Backpacks",
+        "rank": 1,
+        "mpath": "pcat_01M70WH4EEJSY9JY12W7TG0N4D.pcat_01M70WH4G7GGT0EMBWAJEK60JW"
+      }
+    }
+  },
+  "grand": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_category": {
+        "id": "pcat_01M70WH4GG187595Z60VCRT8AX",
+        "name": "Dome tents",
+        "rank": 0,
+        "mpath": "pcat_01M70WH4EEJSY9JY12W7TG0N4D.pcat_01M70WH4FVSJ311H13M1YDDSSR.pcat_01M70WH4GG187595Z60VCRT8AX"
+      }
+    }
+  },
+  "bad_parent": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_argument",
+      "message": "Parent category with id: 'pcat_missing' does not exist"
+    }
+  },
+  "dup_handle": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Product category with handle: tents, already exists."
+    }
+  },
+  "neg_rank": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Value for field 'rank' too small, expected at least: '0'"
+    }
+  },
+  "roots_after_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_categories": [
+        {
+          "id": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9",
+          "name": "Accessories",
+          "rank": 0
+        },
+        {
+          "id": "pcat_01M70R87S2X3RC5JAV2YHBTMVG",
+          "name": "Clothing",
+          "rank": 1
+        },
+        {
+          "id": "pcat_01M70WH4EEJSY9JY12W7TG0N4D",
+          "name": "Outdoor Gear",
+          "rank": 2
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "get_one": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_category": {
+        "id": "pcat_01M70WH4FVSJ311H13M1YDDSSR",
+        "name": "Tents",
+        "description": "",
+        "handle": "tents",
+        "is_active": false,
+        "is_internal": false,
+        "rank": 0,
+        "external_id": null,
+        "parent_category_id": "pcat_01M70WH4EEJSY9JY12W7TG0N4D",
+        "created_at": "2026-11-09T19:28:29.691Z",
+        "updated_at": "2026-11-09T19:28:29.691Z",
+        "metadata": null,
+        "parent_category": {
+          "id": "pcat_01M70WH4EEJSY9JY12W7TG0N4D",
+          "name": "Outdoor Gear",
+          "description": "",
+          "handle": "outdoor-gear",
+          "mpath": "pcat_01M70WH4EEJSY9JY12W7TG0N4D",
+          "is_active": false,
+          "is_internal": false,
+          "rank": 2,
+          "external_id": null,
+          "metadata": null,
+          "parent_category_id": null,
+          "created_at": "2026-11-09T19:28:29.646Z",
+          "updated_at": "2026-11-09T19:28:29.679Z",
+          "deleted_at": null
+        },
+        "category_children": [
+          {
+            "id": "pcat_01M70WH4GG187595Z60VCRT8AX",
+            "name": "Dome tents",
+            "description": "",
+            "handle": "dome-tents",
+            "mpath": "pcat_01M70WH4EEJSY9JY12W7TG0N4D.pcat_01M70WH4FVSJ311H13M1YDDSSR.pcat_01M70WH4GG187595Z60VCRT8AX",
+            "is_active": false,
+            "is_internal": false,
+            "rank": 0,
+            "external_id": null,
+            "metadata": null,
+            "parent_category_id": "pcat_01M70WH4FVSJ311H13M1YDDSSR",
+            "created_at": "2026-11-09T19:28:29.712Z",
+            "updated_at": "2026-11-09T19:28:29.712Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "get_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Product category with id: pcat_missing was not found"
+    }
+  },
+  "rerank": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_category": {
+        "id": "pcat_01M70WH4G7GGT0EMBWAJEK60JW",
+        "rank": 0
+      }
+    }
+  },
+  "children_after_rerank": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_categories": [
+        {
+          "id": "pcat_01M70WH4G7GGT0EMBWAJEK60JW",
+          "name": "Backpacks",
+          "rank": 0
+        },
+        {
+          "id": "pcat_01M70WH4FVSJ311H13M1YDDSSR",
+          "name": "Tents",
+          "rank": 1
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "move": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_category": {
+        "id": "pcat_01M70WH4FVSJ311H13M1YDDSSR",
+        "rank": 0,
+        "mpath": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9.pcat_01M70WH4FVSJ311H13M1YDDSSR",
+        "parent_category_id": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9"
+      }
+    }
+  },
+  "grand_after_move": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_category": {
+        "id": "pcat_01M70WH4GG187595Z60VCRT8AX",
+        "mpath": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9.pcat_01M70WH4FVSJ311H13M1YDDSSR.pcat_01M70WH4GG187595Z60VCRT8AX",
+        "rank": 0
+      }
+    }
+  },
+  "a_children_after_move": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_categories": [
+        {
+          "id": "pcat_01M70WH4G7GGT0EMBWAJEK60JW",
+          "name": "Backpacks",
+          "rank": 0
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "update_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "link_products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_category": {
+        "id": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9",
+        "products": [
+          {
+            "id": "prod_01M70R87SKTYART5PD889MB0FM",
+            "title": "Draft Hoodie",
+            "handle": "hoodie",
+            "subtitle": null,
+            "description": null,
+            "is_giftcard": false,
+            "status": "draft",
+            "thumbnail": null,
+            "weight": null,
+            "length": null,
+            "height": null,
+            "width": null,
+            "origin_country": null,
+            "hs_code": null,
+            "mid_code": null,
+            "material": null,
+            "discountable": false,
+            "external_id": null,
+            "metadata": null,
+            "type_id": null,
+            "type": null,
+            "collection_id": null,
+            "collection": null,
+            "created_at": "2026-11-09T18:13:43.862Z",
+            "updated_at": "2026-11-09T18:13:43.862Z",
+            "deleted_at": null
+          },
+          {
+            "id": "prod_01M70R87SKP6VQ44C7XYGTN8SH",
+            "title": "Medusa Sweatpants",
+            "handle": "sweatpants",
+            "subtitle": null,
+            "description": null,
+            "is_giftcard": false,
+            "status": "published",
+            "thumbnail": null,
+            "weight": null,
+            "length": null,
+            "height": null,
+            "width": null,
+            "origin_country": null,
+            "hs_code": null,
+            "mid_code": null,
+            "material": null,
+            "discountable": true,
+            "external_id": null,
+            "metadata": null,
+            "type_id": null,
+            "type": null,
+            "collection_id": "pcol_01M70R87RNPCK33T7G6F25TW4K",
+            "collection": {
+              "id": "pcol_01M70R87RNPCK33T7G6F25TW4K"
+            },
+            "created_at": "2026-11-09T18:13:43.862Z",
+            "updated_at": "2026-11-09T18:13:43.862Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "unlink_products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_category": {
+        "id": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9",
+        "products": [
+          {
+            "id": "prod_01M70R87SKP6VQ44C7XYGTN8SH"
+          }
+        ]
+      }
+    }
+  },
+  "delete_with_children": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Deleting ProductCategory (pcat_01M70WH4FFFB6TA7SMEP0WRYR9) with category children is not allowed"
+    }
+  },
+  "delete_leaf": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "pcat_01M70WH4G7GGT0EMBWAJEK60JW",
+      "object": "product_category",
+      "deleted": true
+    }
+  },
+  "delete_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "ProductCategory with id: pcat_missing was not found"
+    }
+  },
+  "col": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "collections": [
+        {
+          "id": "pcol_01M70R87RNPCK33T7G6F25TW4K"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 10
+    }
+  },
+  "col_link": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "collection": {
+        "id": "pcol_01M70R87RNPCK33T7G6F25TW4K",
+        "products": [
+          {
+            "id": "prod_01M70R87SKTYART5PD889MB0FM",
+            "title": "Draft Hoodie"
+          },
+          {
+            "id": "prod_01M70R87SK516NGY096588K13N",
+            "title": "Medusa T-Shirt"
+          },
+          {
+            "id": "prod_01M70R87SKP6VQ44C7XYGTN8SH",
+            "title": "Medusa Sweatpants"
+          }
+        ]
+      }
+    }
+  },
+  "col_unlink": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "collection": {
+        "id": "pcol_01M70R87RNPCK33T7G6F25TW4K",
+        "products": [
+          {
+            "id": "prod_01M70R87SK516NGY096588K13N"
+          },
+          {
+            "id": "prod_01M70R87SKP6VQ44C7XYGTN8SH"
+          }
+        ]
+      }
+    }
+  },
+  "col_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "ProductCollection with id: pcol_missing was not found"
+    }
+  },
+  "final": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_categories": [
+        {
+          "id": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9",
+          "name": "Accessories",
+          "rank": 0,
+          "mpath": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9",
+          "parent_category_id": null,
+          "deleted_at": null,
+          "products": [
+            {
+              "id": "prod_01M70R87SKP6VQ44C7XYGTN8SH"
+            }
+          ]
+        },
+        {
+          "id": "pcat_01M70R87S2X3RC5JAV2YHBTMVG",
+          "name": "Clothing",
+          "rank": 1,
+          "mpath": "pcat_01M70R87S2X3RC5JAV2YHBTMVG",
+          "parent_category_id": null,
+          "deleted_at": null,
+          "products": [
+            {
+              "id": "prod_01M70R87SKP6VQ44C7XYGTN8SH"
+            }
+          ]
+        },
+        {
+          "id": "pcat_01M70WH4GG187595Z60VCRT8AX",
+          "name": "Dome tents",
+          "rank": 0,
+          "mpath": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9.pcat_01M70WH4FVSJ311H13M1YDDSSR.pcat_01M70WH4GG187595Z60VCRT8AX",
+          "parent_category_id": "pcat_01M70WH4FVSJ311H13M1YDDSSR",
+          "deleted_at": null,
+          "products": []
+        },
+        {
+          "id": "pcat_01M70WH4EEJSY9JY12W7TG0N4D",
+          "name": "Outdoor Gear",
+          "rank": 2,
+          "mpath": "pcat_01M70WH4EEJSY9JY12W7TG0N4D",
+          "parent_category_id": null,
+          "deleted_at": null,
+          "products": []
+        },
+        {
+          "id": "pcat_01M70R87S9F01XXPJKVT94MKHA",
+          "name": "Shirts",
+          "rank": 1,
+          "mpath": "pcat_01M70R87S2X3RC5JAV2YHBTMVG.pcat_01M70R87S9F01XXPJKVT94MKHA",
+          "parent_category_id": "pcat_01M70R87S2X3RC5JAV2YHBTMVG",
+          "deleted_at": null,
+          "products": [
+            {
+              "id": "prod_01M70R87SK516NGY096588K13N"
+            }
+          ]
+        },
+        {
+          "id": "pcat_01M70WH4FVSJ311H13M1YDDSSR",
+          "name": "Tents & shelters",
+          "rank": 0,
+          "mpath": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9.pcat_01M70WH4FVSJ311H13M1YDDSSR",
+          "parent_category_id": "pcat_01M70WH4FFFB6TA7SMEP0WRYR9",
+          "deleted_at": null,
+          "products": []
+        }
+      ],
+      "count": 6,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}
