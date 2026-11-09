@@ -10,6 +10,7 @@ import (
 	currencies "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/currencies"
 	customergroups "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups"
 	admincustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers"
+	fulfillmentproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-providers"
 	fulfillmentsets "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets"
 	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
@@ -29,6 +30,7 @@ import (
 	adminreservations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/reservations"
 	returnreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons"
 	saleschannels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels"
+	shippingoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-options"
 	shippingprofiles "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-profiles"
 	stocklocations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores"
@@ -73,6 +75,8 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, taxproviders.Middlewares...)
 	out = append(out, fulfillmentsets.Middlewares...)
 	out = append(out, shippingprofiles.Middlewares...)
+	out = append(out, shippingoptions.Middlewares...)
+	out = append(out, fulfillmentproviders.Middlewares...)
 	out = append(out, apikeys.Middlewares...)
 	out = append(out, admincustomers.Middlewares...)
 	out = append(out, customergroups.Middlewares...)

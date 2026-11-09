@@ -733,3 +733,26 @@ func (s *FulfillmentModuleService) SoftDeleteShippingProfiles(ctx context.Contex
 	}
 	return s.Internal("ShippingProfile").SoftDelete(ctx, profileIDs)
 }
+
+// manualFulfillmentOptions mirrors ManualFulfillmentService.getFulfillmentOptions.
+func manualFulfillmentOptions() []any {
+	a := dal.NewRecord()
+	a.Set("id", "manual-fulfillment")
+	b := dal.NewRecord()
+	b.Set("id", "manual-fulfillment-return")
+	b.Set("is_return", true)
+	return []any{a, b}
+}
+
+// RetrieveFulfillmentOptions mirrors retrieveFulfillmentOptions: the
+// registered provider's options (only the manual provider is bundled).
+func (s *FulfillmentModuleService) RetrieveFulfillmentOptions(ctx context.Context, providerID string) ([]any, error) {
+	if strings.HasPrefix(providerID, "manual_") {
+		f := dal.NewRecord()
+		f.Set("id", providerID)
+		if rows, err := s.Internal("FulfillmentProvider").List(ctx, f, utilsmodulessdk.FindConfig{}); err == nil && len(rows) > 0 {
+			return manualFulfillmentOptions(), nil
+		}
+	}
+	return nil, fmt.Errorf("\nUnable to retrieve the fulfillment provider with id: %s\nPlease make sure that the provider is registered in the container and it is configured correctly in your project configuration file.", providerID)
+}

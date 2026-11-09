@@ -108,6 +108,15 @@ func (r *Repository) exec(ctx context.Context, sql string, args ...any) error {
 // columnValue converts a value for a column: arrays go to Postgres array
 // columns as arrays, other structured values as JSON.
 func columnValue(e *dml.Entity, column string, v any) (any, error) {
+	if v != nil {
+		for _, p := range e.Meta.Properties {
+			if len(p.FieldNames) > 0 && p.FieldNames[0] == column && (p.ColumnType == "jsonb" || p.ColumnType == "json") {
+				// JsonType.convertToDatabaseValue: JSON.stringify of any value
+				b, err := MarshalValue(v)
+				return string(b), err
+			}
+		}
+	}
 	if list, ok := v.([]any); ok {
 		for _, p := range e.Meta.Properties {
 			if len(p.FieldNames) == 0 || p.FieldNames[0] != column {

@@ -20,6 +20,8 @@ import (
 	customeraddress "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_/addresses/address_id_"
 	customercustomergroups "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_/customer-groups"
 	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/feature-flags"
+	fulfillmentproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-providers"
+	fulfillmentprovideroptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-providers/id_/options"
 	fulfillmentsetid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets/id_"
 	fulfillmentsetzones "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets/id_/service-zones"
 	fulfillmentsetzone "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets/id_/service-zones/zone_id_"
@@ -68,6 +70,8 @@ import (
 	saleschannelid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_"
 	saleschannelproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_/products"
 	searchindexes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/search-indexes"
+	shippingoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-options"
+	shippingoptionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-options/id_"
 	shippingprofiles "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-profiles"
 	shippingprofileid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-profiles/id_"
 	stocklocations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations"
@@ -134,6 +138,10 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/stock-locations/:id/fulfillment-providers", Route: stocklocationfp.Route},
 		{Path: "/admin/stock-locations/:id/fulfillment-sets", Route: stocklocationfs.Route},
 		{Path: "/admin/shipping-profiles", Route: shippingprofiles.Route},
+		{Path: "/admin/shipping-options", Route: shippingoptions.Route},
+		{Path: "/admin/shipping-options/:id", Route: shippingoptionid.Route},
+		{Path: "/admin/fulfillment-providers", Route: fulfillmentproviders.Route},
+		{Path: "/admin/fulfillment-providers/:id/options", Route: fulfillmentprovideroptions.Route},
 		{Path: "/admin/shipping-profiles/:id", Route: shippingprofileid.Route},
 		{Path: "/admin/fulfillment-sets/:id", Route: fulfillmentsetid.Route},
 		{Path: "/admin/fulfillment-sets/:id/service-zones", Route: fulfillmentsetzones.Route},

@@ -79,3 +79,20 @@ var UseRemoteQueryStep = composer.CreateStep("use-remote-query",
 		}
 		return composer.NewStepResponse(res), nil
 	}, nil)
+
+// RemoteQuery mirrors remoteQuery(remoteQueryObjectFromString({ entryPoint,
+// variables, fields })) inside a step: the rows.
+func RemoteQuery(ctx composer.StepExecutionContext, entryPoint string, variables *dal.Record, fields []string) ([]any, error) {
+	obj := query.RemoteQueryObjectFromString(query.RemoteQueryObjectConfig{EntryPoint: entryPoint, Fields: fields, Variables: variables})
+	res, err := QueryOf(ctx.Container).RemoteQuery(ctx.Context, obj)
+	if err != nil {
+		return nil, err
+	}
+	return res.Data, nil
+}
+
+// RemoteQueryService mirrors remoteQuery({ service: LINKS.X, variables,
+// fields }) through the link's entry point.
+func RemoteQueryService(ctx composer.StepExecutionContext, entryPoint string, variables *dal.Record, fields []string) ([]any, error) {
+	return RemoteQuery(ctx, entryPoint, variables, fields)
+}
