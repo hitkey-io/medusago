@@ -81,6 +81,8 @@ type InputConfig struct {
 	Modules       []ModuleConfig `json:"modules,omitempty" yaml:"modules,omitempty"`
 	// FeatureFlags mirrors config.featureFlags.
 	FeatureFlags map[string]any `json:"featureFlags,omitempty" yaml:"featureFlags,omitempty"`
+	// Plugins mirrors config.plugins.
+	Plugins []PluginConfig `json:"plugins,omitempty" yaml:"plugins,omitempty"`
 }
 
 // ConfigModule is the resolved configuration.
@@ -88,6 +90,7 @@ type ConfigModule struct {
 	ProjectConfig ProjectConfig
 	Modules       []ModuleConfig
 	FeatureFlags  map[string]any
+	Plugins       []PluginConfig
 }
 
 // DefineConfig mirrors defineConfig from define-config.ts: it fills project
@@ -147,7 +150,35 @@ func DefineConfig(input InputConfig) ConfigModule {
 		}
 	}
 
-	return ConfigModule{ProjectConfig: pc, Modules: modules, FeatureFlags: input.FeatureFlags}
+	return ConfigModule{ProjectConfig: pc, Modules: modules, FeatureFlags: input.FeatureFlags, Plugins: resolvePlugins(input.Plugins)}
+}
+
+// PluginConfig mirrors a resolved plugin entry { resolve, options }.
+type PluginConfig struct {
+	Resolve string         `json:"resolve" yaml:"resolve"`
+	Options map[string]any `json:"options,omitempty" yaml:"options,omitempty"`
+}
+
+// resolvePlugins mirrors resolvePlugins: the default @medusajs/draft-order
+// plugin, then the configured plugins (by resolve, the last one wins).
+func resolvePlugins(configPlugins []PluginConfig) []PluginConfig {
+	out := []PluginConfig{{Resolve: "@medusajs/draft-order", Options: map[string]any{}}}
+	for _, p := range configPlugins {
+		if p.Options == nil {
+			p.Options = map[string]any{}
+		}
+		replaced := false
+		for i := range out {
+			if out[i].Resolve == p.Resolve {
+				out[i] = p
+				replaced = true
+			}
+		}
+		if !replaced {
+			out = append(out, p)
+		}
+	}
+	return out
 }
 
 const (

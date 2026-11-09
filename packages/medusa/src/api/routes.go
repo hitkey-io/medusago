@@ -42,7 +42,9 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/zone_/configuration"
 	adminmodules "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/modules"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
+	notificationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
+	adminplugins "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/plugins"
 	pricelists "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists"
 	pricelistid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists/id_"
 	pricelistprices "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists/id_/prices"
@@ -242,6 +244,8 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/users/:id/auth-providers", Route: userauthproviders.Route},
 		{Path: "/admin/invites", Route: admininvites.Route},
 		{Path: "/admin/uploads", Route: adminuploads.Route},
+		{Path: "/admin/notifications/:id", Route: notificationid.Route},
+		{Path: "/admin/plugins", Route: adminplugins.Route},
 		{Path: "/admin/uploads/:id", Route: uploadid.Route},
 		{Path: "/admin/uploads/presigned-urls", Route: uploadpresigned.Route},
 		{Path: "/admin/invites/accept", Route: inviteaccept.Route},

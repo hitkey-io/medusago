@@ -1,0 +1,60 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNjQxOTksImV4cCI6MTc5NDM1MDU5OX0.6C_XCEPmpKUMLvE-xITu1H_7GxfieuLfgx5zQz6QDQI"
+    }
+  },
+  "plugins": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "plugins": [
+        {
+          "name": "@medusajs/draft-order"
+        }
+      ]
+    }
+  },
+  "plugins_anonymous": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "message": "Unauthorized"
+    }
+  },
+  "notification_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "notification_bad_query": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'limit'"
+    }
+  }
+}

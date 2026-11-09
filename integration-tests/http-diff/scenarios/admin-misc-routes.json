@@ -1,0 +1,7 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "plugins", "method": "GET", "bearer": "login", "path": "/admin/plugins" },
+  { "name": "plugins_anonymous", "method": "GET", "path": "/admin/plugins" },
+  { "name": "notification_missing", "method": "GET", "bearer": "login", "path": "/admin/notifications/noti_missing" },
+  { "name": "notification_bad_query", "method": "GET", "bearer": "login", "path": "/admin/notifications/noti_missing?limit=x" }
+]
