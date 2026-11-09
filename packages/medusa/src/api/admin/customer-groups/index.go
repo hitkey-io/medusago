@@ -56,4 +56,4 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 }
 
 // Route is route.ts.
-var Route = medusahttp.Route{GET: httputils.RemoteQueryListRoute("customer_group", "customer_groups")}
+var Route = medusahttp.Route{GET: httputils.RemoteQueryListRoute("customer_group", "customer_groups"), POST: POST}

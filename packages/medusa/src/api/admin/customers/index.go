@@ -53,5 +53,7 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/customers/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 }
 
+func init() { Middlewares = append(Middlewares, WriteMiddlewares...) }
+
 // Route is route.ts.
-var Route = medusahttp.Route{GET: httputils.RemoteQueryListRoute("customers", "customers")}
+var Route = medusahttp.Route{GET: httputils.RemoteQueryListRoute("customers", "customers"), POST: POST}

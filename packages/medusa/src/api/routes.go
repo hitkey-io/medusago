@@ -13,8 +13,12 @@ import (
 	currencycode "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/currencies/code_"
 	customergroups "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups"
 	customergroupid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups/id_"
+	customergroupcustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups/id_/customers"
 	admincustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers"
 	customerid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_"
+	customeraddresses "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_/addresses"
+	customeraddress "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_/addresses/address_id_"
+	customercustomergroups "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_/customer-groups"
 	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/feature-flags"
 	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
 	inventoryitemid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_"
@@ -107,6 +111,10 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/customer-groups/:id", Route: customergroupid.Route},
 		{Path: "/admin/customers", Route: admincustomers.Route},
 		{Path: "/admin/customers/:id", Route: customerid.Route},
+		{Path: "/admin/customers/:id/addresses", Route: customeraddresses.Route},
+		{Path: "/admin/customers/:id/addresses/:address_id", Route: customeraddress.Route},
+		{Path: "/admin/customers/:id/customer-groups", Route: customercustomergroups.Route},
+		{Path: "/admin/customer-groups/:id/customers", Route: customergroupcustomers.Route},
 		{Path: "/admin/currencies/:code", Route: currencycode.Route},
 		{Path: "/admin/feature-flags", Route: featureflags.Route},
 		{Path: "/admin/inventory-items", Route: inventoryitems.Route},
