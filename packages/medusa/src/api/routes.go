@@ -27,6 +27,7 @@ import (
 	pricelists "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists"
 	pricelistid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists/id_"
 	pricepreferences "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-preferences"
+	pricepreferenceid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-preferences/id_"
 	productcategories "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories"
 	categoryid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories/id_"
 	categoryproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories/id_/products"
@@ -114,6 +115,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/return-reasons/:id", Route: returnreasonid.Route},
 		{Path: "/admin/search-indexes", Route: searchindexes.Route},
 		{Path: "/admin/price-preferences", Route: pricepreferences.Route},
+		{Path: "/admin/price-preferences/:id", Route: pricepreferenceid.Route},
 		{Path: "/admin/product-categories", Route: productcategories.Route},
 		{Path: "/admin/product-categories/:id", Route: categoryid.Route},
 		{Path: "/admin/product-categories/:id/products", Route: categoryproducts.Route},

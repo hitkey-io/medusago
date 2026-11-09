@@ -1,0 +1,18 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "create", "method": "POST", "bearer": "login", "path": "/admin/price-preferences", "body": { "attribute": "currency_code", "value": "gbp", "is_tax_inclusive": true } },
+  { "name": "create_default", "method": "POST", "bearer": "login", "path": "/admin/price-preferences?fields=is_tax_inclusive,value", "body": { "attribute": "currency_code", "value": "chf" } },
+  { "name": "create_dup", "method": "POST", "bearer": "login", "path": "/admin/price-preferences", "body": { "attribute": "currency_code", "value": "gbp" } },
+  { "name": "create_invalid", "method": "POST", "bearer": "login", "path": "/admin/price-preferences", "body": { "attribute": 1 } },
+  { "name": "create_extra", "method": "POST", "bearer": "login", "path": "/admin/price-preferences", "body": { "attribute": "currency_code", "value": "jpy", "foo": 1 } },
+  { "name": "get", "method": "GET", "bearer": "login", "path": "/admin/price-preferences/{{create.price_preference.id}}" },
+  { "name": "get_missing", "method": "GET", "bearer": "login", "path": "/admin/price-preferences/prpref_missing" },
+  { "name": "update", "method": "POST", "bearer": "login", "path": "/admin/price-preferences/{{create.price_preference.id}}", "body": { "is_tax_inclusive": false } },
+  { "name": "update_value", "method": "POST", "bearer": "login", "path": "/admin/price-preferences/{{create.price_preference.id}}?fields=value", "body": { "value": "usd" } },
+  { "name": "update_missing", "method": "POST", "bearer": "login", "path": "/admin/price-preferences/prpref_missing", "body": { "is_tax_inclusive": true } },
+  { "name": "update_invalid", "method": "POST", "bearer": "login", "path": "/admin/price-preferences/{{create.price_preference.id}}", "body": { "is_tax_inclusive": "yes" } },
+  { "name": "delete", "method": "DELETE", "bearer": "login", "path": "/admin/price-preferences/{{create.price_preference.id}}" },
+  { "name": "get_deleted", "method": "GET", "bearer": "login", "path": "/admin/price-preferences/{{create.price_preference.id}}" },
+  { "name": "delete_missing", "method": "DELETE", "bearer": "login", "path": "/admin/price-preferences/prpref_missing" },
+  { "name": "list", "method": "GET", "bearer": "login", "path": "/admin/price-preferences?order=value&fields=attribute,value,is_tax_inclusive" }
+]

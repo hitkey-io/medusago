@@ -58,3 +58,20 @@ var UpdatePricePreferencesStep = composer.CreateStep("update-price-preferences",
 		_, err := pricing(ctx.Container).UpsertPricePreferences(ctx.Context, prev)
 		return err
 	})
+
+// DeletePricePreferencesStep mirrors deletePricePreferencesStep.
+var DeletePricePreferencesStep = composer.CreateStep("delete-price-preferences",
+	func(ctx composer.StepExecutionContext, ids []any) (composer.StepResponse[any], error) {
+		if _, err := pricing(ctx.Container).Internal("PricePreference").SoftDelete(ctx.Context, ids); err != nil {
+			return composer.StepResponse[any]{}, err
+		}
+		return composer.NewStepResponse[any](nil, any(ids)), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		ids, _ := data.([]any)
+		if len(ids) == 0 {
+			return nil
+		}
+		_, err := pricing(ctx.Container).Internal("PricePreference").Restore(ctx.Context, ids)
+		return err
+	})
