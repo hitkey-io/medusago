@@ -1,0 +1,386 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNjQzOTcsImV4cCI6MTc5NDM1MDc5N30.vbGlhQZo_NZKqBKhk6S_bWnR939TLz7nPuWvyHvTTCs"
+    }
+  },
+  "variant": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "variants": [
+        {
+          "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+          "product_id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "inventory_items": [
+            {
+              "inventory_item_id": "iitem_01M70Y000R77AV02RWX3KTV1ZY",
+              "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+            }
+          ]
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "box": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_item": {
+        "id": "iitem_01M717VY554FT0048V0ECT279Q",
+        "sku": "BOX"
+      }
+    }
+  },
+  "link": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "variant": {
+        "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+        "inventory_items": [
+          {
+            "required_quantity": 1,
+            "inventory_item_id": "iitem_01M70Y000R77AV02RWX3KTV1ZY",
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+          },
+          {
+            "required_quantity": 2,
+            "inventory_item_id": "iitem_01M717VY554FT0048V0ECT279Q",
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+          }
+        ]
+      }
+    }
+  },
+  "link_again": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "variant": {
+        "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+        "inventory_items": [
+          {
+            "required_quantity": 1,
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+          },
+          {
+            "required_quantity": 4,
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+          }
+        ]
+      }
+    }
+  },
+  "link_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'required_quantity' is required; Expected type: 'string' for field 'inventory_item_id', got: '1'"
+    }
+  },
+  "update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "variant": {
+        "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+        "inventory_items": [
+          {
+            "required_quantity": 1,
+            "inventory_item_id": "iitem_01M70Y000R77AV02RWX3KTV1ZY",
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+          },
+          {
+            "required_quantity": 3,
+            "inventory_item_id": "iitem_01M717VY554FT0048V0ECT279Q",
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+          }
+        ]
+      }
+    }
+  },
+  "update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Could not find all existing links from data"
+    }
+  },
+  "default_fields": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "variant": {
+        "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+        "title": "S / Black",
+        "sku": "SHIRT-S-BLACK",
+        "thumbnail": null,
+        "barcode": null,
+        "ean": null,
+        "upc": null,
+        "allow_backorder": false,
+        "manage_inventory": true,
+        "hs_code": null,
+        "origin_country": null,
+        "mid_code": null,
+        "material": null,
+        "weight": null,
+        "length": null,
+        "height": null,
+        "width": null,
+        "metadata": null,
+        "variant_rank": 0,
+        "product_id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+        "created_at": "2026-11-09T19:54:05.200Z",
+        "updated_at": "2026-11-09T19:54:05.200Z",
+        "deleted_at": null,
+        "options": [
+          {
+            "id": "optval_01M70XZZZ5E4P2NHJ5JWBTF6J1",
+            "value": "S",
+            "rank": null,
+            "metadata": null,
+            "option_id": "opt_01M70XZZZ41VTMWENQ2694WEQY",
+            "option": {
+              "id": "opt_01M70XZZZ41VTMWENQ2694WEQY"
+            },
+            "created_at": "2026-11-09T19:54:05.158Z",
+            "updated_at": "2026-11-09T19:54:05.158Z",
+            "deleted_at": null
+          },
+          {
+            "id": "optval_01M70XZZZ5FRYNZQFJET8FF6S7",
+            "value": "Black",
+            "rank": null,
+            "metadata": null,
+            "option_id": "opt_01M70XZZZ4S5Y9QDKWGS85RWED",
+            "option": {
+              "id": "opt_01M70XZZZ4S5Y9QDKWGS85RWED"
+            },
+            "created_at": "2026-11-09T19:54:05.158Z",
+            "updated_at": "2026-11-09T19:54:05.158Z",
+            "deleted_at": null
+          }
+        ],
+        "prices": [
+          {
+            "id": "price_01M70Y001525D608HG5YSTE0RA",
+            "amount": 10,
+            "currency_code": "eur",
+            "min_quantity": null,
+            "max_quantity": null,
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+            "created_at": "2026-11-09T19:54:05.222Z",
+            "updated_at": "2026-11-09T19:54:05.222Z",
+            "rules": {}
+          },
+          {
+            "id": "price_01M70Y00154YWXZ0WT73RYE8YA",
+            "amount": 9.5,
+            "currency_code": "eur",
+            "min_quantity": null,
+            "max_quantity": null,
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+            "created_at": "2026-11-09T19:54:05.222Z",
+            "updated_at": "2026-11-09T19:54:05.222Z",
+            "rules": {
+              "region_id": "reg_01M70XZZXEGXRXTCSXMSQJ4FC9"
+            }
+          },
+          {
+            "id": "price_01M70Y00153QEFXRXM0S24RJ20",
+            "amount": 15,
+            "currency_code": "usd",
+            "min_quantity": null,
+            "max_quantity": null,
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+            "created_at": "2026-11-09T19:54:05.222Z",
+            "updated_at": "2026-11-09T19:54:05.222Z",
+            "rules": {}
+          }
+        ]
+      }
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": {
+        "product": {
+          "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+        },
+        "inventory": {
+          "inventory_item_id": "iitem_01M717VY554FT0048V0ECT279Q"
+        }
+      },
+      "object": "variant-inventory-item-link",
+      "deleted": true,
+      "parent": {
+        "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+        "inventory_items": [
+          {
+            "inventory_item_id": "iitem_01M70Y000R77AV02RWX3KTV1ZY",
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+          }
+        ]
+      }
+    }
+  },
+  "batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "product": {
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+          },
+          "inventory": {
+            "inventory_item_id": "iitem_01M717VY554FT0048V0ECT279Q"
+          },
+          "data": {
+            "required_quantity": 1
+          }
+        }
+      ],
+      "updated": [
+        {
+          "product": {
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+          },
+          "inventory": {
+            "inventory_item_id": "iitem_01M70Y000R77AV02RWX3KTV1ZY"
+          },
+          "data": {
+            "required_quantity": 5
+          }
+        }
+      ],
+      "deleted": []
+    }
+  },
+  "batch_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'extra'"
+    }
+  },
+  "batch_update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Could not find all existing links from data"
+    }
+  },
+  "batch_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [],
+      "updated": [],
+      "deleted": [
+        {
+          "product": {
+            "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+          },
+          "inventory": {
+            "inventory_item_id": "iitem_01M717VY554FT0048V0ECT279Q"
+          }
+        }
+      ]
+    }
+  },
+  "after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "variants": [
+        {
+          "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+          "inventory_items": [
+            {
+              "required_quantity": 5,
+              "inventory_item_id": "iitem_01M70Y000R77AV02RWX3KTV1ZY",
+              "variant_id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+            }
+          ]
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}

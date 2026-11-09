@@ -270,3 +270,64 @@ func NewLinkDefinition(moduleA, keyA string, valueA any, moduleB, keyB string, v
 func (l *Link) GetLinkModule(moduleA, keyA, moduleB, keyB string) *services.LinkModuleService {
 	return l.pairs[strings.Join([]string{moduleA, keyA, moduleB, keyB}, "-")]
 }
+
+// List mirrors list: the stored links matching the definitions, as link
+// definitions when asLinkDefinition is set.
+func (l *Link) List(ctx context.Context, links []LinkDefinition, asLinkDefinition bool) ([]*dal.Record, error) {
+	var order []string
+	filters := map[string][]any{}
+	svcs := map[string]*services.LinkModuleService{}
+	for _, link := range links {
+		svc, c, err := l.getLinkModuleOrThrow(link, "list")
+		if err != nil {
+			return nil, err
+		}
+		name := svc.Config.ServiceName
+		if _, ok := filters[name]; !ok {
+			order = append(order, name)
+			svcs[name] = svc
+		}
+		f := dal.NewRecord()
+		for _, m := range []string{c.moduleA, c.moduleB} {
+			s := sub(link, m)
+			for _, k := range s.Keys() {
+				v, _ := s.Get(k)
+				f.Set(k, v)
+			}
+		}
+		filters[name] = append(filters[name], f)
+	}
+	out := []*dal.Record{}
+	for _, name := range order {
+		svc := svcs[name]
+		f := dal.NewRecord()
+		f.Set("$or", filters[name])
+		rows, err := svc.List(ctx, f, utilsmodulessdk.FindConfig{})
+		if err != nil {
+			return nil, err
+		}
+		if !asLinkDefinition {
+			out = append(out, rows...)
+			continue
+		}
+		for _, row := range rows {
+			def := dal.NewRecord()
+			for _, rel := range svc.Config.Relationships {
+				v, _ := row.Get(rel.ForeignKey)
+				r := dal.NewRecord()
+				r.Set(rel.ForeignKey, v)
+				def.Set(rel.ServiceName, r)
+			}
+			data := dal.NewRecord()
+			for _, field := range svc.Config.ExtraDataFields {
+				v, _ := row.Get(field)
+				data.Set(field, v)
+			}
+			if len(data.Keys()) > 0 {
+				def.Set("data", data)
+			}
+			out = append(out, def)
+		}
+	}
+	return out, nil
+}

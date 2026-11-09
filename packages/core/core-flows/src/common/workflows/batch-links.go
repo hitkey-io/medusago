@@ -1,8 +1,6 @@
 package workflows
 
 import (
-	"fmt"
-
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -33,11 +31,9 @@ var BatchLinksWorkflow = composer.CreateWorkflow("batch-links",
 				return err
 			},
 			func() error {
-				if len(input.Update) > 0 {
-					return fmt.Errorf("batch-links: updating links is not supported yet")
-				}
-				out.Updated = []*dal.Record{}
-				return nil
+				var err error
+				out.Updated, err = steps.UpdateRemoteLinksStep.Run(e, nonNil(input.Update))
+				return err
 			},
 			func() error {
 				var err error
