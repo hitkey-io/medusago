@@ -13,6 +13,7 @@ import (
 	productoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-options"
 	producttags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-tags"
 	producttypes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-types"
+	productvariants "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-variants"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
 	saleschannels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels"
@@ -30,6 +31,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, users.AdminUserRoutesMiddlewares...)
 	out = append(out, stores.AdminStoreRoutesMiddlewares...)
 	out = append(out, products.AdminProductRoutesMiddlewares...)
+	out = append(out, productvariants.Middlewares...)
 	out = append(out, pricepreferences.Middlewares...)
 	out = append(out, collections.Middlewares...)
 	out = append(out, saleschannels.AdminSalesChannelRoutesMiddlewares...)

@@ -135,3 +135,56 @@ var CreateInventoryLevelsStep = composer.CreateStep("create-inventory-levels",
 		_, err := inventory(ctx.Container).Internal("InventoryLevel").Delete(ctx.Context, idList)
 		return err
 	})
+
+// ValidateInventoryDeleteStep mirrors validateInventoryDeleteStep.
+var ValidateInventoryDeleteStep = composer.CreateStep("validate-inventory-item-delete",
+	func(_ composer.StepExecutionContext, items []any) (composer.StepResponse[any], error) {
+		var bad []string
+		for _, it := range items {
+			r, _ := it.(*dal.Record)
+			if r == nil {
+				continue
+			}
+			q, _ := r.Get("reserved_quantity")
+			if f, ok := toFloat(q); ok && f > 0 {
+				id, _ := r.Get("id")
+				bad = append(bad, fmt.Sprint(id))
+			}
+		}
+		if len(bad) > 0 {
+			return composer.StepResponse[any]{}, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA,
+				fmt.Sprintf("Cannot remove following inventory item(s) since they have reservations: [%s].", strings.Join(bad, ", ")))
+		}
+		return composer.NewStepResponse[any](nil), nil
+	}, nil)
+
+func toFloat(v any) (float64, bool) {
+	switch t := v.(type) {
+	case float64:
+		return t, true
+	case int:
+		return float64(t), true
+	case string:
+		var f float64
+		_, err := fmt.Sscan(t, &f)
+		return f, err == nil
+	}
+	return 0, false
+}
+
+// DeleteInventoryItemStep mirrors deleteInventoryItemStep.
+var DeleteInventoryItemStep = composer.CreateStep("delete-inventory-item-step",
+	func(ctx composer.StepExecutionContext, ids []any) (composer.StepResponse[any], error) {
+		if _, err := inventory(ctx.Container).Internal("InventoryItem").SoftDelete(ctx.Context, ids); err != nil {
+			return composer.StepResponse[any]{}, err
+		}
+		return composer.NewStepResponse[any](nil, any(ids)), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		ids, _ := data.([]any)
+		if len(ids) == 0 {
+			return nil
+		}
+		_, err := inventory(ctx.Container).Internal("InventoryItem").Restore(ctx.Context, ids)
+		return err
+	})

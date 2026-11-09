@@ -372,3 +372,10 @@ func (s *InternalService) Upsert(ctx context.Context, data []*dal.Record) ([]*da
 	})
 	return out, err
 }
+
+// ReplaceManyToMany replaces the m:n collection relation of ownerID.
+func (s *InternalService) ReplaceManyToMany(ctx context.Context, ownerID any, relation string, targetIDs []any) error {
+	return s.inTransaction(ctx, func(repo *dal.Repository) error {
+		return repo.ReplaceManyToMany(ctx, ownerID, relation, targetIDs)
+	})
+}

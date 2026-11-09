@@ -19,5 +19,7 @@ var AdminProductRoutesMiddlewares = []medusahttp.MiddlewareRoute{
 		httputils.ValidateAndTransformQuery(AdminGetProductParams, RetrieveProductQueryConfig),
 	}},
 	{Methods: []string{"GET"}, Matcher: "/admin/products/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetProductParams, RetrieveProductQueryConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/products/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminUpdateProduct)), httputils.ValidateAndTransformQuery(AdminGetProductParams, RetrieveProductQueryConfig)}},
+	{Methods: []string{"DELETE"}, Matcher: "/admin/products/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetProductParams, RetrieveProductQueryConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/products/:id/variants", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(productvariants.AdminGetProductVariantsParams, ListVariantConfig)}},
 }

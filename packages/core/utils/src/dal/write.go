@@ -691,7 +691,7 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 	for len(level) > 0 {
 		var next []pending
 		for _, group := range level {
-			if !hasDeletedAt(group.entity) {
+			if !hasDeletedAt(group.entity) || len(group.insts) == 0 {
 				continue
 			}
 			if _, ok := touched[group.entity]; !ok {
@@ -737,4 +737,71 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 		}
 	}
 	return result, nil
+}
+
+// ReplaceManyToMany mirrors assigning a new array to an owning-side m:n
+// collection and flushing: pivot rows of targets no longer present are
+// deleted, then the missing ones inserted in the given order.
+func (r *Repository) ReplaceManyToMany(ctx context.Context, ownerID any, relation string, targetIDs []any) error {
+	join, err := r.Schema.ResolveJoin(r.Entity, relation)
+	if err != nil {
+		return err
+	}
+	if join.PivotTable == "" {
+		return fmt.Errorf("%s.%s is not a many-to-many relation", r.Entity.Meta.ClassName, relation)
+	}
+	src, dst := quote(join.PivotSourceColumns[0]), quote(join.PivotTargetColumns[0])
+	rows, err := QueryRows(ctx, r.DB, fmt.Sprintf("select %s as \"target\" from %s where %s = $1", dst, quote(join.PivotTable), src), ownerID)
+	if err != nil {
+		return MapDBError(err)
+	}
+	current := map[string]bool{}
+	for _, row := range rows {
+		current[fmt.Sprint(row["target"])] = true
+	}
+	wanted := map[string]bool{}
+	keep := []string{}
+	for _, id := range targetIDs {
+		wanted[fmt.Sprint(id)] = true
+		keep = append(keep, fmt.Sprint(id))
+	}
+	var removed []string
+	for _, row := range rows {
+		if k := fmt.Sprint(row["target"]); !wanted[k] {
+			removed = append(removed, k)
+		}
+	}
+	if len(removed) > 0 {
+		if err := r.exec(ctx, fmt.Sprintf("delete from %s where %s = $1 and %s = any($2)", quote(join.PivotTable), src, dst), ownerID, removed); err != nil {
+			return err
+		}
+	}
+	_ = keep
+	inserted := map[string]bool{}
+	for _, id := range targetIDs {
+		k := fmt.Sprint(id)
+		if current[k] || inserted[k] {
+			continue
+		}
+		inserted[k] = true
+		if pivot, err := r.Schema.Entity(join.Relation.PivotEntity); err == nil && join.Relation.PivotEntity != "" {
+			data := Row{}
+			input := NewRecord()
+			input.Set(join.PivotSourceColumns[0], ownerID)
+			input.Set(join.PivotTargetColumns[0], id)
+			if err := r.assignFields(pivot, data, input, true); err != nil {
+				return err
+			}
+			data[join.PivotSourceColumns[0]] = ownerID
+			data[join.PivotTargetColumns[0]] = id
+			if err := r.insertRow(ctx, pivot, data); err != nil {
+				return err
+			}
+			continue
+		}
+		if err := r.exec(ctx, fmt.Sprintf("insert into %s (%s, %s) values ($1, $2)", quote(join.PivotTable), src, dst), ownerID, id); err != nil {
+			return err
+		}
+	}
+	return nil
 }

@@ -113,3 +113,77 @@ var CreateProduct = zod.Object(
 
 // AdminCreateProduct mirrors AdminCreateProduct.
 var AdminCreateProduct = utils.WithAdditionalData(CreateProduct)
+
+// AdminUpdateVariantPrice mirrors AdminUpdateVariantPrice.
+var AdminUpdateVariantPrice = zod.Object(
+	zod.F("id", zod.String().Optional()),
+	zod.F("currency_code", zod.String().Optional()),
+	zod.F("amount", zod.Number().Optional()),
+	zod.F("min_quantity", zod.Number().Nullish()),
+	zod.F("max_quantity", zod.Number().Nullish()),
+	zod.F("rules", zod.Record(zod.String(), zod.String()).Optional()),
+)
+
+// UpdateProductVariant mirrors UpdateProductVariant.
+var UpdateProductVariant = zod.Object(
+	zod.F("id", zod.String().Optional()),
+	zod.F("title", zod.String().Optional()),
+	zod.F("prices", zod.Array(AdminUpdateVariantPrice).Optional()),
+	zod.F("sku", zod.String().Nullish()),
+	zod.F("ean", zod.String().Nullish()),
+	zod.F("upc", zod.String().Nullish()),
+	zod.F("barcode", zod.String().Nullish()),
+	zod.F("hs_code", zod.String().Nullish()),
+	zod.F("mid_code", zod.String().Nullish()),
+	zod.F("thumbnail", zod.String().Nullish()),
+	zod.F("allow_backorder", commonvalidators.BooleanString().Optional()),
+	zod.F("manage_inventory", commonvalidators.BooleanString().Optional()),
+	zod.F("variant_rank", zod.Number().Optional()),
+	zod.F("weight", zod.Number().Nullish()),
+	zod.F("length", zod.Number().Nullish()),
+	zod.F("height", zod.Number().Nullish()),
+	zod.F("width", zod.Number().Nullish()),
+	zod.F("origin_country", zod.String().Nullish()),
+	zod.F("material", zod.String().Nullish()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+	zod.F("options", zod.Record(zod.String(), zod.String()).Optional()),
+).Strict()
+
+// UpdateProduct mirrors UpdateProduct.
+var UpdateProduct = zod.Object(
+	zod.F("title", zod.String().Optional()),
+	zod.F("discountable", commonvalidators.BooleanString().Optional()),
+	zod.F("is_giftcard", commonvalidators.BooleanString().Optional()),
+	zod.F("options", zod.Any().Optional().SuperRefine(func(v any, add func(*zod.Issue)) {
+		if !zod.IsUndefined(v) {
+			add(&zod.Issue{Message: "The 'options' property was removed in version 2.16.0. Please remove it from your request payload."})
+		}
+	})),
+	zod.F("option_ids", zod.Array(zod.String()).Optional()),
+	zod.F("variants", zod.Array(UpdateProductVariant).Optional()),
+	zod.F("status", commonvalidators.ProductStatusEnum().Optional()),
+	zod.F("subtitle", zod.String().Nullish()),
+	zod.F("description", zod.String().Nullish()),
+	zod.F("images", zod.Array(zod.Object(zod.F("id", zod.String().Optional()), zod.F("url", zod.String()))).Optional()),
+	zod.F("thumbnail", zod.String().Nullish()),
+	zod.F("handle", zod.String().Optional()),
+	zod.F("type_id", zod.String().Nullish()),
+	zod.F("external_id", zod.String().Nullish()),
+	zod.F("collection_id", zod.String().Nullish()),
+	zod.F("categories", zod.Array(IdAssociation).Optional()),
+	zod.F("tags", zod.Array(IdAssociation).Optional()),
+	zod.F("sales_channels", zod.Array(zod.Object(zod.F("id", zod.String()))).Optional()),
+	zod.F("shipping_profile_id", zod.String().Nullish()),
+	zod.F("weight", zod.Number().Nullish()),
+	zod.F("length", zod.Number().Nullish()),
+	zod.F("height", zod.Number().Nullish()),
+	zod.F("width", zod.Number().Nullish()),
+	zod.F("hs_code", zod.String().Nullish()),
+	zod.F("mid_code", zod.String().Nullish()),
+	zod.F("origin_country", zod.String().Nullish()),
+	zod.F("material", zod.String().Nullish()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+).Strict()
+
+// AdminUpdateProduct mirrors AdminUpdateProduct.
+var AdminUpdateProduct = utils.WithAdditionalData(UpdateProduct)

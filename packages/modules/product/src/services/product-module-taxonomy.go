@@ -352,3 +352,63 @@ func (s *ProductModuleService) updateCollections(ctx context.Context, data []*da
 	}
 	return updated, nil
 }
+
+// SoftDeleteProductOptions mirrors softDeleteProductOptions: options still
+// associated with live products cannot be deleted; their product pivot rows
+// are soft deleted first.
+func (s *ProductModuleService) SoftDeleteProductOptions(ctx context.Context, ids []any) (*dal.Record, error) {
+	if len(ids) == 0 {
+		return dal.NewRecord(), nil
+	}
+	var out *dal.Record
+	err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
+		t := &ProductModuleService{MedusaService: tx, db: tx.DB()}
+		blocking, err := dal.QueryRows(ctx, t.db, `select "ppo"."product_option_id" from "product_product_option" as "ppo"
+inner join "product" as "p" on "p"."id" = "ppo"."product_id"
+inner join "product_option" as "po" on "po"."id" = "ppo"."product_option_id"
+where "ppo"."product_option_id" = any($1) and "ppo"."deleted_at" is null and "p"."deleted_at" is null and "po"."deleted_at" is null limit 1`, toStrings(ids))
+		if err != nil {
+			return err
+		}
+		if len(blocking) > 0 {
+			return invalid("Cannot delete product options that are associated with products.")
+		}
+		f := dal.NewRecord()
+		f.Set("product_option_id", ids)
+		ppos, err := t.Internal("ProductProductOption").List(ctx, f, utilsmodulessdk.FindConfig{Select: []string{"id"}})
+		if err != nil {
+			return err
+		}
+		if len(ppos) > 0 {
+			ppoIDs := make([]any, len(ppos))
+			for i, r := range ppos {
+				ppoIDs[i], _ = r.Get("id")
+			}
+			vf := dal.NewRecord()
+			vf.Set("product_product_option_id", ppoIDs)
+			ppovs, err := t.Internal("ProductProductOptionValue").List(ctx, vf, utilsmodulessdk.FindConfig{Select: []string{"id"}})
+			if err != nil {
+				return err
+			}
+			if len(ppovs) > 0 {
+				vids := make([]any, len(ppovs))
+				for i, r := range ppovs {
+					vids[i], _ = r.Get("id")
+				}
+				if _, err := t.Internal("ProductProductOptionValue").SoftDelete(ctx, vids); err != nil {
+					return err
+				}
+			}
+			if _, err := t.Internal("ProductProductOption").SoftDelete(ctx, ppoIDs); err != nil {
+				return err
+			}
+		}
+		res, err := t.Call(ctx, "softDeleteProductOptions", []any{ids})
+		if err != nil {
+			return err
+		}
+		out, _ = res.(*dal.Record)
+		return nil
+	})
+	return out, err
+}
