@@ -3,6 +3,7 @@ package steps
 
 import (
 	"fmt"
+	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
@@ -12,9 +13,8 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 )
 
-func inventory(c composer.Container) *utilsmodulessdk.MedusaService {
-	s, _ := c.Resolve(utilsmodulessdk.INVENTORY).(*utilsmodulessdk.MedusaService)
-	return s
+func inventory(c composer.Container) commonsteps.ModuleService {
+	return commonsteps.ModuleOf(c, utilsmodulessdk.INVENTORY)
 }
 
 func ids(rows []*dal.Record) []any {

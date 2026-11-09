@@ -240,7 +240,7 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 		}
 	}
 
-	if err := r.populate(ctx, roots, idm, r.relationPaths(opts), opts.WithDeleted, relationOrder, opts.PopulateWhere); err != nil {
+	if err := r.populate(ctx, roots, idm, r.relationPaths(opts), opts.WithDeleted, relationOrder, opts.PopulateWhere, tree); err != nil {
 		return nil, nil, err
 	}
 	return roots, idm, nil
@@ -417,7 +417,7 @@ func (r *Repository) relationPaths(opts FindOptions) []string {
 
 // populate loads the relation paths level by level, the way MikroORM's
 // select-in loading does.
-func (r *Repository) populate(ctx context.Context, roots []*instance, idm identityMap, paths []string, withDeleted bool, relationOrder map[string][]OrderBy, populateWhere map[string]*Record) error {
+func (r *Repository) populate(ctx context.Context, roots []*instance, idm identityMap, paths []string, withDeleted bool, relationOrder map[string][]OrderBy, populateWhere map[string]*Record, tree *fieldTree) error {
 	byPath := map[string][]*instance{"": roots}
 	for _, path := range paths {
 		parentPath, relation := "", path
@@ -429,7 +429,7 @@ func (r *Repository) populate(ctx context.Context, roots []*instance, idm identi
 			byPath[path] = nil
 			continue
 		}
-		children, err := r.loadRelation(ctx, parents, relation, idm, withDeleted, relationOrder[path], populateWhere[path])
+		children, err := r.loadRelationSelecting(ctx, parents, relation, idm, withDeleted, relationOrder[path], tree.at(path), populateWhere[path])
 		if err != nil {
 			return fmt.Errorf("populate %s: %w", path, err)
 		}
@@ -456,6 +456,24 @@ func uniqueValues(parents []*instance, columns []string) []any {
 }
 
 func (r *Repository) loadRelation(ctx context.Context, parents []*instance, relation string, idm identityMap, withDeleted bool, order []OrderBy, where ...*Record) ([]*instance, error) {
+	return r.loadRelationSelecting(ctx, parents, relation, idm, withDeleted, order, nil, where...)
+}
+
+// at returns the subtree of a relation path (nil when absent).
+func (t *fieldTree) at(path string) *fieldTree {
+	n := t
+	for _, part := range strings.Split(path, ".") {
+		if n == nil {
+			return nil
+		}
+		n = n.children[part]
+	}
+	return n
+}
+
+// loadRelationSelecting loads a relation; the lazy formulas requested in
+// sel are selected along with the columns.
+func (r *Repository) loadRelationSelecting(ctx context.Context, parents []*instance, relation string, idm identityMap, withDeleted bool, order []OrderBy, sel *fieldTree, where ...*Record) ([]*instance, error) {
 	owner := parents[0].entity
 	join, err := r.Schema.ResolveJoin(owner, relation)
 	if err != nil {
@@ -499,8 +517,8 @@ func (r *Repository) loadRelation(ctx context.Context, parents []*instance, rela
 		if pivot, err := r.Schema.Entity(join.Relation.PivotEntity); err == nil && join.Relation.PivotEntity != "" {
 			order = fmt.Sprintf(` order by "p0".%s asc`, quote(pivot.Meta.PrimaryKey[0]))
 		}
-		sql := fmt.Sprintf(`select "p0".%s as "__pivot_source", "t1".* from %s as "p0" inner join %s as "t1" on "p0".%s = "t1".%s where "p0".%s in (%s)%s%s`,
-			quote(join.PivotSourceColumns[0]), quote(join.PivotTable), quote(target.Meta.Collection),
+		sql := fmt.Sprintf(`select "p0".%s as "__pivot_source", "t1".*%s from %s as "p0" inner join %s as "t1" on "p0".%s = "t1".%s where "p0".%s in (%s)%s%s`,
+			quote(join.PivotSourceColumns[0]), extraColumns(formulaColumns(target.Meta.ClassName, "t1", sel)), quote(join.PivotTable), quote(target.Meta.Collection),
 			quote(join.PivotTargetColumns[0]), quote(join.TargetColumns[0]),
 			quote(join.PivotSourceColumns[0]), placeholders(values), cond, order)
 		rows, err := queryRows(ctx, r.DB, sql, args...)
@@ -553,7 +571,7 @@ func (r *Repository) loadRelation(ctx context.Context, parents []*instance, rela
 				}
 			}
 		}
-		sql := fmt.Sprintf(`select "t0".* from %s as "t0" where %s`, quote(target.Meta.Collection), cond)
+		sql := fmt.Sprintf(`select "t0".*%s from %s as "t0" where %s`, extraColumns(formulaColumns(target.Meta.ClassName, "t0", sel)), quote(target.Meta.Collection), cond)
 		if len(order) > 0 {
 			tr := &Repository{DB: r.DB, Schema: r.Schema, Entity: target}
 			o, err := tr.orderSQL(order, "t0")
@@ -585,6 +603,13 @@ func (r *Repository) loadRelation(ctx context.Context, parents []*instance, rela
 		}
 	}
 	return children, nil
+}
+
+func extraColumns(cols []string) string {
+	if len(cols) == 0 {
+		return ""
+	}
+	return ", " + strings.Join(cols, ", ")
 }
 
 // fieldTree is the selection for one entity level.

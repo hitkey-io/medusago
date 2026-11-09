@@ -3,6 +3,7 @@ package steps
 import (
 	"context"
 	"fmt"
+	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
@@ -44,7 +45,7 @@ func withoutKeys(r *dal.Record, keys ...string) *dal.Record {
 
 // UpdateInventoryItems mirrors updateInventoryItems (location_levels
 // dropped).
-func UpdateInventoryItems(ctx context.Context, svc *utilsmodulessdk.MedusaService, input []*dal.Record) ([]*dal.Record, error) {
+func UpdateInventoryItems(ctx context.Context, svc commonsteps.ModuleService, input []*dal.Record) ([]*dal.Record, error) {
 	in := make([]any, len(input))
 	for i, r := range input {
 		in[i] = withoutKeys(r, "location_levels")
@@ -87,7 +88,7 @@ var UpdateInventoryItemsStep = composer.CreateStep("update-inventory-items-step"
 
 // EnsureInventoryLevels mirrors ensureInventoryLevels (without the quantity
 // validation).
-func EnsureInventoryLevels(ctx context.Context, svc *utilsmodulessdk.MedusaService, data []*dal.Record) ([]*dal.Record, error) {
+func EnsureInventoryLevels(ctx context.Context, svc commonsteps.ModuleService, data []*dal.Record) ([]*dal.Record, error) {
 	or := []any{}
 	idF := dal.NewRecord()
 	idF.Set("id", []any{})
@@ -121,7 +122,7 @@ func EnsureInventoryLevels(ctx context.Context, svc *utilsmodulessdk.MedusaServi
 }
 
 // UpdateInventoryLevels mirrors updateInventoryLevels.
-func UpdateInventoryLevels(ctx context.Context, svc *utilsmodulessdk.MedusaService, updates []*dal.Record) ([]*dal.Record, error) {
+func UpdateInventoryLevels(ctx context.Context, svc commonsteps.ModuleService, updates []*dal.Record) ([]*dal.Record, error) {
 	input := make([]*dal.Record, len(updates))
 	for i, u := range updates {
 		input[i] = withoutKeys(u, "reserved_quantity")

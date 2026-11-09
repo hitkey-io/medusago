@@ -164,7 +164,7 @@ var CreateProductVariantsDefaultInventoryStep = composer.CreateStep("create-prod
 		if len(variants) == 0 {
 			return composer.NewStepResponse[any](nil), nil
 		}
-		inv, _ := ctx.Container.Resolve(utilsmodulessdk.INVENTORY).(*utilsmodulessdk.MedusaService)
+		inv := commonsteps.ModuleOf(ctx.Container, utilsmodulessdk.INVENTORY)
 		toCreate := make([]*dal.Record, len(variants))
 		for i, v := range variants {
 			toCreate[i] = utils.CreateDefaultInventoryItem(v)
@@ -194,7 +194,7 @@ var CreateProductVariantsDefaultInventoryStep = composer.CreateStep("create-prod
 		if _, err := commonsteps.LinkOf(ctx.Container).Dismiss(ctx.Context, c.links); err != nil {
 			return err
 		}
-		inv, _ := ctx.Container.Resolve(utilsmodulessdk.INVENTORY).(*utilsmodulessdk.MedusaService)
+		inv := commonsteps.ModuleOf(ctx.Container, utilsmodulessdk.INVENTORY)
 		_, err := inv.Internal("InventoryItem").Delete(ctx.Context, c.itemIDs)
 		return err
 	})
