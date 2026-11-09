@@ -2,9 +2,11 @@
 package returnreasons
 
 import (
+	"github.com/hitkey-io/medusago/packages/core/core-flows/src/return-reason/workflows"
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/utils"
 	commonvalidators "github.com/hitkey-io/medusago/packages/medusa/src/api/utils/common-validators"
 )
@@ -39,10 +41,56 @@ var AdminGetReturnReasonsParams = utils.CreateFindParams(utils.FindParamsOptions
 	Merge(AdminGetReturnReasonsParamsFields).Merge(commonvalidators.ApplyAndAndOrOperators(AdminGetReturnReasonsParamsFields))
 
 // Middlewares mirrors adminReturnReasonRoutesMiddlewares (reads).
+// AdminCreateReturnReason mirrors AdminCreateReturnReason.
+var AdminCreateReturnReason = zod.Object(
+	zod.F("value", zod.String()),
+	zod.F("label", zod.String()),
+	zod.F("description", zod.String().Nullish()),
+	zod.F("parent_return_reason_id", zod.String().Nullish()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+)
+
+// AdminUpdateReturnReason mirrors AdminUpdateReturnReason.
+var AdminUpdateReturnReason = zod.Object(
+	zod.F("value", zod.String()),
+	zod.F("label", zod.String()),
+	zod.F("description", zod.String().Nullish()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+)
+
 var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/return-reasons", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetReturnReasonsParams, ListConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/return-reasons/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/return-reasons", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateReturnReason)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/return-reasons/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminUpdateReturnReason)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 }
 
 // Route is route.ts.
-var Route = medusahttp.Route{GET: httputils.RemoteQueryListRoute("return_reason", "return_reasons")}
+var Route = medusahttp.Route{GET: httputils.RemoteQueryListRoute("return_reason", "return_reasons"), POST: POST}
+
+// POST mirrors POST.
+func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+	body, _ := req.ValidatedBody.(*dal.Record)
+	result, err := workflows.CreateReturnReasonsWorkflow.Run(req.Ctx(), req.Scope, []*dal.Record{body})
+	if err != nil {
+		return err
+	}
+	id, _ := result[0].Get("id")
+	return RespondByID(req, res, id)
+}
+
+// RespondByID mirrors remoteQuery({ entryPoint: "return_reason", variables:
+// { id } })[0] written as { return_reason }.
+func RespondByID(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, id any) error {
+	vars := dal.NewRecord()
+	vars.Set("id", id)
+	r, err := httputils.RemoteQueryList(req.Ctx(), req.Scope, "return_reason", vars, req.QueryConfig.Fields)
+	if err != nil {
+		return err
+	}
+	out := dal.NewRecord()
+	if len(r.Data) > 0 {
+		out.Set("return_reason", r.Data[0])
+	}
+	return res.JSON(out)
+}

@@ -1,0 +1,400 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNTY2NjgsImV4cCI6MTc5NDM0MzA2OH0.Meiyw8J8GfFNn-dxFZz0hhQLf9CONhwv3xUCGxvX3I8"
+    }
+  },
+  "rr_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "return_reason": {
+        "id": "rr_01M710G1MWVREDVAJAHQVZK0ZT",
+        "value": "wrong_size",
+        "label": "Wrong size",
+        "parent_return_reason_id": null,
+        "description": "Too small",
+        "created_at": "2026-11-09T20:37:48.316Z",
+        "updated_at": "2026-11-09T20:37:48.316Z",
+        "deleted_at": null,
+        "parent_return_reason": null,
+        "return_reason_children": []
+      }
+    }
+  },
+  "rr_create_child": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "return_reason": {
+        "id": "rr_01M710G1NDSG92K7SYVMAGA453",
+        "value": "too_small",
+        "label": "Too small",
+        "parent_return_reason_id": "rr_01M710G1MWVREDVAJAHQVZK0ZT",
+        "description": null,
+        "created_at": "2026-11-09T20:37:48.333Z",
+        "updated_at": "2026-11-09T20:37:48.333Z",
+        "deleted_at": null,
+        "parent_return_reason": {
+          "id": "rr_01M710G1MWVREDVAJAHQVZK0ZT",
+          "value": "wrong_size",
+          "label": "Wrong size",
+          "description": "Too small",
+          "metadata": {
+            "a": 1
+          },
+          "parent_return_reason_id": null,
+          "created_at": "2026-11-09T20:37:48.316Z",
+          "updated_at": "2026-11-09T20:37:48.316Z",
+          "deleted_at": null
+        },
+        "return_reason_children": []
+      }
+    }
+  },
+  "rr_create_dup": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "return_reason": {
+        "id": "rr_01M710G1NPN1TXY0NAE05JRWDB",
+        "value": "wrong_size",
+        "label": "Again",
+        "parent_return_reason_id": null,
+        "description": null,
+        "created_at": "2026-11-09T20:37:48.343Z",
+        "updated_at": "2026-11-09T20:37:48.343Z",
+        "deleted_at": null,
+        "parent_return_reason": null,
+        "return_reason_children": []
+      }
+    }
+  },
+  "rr_create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'label' is required"
+    }
+  },
+  "rr_get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "return_reason": {
+        "id": "rr_01M710G1MWVREDVAJAHQVZK0ZT",
+        "value": "wrong_size",
+        "label": "Wrong size",
+        "parent_return_reason_id": null,
+        "description": "Too small",
+        "created_at": "2026-11-09T20:37:48.316Z",
+        "updated_at": "2026-11-09T20:37:48.316Z",
+        "deleted_at": null,
+        "parent_return_reason": null,
+        "return_reason_children": [
+          {
+            "id": "rr_01M710G1NDSG92K7SYVMAGA453",
+            "value": "too_small",
+            "label": "Too small",
+            "description": null,
+            "metadata": null,
+            "parent_return_reason_id": "rr_01M710G1MWVREDVAJAHQVZK0ZT",
+            "created_at": "2026-11-09T20:37:48.333Z",
+            "updated_at": "2026-11-09T20:37:48.333Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "rr_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "return_reason": {
+        "id": "rr_01M710G1MWVREDVAJAHQVZK0ZT",
+        "value": "wrong_fit",
+        "label": "Wrong fit",
+        "description": null,
+        "metadata": {
+          "a": 1,
+          "b": 2
+        }
+      }
+    }
+  },
+  "rr_update_partial": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'value' is required"
+    }
+  },
+  "rr_update_missing": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "code": "unknown_error",
+      "type": "unknown_error",
+      "message": "An unknown error occurred."
+    }
+  },
+  "rr_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "rr_01M710G1MWVREDVAJAHQVZK0ZT",
+      "object": "return_reason",
+      "deleted": true
+    }
+  },
+  "rr_get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Return reason with id: rr_01M710G1MWVREDVAJAHQVZK0ZT was not found"
+    }
+  },
+  "rr_get_child": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "return_reason": {
+        "id": "rr_01M710G1NDSG92K7SYVMAGA453",
+        "value": "too_small",
+        "label": "Too small",
+        "parent_return_reason_id": "rr_01M710G1MWVREDVAJAHQVZK0ZT",
+        "description": null,
+        "created_at": "2026-11-09T20:37:48.333Z",
+        "updated_at": "2026-11-09T20:37:48.333Z",
+        "deleted_at": null,
+        "parent_return_reason": null,
+        "return_reason_children": []
+      }
+    }
+  },
+  "rr_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "return_reasons": [
+        {
+          "value": "damaged",
+          "label": "Damaged",
+          "id": "rr_01M70Y005PFSMW073Q9K01TS49"
+        },
+        {
+          "value": "too_small",
+          "label": "Too small",
+          "id": "rr_01M710G1NDSG92K7SYVMAGA453"
+        },
+        {
+          "value": "wrong_size",
+          "label": "Again",
+          "id": "rr_01M710G1NPN1TXY0NAE05JRWDB"
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "rf_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "refund_reason": {
+        "id": "refr_01M710G1QWZ8RC2A3E95VJ7QGV",
+        "label": "Goodwill",
+        "code": "goodwill",
+        "description": "Customer care",
+        "created_at": "2026-11-09T20:37:48.412Z",
+        "updated_at": "2026-11-09T20:37:48.412Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "rf_create_extra": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'metadata'"
+    }
+  },
+  "rf_create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'code' is required"
+    }
+  },
+  "rf_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "refund_reason": {
+        "id": "refr_01M710G1QWZ8RC2A3E95VJ7QGV",
+        "label": "Goodwill 2",
+        "code": "goodwill",
+        "description": null,
+        "created_at": "2026-11-09T20:37:48.412Z",
+        "updated_at": "2026-11-09T20:37:48.423Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "rf_update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "RefundReason with id \"refr_missing\" not found"
+    }
+  },
+  "rf_get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "refund_reason": {
+        "label": "Goodwill 2",
+        "code": "goodwill",
+        "id": "refr_01M710G1QWZ8RC2A3E95VJ7QGV"
+      }
+    }
+  },
+  "rf_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "refr_01M710G1QWZ8RC2A3E95VJ7QGV",
+      "object": "refund_reason",
+      "deleted": true
+    }
+  },
+  "rf_get_deleted": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "rf_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "refund_reasons": [
+        {
+          "code": "customer_care_adjustment",
+          "label": "Customer Care Adjustment",
+          "id": "refr_01M70EKAE8E6PD5FEGE92WQ5DR"
+        },
+        {
+          "code": "pricing_error",
+          "label": "Pricing Error",
+          "id": "refr_01M70EKAE8QNKJBDB1RPEQVKNB"
+        },
+        {
+          "code": "shipping_issue",
+          "label": "Shipping Issue",
+          "id": "refr_01M70EKAE87Q8X6SZV9XQN0DX0"
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 15
+    }
+  }
+}
