@@ -141,7 +141,14 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/shipping-options/:id", Middlewares: mw(httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig))},
 	{Methods: []string{"POST"}, Matcher: "/admin/shipping-options", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateShippingOption)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig))},
 	{Methods: []string{"POST"}, Matcher: "/admin/shipping-options/:id", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(AdminUpdateShippingOption)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig))},
+	{Methods: []string{"POST"}, Matcher: "/admin/shipping-options/:id/rules/batch", Middlewares: mw(
+		httputils.ValidateAndTransformBody(httputils.Schema(utils.CreateBatchBody(AdminCreateShippingOptionRule, AdminUpdateShippingOptionRule, nil))),
+		httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveRuleConfig),
+	)},
 }
+
+// RetrieveRuleConfig mirrors retrieveRuleTransformQueryConfig.
+var RetrieveRuleConfig = httputils.QueryConfig{Defaults: []string{"id", "description", "attribute", "operator", "values.value"}}
 
 // RefetchShippingOption mirrors refetchShippingOption (query.graph).
 func RefetchShippingOption(req *medusahttp.MedusaRequest, id any) (any, error) {

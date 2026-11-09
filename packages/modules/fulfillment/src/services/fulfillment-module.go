@@ -213,6 +213,31 @@ func (s *FulfillmentModuleService) CreateShippingOptionRules(ctx context.Context
 	return s.Internal("ShippingOptionRule").Create(ctx, data)
 }
 
+// UpdateShippingOptionRules mirrors updateShippingOptionRules.
+func (s *FulfillmentModuleService) UpdateShippingOptionRules(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	if len(data) == 0 {
+		return []*dal.Record{}, nil
+	}
+	if err := utils.ValidateAndNormalizeRules(data); err != nil {
+		return nil, err
+	}
+	in := make([]any, len(data))
+	for i, d := range data {
+		in[i] = d
+	}
+	res, err := s.Internal("ShippingOptionRule").Update(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	switch t := res.(type) {
+	case []*dal.Record:
+		return t, nil
+	case *dal.Record:
+		return []*dal.Record{t}, nil
+	}
+	return []*dal.Record{}, nil
+}
+
 // CreateGeoZones mirrors createGeoZones.
 func (s *FulfillmentModuleService) CreateGeoZones(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
 	if err := ValidateGeoZones(data); err != nil {

@@ -93,6 +93,7 @@ import (
 	shippingoptiontypeid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-option-types/id_"
 	shippingoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-options"
 	shippingoptionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-options/id_"
+	shippingoptionrulesbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-options/id_/rules/batch"
 	shippingprofiles "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-profiles"
 	shippingprofileid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-profiles/id_"
 	stocklocations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations"
@@ -183,6 +184,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/shipping-option-types", Route: shippingoptiontypes.Route},
 		{Path: "/admin/shipping-option-types/:id", Route: shippingoptiontypeid.Route},
 		{Path: "/admin/shipping-options/:id", Route: shippingoptionid.Route},
+		{Path: "/admin/shipping-options/:id/rules/batch", Route: shippingoptionrulesbatch.Route},
 		{Path: "/admin/fulfillment-providers", Route: fulfillmentproviders.Route},
 		{Path: "/admin/fulfillment-providers/:id/options", Route: fulfillmentprovideroptions.Route},
 		{Path: "/admin/shipping-profiles/:id", Route: shippingprofileid.Route},

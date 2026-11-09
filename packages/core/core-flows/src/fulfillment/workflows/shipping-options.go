@@ -151,3 +151,48 @@ var DeleteShippingOptionsWorkflow = composer.CreateWorkflow("delete-shipping-opt
 		)
 		return nil, err
 	})
+
+// BatchShippingOptionRulesInput mirrors BatchShippingOptionRulesInput.
+type BatchShippingOptionRulesInput struct {
+	Create []*dal.Record
+	Update []*dal.Record
+	Delete []any
+}
+
+// BatchShippingOptionRulesResult mirrors BatchShippingOptionRulesOutput.
+type BatchShippingOptionRulesResult struct {
+	Created []*dal.Record
+	Updated []*dal.Record
+	Deleted []any
+}
+
+// BatchShippingOptionRulesWorkflow mirrors batchShippingOptionRulesWorkflow.
+var BatchShippingOptionRulesWorkflow = composer.CreateWorkflow("batch-shipping-option-rules",
+	func(e *composer.Execution, in BatchShippingOptionRulesInput) (BatchShippingOptionRulesResult, error) {
+		var out BatchShippingOptionRulesResult
+		create, update, del := in.Create, in.Update, in.Delete
+		if create == nil {
+			create = []*dal.Record{}
+		}
+		if update == nil {
+			update = []*dal.Record{}
+		}
+		if del == nil {
+			del = []any{}
+		}
+		err := composer.Parallelize(
+			func() (err error) {
+				out.Created, err = steps.CreateShippingOptionRulesStep.Run(e, create)
+				return err
+			},
+			func() (err error) {
+				out.Updated, err = steps.UpdateShippingOptionRulesStep.Run(e, update)
+				return err
+			},
+			func() (err error) {
+				out.Deleted, err = steps.DeleteShippingOptionRulesStep.Run(e, del)
+				return err
+			},
+		)
+		return out, err
+	})
