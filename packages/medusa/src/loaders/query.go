@@ -17,10 +17,21 @@ import (
 // and the link module services, over the joiner configs and relation map
 // upstream loads with the default configuration.
 func NewDefaultQuery(db dal.Querier, moduleServices ...map[string]any) (*query.Query, error) {
-	registered := map[string]any{}
-	if len(moduleServices) > 0 && moduleServices[0] != nil {
+	var registered map[string]any
+	if len(moduleServices) > 0 {
 		registered = moduleServices[0]
 	}
+	q, _, err := NewDefaultQueryAndLink(db, registered)
+	return q, err
+}
+
+// NewDefaultQueryAndLink builds Query and Link (remoteLink) over the same
+// link module services.
+func NewDefaultQueryAndLink(db dal.Querier, registered map[string]any) (*query.Query, *modulessdk.Link, error) {
+	if registered == nil {
+		registered = map[string]any{}
+	}
+	linkServices := map[string]*services.LinkModuleService{}
 	svcs := map[string]query.ModuleService{}
 	for _, cfg := range modulessdk.DefaultJoinerConfigs {
 		if cfg.IsReadOnlyLink || cfg.ServiceName == "" {
@@ -40,8 +51,9 @@ func NewDefaultQuery(db dal.Querier, moduleServices ...map[string]any) (*query.Q
 			}
 			link, err := services.NewLinkModuleService(db, linkCfg)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
+			linkServices[cfg.ServiceName] = link
 			svcs[cfg.ServiceName] = query.LinkServiceAdapter{Service: link}
 			continue
 		}
@@ -63,5 +75,9 @@ func NewDefaultQuery(db dal.Querier, moduleServices ...map[string]any) (*query.Q
 		}
 		svcs[cfg.ServiceName] = query.MedusaServiceAdapter{Service: svc}
 	}
-	return query.New(modulessdk.DefaultJoinerConfigs, joiner.RelationMap(modulessdk.DefaultRelationMap), svcs)
+	q, err := query.New(modulessdk.DefaultJoinerConfigs, joiner.RelationMap(modulessdk.DefaultRelationMap), svcs)
+	if err != nil {
+		return nil, nil, err
+	}
+	return q, modulessdk.NewLink(linkServices), nil
 }

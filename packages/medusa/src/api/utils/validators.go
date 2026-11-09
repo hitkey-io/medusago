@@ -154,3 +154,9 @@ func CreateLinkBody() *zod.Schema {
 func StringOrStrings() *zod.Schema {
 	return zod.Union(zod.String(), zod.Array(zod.String()))
 }
+
+// WithAdditionalData mirrors WithAdditionalData without a custom validator:
+// the schema extended with additional_data.
+func WithAdditionalData(schema *zod.Schema) *zod.Schema {
+	return schema.Extend(zod.F("additional_data", zod.Record(zod.String(), zod.Unknown()).Nullish()))
+}

@@ -14,6 +14,10 @@ var AdminProductRoutesMiddlewares = []medusahttp.MiddlewareRoute{
 		httputils.MaybeApplyLinkFilter(httputils.LinkFilterOptions{EntryPoint: "product_sales_channel", ResourceID: "product_id", FilterableField: "sales_channel_id"}),
 		MaybeApplyPriceListsFilter(),
 	}},
+	{Methods: []string{"POST"}, Matcher: "/admin/products", Middlewares: []medusahttp.MiddlewareFunction{
+		httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateProduct)),
+		httputils.ValidateAndTransformQuery(AdminGetProductParams, RetrieveProductQueryConfig),
+	}},
 	{Methods: []string{"GET"}, Matcher: "/admin/products/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetProductParams, RetrieveProductQueryConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/products/:id/variants", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(productvariants.AdminGetProductVariantsParams, ListVariantConfig)}},
 }

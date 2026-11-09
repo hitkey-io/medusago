@@ -238,16 +238,41 @@ func (r *Repository) assignFields(e *dml.Entity, data Row, input *Record, create
 	}
 
 	// Foreign keys, given either as <relation>_id or as the relation.
+	// The FK is either a mapToPk relation property or (pivot models such as
+	// ProductProductOption) a plain scalar sharing its column with a
+	// non-persisted relation.
+	dmlFields := map[string]bool{}
+	for _, p := range e.Properties {
+		if p.Field != nil {
+			dmlFields[p.Name] = true
+		}
+	}
+	isToOne := func(k string) bool { return k == "m:1" || k == "1:1" }
 	for _, mp := range e.Meta.Properties {
-		if !mp.MapToPk || (mp.Persist != nil && !*mp.Persist) {
+		if (mp.Persist != nil && !*mp.Persist) || len(mp.FieldNames) == 0 {
 			continue
+		}
+		if !mp.MapToPk {
+			if mp.Kind != "scalar" || dmlFields[mp.Name] {
+				continue
+			}
+			shared := false
+			for _, rel := range e.Meta.Properties {
+				if isToOne(rel.Kind) && len(rel.FieldNames) > 0 && rel.FieldNames[0] == mp.FieldNames[0] {
+					shared = true
+					break
+				}
+			}
+			if !shared {
+				continue
+			}
 		}
 		if v, ok := input.Get(mp.Name); ok {
 			data[mp.FieldNames[0]] = v
 			continue
 		}
 		for _, rel := range e.Meta.Properties {
-			if rel.Kind != mp.Kind || rel.MapToPk || len(rel.FieldNames) == 0 || rel.FieldNames[0] != mp.FieldNames[0] {
+			if !isToOne(rel.Kind) || rel.MapToPk || rel.Name == mp.Name || len(rel.FieldNames) == 0 || rel.FieldNames[0] != mp.FieldNames[0] {
 				continue
 			}
 			v, ok := input.Get(rel.Name)

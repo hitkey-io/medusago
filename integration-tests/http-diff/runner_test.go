@@ -194,14 +194,20 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 }
 
 var refRe = regexp.MustCompile(`\{\{([A-Za-z0-9_]+)\.([^}]+)\}\}`)
+var quotedRefRe = regexp.MustCompile(`"\{\{([A-Za-z0-9_]+)\.([^}]+)\}\}"`)
 
 // resolveRefs replaces {{step.path.to.value}} with a value of a previous
 // response body (path segments: object keys or array indexes). In bodies
-// the value is JSON-encoded (the placeholder must stand for a whole JSON
-// value); in paths it is inserted as text, URL-escaped.
+// the placeholder is a JSON string ("{{...}}") standing for a whole value,
+// replaced by the JSON-encoded value; in paths it is inserted as text,
+// URL-escaped.
 func resolveRefs(s string, bodies map[string]any, inPath bool) string {
-	return refRe.ReplaceAllStringFunc(s, func(m string) string {
-		sm := refRe.FindStringSubmatch(m)
+	re := refRe
+	if !inPath {
+		re = quotedRefRe
+	}
+	return re.ReplaceAllStringFunc(s, func(m string) string {
+		sm := re.FindStringSubmatch(m)
 		var cur any = bodies[sm[1]]
 		for _, seg := range strings.Split(sm[2], ".") {
 			switch t := cur.(type) {
@@ -296,6 +302,10 @@ func (p *placeholders) of(s string) string {
 	gen, kind := isGenerated(s)
 	if !gen {
 		return s
+	}
+	if kind == "date" {
+		// which rows share a millisecond depends on timing (upstream too)
+		return "<date>"
 	}
 	if n, ok := p.names[s]; ok {
 		return n

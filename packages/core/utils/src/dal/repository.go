@@ -26,6 +26,9 @@ type FindOptions struct {
 	Take        *int
 	Skip        *int
 	WithDeleted bool
+	// PopulateWhere filters the rows loaded for a relation path (equality
+	// and null checks).
+	PopulateWhere map[string]*Record
 }
 
 // Repository reads the rows of one model, reproducing the queries and the
@@ -233,7 +236,7 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 		}
 	}
 
-	if err := r.populate(ctx, roots, idm, r.relationPaths(opts), opts.WithDeleted, relationOrder); err != nil {
+	if err := r.populate(ctx, roots, idm, r.relationPaths(opts), opts.WithDeleted, relationOrder, opts.PopulateWhere); err != nil {
 		return nil, nil, err
 	}
 	return roots, idm, nil
@@ -410,7 +413,7 @@ func (r *Repository) relationPaths(opts FindOptions) []string {
 
 // populate loads the relation paths level by level, the way MikroORM's
 // select-in loading does.
-func (r *Repository) populate(ctx context.Context, roots []*instance, idm identityMap, paths []string, withDeleted bool, relationOrder map[string][]OrderBy) error {
+func (r *Repository) populate(ctx context.Context, roots []*instance, idm identityMap, paths []string, withDeleted bool, relationOrder map[string][]OrderBy, populateWhere map[string]*Record) error {
 	byPath := map[string][]*instance{"": roots}
 	for _, path := range paths {
 		parentPath, relation := "", path
@@ -422,7 +425,7 @@ func (r *Repository) populate(ctx context.Context, roots []*instance, idm identi
 			byPath[path] = nil
 			continue
 		}
-		children, err := r.loadRelation(ctx, parents, relation, idm, withDeleted, relationOrder[path])
+		children, err := r.loadRelation(ctx, parents, relation, idm, withDeleted, relationOrder[path], populateWhere[path])
 		if err != nil {
 			return fmt.Errorf("populate %s: %w", path, err)
 		}
@@ -448,7 +451,7 @@ func uniqueValues(parents []*instance, columns []string) []any {
 	return out
 }
 
-func (r *Repository) loadRelation(ctx context.Context, parents []*instance, relation string, idm identityMap, withDeleted bool, order []OrderBy) ([]*instance, error) {
+func (r *Repository) loadRelation(ctx context.Context, parents []*instance, relation string, idm identityMap, withDeleted bool, order []OrderBy, where ...*Record) ([]*instance, error) {
 	owner := parents[0].entity
 	join, err := r.Schema.ResolveJoin(owner, relation)
 	if err != nil {
@@ -528,11 +531,25 @@ func (r *Repository) loadRelation(ctx context.Context, parents []*instance, rela
 		if len(values) == 0 {
 			return nil, nil
 		}
-		where := fmt.Sprintf(`"t0".%s in (%s)`, quote(join.TargetColumns[0]), placeholders(values))
+		cond := fmt.Sprintf(`"t0".%s in (%s)`, quote(join.TargetColumns[0]), placeholders(values))
 		if softDelete {
-			where = `"t0"."deleted_at" is null and ` + where
+			cond = `"t0"."deleted_at" is null and ` + cond
 		}
-		sql := fmt.Sprintf(`select "t0".* from %s as "t0" where %s`, quote(target.Meta.Collection), where)
+		if len(where) > 0 && where[0] != nil {
+			for _, k := range where[0].Keys() {
+				v, _ := where[0].Get(k)
+				column := k
+				if p, ok := target.MetaProperty(k); ok && len(p.FieldNames) > 0 {
+					column = p.FieldNames[0]
+				}
+				if v == nil {
+					cond += fmt.Sprintf(` and "t0".%s is null`, quote(column))
+				} else {
+					cond += fmt.Sprintf(` and "t0".%s = %s`, quote(column), placeholders([]any{v}))
+				}
+			}
+		}
+		sql := fmt.Sprintf(`select "t0".* from %s as "t0" where %s`, quote(target.Meta.Collection), cond)
 		if len(order) > 0 {
 			tr := &Repository{DB: r.DB, Schema: r.Schema, Entity: target}
 			o, err := tr.orderSQL(order, "t0")

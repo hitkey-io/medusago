@@ -21,6 +21,9 @@ type FindConfig struct {
 	Skip        *int
 	Order       []dal.OrderBy
 	WithDeleted bool
+	// PopulateWhere mirrors options.populateWhere: conditions on the rows
+	// of populated relations, by relation path.
+	PopulateWhere map[string]*dal.Record
 }
 
 // InternalService mirrors MedusaInternalService for one model.
@@ -43,13 +46,14 @@ func (s *InternalService) applyDefaultOrdering(config *FindConfig) {
 
 func buildQuery(filters *dal.Record, config FindConfig) dal.FindOptions {
 	return dal.FindOptions{
-		Where:       filters,
-		Select:      config.Select,
-		Relations:   config.Relations,
-		Order:       config.Order,
-		Take:        config.Take,
-		Skip:        config.Skip,
-		WithDeleted: config.WithDeleted,
+		Where:         filters,
+		Select:        config.Select,
+		Relations:     config.Relations,
+		Order:         config.Order,
+		Take:          config.Take,
+		Skip:          config.Skip,
+		WithDeleted:   config.WithDeleted,
+		PopulateWhere: config.PopulateWhere,
 	}
 }
 

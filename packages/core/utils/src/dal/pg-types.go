@@ -145,3 +145,8 @@ func parseTextArray(s string) ([]any, error) {
 	flush()
 	return out, nil
 }
+
+// QueryRows runs a query and parses its rows like node-postgres.
+func QueryRows(ctx context.Context, db Querier, sql string, args ...any) ([]Row, error) {
+	return queryRows(ctx, db, sql, args...)
+}

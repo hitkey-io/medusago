@@ -3,6 +3,7 @@ package modulessdk
 import (
 	"context"
 	"fmt"
+	"github.com/jackc/pgx/v5"
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
@@ -249,4 +250,41 @@ func ParseFindConfig(v any) (FindConfig, error) {
 		}
 	}
 	return c, nil
+}
+
+// withDB returns a copy of the service whose internal services use db.
+func (s *MedusaService) withDB(db dal.Querier) *MedusaService {
+	c := &MedusaService{byName: map[string]*InternalService{}, bySuffix: map[string]*InternalService{}, linkableKeys: s.linkableKeys}
+	copies := map[*InternalService]*InternalService{}
+	for name, svc := range s.byName {
+		repo := *svc.Repository
+		repo.DB = db
+		n := &InternalService{Repository: &repo}
+		copies[svc] = n
+		c.byName[name] = n
+	}
+	for suffix, svc := range s.bySuffix {
+		c.bySuffix[suffix] = copies[svc]
+	}
+	return c
+}
+
+// DB returns the database handle of the service.
+func (s *MedusaService) DB() dal.Querier {
+	for _, svc := range s.byName {
+		return svc.Repository.DB
+	}
+	return nil
+}
+
+// InTransaction mirrors @InjectTransactionManager: fn runs with a copy of
+// the service bound to one transaction (a savepoint when already in one).
+func (s *MedusaService) InTransaction(ctx context.Context, fn func(tx *MedusaService) error) error {
+	db, ok := s.DB().(txBeginner)
+	if !ok {
+		return fn(s)
+	}
+	return pgx.BeginFunc(ctx, db, func(tx pgx.Tx) error {
+		return fn(s.withDB(tx))
+	})
 }

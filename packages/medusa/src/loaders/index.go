@@ -176,12 +176,14 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 			moduleServices[mc.Key] = v
 		}
 	}
-	q, err := NewDefaultQuery(pool, moduleServices)
+	q, link, err := NewDefaultQueryAndLink(pool, moduleServices)
 	if err != nil {
 		pool.Close()
 		return nil, err
 	}
 	c.Register(common.ContainerRegistrationKeys.QUERY, q)
+	c.Register(common.ContainerRegistrationKeys.LINK, link)
+	c.Register(common.ContainerRegistrationKeys.REMOTE_LINK, link)
 
 	app := medusahttp.NewApp()
 	app.NewRequest = func(r *nethttp.Request) *medusahttp.MedusaRequest {
