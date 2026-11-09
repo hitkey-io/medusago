@@ -351,12 +351,16 @@ func (w *Workflow[I, O]) RunAsStep(parent *Execution, input I) (O, error) {
 }
 
 // Parallelize mirrors parallelize(...): the branches run in order (upstream
-// they run concurrently; their relative order is not observable).
+// they run concurrently; their relative order is not observable). Like the
+// orchestrator, every branch runs even when an earlier one fails, so the
+// steps that succeeded are compensated with the failed one; the first
+// error is returned.
 func Parallelize(fns ...func() error) error {
+	var first error
 	for _, fn := range fns {
-		if err := fn(); err != nil {
-			return err
+		if err := fn(); err != nil && first == nil {
+			first = err
 		}
 	}
-	return nil
+	return first
 }

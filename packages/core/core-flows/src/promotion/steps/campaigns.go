@@ -16,6 +16,15 @@ type PromotionService interface {
 	UpdateCampaigns(ctx context.Context, data []*dal.Record) ([]*dal.Record, error)
 	AddPromotionsToCampaign(ctx context.Context, campaignID any, promotionIDs []any) ([]any, error)
 	RemovePromotionsFromCampaign(ctx context.Context, campaignID any, promotionIDs []any) ([]any, error)
+	CreatePromotions(ctx context.Context, data []*dal.Record) ([]*dal.Record, error)
+	UpdatePromotions(ctx context.Context, data []*dal.Record) ([]*dal.Record, error)
+	UpdatePromotionRules(ctx context.Context, data []*dal.Record) ([]*dal.Record, error)
+	AddPromotionRules(ctx context.Context, promotionID any, rules []*dal.Record) ([]*dal.Record, error)
+	AddPromotionTargetRules(ctx context.Context, promotionID any, rules []*dal.Record) ([]*dal.Record, error)
+	AddPromotionBuyRules(ctx context.Context, promotionID any, rules []*dal.Record) ([]*dal.Record, error)
+	RemovePromotionRules(ctx context.Context, promotionID any, ruleIDs []any) error
+	RemovePromotionTargetRules(ctx context.Context, promotionID any, ruleIDs []any) error
+	RemovePromotionBuyRules(ctx context.Context, promotionID any, ruleIDs []any) error
 	ListBySuffix(ctx context.Context, suffix string, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, error)
 	Internal(className string) *utilsmodulessdk.InternalService
 }

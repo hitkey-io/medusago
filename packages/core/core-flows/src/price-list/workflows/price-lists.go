@@ -226,15 +226,22 @@ func listWithPrices(id any, prices []*dal.Record) []*dal.Record {
 // BatchPriceListPricesWorkflow mirrors batchPriceListPricesWorkflow.
 var BatchPriceListPricesWorkflow = composer.CreateWorkflow("batch-price-list-prices",
 	func(e *composer.Execution, in BatchPriceListPricesInput) (BatchPriceListPricesResult, error) {
-		created, err := CreatePriceListPricesWorkflow.RunAsStep(e, listWithPrices(in.ID, in.Create))
-		if err != nil {
-			return BatchPriceListPricesResult{}, err
-		}
-		updated, err := UpdatePriceListPricesWorkflow.RunAsStep(e, listWithPrices(in.ID, in.Update))
-		if err != nil {
-			return BatchPriceListPricesResult{}, err
-		}
-		deleted, err := RemovePriceListPricesWorkflow.RunAsStep(e, in.Delete)
+		var created, updated []*dal.Record
+		var deleted []any
+		err := composer.Parallelize(
+			func() (err error) {
+				created, err = CreatePriceListPricesWorkflow.RunAsStep(e, listWithPrices(in.ID, in.Create))
+				return err
+			},
+			func() (err error) {
+				updated, err = UpdatePriceListPricesWorkflow.RunAsStep(e, listWithPrices(in.ID, in.Update))
+				return err
+			},
+			func() (err error) {
+				deleted, err = RemovePriceListPricesWorkflow.RunAsStep(e, in.Delete)
+				return err
+			},
+		)
 		if err != nil {
 			return BatchPriceListPricesResult{}, err
 		}

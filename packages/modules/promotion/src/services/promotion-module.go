@@ -67,7 +67,7 @@ func isPresent(v any) bool {
 	case nil:
 		return false
 	case string:
-		return strings.TrimSpace(t) != ""
+		return t != ""
 	case []any:
 		return len(t) > 0
 	case *dal.Record:

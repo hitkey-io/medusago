@@ -1,0 +1,1193 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNjI4NTAsImV4cCI6MTc5NDM0OTI1MH0.gE7VPAwx57MfUxehMjfJpepAK15uxLBdP6rB6lpimc8"
+    }
+  },
+  "campaigns": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaigns": [
+        {
+          "id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+          "campaign_identifier": "SPRING"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "shirt": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+        "code": "SUMMER15",
+        "is_automatic": false,
+        "is_tax_inclusive": false,
+        "type": "standard",
+        "limit": null,
+        "used": 0,
+        "status": "active",
+        "created_at": "2026-11-09T22:20:50.612Z",
+        "updated_at": "2026-11-09T22:20:50.612Z",
+        "deleted_at": null,
+        "metadata": {
+          "a": 1
+        },
+        "campaign_id": null,
+        "application_method": {
+          "id": "proappmet_01M716CQ1K4JGHJHG2YFV5ENT8",
+          "currency_code": null,
+          "max_quantity": 3,
+          "apply_to_quantity": null,
+          "buy_rules_min_quantity": null,
+          "type": "percentage",
+          "target_type": "items",
+          "allocation": "each",
+          "raw_value": {
+            "value": "15",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:20:50.611Z",
+          "updated_at": "2026-11-09T22:20:50.611Z",
+          "deleted_at": null,
+          "promotion_id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+          "target_rules": [
+            {
+              "id": "prorul_01M716CQ1K4QAY4YA0DNNHTPJ1",
+              "description": null,
+              "attribute": "items.product.id",
+              "operator": "in",
+              "created_at": "2026-11-09T22:20:50.611Z",
+              "updated_at": "2026-11-09T22:20:50.611Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "value": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+                }
+              ]
+            }
+          ],
+          "buy_rules": [],
+          "value": 15
+        },
+        "rules": [
+          {
+            "id": "prorul_01M716CQ1JQQ8EJ6H5JY32Z436",
+            "attribute": "customer.groups.id",
+            "operator": "eq",
+            "values": [
+              {
+                "value": "cusgroup_test"
+              }
+            ]
+          }
+        ],
+        "campaign": null
+      }
+    }
+  },
+  "create_order": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ3AQFM184Z7ENS5J50X",
+        "code": "ORDER5",
+        "is_automatic": false,
+        "is_tax_inclusive": false,
+        "type": "standard",
+        "limit": null,
+        "used": 0,
+        "status": "draft",
+        "created_at": "2026-11-09T22:20:50.666Z",
+        "updated_at": "2026-11-09T22:20:50.666Z",
+        "deleted_at": null,
+        "metadata": null,
+        "campaign_id": null,
+        "application_method": {
+          "id": "proappmet_01M716CQ3AB69KGKC39C21EHNN",
+          "currency_code": "eur",
+          "max_quantity": null,
+          "apply_to_quantity": null,
+          "buy_rules_min_quantity": null,
+          "type": "fixed",
+          "target_type": "order",
+          "allocation": "across",
+          "raw_value": {
+            "value": "5",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:20:50.666Z",
+          "updated_at": "2026-11-09T22:20:50.666Z",
+          "deleted_at": null,
+          "promotion_id": "promo_01M716CQ3AQFM184Z7ENS5J50X",
+          "target_rules": [],
+          "buy_rules": [],
+          "value": 5
+        },
+        "rules": [],
+        "campaign": null
+      }
+    }
+  },
+  "create_order_target_rules": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Target rules for application method with target type (order) is not allowed"
+    }
+  },
+  "create_buyget": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ4S56ZS5XWV0P9VYD9N",
+        "code": "B2G1",
+        "is_automatic": false,
+        "is_tax_inclusive": false,
+        "type": "buyget",
+        "limit": null,
+        "used": 0,
+        "status": "draft",
+        "created_at": "2026-11-09T22:20:50.714Z",
+        "updated_at": "2026-11-09T22:20:50.714Z",
+        "deleted_at": null,
+        "metadata": null,
+        "campaign_id": null,
+        "application_method": {
+          "id": "proappmet_01M716CQ4TPN24HY431XS878H8",
+          "currency_code": null,
+          "max_quantity": 1,
+          "apply_to_quantity": 1,
+          "buy_rules_min_quantity": 2,
+          "type": "percentage",
+          "target_type": "items",
+          "allocation": "each",
+          "raw_value": {
+            "value": "100",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:20:50.714Z",
+          "updated_at": "2026-11-09T22:20:50.714Z",
+          "deleted_at": null,
+          "promotion_id": "promo_01M716CQ4S56ZS5XWV0P9VYD9N",
+          "target_rules": [
+            {
+              "id": "prorul_01M716CQ4TWR9HDMQ6Z7Q2MTMC",
+              "description": null,
+              "attribute": "items.product.id",
+              "operator": "in",
+              "created_at": "2026-11-09T22:20:50.714Z",
+              "updated_at": "2026-11-09T22:20:50.714Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "value": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+                }
+              ]
+            }
+          ],
+          "buy_rules": [
+            {
+              "id": "prorul_01M716CQ4TDNMQQC4EJK0QE60Y",
+              "description": null,
+              "attribute": "items.product.id",
+              "operator": "in",
+              "created_at": "2026-11-09T22:20:50.714Z",
+              "updated_at": "2026-11-09T22:20:50.714Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "value": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+                }
+              ]
+            }
+          ],
+          "value": 100
+        },
+        "rules": [],
+        "campaign": null
+      }
+    }
+  },
+  "create_buyget_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Buyget promotions require at least one buy rule and quantities to be defined"
+    }
+  },
+  "create_buyget_max_low": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "max_quantity (1) must be greater than or equal to apply_to_quantity (2) for BUYGET promotions."
+    }
+  },
+  "create_pct_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Application Method value should be a percentage number between 0 and 100"
+    }
+  },
+  "create_across_max": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "application_method.max_quantity is not allowed to be set for allocation (across)"
+    }
+  },
+  "create_each_no_max": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "application_method.max_quantity is required when application_method.allocation is 'each OR once'"
+    }
+  },
+  "create_items_no_alloc": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "application_method.allocation should be either 'across OR each OR once' when application_method.target_type is either 'shipping_methods OR items'"
+    }
+  },
+  "create_once_order": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "application_method.allocation 'once' is not compatible with target_type 'order'"
+    }
+  },
+  "create_with_campaign": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ63808HH3SZ1GV1R8C0",
+        "code": "CAMP1",
+        "is_automatic": false,
+        "is_tax_inclusive": false,
+        "type": "standard",
+        "limit": null,
+        "used": 0,
+        "status": "draft",
+        "created_at": "2026-11-09T22:20:50.756Z",
+        "updated_at": "2026-11-09T22:20:50.756Z",
+        "deleted_at": null,
+        "metadata": null,
+        "campaign_id": "procamp_01M716CQ63Y5VTPFGQZ00CHG6B",
+        "application_method": {
+          "id": "proappmet_01M716CQ63XA9TJ6SMJDDEX164",
+          "currency_code": "eur",
+          "max_quantity": null,
+          "apply_to_quantity": null,
+          "buy_rules_min_quantity": null,
+          "type": "fixed",
+          "target_type": "order",
+          "allocation": null,
+          "raw_value": {
+            "value": "5",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:20:50.756Z",
+          "updated_at": "2026-11-09T22:20:50.756Z",
+          "deleted_at": null,
+          "promotion_id": "promo_01M716CQ63808HH3SZ1GV1R8C0",
+          "target_rules": [],
+          "buy_rules": [],
+          "value": 5
+        },
+        "rules": [],
+        "campaign": {
+          "id": "procamp_01M716CQ63Y5VTPFGQZ00CHG6B",
+          "name": "Promo camp",
+          "description": null,
+          "campaign_identifier": "PCAMP",
+          "starts_at": null,
+          "ends_at": null,
+          "budget": {
+            "id": "probudg_01M716CQ6378DBEGZ41YRJ2EJA",
+            "type": "usage",
+            "currency_code": null,
+            "attribute": null,
+            "raw_limit": {
+              "value": "10",
+              "precision": 20
+            },
+            "raw_used": {
+              "value": "0",
+              "precision": 20
+            },
+            "created_at": "2026-11-09T22:20:50.755Z",
+            "updated_at": "2026-11-09T22:20:50.755Z",
+            "deleted_at": null,
+            "campaign_id": "procamp_01M716CQ63Y5VTPFGQZ00CHG6B",
+            "limit": 10,
+            "used": 0
+          },
+          "created_at": "2026-11-09T22:20:50.756Z",
+          "updated_at": "2026-11-09T22:20:50.756Z",
+          "deleted_at": null
+        }
+      }
+    }
+  },
+  "create_campaign_both": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Buyget promotions require at least one buy rule and quantities to be defined"
+    }
+  },
+  "create_bad_campaign_id": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Could not find campaign with id - camp_missing"
+    }
+  },
+  "create_spend_mismatch": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Currency between promotion and campaigns should match"
+    }
+  },
+  "create_automatic_limit": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Automatic promotions cannot have a usage limit"
+    }
+  },
+  "create_duplicate": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Promotion with code: SUMMER15, already exists."
+    }
+  },
+  "create_bad_operator": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'rules, 0, operator' is required"
+    }
+  },
+  "get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+        "code": "SUMMER15",
+        "is_automatic": false,
+        "is_tax_inclusive": false,
+        "type": "standard",
+        "limit": null,
+        "used": 0,
+        "status": "active",
+        "created_at": "2026-11-09T22:20:50.612Z",
+        "updated_at": "2026-11-09T22:20:50.612Z",
+        "deleted_at": null,
+        "metadata": {
+          "a": 1
+        },
+        "campaign_id": null,
+        "application_method": {
+          "id": "proappmet_01M716CQ1K4JGHJHG2YFV5ENT8",
+          "currency_code": null,
+          "max_quantity": 3,
+          "apply_to_quantity": null,
+          "buy_rules_min_quantity": null,
+          "type": "percentage",
+          "target_type": "items",
+          "allocation": "each",
+          "raw_value": {
+            "value": "15",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:20:50.611Z",
+          "updated_at": "2026-11-09T22:20:50.611Z",
+          "deleted_at": null,
+          "promotion_id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+          "target_rules": [
+            {
+              "id": "prorul_01M716CQ1K4QAY4YA0DNNHTPJ1",
+              "description": null,
+              "attribute": "items.product.id",
+              "operator": "in",
+              "created_at": "2026-11-09T22:20:50.611Z",
+              "updated_at": "2026-11-09T22:20:50.611Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "value": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+                }
+              ]
+            }
+          ],
+          "buy_rules": [],
+          "value": 15
+        },
+        "rules": [
+          {
+            "id": "prorul_01M716CQ1JQQ8EJ6H5JY32Z436",
+            "attribute": "customer.groups.id",
+            "operator": "eq",
+            "values": [
+              {
+                "value": "cusgroup_test"
+              }
+            ]
+          }
+        ],
+        "campaign": null
+      }
+    }
+  },
+  "get_by_code": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+        "code": "SUMMER15",
+        "status": "active"
+      }
+    }
+  },
+  "update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+        "code": "SUMMER20",
+        "is_automatic": false,
+        "is_tax_inclusive": false,
+        "type": "standard",
+        "limit": 10,
+        "used": 0,
+        "status": "inactive",
+        "created_at": "2026-11-09T22:20:50.612Z",
+        "updated_at": "2026-11-09T22:20:50.830Z",
+        "deleted_at": null,
+        "metadata": {
+          "a": 1,
+          "b": 2
+        },
+        "campaign_id": null,
+        "application_method": {
+          "id": "proappmet_01M716CQ1K4JGHJHG2YFV5ENT8",
+          "currency_code": null,
+          "max_quantity": 3,
+          "apply_to_quantity": null,
+          "buy_rules_min_quantity": null,
+          "type": "percentage",
+          "target_type": "items",
+          "allocation": "each",
+          "raw_value": {
+            "value": "20",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:20:50.611Z",
+          "updated_at": "2026-11-09T22:20:50.817Z",
+          "deleted_at": null,
+          "promotion_id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+          "target_rules": [
+            {
+              "id": "prorul_01M716CQ1K4QAY4YA0DNNHTPJ1",
+              "description": null,
+              "attribute": "items.product.id",
+              "operator": "in",
+              "created_at": "2026-11-09T22:20:50.611Z",
+              "updated_at": "2026-11-09T22:20:50.611Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "value": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+                }
+              ]
+            }
+          ],
+          "buy_rules": [],
+          "value": 20
+        },
+        "rules": [
+          {
+            "id": "prorul_01M716CQ1JQQ8EJ6H5JY32Z436",
+            "attribute": "customer.groups.id",
+            "operator": "eq",
+            "values": [
+              {
+                "value": "cusgroup_test"
+              }
+            ]
+          }
+        ],
+        "campaign": null
+      }
+    }
+  },
+  "update_alloc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+        "application_method": {
+          "id": "proappmet_01M716CQ1K4JGHJHG2YFV5ENT8",
+          "currency_code": null,
+          "max_quantity": null,
+          "apply_to_quantity": null,
+          "buy_rules_min_quantity": null,
+          "type": "percentage",
+          "target_type": "items",
+          "allocation": "across",
+          "raw_value": {
+            "value": "20",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:20:50.611Z",
+          "updated_at": "2026-11-09T22:20:50.849Z",
+          "deleted_at": null,
+          "promotion_id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+          "value": 20
+        }
+      }
+    }
+  },
+  "update_campaign_mismatch": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Currency code doesn't match for campaign (procamp_01M70Y004B3CNPZ9961HB1CXH6) and promotion (promo_01M716CQ1JRA6C9H8P7YSK28XV)"
+    }
+  },
+  "update_campaign": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ3AQFM184Z7ENS5J50X",
+        "campaign_id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+        "campaign": {
+          "name": "Spring campaign",
+          "id": "procamp_01M70Y004B3CNPZ9961HB1CXH6"
+        }
+      }
+    }
+  },
+  "update_campaign_missing": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Could not find campaign with id camp_missing"
+    }
+  },
+  "update_campaign_null": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ3AQFM184Z7ENS5J50X",
+        "campaign_id": null
+      }
+    }
+  },
+  "update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Promotion id not found: promo_missing"
+    }
+  },
+  "update_automatic_limit": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Automatic promotions cannot have a usage limit"
+    }
+  },
+  "rules_batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "id": "prorul_01M716CQAXNYNBCKEQQWSR8H1C",
+          "description": "Euro only",
+          "attribute": "currency_code",
+          "operator": "eq",
+          "values": [
+            {
+              "value": "eur"
+            }
+          ]
+        }
+      ],
+      "updated": [
+        {
+          "id": "prorul_01M716CQ1JQQ8EJ6H5JY32Z436",
+          "description": null,
+          "attribute": "customer.groups.id",
+          "operator": "eq",
+          "values": [
+            {
+              "value": "g1"
+            },
+            {
+              "value": "g2"
+            }
+          ]
+        }
+      ],
+      "deleted": {
+        "ids": [],
+        "object": "promotion-rule",
+        "deleted": true
+      }
+    }
+  },
+  "rules_batch_update_missing": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Promotion rules with id - prorul_missing not found"
+    }
+  },
+  "target_rules_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [],
+      "updated": [],
+      "deleted": {
+        "ids": [
+          "prorul_01M716CQ1K4QAY4YA0DNNHTPJ1"
+        ],
+        "object": "promotion-rule",
+        "deleted": true
+      }
+    }
+  },
+  "buy_rules_standard": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Can't add buy rules to a standard promotion"
+    }
+  },
+  "buy_rules_buyget": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "id": "prorul_01M716CQCXFECVJQZPZNVB0HZ0",
+          "description": null,
+          "attribute": "items.variant.id",
+          "operator": "in",
+          "values": [
+            {
+              "value": "v1"
+            }
+          ]
+        }
+      ],
+      "updated": [],
+      "deleted": {
+        "ids": [],
+        "object": "promotion-rule",
+        "deleted": true
+      }
+    }
+  },
+  "rules_batch_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Promotion with id: promo_missing was not found"
+    }
+  },
+  "get_after_rules": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+        "code": "SUMMER20",
+        "is_automatic": false,
+        "is_tax_inclusive": false,
+        "type": "standard",
+        "limit": 10,
+        "used": 0,
+        "status": "inactive",
+        "created_at": "2026-11-09T22:20:50.612Z",
+        "updated_at": "2026-11-09T22:20:50.830Z",
+        "deleted_at": null,
+        "metadata": {
+          "a": 1,
+          "b": 2
+        },
+        "campaign_id": null,
+        "application_method": {
+          "id": "proappmet_01M716CQ1K4JGHJHG2YFV5ENT8",
+          "currency_code": null,
+          "max_quantity": null,
+          "apply_to_quantity": null,
+          "buy_rules_min_quantity": null,
+          "type": "percentage",
+          "target_type": "items",
+          "allocation": "across",
+          "raw_value": {
+            "value": "20",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:20:50.611Z",
+          "updated_at": "2026-11-09T22:20:50.849Z",
+          "deleted_at": null,
+          "promotion_id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+          "target_rules": [],
+          "buy_rules": [],
+          "value": 20
+        },
+        "rules": [
+          {
+            "id": "prorul_01M716CQ1JQQ8EJ6H5JY32Z436",
+            "attribute": "customer.groups.id",
+            "operator": "eq",
+            "values": [
+              {
+                "value": "g1"
+              },
+              {
+                "value": "g2"
+              }
+            ]
+          },
+          {
+            "id": "prorul_01M716CQAXNYNBCKEQQWSR8H1C",
+            "attribute": "currency_code",
+            "operator": "eq",
+            "values": [
+              {
+                "value": "eur"
+              }
+            ]
+          },
+          {
+            "id": "prorul_01M716CQBWVVM337VARBQSQA3C",
+            "attribute": "customer.groups.id",
+            "operator": "eq",
+            "values": [
+              {
+                "value": "g1"
+              },
+              {
+                "value": "g2"
+              }
+            ]
+          },
+          {
+            "id": "prorul_01M716CQBWYYY7GZ10489X2Q80",
+            "attribute": "currency_code",
+            "operator": "eq",
+            "values": [
+              {
+                "value": "eur"
+              }
+            ]
+          }
+        ],
+        "campaign": null
+      }
+    }
+  },
+  "get_buyget": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ4S56ZS5XWV0P9VYD9N",
+        "code": "B2G1",
+        "is_automatic": false,
+        "is_tax_inclusive": false,
+        "type": "buyget",
+        "limit": null,
+        "used": 0,
+        "status": "draft",
+        "created_at": "2026-11-09T22:20:50.714Z",
+        "updated_at": "2026-11-09T22:20:50.714Z",
+        "deleted_at": null,
+        "metadata": null,
+        "campaign_id": null,
+        "application_method": {
+          "id": "proappmet_01M716CQ4TPN24HY431XS878H8",
+          "currency_code": null,
+          "max_quantity": 1,
+          "apply_to_quantity": 1,
+          "buy_rules_min_quantity": 2,
+          "type": "percentage",
+          "target_type": "items",
+          "allocation": "each",
+          "raw_value": {
+            "value": "100",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:20:50.714Z",
+          "updated_at": "2026-11-09T22:20:50.714Z",
+          "deleted_at": null,
+          "promotion_id": "promo_01M716CQ4S56ZS5XWV0P9VYD9N",
+          "target_rules": [
+            {
+              "id": "prorul_01M716CQ4TWR9HDMQ6Z7Q2MTMC",
+              "description": null,
+              "attribute": "items.product.id",
+              "operator": "in",
+              "created_at": "2026-11-09T22:20:50.714Z",
+              "updated_at": "2026-11-09T22:20:50.714Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "value": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+                }
+              ]
+            }
+          ],
+          "buy_rules": [
+            {
+              "id": "prorul_01M716CQ4TDNMQQC4EJK0QE60Y",
+              "description": null,
+              "attribute": "items.product.id",
+              "operator": "in",
+              "created_at": "2026-11-09T22:20:50.714Z",
+              "updated_at": "2026-11-09T22:20:50.714Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "value": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+                }
+              ]
+            },
+            {
+              "id": "prorul_01M716CQCXFECVJQZPZNVB0HZ0",
+              "description": null,
+              "attribute": "items.variant.id",
+              "operator": "in",
+              "created_at": "2026-11-09T22:20:50.973Z",
+              "updated_at": "2026-11-09T22:20:50.973Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "value": "v1"
+                }
+              ]
+            }
+          ],
+          "value": 100
+        },
+        "rules": [],
+        "campaign": null
+      }
+    }
+  },
+  "get_camp1": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotion": {
+        "id": "promo_01M716CQ63808HH3SZ1GV1R8C0",
+        "code": "CAMP1",
+        "campaign_id": "procamp_01M716CQ63Y5VTPFGQZ00CHG6B",
+        "campaign": {
+          "name": "Promo camp",
+          "id": "procamp_01M716CQ63Y5VTPFGQZ00CHG6B",
+          "budget": {
+            "limit": 10
+          }
+        }
+      }
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "promo_01M716CQ1JRA6C9H8P7YSK28XV",
+      "object": "promotion",
+      "deleted": true
+    }
+  },
+  "get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Promotion with id or code: promo_01M716CQ1JRA6C9H8P7YSK28XV was not found"
+    }
+  },
+  "list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotions": [
+        {
+          "code": "B2G1",
+          "status": "draft",
+          "campaign_id": null,
+          "is_automatic": false,
+          "id": "promo_01M716CQ4S56ZS5XWV0P9VYD9N"
+        },
+        {
+          "code": "CAMP1",
+          "status": "draft",
+          "campaign_id": "procamp_01M716CQ63Y5VTPFGQZ00CHG6B",
+          "is_automatic": false,
+          "id": "promo_01M716CQ63808HH3SZ1GV1R8C0"
+        },
+        {
+          "code": "FREESHIP",
+          "status": "draft",
+          "campaign_id": null,
+          "is_automatic": true,
+          "id": "promo_01M70Y004QW5J7N985738V4B04"
+        },
+        {
+          "code": "ORDER5",
+          "status": "draft",
+          "campaign_id": null,
+          "is_automatic": false,
+          "id": "promo_01M716CQ3AQFM184Z7ENS5J50X"
+        },
+        {
+          "code": "SPRING10",
+          "status": "active",
+          "campaign_id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+          "is_automatic": false,
+          "id": "promo_01M70Y004QE6QZSQKF5H2R3MM6"
+        }
+      ],
+      "count": 5,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}
