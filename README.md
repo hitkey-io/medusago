@@ -21,14 +21,25 @@ JavaScript:
 Route parameter directories use a trailing underscore (`[variant_id]` ->
 `variant_id_`) because brackets are not valid in Go import paths.
 
+The original Medusa JavaScript packages (`packages/admin/*`,
+`packages/design-system/*`, `packages/core/js-sdk`, `packages/core/types`,
+`packages/eslint-plugin`) and the root JavaScript workspace files are copied
+1:1 from upstream with `scripts/sync-upstream.sh`. `turbo.json` is adapted
+because `@medusajs/medusa` is implemented in Go here.
+
 ## Development
 
 ```sh
+# Go backend
 go test ./...
 go run ./packages/cli/medusa-cli start --port 9000
+
+# Original JavaScript packages
+yarn install
+yarn build
 ```
 
 ## License
 
-MIT, see [LICENSE](LICENSE). Medusa Enterprise Edition materials (RBAC, SSO)
-are not part of this project.
+MIT, see [LICENSE](LICENSE), except for the Medusa Enterprise Edition
+materials identified in [ENTERPRISE-LICENSE.md](ENTERPRISE-LICENSE.md).

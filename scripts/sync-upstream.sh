@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 #
-# Copies the original Medusa frontend packages (admin, design-system, js-sdk)
-# from an upstream checkout into this repository, 1:1.
+# Copies the original Medusa JavaScript packages (admin, design-system, js-sdk,
+# types, eslint-plugin) and the root JavaScript workspace files from an upstream
+# checkout into this repository, 1:1.
 #
 # Usage:
 #   scripts/sync-upstream.sh [--include-enterprise] [UPSTREAM_DIR]
@@ -37,7 +38,8 @@ if [[ "$actual_version" != "$EXPECTED_VERSION" ]]; then
   exit 1
 fi
 
-# Frontend packages kept as original JavaScript.
+# Packages kept as original JavaScript. @medusajs/types is the TypeScript
+# contract of the HTTP API; the dashboard imports its sources directly.
 FRONTEND_PATHS=(
   packages/admin/admin-bundler
   packages/admin/admin-sdk
@@ -49,9 +51,34 @@ FRONTEND_PATHS=(
   packages/design-system/ui
   packages/design-system/ui-preset
   packages/core/js-sdk
+  packages/core/types
+  packages/eslint-plugin
 )
 
-EXCLUDES=(--exclude node_modules --exclude dist --exclude .turbo --exclude '*.tsbuildinfo')
+# Root files of the JavaScript workspace. turbo.json is maintained here: the
+# upstream one depends on the JavaScript @medusajs/medusa package, which is Go
+# in this repository.
+ROOT_FILES=(
+  package.json
+  yarn.lock
+  .yarnrc.yml
+  .yarn/releases
+  .yarn/patches
+  _tsconfig.base.json
+  .nvmrc
+  .prettierrc
+  .prettierignore
+  .eslintrc.js
+  .eslintignore
+  eslint.medusa.cjs
+  .syncpackrc.json
+)
+if [[ "$INCLUDE_ENTERPRISE" -eq 1 ]]; then
+  ROOT_FILES+=(ENTERPRISE-LICENSE.md)
+fi
+
+# Go files placed next to the original sources are never touched.
+EXCLUDES=(--filter 'P *.go' --exclude node_modules --exclude dist --exclude .turbo --exclude '*.tsbuildinfo')
 
 if [[ "$INCLUDE_ENTERPRISE" -eq 0 ]]; then
   # "- `path`" bullet lines of ENTERPRISE-LICENSE.md.
@@ -70,11 +97,27 @@ for fp in "${FRONTEND_PATHS[@]}"; do
   rsync -a --delete "${EXCLUDES[@]}" "$UPSTREAM/$fp/" "$ROOT/$fp/"
 done
 
+for rf in "${ROOT_FILES[@]}"; do
+  if [[ -d "$UPSTREAM/$rf" ]]; then
+    mkdir -p "$ROOT/$rf"
+    rsync -a --delete "$UPSTREAM/$rf/" "$ROOT/$rf/"
+  else
+    mkdir -p "$(dirname "$ROOT/$rf")"
+    cp "$UPSTREAM/$rf" "$ROOT/$rf"
+  fi
+done
+
 # Optional local scrub patterns (one extended regex per line, not committed):
-# lines matching them are removed from copied Markdown files, and the sync
-# fails if any copied file still matches afterwards.
+# copied files whose name matches are removed, matching lines are removed from
+# copied Markdown files, and the sync fails if any copied file still matches.
 SCRUB_FILE="$ROOT/.git/info/sync-scrub"
 if [[ -s "$SCRUB_FILE" ]]; then
+  while IFS= read -r -d '' f; do
+    if basename "$f" | grep -qiEf "$SCRUB_FILE"; then
+      rm -f "$f"
+    fi
+  done < <(find "${FRONTEND_PATHS[@]/#/$ROOT/}" -type f -print0)
+
   while IFS= read -r -d '' md; do
     if grep -qiEf "$SCRUB_FILE" "$md"; then
       tmp="$(mktemp)"

@@ -1,19 +1,44 @@
 # Local upstream checkouts used as reference
 /reference/
 
-# Build output
+# Go build output
 /bin/
-/dist/
-
-# Dependencies
-node_modules/
 
 # Environment
 .env
 .env.*
 !.env.template
 
+# JavaScript workspace (mirrors upstream)
+node_modules
+*yarn-error.log
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+packages/**/.yarn/*
+integration-tests/**/.yarn/*
+
+packages/**/plugins/**/.medusa/
+
+.eslintcache
+.turbo
+build/**
+dist/**
+**/dist
+**/stats
+.favorites.json
+**/tsconfig.tsbuildinfo
+/packages/**/.cache
+**/.medusa
+**/storybook-static
+**/coverage
+
 # OS / editors
 .DS_Store
-.idea/
-.vscode/
+.idea
+.vscode
