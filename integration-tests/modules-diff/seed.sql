@@ -26,7 +26,7 @@ SET row_security = off;
 -- Data for Name: api_key; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.api_key (id, token, salt, redacted, title, type, last_used_at, created_by, created_at, revoked_by, revoked_at, updated_at, deleted_at) VALUES ('apk_01M70GNP9BR8F4N58N1JPKAZSQ', 'pk_5fd3b66c177ce2b25ca53722ef543f69dc101c62b85b987293fd1e5ed899d546', '', 'pk_5fd***546', 'Default Publishable API Key', 'publishable', NULL, '', '2026-11-09 16:01:16.075+00', NULL, NULL, '2026-11-09 16:01:16.075+00', NULL);
+INSERT INTO public.api_key (id, token, salt, redacted, title, type, last_used_at, created_by, created_at, revoked_by, revoked_at, updated_at, deleted_at) VALUES ('apk_01M70HF0X4YJ8S6N7T64D5EKQC', 'pk_49f4488359b159f52ae980744733e3f38b70ed5dd26eb8081d7e525c2be83be2', '', 'pk_49f***be2', 'Default Publishable API Key', 'publishable', NULL, '', '2026-11-09 16:15:06.148+00', NULL, NULL, '2026-11-09 16:15:06.148+00', NULL);
 
 
 --
@@ -421,31 +421,31 @@ INSERT INTO public.shipping_profile (id, name, type, metadata, created_at, updat
 -- Data for Name: product_collection; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_collection (id, title, handle, metadata, created_at, updated_at, deleted_at, external_id) VALUES ('pcol_01M70GNPARYDWFQQ1FB5SYGYB3', 'Summer', 'summer', NULL, '2026-11-09 16:01:16.117698+00', '2026-11-09 16:01:16.117698+00', NULL, NULL);
+INSERT INTO public.product_collection (id, title, handle, metadata, created_at, updated_at, deleted_at, external_id) VALUES ('pcol_01M70HF0Y6SVSVWYHPB9FJWJBT', 'Summer', 'summer', NULL, '2026-11-09 16:15:06.179324+00', '2026-11-09 16:15:06.179324+00', NULL, NULL);
 
 
 --
 -- Data for Name: product_type; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_type (id, value, metadata, created_at, updated_at, deleted_at, external_id) VALUES ('ptyp_01M70GNPAM2EAG3K077TWN1J7T', 'Apparel', NULL, '2026-11-09 16:01:16.116+00', '2026-11-09 16:01:16.116+00', NULL, NULL);
+INSERT INTO public.product_type (id, value, metadata, created_at, updated_at, deleted_at, external_id) VALUES ('ptyp_01M70HF0Y3Y1MXP1ZG6RKFZF1C', 'Apparel', NULL, '2026-11-09 16:15:06.179+00', '2026-11-09 16:15:06.179+00', NULL, NULL);
 
 
 --
 -- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product (id, title, handle, subtitle, description, is_giftcard, status, thumbnail, weight, length, height, width, origin_country, hs_code, mid_code, material, collection_id, type_id, discountable, external_id, created_at, updated_at, deleted_at, metadata) VALUES ('prod_01M70GNPBF5DJ5ADYS9T1201HE', 'Medusa T-Shirt', 't-shirt', NULL, 'A comfortable cotton t-shirt', false, 'published', 'https://example.com/shirt-1.png', 400, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'pcol_01M70GNPARYDWFQQ1FB5SYGYB3', 'ptyp_01M70GNPAM2EAG3K077TWN1J7T', true, NULL, '2026-11-09 16:01:16.146+00', '2026-11-09 16:01:16.146+00', NULL, '{"featured": true}');
-INSERT INTO public.product (id, title, handle, subtitle, description, is_giftcard, status, thumbnail, weight, length, height, width, origin_country, hs_code, mid_code, material, collection_id, type_id, discountable, external_id, created_at, updated_at, deleted_at, metadata) VALUES ('prod_01M70GNPBF6Q8CV76R06PQK9N8', 'Medusa Sweatpants', 'sweatpants', NULL, NULL, false, 'draft', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, true, NULL, '2026-11-09 16:01:16.146+00', '2026-11-09 16:01:16.146+00', NULL, NULL);
-INSERT INTO public.product (id, title, handle, subtitle, description, is_giftcard, status, thumbnail, weight, length, height, width, origin_country, hs_code, mid_code, material, collection_id, type_id, discountable, external_id, created_at, updated_at, deleted_at, metadata) VALUES ('prod_01M70GNPBF2ETKVD378AV14WVW', 'Discontinued Hoodie', 'hoodie', NULL, NULL, false, 'published', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, true, NULL, '2026-11-09 16:01:16.146+00', '2026-11-09 16:01:16.193+00', '2026-11-09 16:01:16.193+00', NULL);
+INSERT INTO public.product (id, title, handle, subtitle, description, is_giftcard, status, thumbnail, weight, length, height, width, origin_country, hs_code, mid_code, material, collection_id, type_id, discountable, external_id, created_at, updated_at, deleted_at, metadata) VALUES ('prod_01M70HF0YS05RTVE5NT0E4WA2X', 'Medusa T-Shirt', 't-shirt', NULL, 'A comfortable cotton t-shirt', false, 'published', 'https://example.com/shirt-1.png', 400, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'pcol_01M70HF0Y6SVSVWYHPB9FJWJBT', 'ptyp_01M70HF0Y3Y1MXP1ZG6RKFZF1C', true, NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, '{"featured": true}');
+INSERT INTO public.product (id, title, handle, subtitle, description, is_giftcard, status, thumbnail, weight, length, height, width, origin_country, hs_code, mid_code, material, collection_id, type_id, discountable, external_id, created_at, updated_at, deleted_at, metadata) VALUES ('prod_01M70HF0YSWDNW5ZW5A4Y7341E', 'Medusa Sweatpants', 'sweatpants', NULL, NULL, false, 'draft', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, true, NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, NULL);
+INSERT INTO public.product (id, title, handle, subtitle, description, is_giftcard, status, thumbnail, weight, length, height, width, origin_country, hs_code, mid_code, material, collection_id, type_id, discountable, external_id, created_at, updated_at, deleted_at, metadata) VALUES ('prod_01M70HF0YSR70JXNJZ9D08NDVF', 'Discontinued Hoodie', 'hoodie', NULL, NULL, false, 'published', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, true, NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.246+00', '2026-11-09 16:15:06.246+00', NULL);
 
 
 --
 -- Data for Name: image; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.image (id, url, metadata, created_at, updated_at, deleted_at, rank, product_id) VALUES ('img_01M70GNPBGH15SEN0WTV5WA272', 'https://example.com/shirt-1.png', NULL, '2026-11-09 16:01:16.147+00', '2026-11-09 16:01:16.147+00', NULL, 0, 'prod_01M70GNPBF5DJ5ADYS9T1201HE');
-INSERT INTO public.image (id, url, metadata, created_at, updated_at, deleted_at, rank, product_id) VALUES ('img_01M70GNPBGPM9S1P1C5MT7XEEN', 'https://example.com/shirt-2.png', NULL, '2026-11-09 16:01:16.147+00', '2026-11-09 16:01:16.147+00', NULL, 1, 'prod_01M70GNPBF5DJ5ADYS9T1201HE');
+INSERT INTO public.image (id, url, metadata, created_at, updated_at, deleted_at, rank, product_id) VALUES ('img_01M70HF0YVN7PM52RVJ45Z21JS', 'https://example.com/shirt-1.png', NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, 0, 'prod_01M70HF0YS05RTVE5NT0E4WA2X');
+INSERT INTO public.image (id, url, metadata, created_at, updated_at, deleted_at, rank, product_id) VALUES ('img_01M70HF0YV7CS16P4J5PHFRYVJ', 'https://example.com/shirt-2.png', NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, 1, 'prod_01M70HF0YS05RTVE5NT0E4WA2X');
 
 
 --
@@ -694,7 +694,7 @@ INSERT INTO public.payment_provider (id, is_enabled, created_at, updated_at, del
 -- Data for Name: price_preference; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.price_preference (id, attribute, value, is_tax_inclusive, created_at, updated_at, deleted_at) VALUES ('prpref_01M70GNP92D6QAMBRX30F0P6YS', 'currency_code', 'eur', false, '2026-11-09 16:01:16.067+00', '2026-11-09 16:01:16.067+00', NULL);
+INSERT INTO public.price_preference (id, attribute, value, is_tax_inclusive, created_at, updated_at, deleted_at) VALUES ('prpref_01M70HF0WWSMG93JTXBJMDE1KX', 'currency_code', 'eur', false, '2026-11-09 16:15:06.14+00', '2026-11-09 16:15:06.14+00', NULL);
 
 
 --
@@ -707,57 +707,57 @@ INSERT INTO public.price_preference (id, attribute, value, is_tax_inclusive, cre
 -- Data for Name: product_category; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_category (id, name, description, handle, mpath, is_active, is_internal, rank, parent_category_id, created_at, updated_at, deleted_at, metadata, external_id) VALUES ('pcat_01M70GNPB1S2E4Z2G2WZX6GDH9', 'Clothing', '', 'clothing', 'pcat_01M70GNPB1S2E4Z2G2WZX6GDH9', true, false, 0, NULL, '2026-11-09 16:01:16.129+00', '2026-11-09 16:01:16.129+00', NULL, NULL, NULL);
-INSERT INTO public.product_category (id, name, description, handle, mpath, is_active, is_internal, rank, parent_category_id, created_at, updated_at, deleted_at, metadata, external_id) VALUES ('pcat_01M70GNPB72K2DTZ8EBJB4JHVF', 'Shirts', '', 'shirts', 'pcat_01M70GNPB1S2E4Z2G2WZX6GDH9.pcat_01M70GNPB72K2DTZ8EBJB4JHVF', true, false, 0, 'pcat_01M70GNPB1S2E4Z2G2WZX6GDH9', '2026-11-09 16:01:16.135+00', '2026-11-09 16:01:16.135+00', NULL, NULL, NULL);
+INSERT INTO public.product_category (id, name, description, handle, mpath, is_active, is_internal, rank, parent_category_id, created_at, updated_at, deleted_at, metadata, external_id) VALUES ('pcat_01M70HF0YE0VS03DWXRC61KMCH', 'Clothing', '', 'clothing', 'pcat_01M70HF0YE0VS03DWXRC61KMCH', true, false, 0, NULL, '2026-11-09 16:15:06.19+00', '2026-11-09 16:15:06.19+00', NULL, NULL, NULL);
+INSERT INTO public.product_category (id, name, description, handle, mpath, is_active, is_internal, rank, parent_category_id, created_at, updated_at, deleted_at, metadata, external_id) VALUES ('pcat_01M70HF0YKB61701YM9X6K149R', 'Shirts', '', 'shirts', 'pcat_01M70HF0YE0VS03DWXRC61KMCH.pcat_01M70HF0YKB61701YM9X6K149R', true, false, 0, 'pcat_01M70HF0YE0VS03DWXRC61KMCH', '2026-11-09 16:15:06.195+00', '2026-11-09 16:15:06.195+00', NULL, NULL, NULL);
 
 
 --
 -- Data for Name: product_category_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_category_product (product_id, product_category_id) VALUES ('prod_01M70GNPBF5DJ5ADYS9T1201HE', 'pcat_01M70GNPB1S2E4Z2G2WZX6GDH9');
+INSERT INTO public.product_category_product (product_id, product_category_id) VALUES ('prod_01M70HF0YS05RTVE5NT0E4WA2X', 'pcat_01M70HF0YE0VS03DWXRC61KMCH');
 
 
 --
 -- Data for Name: product_option; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_option (id, title, metadata, created_at, updated_at, deleted_at, is_exclusive) VALUES ('opt_01M70GNPBFJMHMDGJCWM0GAES8', 'Size', NULL, '2026-11-09 16:01:16.146+00', '2026-11-09 16:01:16.146+00', NULL, true);
-INSERT INTO public.product_option (id, title, metadata, created_at, updated_at, deleted_at, is_exclusive) VALUES ('opt_01M70GNPBF2AD7CAK6S1XNJG0V', 'Color', NULL, '2026-11-09 16:01:16.146+00', '2026-11-09 16:01:16.146+00', NULL, true);
-INSERT INTO public.product_option (id, title, metadata, created_at, updated_at, deleted_at, is_exclusive) VALUES ('opt_01M70GNPBFBDZA7BBK333C1YMZ', 'Size', NULL, '2026-11-09 16:01:16.146+00', '2026-11-09 16:01:16.146+00', NULL, true);
+INSERT INTO public.product_option (id, title, metadata, created_at, updated_at, deleted_at, is_exclusive) VALUES ('opt_01M70HF0YSPN5JFCQT9Y9VPMRF', 'Size', NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, true);
+INSERT INTO public.product_option (id, title, metadata, created_at, updated_at, deleted_at, is_exclusive) VALUES ('opt_01M70HF0YSR61J6JB3VFXCSGRN', 'Color', NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, true);
+INSERT INTO public.product_option (id, title, metadata, created_at, updated_at, deleted_at, is_exclusive) VALUES ('opt_01M70HF0YS41E5XPSA315K99A1', 'Size', NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, true);
 
 
 --
 -- Data for Name: product_option_value; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70GNPBHSAB3GZTQTXKB4N67', 'S', 'opt_01M70GNPBFJMHMDGJCWM0GAES8', NULL, '2026-11-09 16:01:16.146+00', '2026-11-09 16:01:16.146+00', NULL, NULL);
-INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70GNPBJKDQJ0BJV494JVYHF', 'Black', 'opt_01M70GNPBF2AD7CAK6S1XNJG0V', NULL, '2026-11-09 16:01:16.147+00', '2026-11-09 16:01:16.147+00', NULL, NULL);
-INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70GNPBHSJRG6GGZHNGJA4F2', 'M', 'opt_01M70GNPBFJMHMDGJCWM0GAES8', NULL, '2026-11-09 16:01:16.147+00', '2026-11-09 16:01:16.147+00', NULL, NULL);
-INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70GNPBJ5AJX82MRA9RJ9K7Z', 'White', 'opt_01M70GNPBF2AD7CAK6S1XNJG0V', NULL, '2026-11-09 16:01:16.147+00', '2026-11-09 16:01:16.147+00', NULL, NULL);
-INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70GNPBHRXS268HSAWA3D3Q1', 'L', 'opt_01M70GNPBFJMHMDGJCWM0GAES8', NULL, '2026-11-09 16:01:16.147+00', '2026-11-09 16:01:16.147+00', NULL, NULL);
-INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70GNPBJ3RBQHND0M9530DB4', 'M', 'opt_01M70GNPBFBDZA7BBK333C1YMZ', NULL, '2026-11-09 16:01:16.147+00', '2026-11-09 16:01:16.147+00', NULL, NULL);
+INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70HF0YWWD467E3NKX3G8B3X', 'S', 'opt_01M70HF0YSPN5JFCQT9Y9VPMRF', NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, NULL);
+INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70HF0YWG979A8Q4RJPKH6R2', 'Black', 'opt_01M70HF0YSR61J6JB3VFXCSGRN', NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, NULL);
+INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70HF0YWCFW5HBDFNCXEZK3J', 'M', 'opt_01M70HF0YSPN5JFCQT9Y9VPMRF', NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, NULL);
+INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70HF0YWTFBDCX94PT967W2F', 'White', 'opt_01M70HF0YSR61J6JB3VFXCSGRN', NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, NULL);
+INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70HF0YWSK8RFM286GQNWTD6', 'L', 'opt_01M70HF0YSPN5JFCQT9Y9VPMRF', NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, NULL);
+INSERT INTO public.product_option_value (id, value, option_id, metadata, created_at, updated_at, deleted_at, rank) VALUES ('optval_01M70HF0YW362MFCN7JTBWT5J1', 'M', 'opt_01M70HF0YS41E5XPSA315K99A1', NULL, '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, NULL);
 
 
 --
 -- Data for Name: product_product_option; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_product_option (id, product_id, product_option_id, created_at, updated_at, deleted_at) VALUES ('prodopt_01M70GNPC352CMX3TDVN9C2M57', 'prod_01M70GNPBF5DJ5ADYS9T1201HE', 'opt_01M70GNPBFJMHMDGJCWM0GAES8', '2026-11-09 16:01:16.164+00', '2026-11-09 16:01:16.164+00', NULL);
-INSERT INTO public.product_product_option (id, product_id, product_option_id, created_at, updated_at, deleted_at) VALUES ('prodopt_01M70GNPC3BK8KMHWE7RYPM2AW', 'prod_01M70GNPBF5DJ5ADYS9T1201HE', 'opt_01M70GNPBF2AD7CAK6S1XNJG0V', '2026-11-09 16:01:16.164+00', '2026-11-09 16:01:16.164+00', NULL);
-INSERT INTO public.product_product_option (id, product_id, product_option_id, created_at, updated_at, deleted_at) VALUES ('prodopt_01M70GNPC341VGAC747HW7F171', 'prod_01M70GNPBF6Q8CV76R06PQK9N8', 'opt_01M70GNPBFBDZA7BBK333C1YMZ', '2026-11-09 16:01:16.164+00', '2026-11-09 16:01:16.164+00', NULL);
+INSERT INTO public.product_product_option (id, product_id, product_option_id, created_at, updated_at, deleted_at) VALUES ('prodopt_01M70HF0ZB4F211HVX73YJMASF', 'prod_01M70HF0YS05RTVE5NT0E4WA2X', 'opt_01M70HF0YSPN5JFCQT9Y9VPMRF', '2026-11-09 16:15:06.219+00', '2026-11-09 16:15:06.219+00', NULL);
+INSERT INTO public.product_product_option (id, product_id, product_option_id, created_at, updated_at, deleted_at) VALUES ('prodopt_01M70HF0ZBX39J4PCCX1E7K3XS', 'prod_01M70HF0YS05RTVE5NT0E4WA2X', 'opt_01M70HF0YSR61J6JB3VFXCSGRN', '2026-11-09 16:15:06.22+00', '2026-11-09 16:15:06.22+00', NULL);
+INSERT INTO public.product_product_option (id, product_id, product_option_id, created_at, updated_at, deleted_at) VALUES ('prodopt_01M70HF0ZB7RY6TZ3E1PVZVKKB', 'prod_01M70HF0YSWDNW5ZW5A4Y7341E', 'opt_01M70HF0YS41E5XPSA315K99A1', '2026-11-09 16:15:06.22+00', '2026-11-09 16:15:06.22+00', NULL);
 
 
 --
 -- Data for Name: product_product_option_value; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70GNPC3QQGMTTDNP59J00TS', 'prodopt_01M70GNPC352CMX3TDVN9C2M57', 'optval_01M70GNPBHSAB3GZTQTXKB4N67', '2026-11-09 16:01:16.164+00', '2026-11-09 16:01:16.164+00', NULL);
-INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70GNPC3FE0CFBZ860GZNJC2', 'prodopt_01M70GNPC352CMX3TDVN9C2M57', 'optval_01M70GNPBHSJRG6GGZHNGJA4F2', '2026-11-09 16:01:16.164+00', '2026-11-09 16:01:16.164+00', NULL);
-INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70GNPC3XG0FSJQ3XWJR3S2S', 'prodopt_01M70GNPC352CMX3TDVN9C2M57', 'optval_01M70GNPBHRXS268HSAWA3D3Q1', '2026-11-09 16:01:16.164+00', '2026-11-09 16:01:16.164+00', NULL);
-INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70GNPC3G3DVN7FA5GNF655J', 'prodopt_01M70GNPC3BK8KMHWE7RYPM2AW', 'optval_01M70GNPBJKDQJ0BJV494JVYHF', '2026-11-09 16:01:16.164+00', '2026-11-09 16:01:16.164+00', NULL);
-INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70GNPC30N96Z0BG4DMQWRJT', 'prodopt_01M70GNPC3BK8KMHWE7RYPM2AW', 'optval_01M70GNPBJ5AJX82MRA9RJ9K7Z', '2026-11-09 16:01:16.164+00', '2026-11-09 16:01:16.164+00', NULL);
-INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70GNPC4PDXNP2YAXSJDMDVM', 'prodopt_01M70GNPC341VGAC747HW7F171', 'optval_01M70GNPBJ3RBQHND0M9530DB4', '2026-11-09 16:01:16.164+00', '2026-11-09 16:01:16.164+00', NULL);
+INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70HF0ZB5R2ZHA6Y5848HX7Y', 'prodopt_01M70HF0ZB4F211HVX73YJMASF', 'optval_01M70HF0YWWD467E3NKX3G8B3X', '2026-11-09 16:15:06.22+00', '2026-11-09 16:15:06.22+00', NULL);
+INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70HF0ZBZ36EZ9Y3A68TERWD', 'prodopt_01M70HF0ZB4F211HVX73YJMASF', 'optval_01M70HF0YWCFW5HBDFNCXEZK3J', '2026-11-09 16:15:06.22+00', '2026-11-09 16:15:06.22+00', NULL);
+INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70HF0ZB421QGP7DJ2A7XR54', 'prodopt_01M70HF0ZB4F211HVX73YJMASF', 'optval_01M70HF0YWSK8RFM286GQNWTD6', '2026-11-09 16:15:06.22+00', '2026-11-09 16:15:06.22+00', NULL);
+INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70HF0ZB4QH59F612C88JHGJ', 'prodopt_01M70HF0ZBX39J4PCCX1E7K3XS', 'optval_01M70HF0YWG979A8Q4RJPKH6R2', '2026-11-09 16:15:06.22+00', '2026-11-09 16:15:06.22+00', NULL);
+INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70HF0ZB55VEP073M8DJFPBG', 'prodopt_01M70HF0ZBX39J4PCCX1E7K3XS', 'optval_01M70HF0YWTFBDCX94PT967W2F', '2026-11-09 16:15:06.22+00', '2026-11-09 16:15:06.22+00', NULL);
+INSERT INTO public.product_product_option_value (id, product_product_option_id, product_option_value_id, created_at, updated_at, deleted_at) VALUES ('prodoptval_01M70HF0ZB73VZZ46YK0793K9W', 'prodopt_01M70HF0ZB7RY6TZ3E1PVZVKKB', 'optval_01M70HF0YW362MFCN7JTBWT5J1', '2026-11-09 16:15:06.22+00', '2026-11-09 16:15:06.22+00', NULL);
 
 
 --
@@ -776,27 +776,27 @@ INSERT INTO public.product_product_option_value (id, product_product_option_id, 
 -- Data for Name: product_tag; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_tag (id, value, metadata, created_at, updated_at, deleted_at, external_id) VALUES ('ptag_01M70GNPAVESXHMFNQBF6CWCSM', 'cotton', NULL, '2026-11-09 16:01:16.123+00', '2026-11-09 16:01:16.123+00', NULL, NULL);
-INSERT INTO public.product_tag (id, value, metadata, created_at, updated_at, deleted_at, external_id) VALUES ('ptag_01M70GNPAVFEHBT3FEKJF9B3RB', 'sale', NULL, '2026-11-09 16:01:16.123+00', '2026-11-09 16:01:16.123+00', NULL, NULL);
+INSERT INTO public.product_tag (id, value, metadata, created_at, updated_at, deleted_at, external_id) VALUES ('ptag_01M70HF0YA7BFB05Y7HZ996Q6B', 'cotton', NULL, '2026-11-09 16:15:06.186+00', '2026-11-09 16:15:06.186+00', NULL, NULL);
+INSERT INTO public.product_tag (id, value, metadata, created_at, updated_at, deleted_at, external_id) VALUES ('ptag_01M70HF0YA2B5FFBM99SM1TYQT', 'sale', NULL, '2026-11-09 16:15:06.186+00', '2026-11-09 16:15:06.186+00', NULL, NULL);
 
 
 --
 -- Data for Name: product_tags; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_tags (product_id, product_tag_id) VALUES ('prod_01M70GNPBF5DJ5ADYS9T1201HE', 'ptag_01M70GNPAVESXHMFNQBF6CWCSM');
-INSERT INTO public.product_tags (product_id, product_tag_id) VALUES ('prod_01M70GNPBF5DJ5ADYS9T1201HE', 'ptag_01M70GNPAVFEHBT3FEKJF9B3RB');
-INSERT INTO public.product_tags (product_id, product_tag_id) VALUES ('prod_01M70GNPBF2ETKVD378AV14WVW', 'ptag_01M70GNPAVFEHBT3FEKJF9B3RB');
+INSERT INTO public.product_tags (product_id, product_tag_id) VALUES ('prod_01M70HF0YS05RTVE5NT0E4WA2X', 'ptag_01M70HF0YA7BFB05Y7HZ996Q6B');
+INSERT INTO public.product_tags (product_id, product_tag_id) VALUES ('prod_01M70HF0YS05RTVE5NT0E4WA2X', 'ptag_01M70HF0YA2B5FFBM99SM1TYQT');
+INSERT INTO public.product_tags (product_id, product_tag_id) VALUES ('prod_01M70HF0YSR70JXNJZ9D08NDVF', 'ptag_01M70HF0YA2B5FFBM99SM1TYQT');
 
 
 --
 -- Data for Name: product_variant; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_variant (id, title, sku, barcode, ean, upc, allow_backorder, manage_inventory, hs_code, origin_country, mid_code, material, weight, length, height, width, metadata, variant_rank, product_id, created_at, updated_at, deleted_at, thumbnail) VALUES ('variant_01M70GNPBFHHHS1CMZ4XKRNSK6', 'S / Black', 'SHIRT-S-BLACK', NULL, NULL, NULL, false, true, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'prod_01M70GNPBF5DJ5ADYS9T1201HE', '2026-11-09 16:01:16.147+00', '2026-11-09 16:01:16.147+00', NULL, NULL);
-INSERT INTO public.product_variant (id, title, sku, barcode, ean, upc, allow_backorder, manage_inventory, hs_code, origin_country, mid_code, material, weight, length, height, width, metadata, variant_rank, product_id, created_at, updated_at, deleted_at, thumbnail) VALUES ('variant_01M70GNPBF81ETDF56QWVPZEWT', 'M / Black', 'SHIRT-M-BLACK', NULL, NULL, NULL, false, true, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 'prod_01M70GNPBF5DJ5ADYS9T1201HE', '2026-11-09 16:01:16.147+00', '2026-11-09 16:01:16.147+00', NULL, NULL);
-INSERT INTO public.product_variant (id, title, sku, barcode, ean, upc, allow_backorder, manage_inventory, hs_code, origin_country, mid_code, material, weight, length, height, width, metadata, variant_rank, product_id, created_at, updated_at, deleted_at, thumbnail) VALUES ('variant_01M70GNPBFX3PNRFXR8G4S1CNN', 'M', 'PANTS-M', NULL, NULL, NULL, false, true, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'prod_01M70GNPBF6Q8CV76R06PQK9N8', '2026-11-09 16:01:16.147+00', '2026-11-09 16:01:16.147+00', NULL, NULL);
-INSERT INTO public.product_variant (id, title, sku, barcode, ean, upc, allow_backorder, manage_inventory, hs_code, origin_country, mid_code, material, weight, length, height, width, metadata, variant_rank, product_id, created_at, updated_at, deleted_at, thumbnail) VALUES ('variant_01M70GNPBFXNR4G0Z6KN8ZMAWT', 'L / White', 'SHIRT-L-WHITE', NULL, NULL, NULL, false, true, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 'prod_01M70GNPBF5DJ5ADYS9T1201HE', '2026-11-09 16:01:16.147+00', '2026-11-09 16:01:16.202+00', '2026-11-09 16:01:16.202+00', NULL);
+INSERT INTO public.product_variant (id, title, sku, barcode, ean, upc, allow_backorder, manage_inventory, hs_code, origin_country, mid_code, material, weight, length, height, width, metadata, variant_rank, product_id, created_at, updated_at, deleted_at, thumbnail) VALUES ('variant_01M70HF0YSNJWSR9T8H26QFKZC', 'S / Black', 'SHIRT-S-BLACK', NULL, NULL, NULL, false, true, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'prod_01M70HF0YS05RTVE5NT0E4WA2X', '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, NULL);
+INSERT INTO public.product_variant (id, title, sku, barcode, ean, upc, allow_backorder, manage_inventory, hs_code, origin_country, mid_code, material, weight, length, height, width, metadata, variant_rank, product_id, created_at, updated_at, deleted_at, thumbnail) VALUES ('variant_01M70HF0YS46PJZHW302RF0TZF', 'M / Black', 'SHIRT-M-BLACK', NULL, NULL, NULL, false, true, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 'prod_01M70HF0YS05RTVE5NT0E4WA2X', '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, NULL);
+INSERT INTO public.product_variant (id, title, sku, barcode, ean, upc, allow_backorder, manage_inventory, hs_code, origin_country, mid_code, material, weight, length, height, width, metadata, variant_rank, product_id, created_at, updated_at, deleted_at, thumbnail) VALUES ('variant_01M70HF0YSQ7GC76EZ11146M9N', 'M', 'PANTS-M', NULL, NULL, NULL, false, true, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'prod_01M70HF0YSWDNW5ZW5A4Y7341E', '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.205+00', NULL, NULL);
+INSERT INTO public.product_variant (id, title, sku, barcode, ean, upc, allow_backorder, manage_inventory, hs_code, origin_country, mid_code, material, weight, length, height, width, metadata, variant_rank, product_id, created_at, updated_at, deleted_at, thumbnail) VALUES ('variant_01M70HF0YS0CHKQKM471XQ9WHN', 'L / White', 'SHIRT-L-WHITE', NULL, NULL, NULL, false, true, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 'prod_01M70HF0YS05RTVE5NT0E4WA2X', '2026-11-09 16:15:06.205+00', '2026-11-09 16:15:06.254+00', '2026-11-09 16:15:06.254+00', NULL);
 
 
 --
@@ -809,13 +809,13 @@ INSERT INTO public.product_variant (id, title, sku, barcode, ean, upc, allow_bac
 -- Data for Name: product_variant_option; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70GNPBFHHHS1CMZ4XKRNSK6', 'optval_01M70GNPBHSAB3GZTQTXKB4N67');
-INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70GNPBFHHHS1CMZ4XKRNSK6', 'optval_01M70GNPBJKDQJ0BJV494JVYHF');
-INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70GNPBFX3PNRFXR8G4S1CNN', 'optval_01M70GNPBJ3RBQHND0M9530DB4');
-INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70GNPBF81ETDF56QWVPZEWT', 'optval_01M70GNPBHSJRG6GGZHNGJA4F2');
-INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70GNPBF81ETDF56QWVPZEWT', 'optval_01M70GNPBJKDQJ0BJV494JVYHF');
-INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70GNPBFXNR4G0Z6KN8ZMAWT', 'optval_01M70GNPBHRXS268HSAWA3D3Q1');
-INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70GNPBFXNR4G0Z6KN8ZMAWT', 'optval_01M70GNPBJ5AJX82MRA9RJ9K7Z');
+INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70HF0YSNJWSR9T8H26QFKZC', 'optval_01M70HF0YWWD467E3NKX3G8B3X');
+INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70HF0YSNJWSR9T8H26QFKZC', 'optval_01M70HF0YWG979A8Q4RJPKH6R2');
+INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70HF0YSQ7GC76EZ11146M9N', 'optval_01M70HF0YW362MFCN7JTBWT5J1');
+INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70HF0YS46PJZHW302RF0TZF', 'optval_01M70HF0YWCFW5HBDFNCXEZK3J');
+INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70HF0YS46PJZHW302RF0TZF', 'optval_01M70HF0YWG979A8Q4RJPKH6R2');
+INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70HF0YS0CHKQKM471XQ9WHN', 'optval_01M70HF0YWSK8RFM286GQNWTD6');
+INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES ('variant_01M70HF0YS0CHKQKM471XQ9WHN', 'optval_01M70HF0YWTFBDCX94PT967W2F');
 
 
 --
@@ -864,7 +864,7 @@ INSERT INTO public.product_variant_option (variant_id, option_value_id) VALUES (
 -- Data for Name: publishable_api_key_sales_channel; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.publishable_api_key_sales_channel (publishable_key_id, sales_channel_id, id, created_at, updated_at, deleted_at) VALUES ('apk_01M70GNP9BR8F4N58N1JPKAZSQ', 'sc_01M70GNP81JNJCMHQ5EJRBKFCJ', 'pksc_01M70GNP9KECQK4MZFM3V3A9P2', '2026-11-09 16:01:16.081155+00', '2026-11-09 16:01:16.081155+00', NULL);
+INSERT INTO public.publishable_api_key_sales_channel (publishable_key_id, sales_channel_id, id, created_at, updated_at, deleted_at) VALUES ('apk_01M70HF0X4YJ8S6N7T64D5EKQC', 'sc_01M70HF0W0C51DQCADBW28N58Y', 'pksc_01M70HF0XA2QRX53S8HNXX70TN', '2026-11-09 16:15:06.151676+00', '2026-11-09 16:15:06.151676+00', NULL);
 
 
 --
@@ -886,9 +886,9 @@ INSERT INTO public.refund_reason (id, label, description, metadata, created_at, 
 -- Data for Name: region; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.region (id, name, currency_code, metadata, created_at, updated_at, deleted_at, automatic_taxes) VALUES ('reg_01M70GNP9TX19RQBPGN7MS2HQ9', 'Europe', 'eur', '{"zone": "eu"}', '2026-11-09 16:01:16.096+00', '2026-11-09 16:01:16.096+00', NULL, true);
-INSERT INTO public.region (id, name, currency_code, metadata, created_at, updated_at, deleted_at, automatic_taxes) VALUES ('reg_01M70GNP9TYS0QCB1RF97FPGMT', 'North America', 'usd', NULL, '2026-11-09 16:01:16.096+00', '2026-11-09 16:01:16.096+00', NULL, false);
-INSERT INTO public.region (id, name, currency_code, metadata, created_at, updated_at, deleted_at, automatic_taxes) VALUES ('reg_01M70GNP9TFYM31DBJBCPKFXDF', 'Archived', 'gbp', NULL, '2026-11-09 16:01:16.096+00', '2026-11-09 16:01:16.106+00', '2026-11-09 16:01:16.106+00', true);
+INSERT INTO public.region (id, name, currency_code, metadata, created_at, updated_at, deleted_at, automatic_taxes) VALUES ('reg_01M70HF0XGPQK7APR05NE9JKBJ', 'Europe', 'eur', '{"zone": "eu"}', '2026-11-09 16:15:06.164+00', '2026-11-09 16:15:06.164+00', NULL, true);
+INSERT INTO public.region (id, name, currency_code, metadata, created_at, updated_at, deleted_at, automatic_taxes) VALUES ('reg_01M70HF0XG7RHQ3B2CE4G5YG0X', 'North America', 'usd', NULL, '2026-11-09 16:15:06.164+00', '2026-11-09 16:15:06.164+00', NULL, false);
+INSERT INTO public.region (id, name, currency_code, metadata, created_at, updated_at, deleted_at, automatic_taxes) VALUES ('reg_01M70HF0XH4AWRH9KK78R7H1HE', 'Archived', 'gbp', NULL, '2026-11-09 16:15:06.164+00', '2026-11-09 16:15:06.173+00', '2026-11-09 16:15:06.172+00', true);
 
 
 --
@@ -1139,12 +1139,12 @@ INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, r
 INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('zm', 'zmb', '894', 'ZAMBIA', 'Zambia', NULL, NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 15:25:03.902+00', NULL);
 INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('zw', 'zwe', '716', 'ZIMBABWE', 'Zimbabwe', NULL, NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 15:25:03.902+00', NULL);
 INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('ax', 'ala', '248', 'ÅLAND ISLANDS', 'Åland Islands', NULL, NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 15:25:03.902+00', NULL);
-INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('ca', 'can', '124', 'CANADA', 'Canada', 'reg_01M70GNP9TYS0QCB1RF97FPGMT', NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:01:16.097+00', NULL);
-INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('fr', 'fra', '250', 'FRANCE', 'France', 'reg_01M70GNP9TX19RQBPGN7MS2HQ9', NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:01:16.097+00', NULL);
-INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('de', 'deu', '276', 'GERMANY', 'Germany', 'reg_01M70GNP9TX19RQBPGN7MS2HQ9', NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:01:16.097+00', NULL);
-INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('it', 'ita', '380', 'ITALY', 'Italy', 'reg_01M70GNP9TX19RQBPGN7MS2HQ9', NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:01:16.097+00', NULL);
-INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('us', 'usa', '840', 'UNITED STATES', 'United States', 'reg_01M70GNP9TYS0QCB1RF97FPGMT', NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:01:16.097+00', NULL);
-INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('gb', 'gbr', '826', 'UNITED KINGDOM', 'United Kingdom', NULL, NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:01:16.112+00', NULL);
+INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('ca', 'can', '124', 'CANADA', 'Canada', 'reg_01M70HF0XG7RHQ3B2CE4G5YG0X', NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:15:06.164+00', NULL);
+INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('fr', 'fra', '250', 'FRANCE', 'France', 'reg_01M70HF0XGPQK7APR05NE9JKBJ', NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:15:06.164+00', NULL);
+INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('de', 'deu', '276', 'GERMANY', 'Germany', 'reg_01M70HF0XGPQK7APR05NE9JKBJ', NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:15:06.164+00', NULL);
+INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('it', 'ita', '380', 'ITALY', 'Italy', 'reg_01M70HF0XGPQK7APR05NE9JKBJ', NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:15:06.164+00', NULL);
+INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('us', 'usa', '840', 'UNITED STATES', 'United States', 'reg_01M70HF0XG7RHQ3B2CE4G5YG0X', NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:15:06.164+00', NULL);
+INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, region_id, metadata, created_at, updated_at, deleted_at) VALUES ('gb', 'gbr', '826', 'UNITED KINGDOM', 'United Kingdom', NULL, NULL, '2026-11-09 15:25:03.902+00', '2026-11-09 16:15:06.176+00', NULL);
 
 
 --
@@ -1187,7 +1187,7 @@ INSERT INTO public.region_country (iso_2, iso_3, num_code, name, display_name, r
 -- Data for Name: sales_channel; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.sales_channel (id, name, description, is_disabled, metadata, created_at, updated_at, deleted_at) VALUES ('sc_01M70GNP81JNJCMHQ5EJRBKFCJ', 'Default Sales Channel', 'Created by Medusa', false, NULL, '2026-11-09 16:01:16.033+00', '2026-11-09 16:01:16.033+00', NULL);
+INSERT INTO public.sales_channel (id, name, description, is_disabled, metadata, created_at, updated_at, deleted_at) VALUES ('sc_01M70HF0W0C51DQCADBW28N58Y', 'Default Sales Channel', 'Created by Medusa', false, NULL, '2026-11-09 16:15:06.112+00', '2026-11-09 16:15:06.112+00', NULL);
 
 
 --
@@ -1248,14 +1248,14 @@ INSERT INTO public.sales_channel (id, name, description, is_disabled, metadata, 
 -- Data for Name: store; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.store (id, name, default_sales_channel_id, default_region_id, default_location_id, metadata, created_at, updated_at, deleted_at) VALUES ('store_01M70GNP8N82VPKK883P9VHR88', 'Medusa Store', 'sc_01M70GNP81JNJCMHQ5EJRBKFCJ', NULL, NULL, NULL, '2026-11-09 16:01:16.050724+00', '2026-11-09 16:01:16.050724+00', NULL);
+INSERT INTO public.store (id, name, default_sales_channel_id, default_region_id, default_location_id, metadata, created_at, updated_at, deleted_at) VALUES ('store_01M70HF0WGCBX0JRWJECFHR6AS', 'Medusa Store', 'sc_01M70HF0W0C51DQCADBW28N58Y', NULL, NULL, NULL, '2026-11-09 16:15:06.124859+00', '2026-11-09 16:15:06.124859+00', NULL);
 
 
 --
 -- Data for Name: store_currency; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-INSERT INTO public.store_currency (id, currency_code, is_default, store_id, created_at, updated_at, deleted_at) VALUES ('stocur_01M70GNP8SWBR27DQQC4WRFYWS', 'eur', true, 'store_01M70GNP8N82VPKK883P9VHR88', '2026-11-09 16:01:16.050724+00', '2026-11-09 16:01:16.050724+00', NULL);
+INSERT INTO public.store_currency (id, currency_code, is_default, store_id, created_at, updated_at, deleted_at) VALUES ('stocur_01M70HF0WJ5ZS0TZBVNEST4MGR', 'eur', true, 'store_01M70HF0WGCBX0JRWJECFHR6AS', '2026-11-09 16:15:06.124859+00', '2026-11-09 16:15:06.124859+00', NULL);
 
 
 --

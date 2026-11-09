@@ -11,9 +11,12 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -84,16 +87,116 @@ func moduleService(pool *pgxpool.Pool, key string) (*modulessdk.MedusaService, e
 	if !ok {
 		return nil, fmt.Errorf("unknown module %s", key)
 	}
-	return modulessdk.NewMedusaService(pool, exp.Models), nil
+	return modulessdk.NewMedusaService(pool, exp.Models, exp.JoinerConfig), nil
+}
+
+var refRe = regexp.MustCompile(`^\{\{([^.}]+)\.([^}]+)\}\}$`)
+
+// resolveRefs mirrors resolveRefs from run-calls.js.
+func resolveRefs(v any, outputs map[string]any) any {
+	switch t := v.(type) {
+	case string:
+		m := refRe.FindStringSubmatch(t)
+		if m == nil {
+			return t
+		}
+		var cur any = outputs[m[1]]
+		for _, key := range strings.Split(m[2], ".") {
+			switch c := cur.(type) {
+			case map[string]any:
+				cur = c[key]
+			case []any:
+				i, err := strconv.Atoi(key)
+				if err != nil || i >= len(c) {
+					return nil
+				}
+				cur = c[i]
+			default:
+				return nil
+			}
+		}
+		return cur
+	case []any:
+		out := make([]any, len(t))
+		for i, x := range t {
+			out[i] = resolveRefs(x, outputs)
+		}
+		return out
+	case *dal.Record:
+		out := dal.NewRecord()
+		for _, k := range t.Keys() {
+			x, _ := t.Get(k)
+			out.Set(k, resolveRefs(x, outputs))
+		}
+		return out
+	default:
+		return v
+	}
+}
+
+var (
+	generatedIDRe = regexp.MustCompile(`^([a-z]+_)?[0-9A-HJKMNP-TV-Z]{26}$`)
+	timestampRe   = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$`)
+)
+
+// knownValues collects the identifiers and timestamps present in seed.sql.
+func knownValues(seed string) map[string]bool {
+	known := map[string]bool{}
+	for _, m := range regexp.MustCompile(`'([^']*)'`).FindAllStringSubmatch(seed, -1) {
+		known[m[1]] = true
+		if t, err := time.Parse("2006-01-02 15:04:05.999999-07", m[1]); err == nil {
+			known[dal.FormatJSDate(t)] = true
+		}
+	}
+	return known
+}
+
+// normalize replaces identifiers and timestamps generated while the cases
+// run (absent from seed.sql) with stable placeholders.
+func normalize(v any, known map[string]bool, ids map[string]string) any {
+	switch t := v.(type) {
+	case string:
+		if known[t] {
+			return t
+		}
+		if timestampRe.MatchString(t) {
+			return "<now>"
+		}
+		if generatedIDRe.MatchString(t) {
+			if p, ok := ids[t]; ok {
+				return p
+			}
+			ids[t] = fmt.Sprintf("<generated %d>", len(ids)+1)
+			return ids[t]
+		}
+		return t
+	case []any:
+		for i := range t {
+			t[i] = normalize(t[i], known, ids)
+		}
+		return t
+	case map[string]any:
+		keys := make([]string, 0, len(t))
+		for k := range t {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			t[k] = normalize(t[k], known, ids)
+		}
+		return t
+	default:
+		return v
+	}
 }
 
 // run executes one case and returns it encoded like run-calls.js does.
-func run(ctx context.Context, svc *modulessdk.MedusaService, c testCase) ([]byte, error) {
+func run(ctx context.Context, svc *modulessdk.MedusaService, c testCase, outputs map[string]any) ([]byte, error) {
 	decoded, err := dal.DecodeOrderedJSON(c.Args)
 	if err != nil {
 		return nil, err
 	}
-	args, _ := decoded.([]any)
+	args, _ := resolveRefs(decoded, outputs).([]any)
 	result, err := svc.Call(ctx, c.Method, args)
 	if err != nil {
 		if me, ok := common.AsMedusaError(err); ok {
@@ -215,10 +318,16 @@ func TestModulesMatchUpstream(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pool := setupDatabase(t, "medusa_diff_go")
 	ctx := context.Background()
+	seed, err := os.ReadFile("seed.sql")
+	if err != nil {
+		t.Fatal(err)
+	}
+	known := knownValues(string(seed))
 
 	for _, file := range files {
+		pool := setupDatabase(t, "medusa_diff_go_"+strings.TrimSuffix(strings.ReplaceAll(filepath.Base(file), "-", "_"), ".json"))
+		outputs := map[string]any{}
 		var cases []testCase
 		raw, _ := os.ReadFile(file)
 		if err := json.Unmarshal(raw, &cases); err != nil {
@@ -239,7 +348,7 @@ func TestModulesMatchUpstream(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				got, err := run(ctx, svc, c)
+				got, err := run(ctx, svc, c, outputs)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -248,6 +357,11 @@ func TestModulesMatchUpstream(t *testing.T) {
 				if err := json.Unmarshal(got, &gotV); err != nil {
 					t.Fatalf("invalid output: %v\n%s", err, got)
 				}
+				var saved any
+				_ = json.Unmarshal(got, &saved)
+				outputs[c.Name] = saved
+				wantV = normalize(wantV, known, map[string]string{})
+				gotV = normalize(gotV, known, map[string]string{})
 				if d := firstDifference("$", wantV, gotV); d != "" {
 					t.Fatalf("%s\n got: %.600s", d, got)
 				}

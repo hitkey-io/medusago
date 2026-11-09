@@ -3,6 +3,7 @@
 package modulessdk
 
 import (
+	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dml"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/migrations"
 )
@@ -13,4 +14,6 @@ type ModuleExports struct {
 	Migrations []migrations.Migration
 	// Models are the data models of the module.
 	Models []*dml.Entity
+	// JoinerConfig is the joiner configuration of the module service.
+	JoinerConfig *joiner.ModuleJoinerConfig
 }

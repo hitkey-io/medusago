@@ -9,6 +9,7 @@ import (
 
 // Module is the module definition.
 var Module = modulessdk.ModuleExports{
-	Migrations: migrations.Migrations,
-	Models:     models.All,
+	Migrations:   migrations.Migrations,
+	Models:       models.All,
+	JoinerConfig: JoinerConfig,
 }

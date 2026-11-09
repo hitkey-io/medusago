@@ -1,0 +1,27 @@
+[
+  { "name": "cur.create.array", "module": "currency", "method": "createCurrencies", "args": [[{ "code": "xts", "symbol": "XTS", "symbol_native": "X", "name": "Test Currency", "decimal_digits": 3, "rounding": 0.5 }]] },
+  { "name": "cur.create.single", "module": "currency", "method": "createCurrencies", "args": [{ "code": "xtt", "symbol": "XTT", "symbol_native": "T", "name": "Other Test Currency" }] },
+  { "name": "cur.create.duplicate", "module": "currency", "method": "createCurrencies", "args": [{ "code": "xts", "symbol": "XTS", "symbol_native": "X", "name": "Duplicate" }] },
+  { "name": "cur.update.by-pk", "module": "currency", "method": "updateCurrencies", "args": [{ "code": "xts", "name": "Renamed", "rounding": "0.25" }] },
+  { "name": "cur.update.selector", "module": "currency", "method": "updateCurrencies", "args": [{ "selector": { "code": "xtt" }, "data": { "symbol": "T$" } }] },
+  { "name": "cur.update.not-found", "module": "currency", "method": "updateCurrencies", "args": [{ "code": "zzz", "name": "x" }] },
+  { "name": "cur.list.after-update", "module": "currency", "method": "listCurrencies", "args": [{ "code": ["xts", "xtt"] }, { "order": { "code": "ASC" } }] },
+  { "name": "cur.softDelete", "module": "currency", "method": "softDeleteCurrencies", "args": [["xtt"]] },
+  { "name": "cur.list.soft-deleted", "module": "currency", "method": "listCurrencies", "args": [{ "code": ["xts", "xtt"] }, { "withDeleted": true, "select": ["code", "deleted_at"], "order": { "code": "ASC" } }] },
+  { "name": "cur.restore", "module": "currency", "method": "restoreCurrencies", "args": [["xtt"]] },
+  { "name": "cur.delete", "module": "currency", "method": "deleteCurrencies", "args": [["xts"]] },
+  { "name": "cur.list.after-delete", "module": "currency", "method": "listCurrencies", "args": [{ "code": ["xts", "xtt"] }, { "withDeleted": true, "select": ["code", "deleted_at"] }] },
+
+  { "name": "shirt", "module": "product", "method": "listProducts", "args": [{ "handle": "t-shirt" }, { "select": ["id"], "relations": ["options", "tags"] }] },
+  { "name": "img_create", "module": "product", "method": "createProductImages", "args": [[{ "url": "https://example.com/new.png", "product_id": "{{shirt.result.0.id}}", "rank": 5 }]] },
+  { "name": "img.update", "module": "product", "method": "updateProductImages", "args": [{ "id": "{{img_create.result.0.id}}", "metadata": { "alt": "New" } }] },
+  { "name": "img.update.metadata-merge", "module": "product", "method": "updateProductImages", "args": [{ "id": "{{img_create.result.0.id}}", "metadata": { "width": 100 } }] },
+  { "name": "optval.create", "module": "product", "method": "createProductOptionValues", "args": [[{ "value": "XL", "option_id": "{{shirt.result.0.options.0.id}}" }]] },
+  { "name": "product.softDelete.cascade", "module": "product", "method": "softDeleteProducts", "args": [["{{shirt.result.0.id}}"]] },
+  { "name": "variants.after-soft-delete", "module": "product", "method": "listProductVariants", "args": [{}, { "withDeleted": true, "select": ["sku", "deleted_at"], "order": { "sku": "ASC" } }] },
+  { "name": "images.after-soft-delete", "module": "product", "method": "listProductImages", "args": [{}, { "withDeleted": true, "select": ["url", "deleted_at"], "order": { "url": "ASC" } }] },
+  { "name": "product.restore.cascade", "module": "product", "method": "restoreProducts", "args": [["{{shirt.result.0.id}}"]] },
+  { "name": "product.after-restore", "module": "product", "method": "listProducts", "args": [{ "handle": "t-shirt" }, { "select": ["handle", "deleted_at", "variants.sku", "variants.deleted_at", "images.url"], "relations": ["variants", "images"] }] },
+  { "name": "tag.delete", "module": "product", "method": "deleteProductTags", "args": [["{{shirt.result.0.tags.0.id}}"]] },
+  { "name": "tags.after-delete", "module": "product", "method": "listProducts", "args": [{ "handle": "t-shirt" }, { "select": ["handle"], "relations": ["tags"] }] }
+]

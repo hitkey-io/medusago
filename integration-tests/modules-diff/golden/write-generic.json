@@ -1,0 +1,425 @@
+{
+  "cur.create.array": {
+    "result": [
+      {
+        "code": "xts",
+        "symbol": "XTS",
+        "symbol_native": "X",
+        "name": "Test Currency",
+        "decimal_digits": 3,
+        "raw_rounding": {
+          "value": "0.5",
+          "precision": 20
+        },
+        "created_at": "2026-11-09T16:15:15.557Z",
+        "updated_at": "2026-11-09T16:15:15.557Z",
+        "deleted_at": null,
+        "rounding": 0.5
+      }
+    ]
+  },
+  "cur.create.single": {
+    "result": {
+      "code": "xtt",
+      "symbol": "XTT",
+      "symbol_native": "T",
+      "name": "Other Test Currency",
+      "decimal_digits": 0,
+      "raw_rounding": {
+        "value": "0",
+        "precision": 20
+      },
+      "created_at": "2026-11-09T16:15:15.561Z",
+      "updated_at": "2026-11-09T16:15:15.561Z",
+      "deleted_at": null,
+      "rounding": 0
+    }
+  },
+  "cur.create.duplicate": {
+    "error": {
+      "type": "invalid_data",
+      "message": "Currency with code: xts, already exists."
+    }
+  },
+  "cur.update.by-pk": {
+    "result": {
+      "code": "xts",
+      "symbol": "XTS",
+      "symbol_native": "X",
+      "name": "Renamed",
+      "decimal_digits": 3,
+      "raw_rounding": {
+        "value": "0.25",
+        "precision": 20
+      },
+      "created_at": "2026-11-09T16:15:15.557Z",
+      "updated_at": "2026-11-09T16:15:15.569Z",
+      "deleted_at": null,
+      "rounding": 0.25
+    }
+  },
+  "cur.update.selector": {
+    "result": [
+      {
+        "code": "xtt",
+        "symbol": "T$",
+        "symbol_native": "T",
+        "name": "Other Test Currency",
+        "decimal_digits": 0,
+        "raw_rounding": {
+          "value": "0",
+          "precision": 20
+        },
+        "created_at": "2026-11-09T16:15:15.561Z",
+        "updated_at": "2026-11-09T16:15:15.573Z",
+        "deleted_at": null,
+        "rounding": 0
+      }
+    ]
+  },
+  "cur.update.not-found": {
+    "error": {
+      "type": "not_found",
+      "message": "Currency with code \"zzz\" not found"
+    }
+  },
+  "cur.list.after-update": {
+    "result": [
+      {
+        "code": "xts",
+        "symbol": "XTS",
+        "symbol_native": "X",
+        "name": "Renamed",
+        "decimal_digits": 3,
+        "raw_rounding": {
+          "value": "0.25",
+          "precision": 20
+        },
+        "created_at": "2026-11-09T16:15:15.557Z",
+        "updated_at": "2026-11-09T16:15:15.569Z",
+        "deleted_at": null,
+        "rounding": 0.25
+      },
+      {
+        "code": "xtt",
+        "symbol": "T$",
+        "symbol_native": "T",
+        "name": "Other Test Currency",
+        "decimal_digits": 0,
+        "raw_rounding": {
+          "value": "0",
+          "precision": 20
+        },
+        "created_at": "2026-11-09T16:15:15.561Z",
+        "updated_at": "2026-11-09T16:15:15.573Z",
+        "deleted_at": null,
+        "rounding": 0
+      }
+    ]
+  },
+  "cur.softDelete": {
+    "result": {
+      "currency_code": [
+        "xtt"
+      ]
+    }
+  },
+  "cur.list.soft-deleted": {
+    "result": [
+      {
+        "code": "xts",
+        "deleted_at": null
+      },
+      {
+        "code": "xtt",
+        "deleted_at": "2026-11-09T16:15:15.578Z"
+      }
+    ]
+  },
+  "cur.restore": {
+    "result": {
+      "currency_code": [
+        "xtt"
+      ]
+    }
+  },
+  "cur.delete": {
+    "result": null
+  },
+  "cur.list.after-delete": {
+    "result": [
+      {
+        "code": "xtt",
+        "deleted_at": null
+      }
+    ]
+  },
+  "shirt": {
+    "result": [
+      {
+        "id": "prod_01M70HF0YS05RTVE5NT0E4WA2X",
+        "tags": [
+          {
+            "id": "ptag_01M70HF0YA7BFB05Y7HZ996Q6B",
+            "value": "cotton",
+            "external_id": null,
+            "metadata": null,
+            "created_at": "2026-11-09T16:15:06.186Z",
+            "updated_at": "2026-11-09T16:15:06.186Z",
+            "deleted_at": null
+          },
+          {
+            "id": "ptag_01M70HF0YA2B5FFBM99SM1TYQT",
+            "value": "sale",
+            "external_id": null,
+            "metadata": null,
+            "created_at": "2026-11-09T16:15:06.186Z",
+            "updated_at": "2026-11-09T16:15:06.186Z",
+            "deleted_at": null
+          }
+        ],
+        "options": [
+          {
+            "id": "opt_01M70HF0YSPN5JFCQT9Y9VPMRF",
+            "title": "Size",
+            "is_exclusive": true,
+            "metadata": null,
+            "created_at": "2026-11-09T16:15:06.205Z",
+            "updated_at": "2026-11-09T16:15:06.205Z",
+            "deleted_at": null
+          },
+          {
+            "id": "opt_01M70HF0YSR61J6JB3VFXCSGRN",
+            "title": "Color",
+            "is_exclusive": true,
+            "metadata": null,
+            "created_at": "2026-11-09T16:15:06.205Z",
+            "updated_at": "2026-11-09T16:15:06.205Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    ]
+  },
+  "img_create": {
+    "result": [
+      {
+        "id": "img_01M70HFA4B1ZANDEFCDJJQ3057",
+        "url": "https://example.com/new.png",
+        "metadata": null,
+        "rank": 5,
+        "product_id": "prod_01M70HF0YS05RTVE5NT0E4WA2X",
+        "created_at": "2026-11-09T16:15:15.595Z",
+        "updated_at": "2026-11-09T16:15:15.595Z",
+        "deleted_at": null,
+        "variants": []
+      }
+    ]
+  },
+  "img.update": {
+    "result": {
+      "id": "img_01M70HFA4B1ZANDEFCDJJQ3057",
+      "url": "https://example.com/new.png",
+      "metadata": {
+        "alt": "New"
+      },
+      "rank": 5,
+      "product_id": "prod_01M70HF0YS05RTVE5NT0E4WA2X",
+      "product": {
+        "id": "prod_01M70HF0YS05RTVE5NT0E4WA2X"
+      },
+      "created_at": "2026-11-09T16:15:15.595Z",
+      "updated_at": "2026-11-09T16:15:15.598Z",
+      "deleted_at": null
+    }
+  },
+  "img.update.metadata-merge": {
+    "result": {
+      "id": "img_01M70HFA4B1ZANDEFCDJJQ3057",
+      "url": "https://example.com/new.png",
+      "metadata": {
+        "alt": "New",
+        "width": 100
+      },
+      "rank": 5,
+      "product_id": "prod_01M70HF0YS05RTVE5NT0E4WA2X",
+      "product": {
+        "id": "prod_01M70HF0YS05RTVE5NT0E4WA2X"
+      },
+      "created_at": "2026-11-09T16:15:15.595Z",
+      "updated_at": "2026-11-09T16:15:15.601Z",
+      "deleted_at": null
+    }
+  },
+  "optval.create": {
+    "result": [
+      {
+        "id": "optval_01M70HFA4M7T76N7A5RVX5XHMX",
+        "value": "XL",
+        "rank": null,
+        "metadata": null,
+        "option_id": "opt_01M70HF0YSPN5JFCQT9Y9VPMRF",
+        "created_at": "2026-11-09T16:15:15.604Z",
+        "updated_at": "2026-11-09T16:15:15.604Z",
+        "deleted_at": null,
+        "variants": [],
+        "product_options": []
+      }
+    ]
+  },
+  "product.softDelete.cascade": {
+    "result": {
+      "product_id": [
+        "prod_01M70HF0YS05RTVE5NT0E4WA2X"
+      ],
+      "product_variant_id": [
+        "variant_01M70HF0YSNJWSR9T8H26QFKZC",
+        "variant_01M70HF0YS46PJZHW302RF0TZF",
+        "variant_01M70HF0YS0CHKQKM471XQ9WHN"
+      ],
+      "variant_id": [
+        "variant_01M70HF0YSNJWSR9T8H26QFKZC",
+        "variant_01M70HF0YS46PJZHW302RF0TZF",
+        "variant_01M70HF0YS0CHKQKM471XQ9WHN"
+      ],
+      "product_image_id": [
+        "img_01M70HF0YVN7PM52RVJ45Z21JS",
+        "img_01M70HF0YV7CS16P4J5PHFRYVJ",
+        "img_01M70HFA4B1ZANDEFCDJJQ3057"
+      ]
+    }
+  },
+  "variants.after-soft-delete": {
+    "result": [
+      {
+        "id": "variant_01M70HF0YSQ7GC76EZ11146M9N",
+        "sku": "PANTS-M",
+        "deleted_at": null
+      },
+      {
+        "id": "variant_01M70HF0YS0CHKQKM471XQ9WHN",
+        "sku": "SHIRT-L-WHITE",
+        "deleted_at": "2026-11-09T16:15:15.607Z"
+      },
+      {
+        "id": "variant_01M70HF0YS46PJZHW302RF0TZF",
+        "sku": "SHIRT-M-BLACK",
+        "deleted_at": "2026-11-09T16:15:15.607Z"
+      },
+      {
+        "id": "variant_01M70HF0YSNJWSR9T8H26QFKZC",
+        "sku": "SHIRT-S-BLACK",
+        "deleted_at": "2026-11-09T16:15:15.607Z"
+      }
+    ]
+  },
+  "images.after-soft-delete": {
+    "result": [
+      {
+        "id": "img_01M70HFA4B1ZANDEFCDJJQ3057",
+        "url": "https://example.com/new.png",
+        "deleted_at": "2026-11-09T16:15:15.607Z"
+      },
+      {
+        "id": "img_01M70HF0YVN7PM52RVJ45Z21JS",
+        "url": "https://example.com/shirt-1.png",
+        "deleted_at": "2026-11-09T16:15:15.607Z"
+      },
+      {
+        "id": "img_01M70HF0YV7CS16P4J5PHFRYVJ",
+        "url": "https://example.com/shirt-2.png",
+        "deleted_at": "2026-11-09T16:15:15.607Z"
+      }
+    ]
+  },
+  "product.restore.cascade": {
+    "result": {
+      "product_id": [
+        "prod_01M70HF0YS05RTVE5NT0E4WA2X"
+      ],
+      "product_variant_id": [
+        "variant_01M70HF0YSNJWSR9T8H26QFKZC",
+        "variant_01M70HF0YS46PJZHW302RF0TZF",
+        "variant_01M70HF0YS0CHKQKM471XQ9WHN"
+      ],
+      "variant_id": [
+        "variant_01M70HF0YSNJWSR9T8H26QFKZC",
+        "variant_01M70HF0YS46PJZHW302RF0TZF",
+        "variant_01M70HF0YS0CHKQKM471XQ9WHN"
+      ],
+      "product_image_id": [
+        "img_01M70HF0YVN7PM52RVJ45Z21JS",
+        "img_01M70HF0YV7CS16P4J5PHFRYVJ",
+        "img_01M70HFA4B1ZANDEFCDJJQ3057"
+      ]
+    }
+  },
+  "product.after-restore": {
+    "result": [
+      {
+        "id": "prod_01M70HF0YS05RTVE5NT0E4WA2X",
+        "handle": "t-shirt",
+        "deleted_at": null,
+        "variants": [
+          {
+            "id": "variant_01M70HF0YS0CHKQKM471XQ9WHN",
+            "sku": "SHIRT-L-WHITE",
+            "product_id": "prod_01M70HF0YS05RTVE5NT0E4WA2X",
+            "deleted_at": null
+          },
+          {
+            "id": "variant_01M70HF0YS46PJZHW302RF0TZF",
+            "sku": "SHIRT-M-BLACK",
+            "product_id": "prod_01M70HF0YS05RTVE5NT0E4WA2X",
+            "deleted_at": null
+          },
+          {
+            "id": "variant_01M70HF0YSNJWSR9T8H26QFKZC",
+            "sku": "SHIRT-S-BLACK",
+            "product_id": "prod_01M70HF0YS05RTVE5NT0E4WA2X",
+            "deleted_at": null
+          }
+        ],
+        "images": [
+          {
+            "id": "img_01M70HF0YVN7PM52RVJ45Z21JS",
+            "url": "https://example.com/shirt-1.png",
+            "product_id": "prod_01M70HF0YS05RTVE5NT0E4WA2X"
+          },
+          {
+            "id": "img_01M70HF0YV7CS16P4J5PHFRYVJ",
+            "url": "https://example.com/shirt-2.png",
+            "product_id": "prod_01M70HF0YS05RTVE5NT0E4WA2X"
+          },
+          {
+            "id": "img_01M70HFA4B1ZANDEFCDJJQ3057",
+            "url": "https://example.com/new.png",
+            "product_id": "prod_01M70HF0YS05RTVE5NT0E4WA2X"
+          }
+        ]
+      }
+    ]
+  },
+  "tag.delete": {
+    "result": null
+  },
+  "tags.after-delete": {
+    "result": [
+      {
+        "id": "prod_01M70HF0YS05RTVE5NT0E4WA2X",
+        "handle": "t-shirt",
+        "tags": [
+          {
+            "id": "ptag_01M70HF0YA2B5FFBM99SM1TYQT",
+            "value": "sale",
+            "external_id": null,
+            "metadata": null,
+            "created_at": "2026-11-09T16:15:06.186Z",
+            "updated_at": "2026-11-09T16:15:06.186Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    ]
+  }
+}

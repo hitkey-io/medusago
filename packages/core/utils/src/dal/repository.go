@@ -40,6 +40,7 @@ type instance struct {
 	entity    *dml.Entity
 	data      Row
 	relations map[string]any // *instance, []*instance or nil
+	created   bool
 }
 
 type identityMap map[string]*instance
@@ -539,7 +540,7 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 				rec.Set(p.Name, v)
 				continue
 			}
-			if len(p.FieldNames) == 0 || !(hydrated(p.Name) || hydrated(p.FieldNames[0])) {
+			if inst.created || len(p.FieldNames) == 0 || !(hydrated(p.Name) || hydrated(p.FieldNames[0])) {
 				continue
 			}
 			fk := inst.data[p.FieldNames[0]]

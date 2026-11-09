@@ -5,31 +5,52 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dml"
 )
 
 // MedusaService mirrors MedusaService: the generated methods of a module
-// service (listProducts, retrieveProduct, ...) dispatched by name.
+// service (listProducts, retrieveProduct, createProducts, ...) dispatched by
+// name.
 type MedusaService struct {
-	byName map[string]*InternalService
-	plural map[string]*InternalService
+	byName       map[string]*InternalService
+	bySuffix     map[string]*InternalService
+	linkableKeys map[string][]linkableKey
 }
 
-// NewMedusaService builds the service of a module over its models.
-func NewMedusaService(db dal.Querier, models []*dml.Entity) *MedusaService {
+type linkableKey struct {
+	mapTo     string
+	valueFrom string
+}
+
+// NewMedusaService builds the service of a module over its models. The
+// method suffixes and linkable keys come from the module joiner config.
+func NewMedusaService(db dal.Querier, models []*dml.Entity, joinerConfig *joiner.ModuleJoinerConfig) *MedusaService {
 	schema := dal.NewSchema(models)
-	s := &MedusaService{byName: map[string]*InternalService{}, plural: map[string]*InternalService{}}
+	s := &MedusaService{byName: map[string]*InternalService{}, bySuffix: map[string]*InternalService{}, linkableKeys: map[string][]linkableKey{}}
 	for _, m := range models {
 		svc := &InternalService{Repository: &dal.Repository{DB: db, Schema: schema, Entity: m}}
-		name := m.Meta.ClassName
-		s.byName[name] = svc
-		s.plural[Pluralize(name)] = svc
+		s.byName[m.Meta.ClassName] = svc
+		s.bySuffix[Pluralize(m.Meta.ClassName)] = svc
+	}
+	if joinerConfig != nil {
+		for _, alias := range joinerConfig.Alias {
+			suffix, _ := alias.Args["methodSuffix"].(string)
+			if svc, ok := s.byName[alias.Entity]; ok && suffix != "" {
+				s.bySuffix[suffix] = svc
+			}
+		}
+		// buildModelsNameToLinkableKeysMap
+		for _, kv := range joinerConfig.LinkableKeys {
+			parts := strings.Split(kv.Key, "_")
+			s.linkableKeys[kv.Value] = append(s.linkableKeys[kv.Value], linkableKey{mapTo: kv.Key, valueFrom: parts[len(parts)-1]})
+		}
 	}
 	return s
 }
 
-// Pluralize mirrors the pluralization used for the generated method names.
+// Pluralize is the fallback for models without a method suffix.
 func Pluralize(word string) string {
 	lower := strings.ToLower(word)
 	switch {
@@ -42,6 +63,30 @@ func Pluralize(word string) string {
 	}
 }
 
+// mapCascade mirrors mapObjectTo over the soft deleted / restored entities.
+func (s *MedusaService) mapCascade(res *dal.CascadeResult) *dal.Record {
+	out := dal.NewRecord()
+	if res == nil {
+		return out
+	}
+	for _, class := range res.Classes {
+		configs, ok := s.linkableKeys[class]
+		if !ok {
+			continue
+		}
+		for _, c := range configs {
+			values := make([]any, 0, len(res.Entities[class]))
+			for _, row := range res.Entities[class] {
+				values = append(values, row[c.valueFrom])
+			}
+			out.Set(c.mapTo, values)
+		}
+	}
+	return out
+}
+
+var methodPrefixes = []string{"listAndCount", "list", "retrieve", "create", "update", "delete", "softDelete", "restore"}
+
 // Call invokes a generated method by name with JSON-like arguments
 // (decoded with dal.DecodeOrderedJSON).
 func (s *MedusaService) Call(ctx context.Context, method string, args []any) (any, error) {
@@ -51,36 +96,86 @@ func (s *MedusaService) Call(ctx context.Context, method string, args []any) (an
 		}
 		return nil
 	}
-	config, err := ParseFindConfig(arg(1))
-	if err != nil {
-		return nil, err
-	}
-
-	switch {
-	case strings.HasPrefix(method, "listAndCount"):
-		svc, ok := s.plural[strings.TrimPrefix(method, "listAndCount")]
-		if !ok {
-			break
+	for _, prefix := range methodPrefixes {
+		if !strings.HasPrefix(method, prefix) {
+			continue
 		}
-		filters, _ := arg(0).(*dal.Record)
-		records, count, err := svc.ListAndCount(ctx, filters, config)
-		if err != nil {
+		name := strings.TrimPrefix(method, prefix)
+		if prefix == "retrieve" {
+			svc, ok := s.byName[name]
+			if !ok {
+				break
+			}
+			config, err := ParseFindConfig(arg(1))
+			if err != nil {
+				return nil, err
+			}
+			return svc.Retrieve(ctx, arg(0), config)
+		}
+		svc, ok := s.bySuffix[name]
+		if !ok {
+			continue
+		}
+		switch prefix {
+		case "listAndCount":
+			config, err := ParseFindConfig(arg(1))
+			if err != nil {
+				return nil, err
+			}
+			filters, _ := arg(0).(*dal.Record)
+			records, count, err := svc.ListAndCount(ctx, filters, config)
+			if err != nil {
+				return nil, err
+			}
+			return []any{records, count}, nil
+		case "list":
+			config, err := ParseFindConfig(arg(1))
+			if err != nil {
+				return nil, err
+			}
+			filters, _ := arg(0).(*dal.Record)
+			return svc.List(ctx, filters, config)
+		case "create":
+			input := arg(0)
+			var items []*dal.Record
+			list, isList := input.([]any)
+			if !isList {
+				list = []any{input}
+			}
+			for _, item := range list {
+				if rec, ok := item.(*dal.Record); ok {
+					items = append(items, rec)
+				}
+			}
+			created, err := svc.Create(ctx, items)
+			if err != nil {
+				return nil, err
+			}
+			if isList {
+				return created, nil
+			}
+			if len(created) == 0 {
+				return nil, nil
+			}
+			return created[0], nil
+		case "update":
+			return svc.Update(ctx, arg(0))
+		case "delete":
+			_, err := svc.Delete(ctx, arg(0))
 			return nil, err
+		case "softDelete":
+			res, err := svc.SoftDelete(ctx, arg(0))
+			if err != nil {
+				return nil, err
+			}
+			return s.mapCascade(res), nil
+		case "restore":
+			res, err := svc.Restore(ctx, arg(0))
+			if err != nil {
+				return nil, err
+			}
+			return s.mapCascade(res), nil
 		}
-		return []any{records, count}, nil
-	case strings.HasPrefix(method, "list"):
-		svc, ok := s.plural[strings.TrimPrefix(method, "list")]
-		if !ok {
-			break
-		}
-		filters, _ := arg(0).(*dal.Record)
-		return svc.List(ctx, filters, config)
-	case strings.HasPrefix(method, "retrieve"):
-		svc, ok := s.byName[strings.TrimPrefix(method, "retrieve")]
-		if !ok {
-			break
-		}
-		return svc.Retrieve(ctx, arg(0), config)
 	}
 	return nil, fmt.Errorf("unknown method %s", method)
 }

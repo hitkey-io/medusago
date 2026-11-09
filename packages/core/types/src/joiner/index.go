@@ -40,8 +40,40 @@ func (f *FieldAlias) UnmarshalJSON(data []byte) error {
 
 // JoinerServiceConfigAlias mirrors the alias entries of a joiner config.
 type JoinerServiceConfigAlias struct {
-	Name   StringOrStrings `json:"name"`
-	Entity string          `json:"entity,omitempty"`
+	Name     StringOrStrings `json:"name"`
+	Entity   string          `json:"entity,omitempty"`
+	Args     map[string]any  `json:"args,omitempty"`
+	Internal json.RawMessage `json:"__internal,omitempty"`
+}
+
+// KeyValue is one entry of an OrderedStringMap.
+type KeyValue struct {
+	Key   string
+	Value string
+}
+
+// OrderedStringMap is a JSON object of strings that keeps its key order.
+type OrderedStringMap []KeyValue
+
+// UnmarshalJSON decodes a JSON object preserving key order.
+func (m *OrderedStringMap) UnmarshalJSON(data []byte) error {
+	dec := json.NewDecoder(bytes.NewReader(data))
+	if tok, err := dec.Token(); err != nil || tok != json.Delim('{') {
+		return fmt.Errorf("expected an object")
+	}
+	for dec.More() {
+		k, err := dec.Token()
+		if err != nil {
+			return err
+		}
+		var v string
+		if err := dec.Decode(&v); err != nil {
+			return err
+		}
+		*m = append(*m, KeyValue{Key: k.(string), Value: v})
+	}
+	_, err := dec.Token()
+	return err
 }
 
 // StringOrStrings holds a value typed `string | string[]` upstream.
@@ -120,14 +152,17 @@ type DatabaseConfig struct {
 
 // ModuleJoinerConfig mirrors ModuleJoinerConfig (the subset used by links).
 type ModuleJoinerConfig struct {
-	ServiceName    string                     `json:"serviceName,omitempty"`
-	IsLink         bool                       `json:"isLink,omitempty"`
-	IsReadOnlyLink bool                       `json:"isReadOnlyLink,omitempty"`
-	DatabaseConfig *DatabaseConfig            `json:"databaseConfig,omitempty"`
-	Alias          []JoinerServiceConfigAlias `json:"alias,omitempty"`
-	PrimaryKeys    []string                   `json:"primaryKeys,omitempty"`
-	Relationships  []JoinerRelationship       `json:"relationships,omitempty"`
-	Extends        []JoinerExtension          `json:"extends,omitempty"`
+	ServiceName          string                     `json:"serviceName,omitempty"`
+	Schema               string                     `json:"schema,omitempty"`
+	LinkableKeys         OrderedStringMap           `json:"linkableKeys,omitempty"`
+	IDPrefixToEntityName map[string]string          `json:"idPrefixToEntityName,omitempty"`
+	IsLink               bool                       `json:"isLink,omitempty"`
+	IsReadOnlyLink       bool                       `json:"isReadOnlyLink,omitempty"`
+	DatabaseConfig       *DatabaseConfig            `json:"databaseConfig,omitempty"`
+	Alias                []JoinerServiceConfigAlias `json:"alias,omitempty"`
+	PrimaryKeys          []string                   `json:"primaryKeys,omitempty"`
+	Relationships        []JoinerRelationship       `json:"relationships,omitempty"`
+	Extends              []JoinerExtension          `json:"extends,omitempty"`
 }
 
 // MustParseModuleJoinerConfig decodes a JSON joiner config, rejecting unknown

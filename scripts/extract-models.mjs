@@ -196,6 +196,21 @@ for (const mod of fs.readdirSync(path.join(UPSTREAM, "packages/modules")).sort()
   }
   await orm.close(true)
 
+  // The module joiner config: linkable keys, aliases (with the generated
+  // method suffixes) and the GraphQL schema used by Query.
+  const definition = require(path.join(UPSTREAM, pkgDir, "dist/index.js")).default
+  const joinerConfig = definition?.service?.prototype?.__joinerConfig?.()
+  if (joinerConfig) {
+    const json = JSON.stringify(clean(joinerConfig), null, 2)
+    if (json.includes("`")) {
+      throw new Error(`${mod}: backtick in joiner config`)
+    }
+    fs.writeFileSync(
+      path.join(ROOT, pkgDir, "src/joiner-config.go"),
+      `${HEADER}\n\npackage ${mod.replace(/-/g, "")}\n\nimport "${GO_MODULE}/packages/core/types/src/joiner"\n\n// JoinerConfig mirrors the joiner configuration of the module service.\nvar JoinerConfig = joiner.MustParseModuleJoinerConfig(\`${json}\`)\n`
+    )
+  }
+
   const ordered = entities.filter((e) => written.has(e)).map((e) => written.get(e))
   fs.writeFileSync(
     path.join(outDir, "index.go"),
