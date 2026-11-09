@@ -59,6 +59,7 @@ import (
 	returnreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons/id_"
 	saleschannels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels"
 	saleschannelid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_"
+	saleschannelproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_/products"
 	searchindexes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/search-indexes"
 	stocklocations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations"
 	stocklocationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stock-locations/id_"
@@ -147,6 +148,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/products/:id/variants/batch", Route: productvariantsbatch.Route},
 		{Path: "/admin/products/:id/variants/:variant_id", Route: productvariantid.Route},
 		{Path: "/admin/sales-channels/:id", Route: saleschannelid.Route},
+		{Path: "/admin/sales-channels/:id/products", Route: saleschannelproducts.Route},
 		{Path: "/admin/layouts/:zone/configuration", Route: configuration.Route},
 		{Path: "/admin/layouts/configurations", Route: configurations.Route},
 		{Path: "/admin/modules", Route: adminmodules.Route},

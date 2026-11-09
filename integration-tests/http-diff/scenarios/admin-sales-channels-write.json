@@ -1,0 +1,22 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "products", "method": "GET", "bearer": "login", "path": "/admin/products?order=title&fields=id" },
+  { "name": "create", "method": "POST", "bearer": "login", "path": "/admin/sales-channels", "body": { "name": "Marketplace", "description": "Third party", "is_disabled": true, "metadata": { "a": 1 } } },
+  { "name": "create_fields", "method": "POST", "bearer": "login", "path": "/admin/sales-channels?fields=name,is_disabled,description", "body": { "name": "POS" } },
+  { "name": "create_invalid", "method": "POST", "bearer": "login", "path": "/admin/sales-channels", "body": { "description": 5 } },
+  { "name": "create_extra", "method": "POST", "bearer": "login", "path": "/admin/sales-channels", "body": { "name": "x", "foo": true } },
+  { "name": "get", "method": "GET", "bearer": "login", "path": "/admin/sales-channels/{{create.sales_channel.id}}" },
+  { "name": "update", "method": "POST", "bearer": "login", "path": "/admin/sales-channels/{{create.sales_channel.id}}", "body": { "name": "Market", "description": null, "is_disabled": false, "metadata": { "b": 2 } } },
+  { "name": "update_missing", "method": "POST", "bearer": "login", "path": "/admin/sales-channels/sc_missing", "body": { "name": "x" } },
+  { "name": "link", "method": "POST", "bearer": "login", "path": "/admin/sales-channels/{{create.sales_channel.id}}/products?fields=id,name", "body": { "add": ["{{products.products.0.id}}", "{{products.products.1.id}}"] } },
+  { "name": "product_channels", "method": "GET", "bearer": "login", "path": "/admin/products/{{products.products.0.id}}?fields=id,sales_channels.name" },
+  { "name": "list_by_product", "method": "GET", "bearer": "login", "path": "/admin/products?sales_channel_id={{create.sales_channel.id}}&order=title&fields=id,title" },
+  { "name": "unlink", "method": "POST", "bearer": "login", "path": "/admin/sales-channels/{{create.sales_channel.id}}/products?fields=id", "body": { "remove": ["{{products.products.0.id}}"] } },
+  { "name": "list_by_product_after", "method": "GET", "bearer": "login", "path": "/admin/products?sales_channel_id={{create.sales_channel.id}}&fields=id,title" },
+  { "name": "link_invalid", "method": "POST", "bearer": "login", "path": "/admin/sales-channels/{{create.sales_channel.id}}/products", "body": { "add": "x" } },
+  { "name": "delete_default", "method": "DELETE", "bearer": "login", "path": "/admin/sales-channels/sc_01M70XZZVJETKWXXT8RHV5DWRZ" },
+  { "name": "delete", "method": "DELETE", "bearer": "login", "path": "/admin/sales-channels/{{create.sales_channel.id}}" },
+  { "name": "get_deleted", "method": "GET", "bearer": "login", "path": "/admin/sales-channels/{{create.sales_channel.id}}" },
+  { "name": "product_channels_after", "method": "GET", "bearer": "login", "path": "/admin/products/{{products.products.1.id}}?fields=id,sales_channels.name" },
+  { "name": "list", "method": "GET", "bearer": "login", "path": "/admin/sales-channels?order=name&fields=name,is_disabled" }
+]

@@ -30,3 +30,19 @@ var AdminGetSalesChannelsParams = utils.CreateFindParams(utils.FindParamsOptions
 		zod.F("location_id", utils.StringOrStrings().Optional()),
 		zod.F("publishable_key_id", utils.StringOrStrings().Optional()),
 	))
+
+// AdminCreateSalesChannel mirrors AdminCreateSalesChannel.
+var AdminCreateSalesChannel = zod.Object(
+	zod.F("name", zod.String()),
+	zod.F("description", zod.String().Nullish()),
+	zod.F("is_disabled", zod.Boolean().Optional()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+)
+
+// AdminUpdateSalesChannel mirrors AdminUpdateSalesChannel.
+var AdminUpdateSalesChannel = zod.Object(
+	zod.F("name", zod.String().Optional()),
+	zod.F("description", zod.String().Nullish()),
+	zod.F("is_disabled", zod.Boolean().Optional()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+)
