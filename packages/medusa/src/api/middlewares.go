@@ -5,6 +5,7 @@ package api
 import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections"
+	currencies "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/currencies"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
@@ -15,7 +16,9 @@ import (
 	producttypes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-types"
 	productvariants "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-variants"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products"
+	refundreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
+	returnreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons"
 	saleschannels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
@@ -42,5 +45,8 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, orders.AdminOrderRoutesMiddlewares...)
 	out = append(out, productcategories.Middlewares...)
 	out = append(out, configurations.LayoutConfigurationListRoutesMiddlewares...)
+	out = append(out, currencies.Middlewares...)
+	out = append(out, returnreasons.Middlewares...)
+	out = append(out, refundreasons.Middlewares...)
 	return out
 }

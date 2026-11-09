@@ -5,6 +5,8 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections"
 	collectionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections/id_"
 	collectionproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections/id_/products"
+	currencies "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/currencies"
+	currencycode "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/currencies/code_"
 	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/feature-flags"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/zone_/configuration"
@@ -31,9 +33,14 @@ import (
 	productvariantsroute "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants"
 	productvariantsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/batch"
 	productvariantid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/variant_id_"
+	refundreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons"
+	refundreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
+	returnreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons"
+	returnreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons/id_"
 	saleschannels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels"
 	saleschannelid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_"
+	searchindexes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/search-indexes"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/me"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_"
@@ -48,7 +55,14 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/collections", Route: collections.Route},
 		{Path: "/admin/collections/:id", Route: collectionid.Route},
 		{Path: "/admin/collections/:id/products", Route: collectionproducts.Route},
+		{Path: "/admin/currencies", Route: currencies.Route},
+		{Path: "/admin/currencies/:code", Route: currencycode.Route},
 		{Path: "/admin/feature-flags", Route: featureflags.Route},
+		{Path: "/admin/refund-reasons", Route: refundreasons.Route},
+		{Path: "/admin/refund-reasons/:id", Route: refundreasonid.Route},
+		{Path: "/admin/return-reasons", Route: returnreasons.Route},
+		{Path: "/admin/return-reasons/:id", Route: returnreasonid.Route},
+		{Path: "/admin/search-indexes", Route: searchindexes.Route},
 		{Path: "/admin/price-preferences", Route: pricepreferences.Route},
 		{Path: "/admin/product-categories", Route: productcategories.Route},
 		{Path: "/admin/product-categories/:id", Route: categoryid.Route},

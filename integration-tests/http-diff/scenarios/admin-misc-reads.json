@@ -1,0 +1,15 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "search_indexes", "method": "GET", "bearer": "login", "path": "/admin/search-indexes" },
+  { "name": "currencies", "method": "GET", "bearer": "login", "path": "/admin/currencies?limit=5&order=code" },
+  { "name": "currencies_q", "method": "GET", "bearer": "login", "path": "/admin/currencies?q=eur&fields=code,name" },
+  { "name": "currencies_codes", "method": "GET", "bearer": "login", "path": "/admin/currencies?code[]=usd&code[]=eur&fields=code,symbol" },
+  { "name": "currencies_default", "method": "GET", "bearer": "login", "path": "/admin/currencies" },
+  { "name": "currency", "method": "GET", "bearer": "login", "path": "/admin/currencies/eur" },
+  { "name": "currency_missing", "method": "GET", "bearer": "login", "path": "/admin/currencies/xxx" },
+  { "name": "return_reasons", "method": "GET", "bearer": "login", "path": "/admin/return-reasons" },
+  { "name": "return_reason_missing", "method": "GET", "bearer": "login", "path": "/admin/return-reasons/rr_missing" },
+  { "name": "refund_reasons", "method": "GET", "bearer": "login", "path": "/admin/refund-reasons" },
+  { "name": "refund_reason_missing", "method": "GET", "bearer": "login", "path": "/admin/refund-reasons/refr_missing" },
+  { "name": "refund_reason_first", "method": "GET", "bearer": "login", "path": "/admin/refund-reasons/{{refund_reasons.refund_reasons.0.id}}" }
+]
