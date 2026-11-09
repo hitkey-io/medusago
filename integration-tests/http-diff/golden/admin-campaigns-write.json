@@ -1,0 +1,592 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNjIxNDEsImV4cCI6MTc5NDM0ODU0MX0.R4S2N0MF0FKDiJFb8y44YA-wh_1-ucw4w5x1nQnU838"
+    }
+  },
+  "promos": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotions": [
+        {
+          "id": "promo_01M70Y004QW5J7N985738V4B04",
+          "code": "FREESHIP"
+        },
+        {
+          "id": "promo_01M70Y004QE6QZSQKF5H2R3MM6",
+          "code": "SPRING10"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+        "name": "Summer",
+        "description": "Summer campaign",
+        "campaign_identifier": "SUMMER",
+        "starts_at": "2026-06-01T00:00:00.000Z",
+        "ends_at": "2026-09-01T00:00:00.000Z",
+        "created_at": "2026-11-09T22:09:01.577Z",
+        "updated_at": "2026-11-09T22:09:01.577Z",
+        "deleted_at": null,
+        "budget": {
+          "id": "probudg_01M715Q2M8JKWQ8BH194HBBW4K",
+          "type": "usage",
+          "currency_code": null,
+          "attribute": null,
+          "raw_limit": {
+            "value": "100",
+            "precision": 20
+          },
+          "raw_used": {
+            "value": "0",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:09:01.577Z",
+          "updated_at": "2026-11-09T22:09:01.577Z",
+          "deleted_at": null,
+          "campaign_id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+          "limit": 100,
+          "used": 0
+        }
+      }
+    }
+  },
+  "create_spend_no_currency": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: currency_code is required when budget type is spend"
+    }
+  },
+  "create_usage_currency": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: currency_code should not be present when budget type is usage"
+    }
+  },
+  "create_attr_missing": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: campaign budget attribute is required when budget type is USE_BY_ATTRIBUTE or SPEND_BY_ATTRIBUTE"
+    }
+  },
+  "create_bad_date": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Expected type: 'date' for field 'starts_at', got: 'nope'"
+    }
+  },
+  "create_duplicate": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Promotion campaign with campaign_identifier: SUMMER, already exists."
+    }
+  },
+  "create_plain": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2NKS4S11BHRJ9TRSZ6E",
+        "name": "Plain",
+        "description": null,
+        "campaign_identifier": "PLAIN",
+        "starts_at": null,
+        "ends_at": null,
+        "created_at": "2026-11-09T22:09:01.619Z",
+        "updated_at": "2026-11-09T22:09:01.619Z",
+        "deleted_at": null,
+        "budget": null
+      }
+    }
+  },
+  "create_spend": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2NY37J0ZXGNT3EK7SJ5",
+        "name": "Spend",
+        "budget": {
+          "id": "probudg_01M715Q2NYKK9HPDJPMZC44X44",
+          "type": "spend",
+          "currency_code": "usd",
+          "attribute": null,
+          "raw_limit": {
+            "value": "50",
+            "precision": 20
+          },
+          "raw_used": {
+            "value": "0",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:09:01.630Z",
+          "updated_at": "2026-11-09T22:09:01.630Z",
+          "deleted_at": null,
+          "campaign_id": "procamp_01M715Q2NY37J0ZXGNT3EK7SJ5",
+          "limit": 50,
+          "used": 0
+        }
+      }
+    }
+  },
+  "create_by_attr": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2P9JYVN0VZJDAJXMQWS",
+        "name": "Per customer",
+        "budget": {
+          "id": "probudg_01M715Q2P98EH76R3PR4BRF91F",
+          "type": "use_by_attribute",
+          "currency_code": null,
+          "attribute": "customer_id",
+          "raw_limit": {
+            "value": "1",
+            "precision": 20
+          },
+          "raw_used": {
+            "value": "0",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:09:01.641Z",
+          "updated_at": "2026-11-09T22:09:01.641Z",
+          "deleted_at": null,
+          "campaign_id": "procamp_01M715Q2P9JYVN0VZJDAJXMQWS",
+          "limit": 1,
+          "used": 0
+        }
+      }
+    }
+  },
+  "get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+        "name": "Summer",
+        "description": "Summer campaign",
+        "campaign_identifier": "SUMMER",
+        "starts_at": "2026-06-01T00:00:00.000Z",
+        "ends_at": "2026-09-01T00:00:00.000Z",
+        "created_at": "2026-11-09T22:09:01.577Z",
+        "updated_at": "2026-11-09T22:09:01.577Z",
+        "deleted_at": null,
+        "budget": {
+          "id": "probudg_01M715Q2M8JKWQ8BH194HBBW4K",
+          "type": "usage",
+          "currency_code": null,
+          "attribute": null,
+          "raw_limit": {
+            "value": "100",
+            "precision": 20
+          },
+          "raw_used": {
+            "value": "0",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:09:01.577Z",
+          "updated_at": "2026-11-09T22:09:01.577Z",
+          "deleted_at": null,
+          "campaign_id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+          "limit": 100,
+          "used": 0
+        }
+      }
+    }
+  },
+  "update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+        "name": "Summer 2",
+        "description": null,
+        "campaign_identifier": "SUMMER",
+        "starts_at": "2026-06-01T00:00:00.000Z",
+        "ends_at": null,
+        "created_at": "2026-11-09T22:09:01.577Z",
+        "updated_at": "2026-11-09T22:09:01.662Z",
+        "deleted_at": null,
+        "budget": {
+          "id": "probudg_01M715Q2M8JKWQ8BH194HBBW4K",
+          "type": "usage",
+          "currency_code": null,
+          "attribute": null,
+          "raw_limit": {
+            "value": "200",
+            "precision": 20
+          },
+          "raw_used": {
+            "value": "0",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:09:01.577Z",
+          "updated_at": "2026-11-09T22:09:01.662Z",
+          "deleted_at": null,
+          "campaign_id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+          "limit": 200,
+          "used": 0
+        }
+      }
+    }
+  },
+  "update_budget_create": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "code": "unknown_error",
+      "type": "unknown_error",
+      "message": "An unknown error occurred."
+    }
+  },
+  "update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Campaign with id \"camp_missing\" not found"
+    }
+  },
+  "update_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'type'"
+    }
+  },
+  "add": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+        "promotions": [
+          {
+            "code": "FREESHIP",
+            "id": "promo_01M70Y004QW5J7N985738V4B04"
+          }
+        ]
+      }
+    }
+  },
+  "add_taken": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+        "promotions": [
+          {
+            "code": "FREESHIP",
+            "id": "promo_01M70Y004QW5J7N985738V4B04"
+          }
+        ]
+      }
+    }
+  },
+  "add_to_spend": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2NY37J0ZXGNT3EK7SJ5",
+        "promotions": []
+      }
+    }
+  },
+  "remove": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+        "promotions": []
+      }
+    }
+  },
+  "remove_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N"
+      }
+    }
+  },
+  "link_missing_campaign": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Campaign with id: camp_missing was not found"
+    }
+  },
+  "get_with_promotions": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaign": {
+        "id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+        "name": "Summer 2",
+        "description": null,
+        "campaign_identifier": "SUMMER",
+        "starts_at": "2026-06-01T00:00:00.000Z",
+        "ends_at": null,
+        "created_at": "2026-11-09T22:09:01.577Z",
+        "updated_at": "2026-11-09T22:09:01.662Z",
+        "deleted_at": null,
+        "budget": {
+          "id": "probudg_01M715Q2M8JKWQ8BH194HBBW4K",
+          "type": "usage",
+          "currency_code": null,
+          "attribute": null,
+          "raw_limit": {
+            "value": "200",
+            "precision": 20
+          },
+          "raw_used": {
+            "value": "0",
+            "precision": 20
+          },
+          "created_at": "2026-11-09T22:09:01.577Z",
+          "updated_at": "2026-11-09T22:09:01.662Z",
+          "deleted_at": null,
+          "campaign_id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+          "limit": 200,
+          "used": 0
+        },
+        "promotions": []
+      }
+    }
+  },
+  "list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaigns": [
+        {
+          "name": "Per customer",
+          "campaign_identifier": "PERCUS",
+          "id": "procamp_01M715Q2P9JYVN0VZJDAJXMQWS",
+          "budget": {
+            "limit": 1,
+            "type": "use_by_attribute"
+          }
+        },
+        {
+          "name": "Plain",
+          "campaign_identifier": "PLAIN",
+          "id": "procamp_01M715Q2NKS4S11BHRJ9TRSZ6E",
+          "budget": null
+        },
+        {
+          "name": "Spend",
+          "campaign_identifier": "SPEND",
+          "id": "procamp_01M715Q2NY37J0ZXGNT3EK7SJ5",
+          "budget": {
+            "limit": 50,
+            "type": "spend"
+          }
+        },
+        {
+          "name": "Spring campaign",
+          "campaign_identifier": "SPRING",
+          "id": "procamp_01M70Y004B3CNPZ9961HB1CXH6",
+          "budget": {
+            "limit": 1000,
+            "type": "spend"
+          }
+        },
+        {
+          "name": "Summer 2",
+          "campaign_identifier": "SUMMER",
+          "id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+          "budget": {
+            "limit": 200,
+            "type": "usage"
+          }
+        }
+      ],
+      "count": 5,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "procamp_01M715Q2M8TR12VDW5EXNB3F7N",
+      "object": "campaign",
+      "deleted": true
+    }
+  },
+  "get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Campaign with id: procamp_01M715Q2M8TR12VDW5EXNB3F7N was not found"
+    }
+  },
+  "list_after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaigns": [
+        {
+          "name": "Per customer",
+          "id": "procamp_01M715Q2P9JYVN0VZJDAJXMQWS"
+        },
+        {
+          "name": "Plain",
+          "id": "procamp_01M715Q2NKS4S11BHRJ9TRSZ6E"
+        },
+        {
+          "name": "Spend",
+          "id": "procamp_01M715Q2NY37J0ZXGNT3EK7SJ5"
+        },
+        {
+          "name": "Spring campaign",
+          "id": "procamp_01M70Y004B3CNPZ9961HB1CXH6"
+        }
+      ],
+      "count": 4,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}

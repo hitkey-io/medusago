@@ -8,6 +8,7 @@ import (
 	apikeysc "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys/id_/sales-channels"
 	admincampaigns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/campaigns"
 	campaignid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/campaigns/id_"
+	campaignpromotions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/campaigns/id_/promotions"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections"
 	collectionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections/id_"
 	collectionproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections/id_/products"
@@ -128,6 +129,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/api-keys/:id/sales-channels", Route: apikeysc.Route},
 		{Path: "/admin/campaigns", Route: admincampaigns.Route},
 		{Path: "/admin/campaigns/:id", Route: campaignid.Route},
+		{Path: "/admin/campaigns/:id/promotions", Route: campaignpromotions.Route},
 		{Path: "/admin/currencies", Route: currencies.Route},
 		{Path: "/admin/price-lists", Route: pricelists.Route},
 		{Path: "/admin/price-lists/:id", Route: pricelistid.Route},

@@ -449,6 +449,9 @@ func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, i
 	if err := r.assignFields(e, data, input, true); err != nil {
 		return nil, err
 	}
+	if err := validateRequired(e, data); err != nil {
+		return nil, err
+	}
 	if err := r.insertRow(ctx, e, data); err != nil {
 		return nil, err
 	}
@@ -481,6 +484,24 @@ func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, i
 		inst.relations[mp.Name] = children
 	}
 	return inst, nil
+}
+
+// validateRequired mirrors MikroORM's EntityValidator.validateRequired for
+// new entities: a non-nullable persisted property without a default must
+// have a value (a plain error, so a 500 response upstream).
+func validateRequired(e *dml.Entity, data Row) error {
+	for _, mp := range e.Meta.Properties {
+		if mp.Nullable || mp.Autoincrement || len(mp.Default) > 0 || mp.DefaultRaw != "" || len(mp.FieldNames) == 0 {
+			continue
+		}
+		if mp.Kind == "1:m" || mp.Kind == "m:n" || (mp.Kind == "1:1" && !mp.Owner) || (mp.Persist != nil && !*mp.Persist) {
+			continue
+		}
+		if v, ok := data[mp.FieldNames[0]]; !ok || v == nil {
+			return fmt.Errorf("Value for %s.%s is required, 'undefined' found", e.Meta.ClassName, mp.Name)
+		}
+	}
+	return nil
 }
 
 func (r *Repository) attachChild(ctx context.Context, parent *instance, join *Join, item any, idm identityMap) (*instance, error) {
