@@ -161,4 +161,4 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 }
 
 // Route is route.ts.
-var Route = medusahttp.Route{GET: GET}
+var Route = medusahttp.Route{GET: GET, POST: POST}

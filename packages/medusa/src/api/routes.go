@@ -44,6 +44,9 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
 	pricelists "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists"
 	pricelistid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists/id_"
+	pricelistprices "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists/id_/prices"
+	pricelistpricesbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists/id_/prices/batch"
+	pricelistproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists/id_/products"
 	pricepreferences "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-preferences"
 	pricepreferenceid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-preferences/id_"
 	productcategories "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories"
@@ -128,6 +131,9 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/currencies", Route: currencies.Route},
 		{Path: "/admin/price-lists", Route: pricelists.Route},
 		{Path: "/admin/price-lists/:id", Route: pricelistid.Route},
+		{Path: "/admin/price-lists/:id/prices", Route: pricelistprices.Route},
+		{Path: "/admin/price-lists/:id/prices/batch", Route: pricelistpricesbatch.Route},
+		{Path: "/admin/price-lists/:id/products", Route: pricelistproducts.Route},
 		{Path: "/admin/promotions", Route: adminpromotions.Route},
 		{Path: "/admin/promotions/:id", Route: promotionid.Route},
 		{Path: "/admin/workflows-executions", Route: workflowsexecutions.Route},

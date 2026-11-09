@@ -1,0 +1,619 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNjE2MzUsImV4cCI6MTc5NDM0ODAzNX0.cqFxWtFh3fN4TeHdWPT96eNYnyN_MuFYzOLelpVAbso"
+    }
+  },
+  "v1": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "variants": [
+        {
+          "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q",
+          "sku": "SHIRT-S-BLACK"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "v2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "variants": [
+        {
+          "id": "variant_01M70Y000GVS02WWBRV8TTXVZ4",
+          "sku": "PANTS-M"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "shirt": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_list": {
+        "id": "plist_01M7157MC4JFK8X65N14A15JJR",
+        "type": "sale",
+        "description": "Seasonal",
+        "title": "Summer sale",
+        "status": "active",
+        "starts_at": "2026-06-01T00:00:00.000Z",
+        "ends_at": "2026-08-31T23:59:59.000Z",
+        "created_at": "2026-11-09T22:00:35.460Z",
+        "updated_at": "2026-11-09T22:00:35.460Z",
+        "deleted_at": null,
+        "metadata": {
+          "keep": true,
+          "campaign": "summer"
+        },
+        "rules": {
+          "customer.groups.id": [
+            "cusgroup_test"
+          ]
+        }
+      }
+    }
+  },
+  "create_bad_variant": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "No price set exist for variants: variant_missing"
+    }
+  },
+  "create_bad_date": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Cannot set price list starts at with with invalid date string: not-a-date"
+    }
+  },
+  "create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'description' is required; Expected: 'active, draft' for field 'status', but got: 'paused'"
+    }
+  },
+  "get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_list": {
+        "id": "plist_01M7157MC4JFK8X65N14A15JJR",
+        "prices": [
+          {
+            "amount": 8,
+            "currency_code": "eur",
+            "min_quantity": null,
+            "id": "price_01M7157MC3XC3QAWB8W50PMVG6"
+          },
+          {
+            "amount": 25,
+            "currency_code": "eur",
+            "min_quantity": 2,
+            "id": "price_01M7157MC4GK11AZFPQ9MPW22S"
+          }
+        ],
+        "rules": {
+          "customer.groups.id": [
+            "cusgroup_test"
+          ]
+        }
+      }
+    }
+  },
+  "prices": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "prices": [
+        {
+          "id": "price_01M7157MC3XC3QAWB8W50PMVG6",
+          "currency_code": "eur",
+          "amount": 8,
+          "min_quantity": null,
+          "max_quantity": null,
+          "created_at": "2026-11-09T22:00:35.460Z",
+          "deleted_at": null,
+          "updated_at": "2026-11-09T22:00:35.460Z",
+          "price_set_id": "pset_01M70Y0015MA0SFAPP1T4VPVDE",
+          "price_set": {
+            "id": "pset_01M70Y0015MA0SFAPP1T4VPVDE",
+            "variant": {
+              "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+            }
+          },
+          "price_rules": []
+        },
+        {
+          "id": "price_01M7157MC4GK11AZFPQ9MPW22S",
+          "currency_code": "eur",
+          "amount": 25,
+          "min_quantity": 2,
+          "max_quantity": null,
+          "created_at": "2026-11-09T22:00:35.460Z",
+          "deleted_at": null,
+          "updated_at": "2026-11-09T22:00:35.460Z",
+          "price_set_id": "pset_01M70Y0015HRZFCV05DZTCSW7X",
+          "price_set": {
+            "id": "pset_01M70Y0015HRZFCV05DZTCSW7X",
+            "variant": {
+              "id": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
+            }
+          },
+          "price_rules": [
+            {
+              "value": "reg_test",
+              "attribute": "region_id"
+            }
+          ]
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_list": {
+        "id": "plist_01M7157MC4JFK8X65N14A15JJR",
+        "type": "sale",
+        "description": "Seasonal",
+        "title": "Summer sale 2",
+        "status": "active",
+        "starts_at": "2026-06-01T00:00:00.000Z",
+        "ends_at": "2026-08-31T23:59:59.000Z",
+        "created_at": "2026-11-09T22:00:35.460Z",
+        "updated_at": "2026-11-09T22:00:35.540Z",
+        "deleted_at": null,
+        "metadata": {
+          "keep": true,
+          "extra": 1
+        },
+        "rules": {
+          "customer.groups.id": [],
+          "customer.id": [
+            "cus_a",
+            "cus_b"
+          ]
+        }
+      }
+    }
+  },
+  "update_status": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Cannot set field 'description' of Price list to null"
+    }
+  },
+  "update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Price lists with id: plist_missing was not found"
+    }
+  },
+  "update_bad_date": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Cannot set price list ends at with with invalid date string: 31/12/2026"
+    }
+  },
+  "batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "id": "price_01M7157MG6GB2FEZQPA2D91JTP",
+          "currency_code": "usd",
+          "amount": 30,
+          "min_quantity": null,
+          "max_quantity": null,
+          "created_at": "2026-11-09T22:00:35.589Z",
+          "deleted_at": null,
+          "updated_at": "2026-11-09T22:00:35.589Z",
+          "price_set_id": "pset_01M70Y0015HRZFCV05DZTCSW7X",
+          "price_set": {
+            "id": "pset_01M70Y0015HRZFCV05DZTCSW7X",
+            "variant": {
+              "id": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
+            }
+          },
+          "price_rules": []
+        }
+      ],
+      "updated": [
+        {
+          "id": "price_01M7157MC3XC3QAWB8W50PMVG6",
+          "currency_code": "eur",
+          "amount": 7,
+          "min_quantity": null,
+          "max_quantity": null,
+          "created_at": "2026-11-09T22:00:35.460Z",
+          "deleted_at": null,
+          "updated_at": "2026-11-09T22:00:35.595Z",
+          "price_set_id": "pset_01M70Y0015MA0SFAPP1T4VPVDE",
+          "price_set": {
+            "id": "pset_01M70Y0015MA0SFAPP1T4VPVDE",
+            "variant": {
+              "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+            }
+          },
+          "price_rules": []
+        }
+      ],
+      "deleted": {
+        "ids": [],
+        "object": "price",
+        "deleted": true
+      }
+    }
+  },
+  "batch_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [],
+      "updated": [],
+      "deleted": {
+        "ids": [
+          "price_01M7157MC4GK11AZFPQ9MPW22S"
+        ],
+        "object": "price",
+        "deleted": true
+      }
+    }
+  },
+  "batch_bad_variant": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "No price set exist for variants: variant_missing"
+    }
+  },
+  "batch_missing_list": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Price lists with id: plist_missing was not found"
+    }
+  },
+  "prices_after_batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "prices": [
+        {
+          "id": "price_01M7157MC3XC3QAWB8W50PMVG6",
+          "currency_code": "eur",
+          "amount": 7,
+          "min_quantity": null,
+          "max_quantity": null,
+          "created_at": "2026-11-09T22:00:35.460Z",
+          "deleted_at": null,
+          "updated_at": "2026-11-09T22:00:35.595Z",
+          "price_set_id": "pset_01M70Y0015MA0SFAPP1T4VPVDE",
+          "price_set": {
+            "id": "pset_01M70Y0015MA0SFAPP1T4VPVDE",
+            "variant": {
+              "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+            }
+          },
+          "price_rules": []
+        },
+        {
+          "id": "price_01M7157MG6GB2FEZQPA2D91JTP",
+          "currency_code": "usd",
+          "amount": 30,
+          "min_quantity": null,
+          "max_quantity": null,
+          "created_at": "2026-11-09T22:00:35.589Z",
+          "deleted_at": null,
+          "updated_at": "2026-11-09T22:00:35.589Z",
+          "price_set_id": "pset_01M70Y0015HRZFCV05DZTCSW7X",
+          "price_set": {
+            "id": "pset_01M70Y0015HRZFCV05DZTCSW7X",
+            "variant": {
+              "id": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
+            }
+          },
+          "price_rules": []
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "products_empty": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "No product ids passed to remove from price list"
+    }
+  },
+  "products_remove": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_list": {
+        "id": "plist_01M7157MC4JFK8X65N14A15JJR",
+        "type": "sale",
+        "description": "Seasonal",
+        "title": "Summer sale 2",
+        "status": "active",
+        "starts_at": "2026-06-01T00:00:00.000Z",
+        "ends_at": "2026-08-31T23:59:59.000Z",
+        "created_at": "2026-11-09T22:00:35.460Z",
+        "updated_at": "2026-11-09T22:00:35.540Z",
+        "deleted_at": null,
+        "metadata": {
+          "keep": true,
+          "extra": 1
+        },
+        "rules": {
+          "customer.groups.id": [],
+          "customer.id": [
+            "cus_a",
+            "cus_b"
+          ]
+        }
+      }
+    }
+  },
+  "prices_after_products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "prices": [
+        {
+          "amount": 30,
+          "currency_code": "usd",
+          "id": "price_01M7157MG6GB2FEZQPA2D91JTP"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_lists": [
+        {
+          "title": "Draft list",
+          "status": "draft",
+          "rules_count": 0,
+          "id": "plist_01M70Y005ES9QYND13694YMGSM",
+          "prices": []
+        },
+        {
+          "title": "Summer sale 2",
+          "status": "active",
+          "rules_count": 2,
+          "id": "plist_01M7157MC4JFK8X65N14A15JJR",
+          "prices": [
+            {
+              "amount": 30,
+              "id": "price_01M7157MG6GB2FEZQPA2D91JTP"
+            }
+          ]
+        },
+        {
+          "title": "VIP prices",
+          "status": "active",
+          "rules_count": 1,
+          "id": "plist_01M70Y005EFK37ETVJY7H2GSCA",
+          "prices": [
+            {
+              "amount": 15,
+              "id": "price_01M70Y005DJ7YX0G85JA4YC01F"
+            },
+            {
+              "amount": 16,
+              "id": "price_01M70Y005DB5M36K22EQZEADWQ"
+            }
+          ]
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "plist_01M7157MC4JFK8X65N14A15JJR",
+      "object": "price_list",
+      "deleted": true
+    }
+  },
+  "get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Price list with id: plist_01M7157MC4JFK8X65N14A15JJR was not found"
+    }
+  },
+  "prices_deleted": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "prices": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "list_final": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_lists": [
+        {
+          "title": "Draft list",
+          "id": "plist_01M70Y005ES9QYND13694YMGSM"
+        },
+        {
+          "title": "VIP prices",
+          "id": "plist_01M70Y005EFK37ETVJY7H2GSCA"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}

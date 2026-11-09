@@ -92,10 +92,9 @@ func hashPrice(p *dal.Record) string {
 	if p.Has("max_quantity") {
 		parts = append(parts, "max:"+jsString(get(p, "max_quantity")))
 	}
-	if rules, ok := get(p, "price_rules").([]any); ok && len(rules) > 0 {
+	if rules := listOf(get(p, "price_rules")); len(rules) > 0 {
 		var rs []string
-		for _, r := range rules {
-			rr, _ := r.(*dal.Record)
+		for _, rr := range rules {
 			rs = append(rs, jsString(get(rr, "attribute"))+"="+jsString(get(rr, "value")))
 		}
 		parts = append(parts, "rules:"+strings.Join(rs, ","))
@@ -104,8 +103,18 @@ func hashPrice(p *dal.Record) string {
 	return strings.Join(parts, "|")
 }
 
-// normalizePrices mirrors normalizePrices (without existing prices).
+// normalizePrices mirrors normalizePrices without existing prices.
 func normalizePrices(data []any, priceListID any) ([]any, error) {
+	return normalizePricesWith(data, nil, priceListID)
+}
+
+// normalizePricesWith mirrors normalizePrices: an input price matching an
+// existing one (same hash) takes its id and price rules.
+func normalizePricesWith(data []any, existingPrices []*dal.Record, priceListID any) ([]any, error) {
+	existingByHash := map[string]*dal.Record{}
+	for _, p := range existingPrices {
+		existingByHash[hashPrice(p)] = p
+	}
 	var order []string
 	byKey := map[string]*dal.Record{}
 	for _, d := range data {
@@ -170,6 +179,14 @@ func normalizePrices(data []any, priceListID any) ([]any, error) {
 			entry.Set("currency_code", strings.ToLower(fmt.Sprint(cc)))
 		}
 		key := hashPrice(entry)
+		if existing := existingByHash[key]; existing != nil {
+			if id := get(existing, "id"); id != nil {
+				entry.Set("id", id)
+			}
+			if pr := get(existing, "price_rules"); pr != nil {
+				entry.Set("price_rules", pr)
+			}
+		}
 		if id, _ := get(entry, "id").(string); id != "" {
 			key = id
 		}
