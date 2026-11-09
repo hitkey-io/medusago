@@ -678,7 +678,7 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 				touched[group.entity] = append(touched[group.entity], inst)
 			}
 			for _, relation := range group.entity.Cascades.Delete {
-				children, err := r.loadRelation(ctx, group.insts, relation, idm, true)
+				children, err := r.loadRelation(ctx, group.insts, relation, idm, true, nil)
 				if err != nil {
 					return nil, err
 				}

@@ -124,3 +124,29 @@ func ListResponse(key string, res *query.GraphResult) *dal.Record {
 	}
 	return out
 }
+
+// RemoteQueryListRoute builds the GET handler shared by the list routes
+// written as remoteQuery(remoteQueryObjectFromString({ entryPoint,
+// variables: { filters, ...pagination }, fields })).
+func RemoteQueryListRoute(entryPoint, key string) medusahttp.RouteHandler {
+	return func(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+		r, err := RemoteQueryList(req.Ctx(), req.Scope, entryPoint, ListVariables(req.FilterableFields, req.QueryConfig.Pagination), req.QueryConfig.Fields)
+		if err != nil {
+			return err
+		}
+		return res.JSON(ListResponse(key, r))
+	}
+}
+
+// RefetchListRoute builds the GET handler shared by the list routes written
+// as refetchEntities({ entity, idOrFilter: filterableFields, fields,
+// pagination }) or query.graph with the same arguments.
+func RefetchListRoute(entity, key string) medusahttp.RouteHandler {
+	return func(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+		r, err := RefetchEntities(req.Ctx(), req.Scope, RefetchEntitiesInput{Entity: entity, IDOrFilter: req.FilterableFields, Fields: req.QueryConfig.Fields, Pagination: req.QueryConfig.Pagination})
+		if err != nil {
+			return err
+		}
+		return res.JSON(ListResponse(key, r))
+	}
+}

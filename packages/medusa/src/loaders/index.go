@@ -170,7 +170,13 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 		pool.Close()
 		return nil, err
 	}
-	q, err := NewDefaultQuery(pool)
+	moduleServices := map[string]any{}
+	for _, mc := range cfg.Modules {
+		if v := c.Resolve(mc.Key); v != nil {
+			moduleServices[mc.Key] = v
+		}
+	}
+	q, err := NewDefaultQuery(pool, moduleServices)
 	if err != nil {
 		pool.Close()
 		return nil, err

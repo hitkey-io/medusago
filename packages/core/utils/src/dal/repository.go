@@ -56,9 +56,22 @@ func pkValue(e *dml.Entity, row Row) string {
 func (m identityMap) get(e *dml.Entity, row Row) *instance {
 	key := e.Meta.ClassName + "\x00" + pkValue(e, row)
 	if inst, ok := m[key]; ok {
+		// Like MikroORM's merge, columns loaded now that the managed
+		// entity did not have yet are added to it.
+		merged := false
+		for k, v := range row {
+			if _, has := inst.data[k]; !has {
+				inst.data[k] = v
+				merged = true
+			}
+		}
+		if merged {
+			runOnInit(e.Meta.ClassName, inst.data)
+		}
 		return inst
 	}
 	inst := &instance{entity: e, data: row, relations: map[string]any{}}
+	runOnInit(e.Meta.ClassName, row)
 	m[key] = inst
 	return inst
 }
@@ -123,6 +136,19 @@ func (r *Repository) count(ctx context.Context, opts FindOptions) (int, error) {
 
 func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, identityMap, error) {
 	opts = r.pruneFindOptions(opts)
+	// Orders on relation fields ("images.rank") order the select-in query
+	// loading that relation; the root query keeps the orders of its own
+	// fields.
+	relationOrder := map[string][]OrderBy{}
+	var rootOrder []OrderBy
+	for _, o := range opts.Order {
+		if i := strings.LastIndex(o.Field, "."); i > 0 {
+			relationOrder[o.Field[:i]] = append(relationOrder[o.Field[:i]], OrderBy{Field: o.Field[i+1:], Direction: o.Direction})
+			continue
+		}
+		rootOrder = append(rootOrder, o)
+	}
+	opts.Order = rootOrder
 	qb := newQueryBuilder(r.Schema, opts.WithDeleted)
 	where, err := qb.rootWhere(r.Entity, "e0", opts.Where)
 	if err != nil {
@@ -207,7 +233,7 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 		}
 	}
 
-	if err := r.populate(ctx, roots, idm, r.relationPaths(opts), opts.WithDeleted); err != nil {
+	if err := r.populate(ctx, roots, idm, r.relationPaths(opts), opts.WithDeleted, relationOrder); err != nil {
 		return nil, nil, err
 	}
 	return roots, idm, nil
@@ -287,13 +313,33 @@ func selectedColumns(e *dml.Entity, tree *fieldTree) []string {
 		add(fieldColumn(e, pk))
 	}
 	for _, p := range e.Meta.Properties {
-		if len(p.FieldNames) == 0 || (p.Persist != nil && !*p.Persist) {
+		if len(p.FieldNames) == 0 {
+			continue
+		}
+		if p.Persist != nil && !*p.Persist {
+			// a non persisted m:1 (its column belongs to the <name>_id
+			// property) still selects its foreign key
+			if tree.fields[p.Name] && (p.Kind == "m:1" || (p.Kind == "1:1" && p.Owner)) {
+				for _, fn := range p.FieldNames {
+					add(fn)
+				}
+			}
 			continue
 		}
 		if tree.fields[p.Name] {
-			add(p.FieldNames[0])
-			if bigNumbers[p.Name] {
-				add("raw_" + p.Name)
+			switch {
+			case p.Kind == "1:m" || p.Kind == "m:n" || (p.Kind == "1:1" && !p.Owner):
+				// a collection named in the selection: nothing to select,
+				// it stays uninitialized (omitted from the result)
+			case p.Kind == "m:1" || p.Kind == "1:1":
+				for _, fn := range p.FieldNames {
+					add(fn)
+				}
+			default:
+				add(p.FieldNames[0])
+				if bigNumbers[p.Name] {
+					add("raw_" + p.Name)
+				}
 			}
 		}
 	}
@@ -364,7 +410,7 @@ func (r *Repository) relationPaths(opts FindOptions) []string {
 
 // populate loads the relation paths level by level, the way MikroORM's
 // select-in loading does.
-func (r *Repository) populate(ctx context.Context, roots []*instance, idm identityMap, paths []string, withDeleted bool) error {
+func (r *Repository) populate(ctx context.Context, roots []*instance, idm identityMap, paths []string, withDeleted bool, relationOrder map[string][]OrderBy) error {
 	byPath := map[string][]*instance{"": roots}
 	for _, path := range paths {
 		parentPath, relation := "", path
@@ -376,7 +422,7 @@ func (r *Repository) populate(ctx context.Context, roots []*instance, idm identi
 			byPath[path] = nil
 			continue
 		}
-		children, err := r.loadRelation(ctx, parents, relation, idm, withDeleted)
+		children, err := r.loadRelation(ctx, parents, relation, idm, withDeleted, relationOrder[path])
 		if err != nil {
 			return fmt.Errorf("populate %s: %w", path, err)
 		}
@@ -402,7 +448,7 @@ func uniqueValues(parents []*instance, columns []string) []any {
 	return out
 }
 
-func (r *Repository) loadRelation(ctx context.Context, parents []*instance, relation string, idm identityMap, withDeleted bool) ([]*instance, error) {
+func (r *Repository) loadRelation(ctx context.Context, parents []*instance, relation string, idm identityMap, withDeleted bool, order []OrderBy) ([]*instance, error) {
 	owner := parents[0].entity
 	join, err := r.Schema.ResolveJoin(owner, relation)
 	if err != nil {
@@ -487,6 +533,14 @@ func (r *Repository) loadRelation(ctx context.Context, parents []*instance, rela
 			where = `"t0"."deleted_at" is null and ` + where
 		}
 		sql := fmt.Sprintf(`select "t0".* from %s as "t0" where %s`, quote(target.Meta.Collection), where)
+		if len(order) > 0 {
+			tr := &Repository{DB: r.DB, Schema: r.Schema, Entity: target}
+			o, err := tr.orderSQL(order, "t0")
+			if err != nil {
+				return nil, err
+			}
+			sql += o
+		}
 		rows, err := queryRows(ctx, r.DB, sql, args...)
 		if err != nil {
 			return nil, err
@@ -639,7 +693,7 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 			if bigNumbers[p.Name] || !hydrated(p.Name) {
 				continue
 			}
-			rec.Set(p.Name, inst.data[p.FieldNames[0]])
+			rec.Set(p.Name, runtimeNumber(p.Type, inst.data[p.FieldNames[0]]))
 
 		case p.MapToPk && (p.Persist == nil || *p.Persist):
 			// Foreign key property (e.g. product_id).
@@ -698,12 +752,29 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 		rec.Set(p.Name, v)
 	}
 
+	// BigNumber values: the computed ones (own properties set by entity
+	// hooks) come before the getters of the persisted ones.
+	bigNumberProps := make([]dml.Property, 0, len(e.Properties))
 	for _, p := range e.Properties {
+		if p.Field != nil && p.Field.Computed {
+			bigNumberProps = append(bigNumberProps, p)
+		}
+	}
+	for _, p := range e.Properties {
+		if p.Field == nil || !p.Field.Computed {
+			bigNumberProps = append(bigNumberProps, p)
+		}
+	}
+	for _, p := range bigNumberProps {
 		if !bigNumbers[p.Name] || !hydrated(p.Name) {
 			continue
 		}
 		raw, ok := inst.data["raw_"+p.Name].(*Record)
 		if !ok {
+			if p.Field != nil && p.Field.Computed {
+				// a computed value the entity hooks did not set: undefined
+				continue
+			}
 			rec.Set(p.Name, nil)
 			continue
 		}

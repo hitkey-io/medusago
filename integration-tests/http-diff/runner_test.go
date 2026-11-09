@@ -16,8 +16,10 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"testing"
@@ -129,10 +131,12 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 	out := map[string]Response{}
 	tokens := map[string]string{}
 
+	bodies := map[string]any{}
 	for _, step := range steps {
+		step.Path = resolveRefs(step.Path, bodies, true)
 		var body io.Reader
 		if len(step.Body) > 0 {
-			body = bytes.NewReader(step.Body)
+			body = strings.NewReader(resolveRefs(string(step.Body), bodies, false))
 		}
 		req, err := http.NewRequest(step.Method, baseURL+step.Path, body)
 		if err != nil {
@@ -184,8 +188,43 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 			}
 		}
 		out[step.Name] = rec
+		bodies[step.Name] = rec.Body
 	}
 	return out
+}
+
+var refRe = regexp.MustCompile(`\{\{([A-Za-z0-9_]+)\.([^}]+)\}\}`)
+
+// resolveRefs replaces {{step.path.to.value}} with a value of a previous
+// response body (path segments: object keys or array indexes). In bodies
+// the value is JSON-encoded (the placeholder must stand for a whole JSON
+// value); in paths it is inserted as text, URL-escaped.
+func resolveRefs(s string, bodies map[string]any, inPath bool) string {
+	return refRe.ReplaceAllStringFunc(s, func(m string) string {
+		sm := refRe.FindStringSubmatch(m)
+		var cur any = bodies[sm[1]]
+		for _, seg := range strings.Split(sm[2], ".") {
+			switch t := cur.(type) {
+			case *dal.Record:
+				cur, _ = t.Get(seg)
+			case []any:
+				i := 0
+				fmt.Sscan(seg, &i)
+				if i < len(t) {
+					cur = t[i]
+				} else {
+					cur = nil
+				}
+			default:
+				cur = nil
+			}
+		}
+		if inPath {
+			return url.QueryEscape(fmt.Sprint(cur))
+		}
+		raw, _ := dal.MarshalValue(cur)
+		return string(raw)
+	})
 }
 
 func encode(v any) []byte {

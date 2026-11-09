@@ -83,9 +83,16 @@ func (q *Query) run(ctx context.Context, remote *dal.Record, opts joiner.Options
 	return out, nil
 }
 
+// SuffixLister is a module service Query reads from: the generic
+// MedusaService or a module service overriding some list methods.
+type SuffixLister interface {
+	ListBySuffix(ctx context.Context, suffix string, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, error)
+	ListAndCountBySuffix(ctx context.Context, suffix string, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, int, error)
+}
+
 // MedusaServiceAdapter exposes a module service to Query.
 type MedusaServiceAdapter struct {
-	Service *utilsmodulessdk.MedusaService
+	Service SuffixLister
 }
 
 // List calls list<suffix>.

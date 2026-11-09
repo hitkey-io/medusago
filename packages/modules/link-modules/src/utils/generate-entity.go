@@ -13,11 +13,13 @@ import (
 
 // Column is a column of a link table.
 type Column struct {
-	Name       string
-	SQLType    string
-	Nullable   bool
-	DefaultRaw *string
-	Primary    bool
+	// RuntimeType is options.runtimeType of an extra field ("number").
+	RuntimeType string
+	Name        string
+	SQLType     string
+	Nullable    bool
+	DefaultRaw  *string
+	Primary     bool
 }
 
 // Index is an index of a link table, either a plain index on Columns or a
@@ -78,11 +80,13 @@ func GenerateEntity(cfg *joiner.ModuleJoinerConfig, primary, foreign joiner.Join
 			if err != nil {
 				return nil, fmt.Errorf("%s.%s: %w", tableName, extra.Name, err)
 			}
+			runtimeType, _ := extra.Options["runtimeType"].(string)
 			columns = append(columns, Column{
-				Name:       extra.Name,
-				SQLType:    sqlType,
-				Nullable:   extra.Nullable,
-				DefaultRaw: extra.DefaultValue,
+				RuntimeType: runtimeType,
+				Name:        extra.Name,
+				SQLType:     sqlType,
+				Nullable:    extra.Nullable,
+				DefaultRaw:  extra.DefaultValue,
 			})
 		}
 	}
@@ -178,9 +182,14 @@ func (e *LinkEntity) ToDMLEntity(className string) *dml.Entity {
 		if columnType == "varchar(255)" {
 			columnType = "text"
 		}
+		propType := "string"
+		if c.RuntimeType != "" {
+			propType = c.RuntimeType
+		}
 		ent.Meta.Properties = append(ent.Meta.Properties, dml.MetaProperty{
 			Name:       c.Name,
 			Kind:       "scalar",
+			Type:       propType,
 			ColumnType: columnType,
 			FieldNames: []string{c.Name},
 			Nullable:   c.Nullable,

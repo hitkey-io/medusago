@@ -42,7 +42,7 @@ func filterFields(data any, fields []string, expands *NestedExpands) any {
 			if exp == nil {
 				continue
 			}
-			v, _ := rec.Get(key)
+			v, present := rec.Get(key)
 			if list, isList := v.([]any); isList {
 				out := make([]any, len(list))
 				for i, item := range list {
@@ -52,6 +52,11 @@ func filterFields(data any, fields []string, expands *NestedExpands) any {
 				continue
 			}
 			if v == nil {
+				// filterFields(null) returns null, which is kept; an absent
+				// key (undefined) is not
+				if present {
+					filtered.Set(key, nil)
+				}
 				continue
 			}
 			if f := filterFields(v, exp.Fields, exp.Expands); f != nil {
