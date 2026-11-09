@@ -14,8 +14,10 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/framework/src/http/middlewares"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
+	ff "github.com/hitkey-io/medusago/packages/core/utils/src/feature-flags"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api"
+	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/feature-flags"
 	"github.com/hitkey-io/medusago/packages/medusa/src/modules"
 )
 
@@ -157,6 +159,12 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 	c.Register(common.ContainerRegistrationKeys.CONFIG_MODULE, cfg)
 	c.Register(common.ContainerRegistrationKeys.LOGGER, logger)
 	c.Register(common.ContainerRegistrationKeys.PG_CONNECTION, pool)
+
+	flagRouter := ff.NewFlagRouter()
+	for _, f := range featureflags.All {
+		ff.RegisterFeatureFlag(f, cfg.FeatureFlags, flagRouter)
+	}
+	c.Register(common.ContainerRegistrationKeys.FEATURE_FLAG_ROUTER, flagRouter)
 
 	if err := LoadModules(ctx, c, pool, cfg, logger); err != nil {
 		pool.Close()

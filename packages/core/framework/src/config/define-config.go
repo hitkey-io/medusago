@@ -79,12 +79,15 @@ type ModuleConfig struct {
 type InputConfig struct {
 	ProjectConfig ProjectConfig  `json:"projectConfig" yaml:"projectConfig"`
 	Modules       []ModuleConfig `json:"modules,omitempty" yaml:"modules,omitempty"`
+	// FeatureFlags mirrors config.featureFlags.
+	FeatureFlags map[string]any `json:"featureFlags,omitempty" yaml:"featureFlags,omitempty"`
 }
 
 // ConfigModule is the resolved configuration.
 type ConfigModule struct {
 	ProjectConfig ProjectConfig
 	Modules       []ModuleConfig
+	FeatureFlags  map[string]any
 }
 
 // DefineConfig mirrors defineConfig from define-config.ts: it fills project
@@ -144,7 +147,7 @@ func DefineConfig(input InputConfig) ConfigModule {
 		}
 	}
 
-	return ConfigModule{ProjectConfig: pc, Modules: modules}
+	return ConfigModule{ProjectConfig: pc, Modules: modules, FeatureFlags: input.FeatureFlags}
 }
 
 const (

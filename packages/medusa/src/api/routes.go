@@ -2,6 +2,12 @@ package api
 
 import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/feature-flags"
+	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
+	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/zone_/configuration"
+	adminmodules "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/modules"
+	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
+	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
 	saleschannels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/stores"
@@ -15,6 +21,12 @@ import (
 // Routes lists the route files by URL path (the file tree of src/api).
 func Routes() []medusahttp.RouteFile {
 	return []medusahttp.RouteFile{
+		{Path: "/admin/feature-flags", Route: featureflags.Route},
+		{Path: "/admin/layouts/:zone/configuration", Route: configuration.Route},
+		{Path: "/admin/layouts/configurations", Route: configurations.Route},
+		{Path: "/admin/modules", Route: adminmodules.Route},
+		{Path: "/admin/notifications", Route: notifications.Route},
+		{Path: "/admin/orders", Route: orders.Route},
 		{Path: "/admin/regions", Route: regions.Route},
 		{Path: "/admin/sales-channels", Route: saleschannels.Route},
 		{Path: "/admin/stores", Route: stores.Route},

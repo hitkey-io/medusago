@@ -1,28 +1,200 @@
 [
-  { "name": "providers", "method": "GET", "path": "/auth/user/providers", "origin": "http://localhost:5173" },
-  { "name": "login_wrong_password", "method": "POST", "path": "/auth/user/emailpass", "origin": "http://localhost:5173", "body": { "email": "admin@medusa-test.com", "password": "wrong" } },
-  { "name": "login_unknown_email", "method": "POST", "path": "/auth/user/emailpass", "origin": "http://localhost:5173", "body": { "email": "nobody@medusa-test.com", "password": "supersecret" } },
-  { "name": "login_invalid_body", "method": "POST", "path": "/auth/user/emailpass", "origin": "http://localhost:5173", "body": { "email": 42 } },
-  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "origin": "http://localhost:5173", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
-  { "name": "me_unauthenticated", "method": "GET", "path": "/admin/users/me", "origin": "http://localhost:5173" },
-  { "name": "preflight_session", "method": "OPTIONS", "path": "/auth/session", "origin": "http://localhost:5173", "headers": { "Access-Control-Request-Method": "POST", "Access-Control-Request-Headers": "authorization,content-type" } },
-  { "name": "session", "method": "POST", "path": "/auth/session", "origin": "http://localhost:5173", "bearer": "login" },
-  { "name": "preflight_admin", "method": "OPTIONS", "path": "/admin/users/me", "origin": "http://localhost:5173", "headers": { "Access-Control-Request-Method": "GET" } },
-  { "name": "modules", "method": "GET", "path": "/admin/modules", "origin": "http://localhost:5173" },
-  { "name": "me", "method": "GET", "path": "/admin/users/me", "origin": "http://localhost:5173" },
-  { "name": "sidebar_layout", "method": "GET", "path": "/admin/layouts/sidebar/configuration", "origin": "http://localhost:5173" },
-  { "name": "stores", "method": "GET", "path": "/admin/stores", "origin": "http://localhost:5173" },
-  { "name": "layout_configurations", "method": "GET", "path": "/admin/layouts/configurations?limit=1&fields=id", "origin": "http://localhost:5173" },
-  { "name": "notifications", "method": "GET", "path": "/admin/notifications?limit=1&offset=0&fields=created_at", "origin": "http://localhost:5173" },
-  { "name": "topbar_layout", "method": "GET", "path": "/admin/layouts/topbar/configuration", "origin": "http://localhost:5173" },
-  { "name": "regions", "method": "GET", "path": "/admin/regions?limit=1000&fields=id%2Cname", "origin": "http://localhost:5173" },
-  { "name": "sales_channels", "method": "GET", "path": "/admin/sales-channels?limit=1000&fields=id%2Cname", "origin": "http://localhost:5173" },
-  { "name": "orders", "method": "GET", "path": "/admin/orders?fields=id%2Cstatus%2Ccreated_at%2Cemail%2Cdisplay_id%2Ccustom_display_id%2Cpayment_status%2Cfulfillment_status%2Ctotal%2Ccurrency_code%2C%2Acustomer%2C%2Asales_channel%2C%2Apayment_collections%2C%2Ashipping_address&limit=20&offset=0&order=-created_at", "origin": "http://localhost:5173" },
-  { "name": "order_list_layout", "method": "GET", "path": "/admin/layouts/order.list/configuration", "origin": "http://localhost:5173" },
-  { "name": "me_bearer", "method": "GET", "path": "/admin/users/me", "bearer": "login", "nocookies": true },
-  { "name": "me_bad_bearer", "method": "GET", "path": "/admin/users/me", "headers": { "Authorization": "Bearer not-a-jwt" }, "nocookies": true },
-  { "name": "logout", "method": "DELETE", "path": "/auth/session", "origin": "http://localhost:5173" },
-  { "name": "me_after_logout", "method": "GET", "path": "/admin/users/me", "origin": "http://localhost:5173" },
-  { "name": "health", "method": "GET", "path": "/health" },
-  { "name": "unknown_route", "method": "GET", "path": "/admin/does-not-exist", "bearer": "login", "nocookies": true }
+  {
+    "name": "feature_flags",
+    "method": "GET",
+    "path": "/admin/feature-flags",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "preflight_feature_flags",
+    "method": "OPTIONS",
+    "path": "/admin/feature-flags",
+    "origin": "http://localhost:5173",
+    "headers": {
+      "Access-Control-Request-Method": "GET"
+    }
+  },
+  {
+    "name": "providers",
+    "method": "GET",
+    "path": "/auth/user/providers",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "login_wrong_password",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "origin": "http://localhost:5173",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "wrong"
+    }
+  },
+  {
+    "name": "login_unknown_email",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "origin": "http://localhost:5173",
+    "body": {
+      "email": "nobody@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "login_invalid_body",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "origin": "http://localhost:5173",
+    "body": {
+      "email": 42
+    }
+  },
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "origin": "http://localhost:5173",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "me_unauthenticated",
+    "method": "GET",
+    "path": "/admin/users/me",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "preflight_session",
+    "method": "OPTIONS",
+    "path": "/auth/session",
+    "origin": "http://localhost:5173",
+    "headers": {
+      "Access-Control-Request-Method": "POST",
+      "Access-Control-Request-Headers": "authorization,content-type"
+    }
+  },
+  {
+    "name": "session",
+    "method": "POST",
+    "path": "/auth/session",
+    "origin": "http://localhost:5173",
+    "bearer": "login"
+  },
+  {
+    "name": "preflight_admin",
+    "method": "OPTIONS",
+    "path": "/admin/users/me",
+    "origin": "http://localhost:5173",
+    "headers": {
+      "Access-Control-Request-Method": "GET"
+    }
+  },
+  {
+    "name": "modules",
+    "method": "GET",
+    "path": "/admin/modules",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "me",
+    "method": "GET",
+    "path": "/admin/users/me",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "sidebar_layout",
+    "method": "GET",
+    "path": "/admin/layouts/sidebar/configuration",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "stores",
+    "method": "GET",
+    "path": "/admin/stores",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "layout_configurations",
+    "method": "GET",
+    "path": "/admin/layouts/configurations?limit=1&fields=id",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "notifications",
+    "method": "GET",
+    "path": "/admin/notifications?limit=1&offset=0&fields=created_at",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "topbar_layout",
+    "method": "GET",
+    "path": "/admin/layouts/topbar/configuration",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "regions",
+    "method": "GET",
+    "path": "/admin/regions?limit=1000&fields=id%2Cname",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "sales_channels",
+    "method": "GET",
+    "path": "/admin/sales-channels?limit=1000&fields=id%2Cname",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "orders",
+    "method": "GET",
+    "path": "/admin/orders?fields=id%2Cstatus%2Ccreated_at%2Cemail%2Cdisplay_id%2Ccustom_display_id%2Cpayment_status%2Cfulfillment_status%2Ctotal%2Ccurrency_code%2C%2Acustomer%2C%2Asales_channel%2C%2Apayment_collections%2C%2Ashipping_address&limit=20&offset=0&order=-created_at",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "order_list_layout",
+    "method": "GET",
+    "path": "/admin/layouts/order.list/configuration",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "me_bearer",
+    "method": "GET",
+    "path": "/admin/users/me",
+    "bearer": "login",
+    "nocookies": true
+  },
+  {
+    "name": "me_bad_bearer",
+    "method": "GET",
+    "path": "/admin/users/me",
+    "headers": {
+      "Authorization": "Bearer not-a-jwt"
+    },
+    "nocookies": true
+  },
+  {
+    "name": "logout",
+    "method": "DELETE",
+    "path": "/auth/session",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "me_after_logout",
+    "method": "GET",
+    "path": "/admin/users/me",
+    "origin": "http://localhost:5173"
+  },
+  {
+    "name": "health",
+    "method": "GET",
+    "path": "/health"
+  },
+  {
+    "name": "unknown_route",
+    "method": "GET",
+    "path": "/admin/does-not-exist",
+    "bearer": "login",
+    "nocookies": true
+  }
 ]
