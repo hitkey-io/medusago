@@ -1,0 +1,14 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "list", "method": "GET", "bearer": "login", "path": "/admin/shipping-option-types" },
+  { "name": "create", "method": "POST", "bearer": "login", "path": "/admin/shipping-option-types", "body": { "label": "Express", "code": "express", "description": "Next day" } },
+  { "name": "create_invalid", "method": "POST", "bearer": "login", "path": "/admin/shipping-option-types", "body": { "label": "X" } },
+  { "name": "get", "method": "GET", "bearer": "login", "path": "/admin/shipping-option-types/{{create.shipping_option_type.id}}" },
+  { "name": "get_missing", "method": "GET", "bearer": "login", "path": "/admin/shipping-option-types/sotype_missing" },
+  { "name": "update", "method": "POST", "bearer": "login", "path": "/admin/shipping-option-types/{{create.shipping_option_type.id}}", "body": { "label": "Express 24h" } },
+  { "name": "update_missing", "method": "POST", "bearer": "login", "path": "/admin/shipping-option-types/sotype_missing", "body": { "label": "x" } },
+  { "name": "list_q", "method": "GET", "bearer": "login", "path": "/admin/shipping-option-types?q=expr&fields=label,code" },
+  { "name": "delete", "method": "DELETE", "bearer": "login", "path": "/admin/shipping-option-types/{{create.shipping_option_type.id}}" },
+  { "name": "get_deleted", "method": "GET", "bearer": "login", "path": "/admin/shipping-option-types/{{create.shipping_option_type.id}}" },
+  { "name": "list_after", "method": "GET", "bearer": "login", "path": "/admin/shipping-option-types?fields=label" }
+]

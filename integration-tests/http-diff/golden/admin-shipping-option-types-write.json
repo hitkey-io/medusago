@@ -1,0 +1,170 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNTkwMjMsImV4cCI6MTc5NDM0NTQyM30.1wBxHrTT3OKedQPLmFVDVu3y6l5oZz418hp3DRsHVnI"
+    }
+  },
+  "list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_option_types": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 10
+    }
+  },
+  "create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_option_type": {
+        "id": "sotype_01M712QY222W8M0K1DNTXVTSDK",
+        "label": "Express",
+        "code": "express",
+        "description": "Next day",
+        "created_at": "2026-11-09T21:17:03.939Z",
+        "updated_at": "2026-11-09T21:17:03.939Z"
+      }
+    }
+  },
+  "create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'code' is required"
+    }
+  },
+  "get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_option_type": {
+        "id": "sotype_01M712QY222W8M0K1DNTXVTSDK",
+        "label": "Express",
+        "code": "express",
+        "description": "Next day",
+        "created_at": "2026-11-09T21:17:03.939Z",
+        "updated_at": "2026-11-09T21:17:03.939Z"
+      }
+    }
+  },
+  "get_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_option_type": {
+        "id": "sotype_01M712QY222W8M0K1DNTXVTSDK",
+        "label": "Express 24h",
+        "code": "express",
+        "description": "Next day",
+        "created_at": "2026-11-09T21:17:03.939Z",
+        "updated_at": "2026-11-09T21:17:03.970Z"
+      }
+    }
+  },
+  "update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Shipping option type with id \"sotype_missing\" not found"
+    }
+  },
+  "list_q": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_option_types": [
+        {
+          "label": "Express 24h",
+          "code": "express",
+          "id": "sotype_01M712QY222W8M0K1DNTXVTSDK"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 10
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "sotype_01M712QY222W8M0K1DNTXVTSDK",
+      "object": "shipping_option_type",
+      "deleted": true
+    }
+  },
+  "get_deleted": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "list_after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_option_types": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 10
+    }
+  }
+}
