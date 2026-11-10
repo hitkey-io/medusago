@@ -1,0 +1,5 @@
+#!/bin/sh
+# Rejects commit messages that do not follow Conventional Commits.
+dir=$(dirname "$0")
+subject=$(grep -v '^#' "$1" | sed -n '1p')
+exec "$dir/conventional.sh" "$subject"
