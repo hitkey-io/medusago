@@ -9,17 +9,19 @@
 #
 # Requires the reference app (reference/medusa/.ref-app) and the reference
 # Postgres container. TEMPLATE_DB is a database migrated by upstream.
+# REF_APP, REC_DB and PORT allow parallel recordings (another checkout,
+# another database and port).
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$HERE/../.." && pwd)"
-APP="$ROOT/reference/medusa/.ref-app"
+APP="${REF_APP:-$ROOT/reference/medusa/.ref-app}"
 MEDUSA="$APP/../node_modules/.bin/medusa"
 PG_CONTAINER="${PG_CONTAINER:-medusago-ref-pg}"
 PG_URL_BASE="${PG_URL_BASE:-postgres://postgres:postgres@localhost:54329}"
 TEMPLATE_DB="${TEMPLATE_DB:-medusa_ref}"
 PORT="${PORT:-9101}"
-DB=medusa_http_rec
+DB="${REC_DB:-medusa_http_rec}"
 # shared with runner_test.go (mfaEncryptionKey)
 MFA_KEY=http-diff-mfa-encryption-key
 
@@ -38,7 +40,7 @@ for scenario in "${scenarios[@]}"; do
 
   (cd "$APP" && NODE_ENV=development LOG_LEVEL=error AUTH_MFA_ENCRYPTION_KEY="$MFA_KEY" DATABASE_URL="$PG_URL_BASE/$DB" \
     ADMIN_CORS=http://localhost:5173 AUTH_CORS=http://localhost:5173 STORE_CORS=http://localhost:8000 \
-    exec "$MEDUSA" start -p "$PORT" >"$HERE/.record-server.log" 2>&1) &
+    exec "$MEDUSA" start -p "$PORT" >"$HERE/.record-server-$PORT.log" 2>&1) &
   pid=$!
   trap 'kill $pid 2>/dev/null || true' EXIT
   for _ in $(seq 1 120); do
