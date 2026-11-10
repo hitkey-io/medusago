@@ -1,0 +1,257 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "refs",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products?handle=t-shirt&fields=id,*shipping_profile"
+  },
+  {
+    "name": "create",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products?fields=id,options.id,options.title,variants.id",
+    "body": {
+      "title": "Wool Socks",
+      "shipping_profile_id": "{{refs.products.0.shipping_profile.id}}",
+      "options": [
+        {
+          "title": "Size",
+          "values": [
+            "S",
+            "M",
+            "L"
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "title": "S",
+          "sku": "SOCK-S",
+          "manage_inventory": true,
+          "options": {
+            "Size": "S"
+          },
+          "prices": [
+            {
+              "amount": 10,
+              "currency_code": "eur"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "add_m",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/{{create.product.id}}/variants?fields=id,variants.id,variants.title",
+    "body": {
+      "title": "M",
+      "sku": "SOCK-M",
+      "options": {
+        "Size": "M"
+      },
+      "prices": [
+        {
+          "amount": 11,
+          "currency_code": "eur"
+        }
+      ]
+    }
+  },
+  {
+    "name": "m_variant",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products/{{create.product.id}}/variants?fields=id,title&title=M"
+  },
+  {
+    "name": "update_variants",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/{{create.product.id}}?fields=id,title,*options,*options.values,*variants,variants.options.value,variants.options.option_id,variants.prices.amount,variants.prices.currency_code,variants.manage_inventory",
+    "body": {
+      "variants": [
+        {
+          "id": "{{create.product.variants.0.id}}",
+          "title": "S updated",
+          "prices": [
+            {
+              "amount": 12,
+              "currency_code": "eur"
+            }
+          ]
+        },
+        {
+          "title": "L",
+          "sku": "SOCK-L",
+          "options": {
+            "Size": "L"
+          },
+          "prices": [
+            {
+              "amount": 13,
+              "currency_code": "usd"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "after_update",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products/{{create.product.id}}?fields=id,title,*options,*options.values,*variants,variants.options.value,variants.options.option_id,variants.prices.amount,variants.prices.currency_code,variants.manage_inventory"
+  },
+  {
+    "name": "m_gone",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/product-variants?fields=id,title&sku=SOCK-M"
+  },
+  {
+    "name": "duplicate_combination",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/{{create.product.id}}",
+    "body": {
+      "variants": [
+        {
+          "title": "A",
+          "options": {
+            "Size": "S"
+          }
+        },
+        {
+          "title": "B",
+          "options": {
+            "Size": "S"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "wrong_count",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/{{create.product.id}}",
+    "body": {
+      "variants": [
+        {
+          "title": "A",
+          "options": {
+            "Size": "S",
+            "Color": "Red"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "unknown_value",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/{{create.product.id}}",
+    "body": {
+      "variants": [
+        {
+          "title": "A",
+          "options": {
+            "Size": "XXL"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "color",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/product-options?fields=id,title",
+    "body": {
+      "title": "Color",
+      "values": [
+        "Red",
+        "Blue"
+      ],
+      "is_exclusive": false
+    }
+  },
+  {
+    "name": "missing_option",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/{{create.product.id}}",
+    "body": {
+      "option_ids": [
+        "{{create.product.options.0.id}}",
+        "opt_missing"
+      ]
+    }
+  },
+  {
+    "name": "link_color",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/{{create.product.id}}?fields=id,title,*options,*options.values,*variants,variants.options.value,variants.options.option_id,variants.prices.amount,variants.prices.currency_code,variants.manage_inventory",
+    "body": {
+      "option_ids": [
+        "{{create.product.options.0.id}}",
+        "{{color.product_option.id}}"
+      ],
+      "variants": [
+        {
+          "id": "{{create.product.variants.0.id}}",
+          "options": {
+            "Size": "S",
+            "Color": "Red"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "after_link",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products/{{create.product.id}}?fields=id,title,*options,*options.values,*variants,variants.options.value,variants.options.option_id,variants.prices.amount,variants.prices.currency_code,variants.manage_inventory"
+  },
+  {
+    "name": "unlink_color",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/{{create.product.id}}?fields=id,title,*options,*options.values,*variants,variants.options.value,variants.options.option_id,variants.prices.amount,variants.prices.currency_code,variants.manage_inventory",
+    "body": {
+      "option_ids": [
+        "{{create.product.options.0.id}}"
+      ],
+      "variants": [
+        {
+          "id": "{{create.product.variants.0.id}}",
+          "options": {
+            "Size": "S"
+          },
+          "manage_inventory": false
+        }
+      ]
+    }
+  },
+  {
+    "name": "inventory",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/product-variants?fields=id,title,manage_inventory,inventory_items.inventory_item_id&sku=SOCK-S"
+  }
+]

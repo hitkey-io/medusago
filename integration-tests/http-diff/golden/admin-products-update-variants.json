@@ -1,0 +1,841 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzMTEyNTgsImV4cCI6MTc5NDM5NzY1OH0.PKirGC6KVFNtoJzb9cqmphsMzRyt9Agtg_eSBdCJ75c"
+    }
+  },
+  "refs": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "shipping_profile": {
+            "id": "sp_01M70EKFVXJQ9SQF567TDFDJPE",
+            "name": "Default Shipping Profile",
+            "type": "default",
+            "metadata": null,
+            "created_at": "2026-11-09T15:25:06.813Z",
+            "updated_at": "2026-11-09T15:25:06.813Z",
+            "deleted_at": null
+          }
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product": {
+        "id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+        "options": [
+          {
+            "id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+            "title": "Size"
+          }
+        ],
+        "variants": [
+          {
+            "id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9"
+          }
+        ]
+      }
+    }
+  },
+  "add_m": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product": {
+        "id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+        "variants": [
+          {
+            "id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+            "title": "S"
+          },
+          {
+            "id": "variant_01M72MJ0QHSATNFP985G7Q830R",
+            "title": "M"
+          }
+        ]
+      }
+    }
+  },
+  "m_variant": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'title'"
+    }
+  },
+  "update_variants": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product": {
+        "id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+        "title": "Wool Socks",
+        "variants": [
+          {
+            "id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+            "title": "S updated",
+            "sku": "SOCK-S",
+            "barcode": null,
+            "ean": null,
+            "upc": null,
+            "allow_backorder": false,
+            "manage_inventory": true,
+            "hs_code": null,
+            "origin_country": null,
+            "mid_code": null,
+            "material": null,
+            "weight": null,
+            "length": null,
+            "height": null,
+            "width": null,
+            "metadata": null,
+            "variant_rank": 0,
+            "thumbnail": null,
+            "product_id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+            "created_at": "2026-11-10T11:47:38.816Z",
+            "updated_at": "2026-11-10T11:47:38.935Z",
+            "deleted_at": null,
+            "options": [
+              {
+                "value": "S",
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC"
+              }
+            ],
+            "prices": [
+              {
+                "id": "price_01M72MJ0TPXJHR8XREP3VAW90Y",
+                "amount": 12,
+                "currency_code": "eur",
+                "variant_id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+                "rules": {}
+              }
+            ]
+          },
+          {
+            "id": "variant_01M72MJ0SQZ01JQCVKSP3M1AG6",
+            "title": "L",
+            "sku": "SOCK-L",
+            "barcode": null,
+            "ean": null,
+            "upc": null,
+            "allow_backorder": false,
+            "manage_inventory": true,
+            "hs_code": null,
+            "origin_country": null,
+            "mid_code": null,
+            "material": null,
+            "weight": null,
+            "length": null,
+            "height": null,
+            "width": null,
+            "metadata": null,
+            "variant_rank": 0,
+            "thumbnail": null,
+            "product_id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+            "created_at": "2026-11-10T11:47:38.935Z",
+            "updated_at": "2026-11-10T11:47:38.935Z",
+            "deleted_at": null,
+            "options": [
+              {
+                "value": "L",
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC"
+              }
+            ],
+            "prices": [
+              {
+                "id": "price_01M72MJ0TXWAS0P689V2VNK11A",
+                "amount": 13,
+                "currency_code": "usd",
+                "variant_id": "variant_01M72MJ0SQZ01JQCVKSP3M1AG6",
+                "rules": {}
+              }
+            ]
+          }
+        ],
+        "options": [
+          {
+            "id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+            "title": "Size",
+            "is_exclusive": true,
+            "metadata": null,
+            "created_at": "2026-11-10T11:47:38.760Z",
+            "updated_at": "2026-11-10T11:47:38.760Z",
+            "deleted_at": null,
+            "values": [
+              {
+                "id": "optval_01M72MJ0M7WR410E95N8790T4K",
+                "value": "L",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0M7RSMJS7XMGK60YN1G",
+                "value": "M",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0M7GRJW367YYTDAKWTB",
+                "value": "S",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "after_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product": {
+        "id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+        "title": "Wool Socks",
+        "variants": [
+          {
+            "id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+            "title": "S updated",
+            "sku": "SOCK-S",
+            "barcode": null,
+            "ean": null,
+            "upc": null,
+            "allow_backorder": false,
+            "manage_inventory": true,
+            "hs_code": null,
+            "origin_country": null,
+            "mid_code": null,
+            "material": null,
+            "weight": null,
+            "length": null,
+            "height": null,
+            "width": null,
+            "metadata": null,
+            "variant_rank": 0,
+            "thumbnail": null,
+            "product_id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+            "created_at": "2026-11-10T11:47:38.816Z",
+            "updated_at": "2026-11-10T11:47:38.935Z",
+            "deleted_at": null,
+            "options": [
+              {
+                "value": "S",
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC"
+              }
+            ],
+            "prices": [
+              {
+                "id": "price_01M72MJ0TPXJHR8XREP3VAW90Y",
+                "amount": 12,
+                "currency_code": "eur",
+                "variant_id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+                "rules": {}
+              }
+            ]
+          },
+          {
+            "id": "variant_01M72MJ0SQZ01JQCVKSP3M1AG6",
+            "title": "L",
+            "sku": "SOCK-L",
+            "barcode": null,
+            "ean": null,
+            "upc": null,
+            "allow_backorder": false,
+            "manage_inventory": true,
+            "hs_code": null,
+            "origin_country": null,
+            "mid_code": null,
+            "material": null,
+            "weight": null,
+            "length": null,
+            "height": null,
+            "width": null,
+            "metadata": null,
+            "variant_rank": 0,
+            "thumbnail": null,
+            "product_id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+            "created_at": "2026-11-10T11:47:38.935Z",
+            "updated_at": "2026-11-10T11:47:38.935Z",
+            "deleted_at": null,
+            "options": [
+              {
+                "value": "L",
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC"
+              }
+            ],
+            "prices": [
+              {
+                "id": "price_01M72MJ0TXWAS0P689V2VNK11A",
+                "amount": 13,
+                "currency_code": "usd",
+                "variant_id": "variant_01M72MJ0SQZ01JQCVKSP3M1AG6",
+                "rules": {}
+              }
+            ]
+          }
+        ],
+        "options": [
+          {
+            "id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+            "title": "Size",
+            "is_exclusive": true,
+            "metadata": null,
+            "created_at": "2026-11-10T11:47:38.760Z",
+            "updated_at": "2026-11-10T11:47:38.760Z",
+            "deleted_at": null,
+            "values": [
+              {
+                "id": "optval_01M72MJ0M7WR410E95N8790T4K",
+                "value": "L",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0M7RSMJS7XMGK60YN1G",
+                "value": "M",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0M7GRJW367YYTDAKWTB",
+                "value": "S",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "m_gone": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "variants": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "duplicate_combination": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Variant \"A\" has same combination of option values as \"B\"."
+    }
+  },
+  "wrong_count": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Product has 1 option values but there were 2 provided option values for the variant: A."
+    }
+  },
+  "unknown_value": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Option value XXL does not exist for option Size"
+    }
+  },
+  "color": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_option": {
+        "id": "opt_01M72MJ0ZGV7MM65CXB8JXP1PZ",
+        "title": "Color"
+      }
+    }
+  },
+  "missing_option": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Some product options were not found: [opt_missing]"
+    }
+  },
+  "link_color": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product": {
+        "id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+        "title": "Wool Socks",
+        "variants": [
+          {
+            "id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+            "title": "S updated",
+            "sku": "SOCK-S",
+            "barcode": null,
+            "ean": null,
+            "upc": null,
+            "allow_backorder": false,
+            "manage_inventory": true,
+            "hs_code": null,
+            "origin_country": null,
+            "mid_code": null,
+            "material": null,
+            "weight": null,
+            "length": null,
+            "height": null,
+            "width": null,
+            "metadata": null,
+            "variant_rank": 0,
+            "thumbnail": null,
+            "product_id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+            "created_at": "2026-11-10T11:47:38.816Z",
+            "updated_at": "2026-11-10T11:47:38.935Z",
+            "deleted_at": null,
+            "options": [
+              {
+                "value": "S",
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC"
+              },
+              {
+                "value": "Red",
+                "option_id": "opt_01M72MJ0ZGV7MM65CXB8JXP1PZ"
+              }
+            ],
+            "prices": [
+              {
+                "id": "price_01M72MJ0TPXJHR8XREP3VAW90Y",
+                "amount": 12,
+                "currency_code": "eur",
+                "variant_id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+                "rules": {}
+              }
+            ]
+          }
+        ],
+        "options": [
+          {
+            "id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+            "title": "Size",
+            "is_exclusive": true,
+            "metadata": null,
+            "created_at": "2026-11-10T11:47:38.760Z",
+            "updated_at": "2026-11-10T11:47:38.760Z",
+            "deleted_at": null,
+            "values": [
+              {
+                "id": "optval_01M72MJ0M7GRJW367YYTDAKWTB",
+                "value": "S",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0M7RSMJS7XMGK60YN1G",
+                "value": "M",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0M7WR410E95N8790T4K",
+                "value": "L",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              }
+            ]
+          },
+          {
+            "id": "opt_01M72MJ0ZGV7MM65CXB8JXP1PZ",
+            "title": "Color",
+            "is_exclusive": false,
+            "metadata": null,
+            "created_at": "2026-11-10T11:47:39.120Z",
+            "updated_at": "2026-11-10T11:47:39.120Z",
+            "deleted_at": null,
+            "values": [
+              {
+                "id": "optval_01M72MJ0ZG86V2TDG6YD29B47E",
+                "value": "Red",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0ZGV7MM65CXB8JXP1PZ",
+                "created_at": "2026-11-10T11:47:39.121Z",
+                "updated_at": "2026-11-10T11:47:39.121Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0ZGSD6KMPH42YKBWV7D",
+                "value": "Blue",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0ZGV7MM65CXB8JXP1PZ",
+                "created_at": "2026-11-10T11:47:39.121Z",
+                "updated_at": "2026-11-10T11:47:39.121Z",
+                "deleted_at": null
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "after_link": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product": {
+        "id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+        "title": "Wool Socks",
+        "variants": [
+          {
+            "id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+            "title": "S updated",
+            "sku": "SOCK-S",
+            "barcode": null,
+            "ean": null,
+            "upc": null,
+            "allow_backorder": false,
+            "manage_inventory": true,
+            "hs_code": null,
+            "origin_country": null,
+            "mid_code": null,
+            "material": null,
+            "weight": null,
+            "length": null,
+            "height": null,
+            "width": null,
+            "metadata": null,
+            "variant_rank": 0,
+            "thumbnail": null,
+            "product_id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+            "created_at": "2026-11-10T11:47:38.816Z",
+            "updated_at": "2026-11-10T11:47:38.935Z",
+            "deleted_at": null,
+            "options": [
+              {
+                "value": "S",
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC"
+              },
+              {
+                "value": "Red",
+                "option_id": "opt_01M72MJ0ZGV7MM65CXB8JXP1PZ"
+              }
+            ],
+            "prices": [
+              {
+                "id": "price_01M72MJ0TPXJHR8XREP3VAW90Y",
+                "amount": 12,
+                "currency_code": "eur",
+                "variant_id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+                "rules": {}
+              }
+            ]
+          }
+        ],
+        "options": [
+          {
+            "id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+            "title": "Size",
+            "is_exclusive": true,
+            "metadata": null,
+            "created_at": "2026-11-10T11:47:38.760Z",
+            "updated_at": "2026-11-10T11:47:38.760Z",
+            "deleted_at": null,
+            "values": [
+              {
+                "id": "optval_01M72MJ0M7GRJW367YYTDAKWTB",
+                "value": "S",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0M7RSMJS7XMGK60YN1G",
+                "value": "M",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0M7WR410E95N8790T4K",
+                "value": "L",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              }
+            ]
+          },
+          {
+            "id": "opt_01M72MJ0ZGV7MM65CXB8JXP1PZ",
+            "title": "Color",
+            "is_exclusive": false,
+            "metadata": null,
+            "created_at": "2026-11-10T11:47:39.120Z",
+            "updated_at": "2026-11-10T11:47:39.120Z",
+            "deleted_at": null,
+            "values": [
+              {
+                "id": "optval_01M72MJ0ZG86V2TDG6YD29B47E",
+                "value": "Red",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0ZGV7MM65CXB8JXP1PZ",
+                "created_at": "2026-11-10T11:47:39.121Z",
+                "updated_at": "2026-11-10T11:47:39.121Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0ZGSD6KMPH42YKBWV7D",
+                "value": "Blue",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0ZGV7MM65CXB8JXP1PZ",
+                "created_at": "2026-11-10T11:47:39.121Z",
+                "updated_at": "2026-11-10T11:47:39.121Z",
+                "deleted_at": null
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "unlink_color": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product": {
+        "id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+        "title": "Wool Socks",
+        "variants": [
+          {
+            "id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+            "title": "S updated",
+            "sku": "SOCK-S",
+            "barcode": null,
+            "ean": null,
+            "upc": null,
+            "allow_backorder": false,
+            "manage_inventory": false,
+            "hs_code": null,
+            "origin_country": null,
+            "mid_code": null,
+            "material": null,
+            "weight": null,
+            "length": null,
+            "height": null,
+            "width": null,
+            "metadata": null,
+            "variant_rank": 0,
+            "thumbnail": null,
+            "product_id": "prod_01M72MJ0M65VSBPCVGX67NCTDG",
+            "created_at": "2026-11-10T11:47:38.816Z",
+            "updated_at": "2026-11-10T11:47:39.260Z",
+            "deleted_at": null,
+            "options": [
+              {
+                "value": "S",
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC"
+              }
+            ],
+            "prices": [
+              {
+                "id": "price_01M72MJ0TPXJHR8XREP3VAW90Y",
+                "amount": 12,
+                "currency_code": "eur",
+                "variant_id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+                "rules": {}
+              }
+            ]
+          }
+        ],
+        "options": [
+          {
+            "id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+            "title": "Size",
+            "is_exclusive": true,
+            "metadata": null,
+            "created_at": "2026-11-10T11:47:38.760Z",
+            "updated_at": "2026-11-10T11:47:38.760Z",
+            "deleted_at": null,
+            "values": [
+              {
+                "id": "optval_01M72MJ0M7WR410E95N8790T4K",
+                "value": "L",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0M7RSMJS7XMGK60YN1G",
+                "value": "M",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              },
+              {
+                "id": "optval_01M72MJ0M7GRJW367YYTDAKWTB",
+                "value": "S",
+                "rank": null,
+                "metadata": null,
+                "option_id": "opt_01M72MJ0M6MKDQ283CH0AW8EVC",
+                "created_at": "2026-11-10T11:47:38.760Z",
+                "updated_at": "2026-11-10T11:47:38.760Z",
+                "deleted_at": null
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "inventory": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "variants": [
+        {
+          "id": "variant_01M72MJ0P0QBE2KVPE1R2V6FH9",
+          "title": "S updated",
+          "manage_inventory": false,
+          "inventory_items": []
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}
