@@ -169,6 +169,14 @@ import (
 	adminorderchanges "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/changes"
 	adminorderpreview "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/preview"
 	adminorderlineitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/line-items"
+	adminreturns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns"
+	adminreturnid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_"
+	adminreturnrequestitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/request-items"
+	adminreturnshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/shipping-method"
+	adminreturnrequest "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/request"
+	adminreturnreceive "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/receive"
+	adminreturnreceiveconfirm "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/receive/confirm"
+	adminreturnreceiveitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/receive-items"
 	storecustomerme "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me"
 	storecustomeraddresses "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses"
 	storecustomeraddress "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses/address_id_"
@@ -326,6 +334,14 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/orders/:id/changes", Route: adminorderchanges.Route},
 		{Path: "/admin/orders/:id/preview", Route: adminorderpreview.Route},
 		{Path: "/admin/orders/:id/line-items", Route: adminorderlineitems.Route},
+		{Path: "/admin/returns", Route: adminreturns.Route},
+		{Path: "/admin/returns/:id", Route: adminreturnid.Route},
+		{Path: "/admin/returns/:id/request-items", Route: adminreturnrequestitems.Route},
+		{Path: "/admin/returns/:id/shipping-method", Route: adminreturnshipping.Route},
+		{Path: "/admin/returns/:id/request", Route: adminreturnrequest.Route},
+		{Path: "/admin/returns/:id/receive", Route: adminreturnreceive.Route},
+		{Path: "/admin/returns/:id/receive/confirm", Route: adminreturnreceiveconfirm.Route},
+		{Path: "/admin/returns/:id/receive-items", Route: adminreturnreceiveitems.Route},
 		{Path: "/admin/regions", Route: regions.Route},
 		{Path: "/admin/regions/:id", Route: regionid.Route},
 		{Path: "/admin/sales-channels", Route: saleschannels.Route},

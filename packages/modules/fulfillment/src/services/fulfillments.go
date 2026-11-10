@@ -158,3 +158,41 @@ func (s *FulfillmentModuleService) CancelFulfillment(ctx context.Context, id any
 	r, _ := res.(*dal.Record)
 	return r, nil
 }
+
+// CreateReturnFulfillment mirrors createReturnFulfillment (the bundled manual
+// provider returns empty data and labels).
+func (s *FulfillmentModuleService) CreateReturnFulfillment(ctx context.Context, data *dal.Record) (*dal.Record, error) {
+	ctx = dal.WithSharedIdentityMap(ctx)
+	in := dal.NewRecord()
+	for _, k := range data.Keys() {
+		if k == "order" {
+			continue
+		}
+		v, _ := data.Get(k)
+		in.Set(k, v)
+	}
+	created, err := s.Internal("Fulfillment").Create(ctx, []*dal.Record{in})
+	if err != nil {
+		return nil, err
+	}
+	fulfillment := created[0]
+	id := get(fulfillment, "id")
+	if _, err := s.Internal("ShippingOption").Retrieve(ctx, get(fulfillment, "shipping_option_id"), utilsmodulessdk.FindConfig{Select: []string{"id", "name", "data", "metadata"}}); err != nil {
+		return nil, err
+	}
+	if err := s.providerCall(ctx, fmt.Sprint(get(fulfillment, "provider_id"))); err != nil {
+		_, _ = s.Internal("Fulfillment").Delete(ctx, []any{id})
+		return nil, err
+	}
+	u := dal.NewRecord()
+	u.Set("id", id)
+	u.Set("data", dal.NewRecord())
+	u.Set("labels", []any{})
+	if _, err := s.Internal("Fulfillment").Update(ctx, []any{u}); err != nil {
+		_, _ = s.Internal("Fulfillment").Delete(ctx, []any{id})
+		return nil, err
+	}
+	fulfillment.Set("data", dal.NewRecord())
+	fulfillment.Set("labels", []any{})
+	return fulfillment, nil
+}

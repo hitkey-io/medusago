@@ -13,6 +13,7 @@ import (
 type fulfillmentService interface {
 	Internal(className string) *utilsmodulessdk.InternalService
 	CreateFulfillment(ctx context.Context, data *dal.Record) (*dal.Record, error)
+	CreateReturnFulfillment(ctx context.Context, data *dal.Record) (*dal.Record, error)
 	UpdateFulfillment(ctx context.Context, id any, data *dal.Record) (*dal.Record, error)
 	CancelFulfillment(ctx context.Context, id any) (*dal.Record, error)
 }
@@ -209,4 +210,49 @@ var CancelFulfillmentWorkflow = composer.CreateWorkflow("cancel-fulfillment-work
 	func(e *composer.Execution, id any) (any, error) {
 		_, err := CancelFulfillmentStep.Run(e, id)
 		return nil, err
+	})
+
+// CreateReturnFulfillmentStep mirrors createReturnFulfillmentStep.
+var CreateReturnFulfillmentStep = composer.CreateStep("create-return-fulfillment",
+	func(ctx composer.StepExecutionContext, data *dal.Record) (composer.StepResponse[*dal.Record], error) {
+		f, err := fulfillmentOf(ctx.Container).CreateReturnFulfillment(ctx.Context, data)
+		if err != nil {
+			return composer.StepResponse[*dal.Record]{}, err
+		}
+		return composer.NewStepResponse(f, getv(f, "id")), nil
+	},
+	func(ctx composer.StepExecutionContext, id any) error {
+		if id == nil {
+			return nil
+		}
+		_, err := fulfillmentOf(ctx.Container).CancelFulfillment(ctx.Context, id)
+		return err
+	})
+
+// CreateReturnFulfillmentWorkflow mirrors createReturnFulfillmentWorkflow.
+var CreateReturnFulfillmentWorkflow = composer.CreateWorkflow("create-return-fulfillment-workflow",
+	func(e *composer.Execution, input *dal.Record) (*dal.Record, error) {
+		v := dal.NewRecord()
+		v.Set("id", getv(input, "location_id"))
+		list := false
+		res, err := commonsteps.UseRemoteQueryStep.Config("get-location", composer.StepOptions{}).Run(e, commonsteps.RemoteStepInput{
+			EntryPoint: "stock_location",
+			Fields: []string{"id", "name", "metadata", "created_at", "updated_at", "address.id", "address.address_1", "address.address_2", "address.city",
+				"address.country_code", "address.phone", "address.province", "address.postal_code", "address.metadata"},
+			Variables: v, List: &list, ThrowIfKeyNotFound: true,
+		})
+		if err != nil {
+			return nil, err
+		}
+		var location any
+		if len(res.Data) > 0 {
+			location = res.Data[0]
+		}
+		in := dal.NewRecord()
+		for _, k := range input.Keys() {
+			x, _ := input.Get(k)
+			in.Set(k, x)
+		}
+		in.Set("location", location)
+		return CreateReturnFulfillmentStep.Run(e, in)
 	})

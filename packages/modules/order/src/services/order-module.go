@@ -231,6 +231,8 @@ func (s *OrderModuleService) findOrders(ctx context.Context, filters *dal.Record
 		Order:         config.Order,
 		WithDeleted:   config.WithDeleted,
 		PopulateWhere: populateWhere,
+		// base-repository-find: JOINED unless paginated or counted
+		JoinedStrategy: !withCount && config.Take == nil && (config.Skip == nil || *config.Skip == 0),
 	}
 	if conf.HasFields {
 		fc.Select = conf.Fields
@@ -258,6 +260,10 @@ func (s *OrderModuleService) ListBySuffix(ctx context.Context, suffix string, fi
 		rows, _, err := s.listOrders(ctx, filters, config, false)
 		return rows, err
 	}
+	if cls, ok := relatedSuffixes[suffix]; ok {
+		rows, _, err := s.listRelated(ctx, cls, filters, config, false)
+		return rows, err
+	}
 	return s.MedusaService.ListBySuffix(ctx, suffix, filters, config)
 }
 
@@ -265,6 +271,9 @@ func (s *OrderModuleService) ListBySuffix(ctx context.Context, suffix string, fi
 func (s *OrderModuleService) ListAndCountBySuffix(ctx context.Context, suffix string, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, int, error) {
 	if suffix == "Orders" {
 		return s.listOrders(ctx, filters, config, true)
+	}
+	if cls, ok := relatedSuffixes[suffix]; ok {
+		return s.listRelated(ctx, cls, filters, config, true)
 	}
 	return s.MedusaService.ListAndCountBySuffix(ctx, suffix, filters, config)
 }

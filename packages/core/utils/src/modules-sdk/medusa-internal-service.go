@@ -21,6 +21,8 @@ type FindConfig struct {
 	Skip        *int
 	Order       []dal.OrderBy
 	WithDeleted bool
+	// JoinedStrategy mirrors LoadStrategy.JOINED (see dal.FindOptions).
+	JoinedStrategy bool
 	// PopulateWhere mirrors options.populateWhere: conditions on the rows
 	// of populated relations, by relation path.
 	PopulateWhere map[string]*dal.Record
@@ -46,14 +48,15 @@ func (s *InternalService) applyDefaultOrdering(config *FindConfig) {
 
 func buildQuery(filters *dal.Record, config FindConfig) dal.FindOptions {
 	return dal.FindOptions{
-		Where:         filters,
-		Select:        config.Select,
-		Relations:     config.Relations,
-		Order:         config.Order,
-		Take:          config.Take,
-		Skip:          config.Skip,
-		WithDeleted:   config.WithDeleted,
-		PopulateWhere: config.PopulateWhere,
+		Where:          filters,
+		Select:         config.Select,
+		Relations:      config.Relations,
+		Order:          config.Order,
+		Take:           config.Take,
+		Skip:           config.Skip,
+		WithDeleted:    config.WithDeleted,
+		PopulateWhere:  config.PopulateWhere,
+		JoinedStrategy: config.JoinedStrategy,
 	}
 }
 
@@ -392,4 +395,6 @@ func (s *InternalService) UpsertWithReplace(ctx context.Context, data []*dal.Rec
 }
 
 // MergeMetadata mirrors mergeMetadata ("" removes a key).
-func MergeMetadata(current any, update *dal.Record) *dal.Record { return mergeMetadata(current, update) }
+func MergeMetadata(current any, update *dal.Record) *dal.Record {
+	return mergeMetadata(current, update)
+}

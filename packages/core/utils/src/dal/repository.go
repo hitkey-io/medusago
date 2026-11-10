@@ -29,6 +29,9 @@ type FindOptions struct {
 	// PopulateWhere filters the rows loaded for a relation path (equality
 	// and null checks).
 	PopulateWhere map[string]*Record
+	// JoinedStrategy mirrors MikroORM's JOINED load strategy: the foreign
+	// keys joining partially selected collections are not hydrated.
+	JoinedStrategy bool
 }
 
 // Repository reads the rows of one model, reproducing the queries and the
@@ -659,6 +662,7 @@ func extraColumns(cols []string) string {
 // fieldTree is the selection for one entity level.
 type fieldTree struct {
 	all      bool
+	joined   bool
 	fields   map[string]bool
 	children map[string]*fieldTree
 }
@@ -706,6 +710,16 @@ func buildFieldTree(opts FindOptions, paths []string) *fieldTree {
 		}
 	}
 	fill(root)
+	if opts.JoinedStrategy {
+		var mark func(n *fieldTree)
+		mark = func(n *fieldTree) {
+			n.joined = true
+			for _, c := range n.children {
+				mark(c)
+			}
+		}
+		mark(root)
+	}
 	return root
 }
 
@@ -787,12 +801,64 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 		return !p.MapToPk && slices.Contains(parents, p.Entity)
 	}
 
+	toOne := func(p *dml.MetaProperty) error {
+		if child, populated := tree.children[p.Name]; populated {
+			v, err := r.serializeValue(inst.relations[p.Name], child, p, childParents, idm)
+			if err != nil {
+				return err
+			}
+			if v == nil && p.Kind == "1:1" && !fkHydrated(p) {
+				// joined 1:1 without a match and without its foreign key
+				// selected: MikroORM never assigns the property (m:1
+				// relations always fetch their foreign key)
+				return nil
+			}
+			rec.Set(p.Name, v)
+			return nil
+		}
+		if inst.created || len(p.FieldNames) == 0 || !(hydrated(p.Name) || hydrated(p.FieldNames[0])) {
+			return nil
+		}
+		fk := inst.data[p.FieldNames[0]]
+		if p.Kind == "1:1" && !p.Owner {
+			fk = inst.data[inverseRefKey(p.Name)]
+		}
+		if fk == nil {
+			rec.Set(p.Name, nil)
+			return nil
+		}
+		target, err := r.Schema.Entity(p.Entity)
+		if err != nil {
+			return err
+		}
+		if loaded, ok := idm.lookup(target, fk); ok {
+			sel := loaded.sel
+			if sel == nil {
+				sel = allFields
+			}
+			ref, err := r.serializeInstance(loaded, sel, childParents, nil, idm)
+			if err != nil {
+				return err
+			}
+			rec.Set(p.Name, ref)
+		} else {
+			ref := NewRecord()
+			ref.Set(target.Meta.PrimaryKey[0], fk)
+			// formula properties of a reference are initialized to null
+			for _, f := range formulas[target.Meta.ClassName] {
+				ref.Set(f.Property, nil)
+			}
+			rec.Set(p.Name, ref)
+		}
+		return nil
+	}
 	for _, pk := range e.Meta.PrimaryKey {
 		rec.Set(pk, inst.data[pk])
 	}
 
 	var collections []*dml.MetaProperty
 	var lateScalars []*dml.MetaProperty
+	var deferredRefs []*dml.MetaProperty
 	for i := range e.Meta.Properties {
 		p := &e.Meta.Properties[i]
 		for _, f := range formulas[e.Meta.ClassName] {
@@ -825,53 +891,14 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 			if isParent(p) {
 				continue
 			}
-			if child, populated := tree.children[p.Name]; populated {
-				v, err := r.serializeValue(inst.relations[p.Name], child, p, childParents, idm)
-				if err != nil {
-					return nil, err
-				}
-				if v == nil && p.Kind == "1:1" && !fkHydrated(p) {
-					// joined 1:1 without a match and without its foreign key
-					// selected: MikroORM never assigns the property (m:1
-					// relations always fetch their foreign key)
-					continue
-				}
-				rec.Set(p.Name, v)
+			if tree.joined && p.Persist != nil && !*p.Persist && p.InversedBy == "" && p.MappedBy == "" {
+				// JOINED strategy: unidirectional non persisted references
+				// are assigned after the hydration of the scalar properties
+				deferredRefs = append(deferredRefs, p)
 				continue
 			}
-			if inst.created || len(p.FieldNames) == 0 || !(hydrated(p.Name) || hydrated(p.FieldNames[0])) {
-				continue
-			}
-			fk := inst.data[p.FieldNames[0]]
-			if p.Kind == "1:1" && !p.Owner {
-				fk = inst.data[inverseRefKey(p.Name)]
-			}
-			if fk == nil {
-				rec.Set(p.Name, nil)
-				continue
-			}
-			target, err := r.Schema.Entity(p.Entity)
-			if err != nil {
+			if err := toOne(p); err != nil {
 				return nil, err
-			}
-			if loaded, ok := idm.lookup(target, fk); ok {
-				sel := loaded.sel
-				if sel == nil {
-					sel = allFields
-				}
-				ref, err := r.serializeInstance(loaded, sel, childParents, nil, idm)
-				if err != nil {
-					return nil, err
-				}
-				rec.Set(p.Name, ref)
-			} else {
-				ref := NewRecord()
-				ref.Set(target.Meta.PrimaryKey[0], fk)
-				// formula properties of a reference are initialized to null
-				for _, f := range formulas[target.Meta.ClassName] {
-					ref.Set(f.Property, nil)
-				}
-				rec.Set(p.Name, ref)
 			}
 
 		default: // 1:m, m:n
@@ -888,6 +915,12 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 			continue
 		}
 		rec.Set(p.Name, runtimeNumber(p.Type, v))
+	}
+
+	for _, p := range deferredRefs {
+		if err := toOne(p); err != nil {
+			return nil, err
+		}
 	}
 
 	for _, p := range collections {
@@ -954,6 +987,9 @@ func (r *Repository) serializeValue(value any, tree *fieldTree, prop *dml.MetaPr
 		joinFK = join.TargetColumns
 	} else if err == nil && join.PivotTable == "" && prop.Kind == "1:1" && !prop.Owner {
 		joinFK = join.TargetColumns
+	}
+	if tree != nil && tree.joined && !tree.all && prop.Kind == "1:m" {
+		joinFK = nil
 	}
 	switch v := value.(type) {
 	case *instance:
