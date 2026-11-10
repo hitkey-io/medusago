@@ -1,0 +1,1007 @@
+[
+ {
+  "input": [
+   {
+    "a": 1,
+    "b": "x"
+   },
+   {
+    "a": 2,
+    "c": true
+   }
+  ],
+  "options": {
+   "prependHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "a,b,c\n1,x,\n2,,true"
+ },
+ {
+  "input": [
+   {
+    "a": 1,
+    "b": "x"
+   },
+   {
+    "a": 2,
+    "c": true
+   }
+  ],
+  "options": {
+   "prependHeader": false,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "1,x,\n2,,true"
+ },
+ {
+  "input": [
+   {
+    "a": 1,
+    "b": "x"
+   },
+   {
+    "a": 2,
+    "c": true
+   }
+  ],
+  "options": {},
+  "output": "a,b,c\n1,x,undefined\n2,undefined,true"
+ },
+ {
+  "input": [
+   {
+    "a": 1,
+    "b": "x"
+   },
+   {
+    "a": 2,
+    "c": true
+   }
+  ],
+  "options": {
+   "sortHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandArrayObjects": true,
+   "emptyFieldValue": ""
+  },
+  "output": "a,b,c\n1,x,\n2,,true"
+ },
+ {
+  "input": [
+   {
+    "a": 1,
+    "b": "x"
+   },
+   {
+    "a": 2,
+    "c": true
+   }
+  ],
+  "options": {
+   "keys": [
+    "a",
+    "items.0.title",
+    "missing"
+   ],
+   "expandArrayObjects": true,
+   "emptyFieldValue": "",
+   "preventCsvInjection": true
+  },
+  "output": "a,items.0.title,missing\n1,,\n2,,"
+ },
+ {
+  "input": [
+   {
+    "id": "o1",
+    "nested": {
+     "x": 1,
+     "y": {
+      "z": "deep"
+     }
+    },
+    "list": [
+     1,
+     2,
+     3
+    ],
+    "empty": [],
+    "nul": null,
+    "s": "has,comma",
+    "q": "say \"hi\"",
+    "nl": "a\nb"
+   }
+  ],
+  "options": {
+   "prependHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "id,nested.x,nested.y.z,list.2,list.1,list.0,nul,s,q,nl\no1,1,deep,3,2,1,,\"has,comma\",\"say \"\"hi\"\"\",\"a\nb\""
+ },
+ {
+  "input": [
+   {
+    "id": "o1",
+    "nested": {
+     "x": 1,
+     "y": {
+      "z": "deep"
+     }
+    },
+    "list": [
+     1,
+     2,
+     3
+    ],
+    "empty": [],
+    "nul": null,
+    "s": "has,comma",
+    "q": "say \"hi\"",
+    "nl": "a\nb"
+   }
+  ],
+  "options": {
+   "prependHeader": false,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "o1,1,deep,3,2,1,,\"has,comma\",\"say \"\"hi\"\"\",\"a\nb\""
+ },
+ {
+  "input": [
+   {
+    "id": "o1",
+    "nested": {
+     "x": 1,
+     "y": {
+      "z": "deep"
+     }
+    },
+    "list": [
+     1,
+     2,
+     3
+    ],
+    "empty": [],
+    "nul": null,
+    "s": "has,comma",
+    "q": "say \"hi\"",
+    "nl": "a\nb"
+   }
+  ],
+  "options": {},
+  "output": "id,nested.x,nested.y.z,list,empty,nul,s,q,nl\no1,1,deep,\"[1,2,3]\",[],null,\"has,comma\",\"say \"\"hi\"\"\",\"a\nb\""
+ },
+ {
+  "input": [
+   {
+    "id": "o1",
+    "nested": {
+     "x": 1,
+     "y": {
+      "z": "deep"
+     }
+    },
+    "list": [
+     1,
+     2,
+     3
+    ],
+    "empty": [],
+    "nul": null,
+    "s": "has,comma",
+    "q": "say \"hi\"",
+    "nl": "a\nb"
+   }
+  ],
+  "options": {
+   "sortHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandArrayObjects": true,
+   "emptyFieldValue": ""
+  },
+  "output": "id,list.0,list.1,list.2,nested.x,nested.y.z,nl,nul,q,s\no1,1,2,3,1,deep,\"a\nb\",,\"say \"\"hi\"\"\",\"has,comma\""
+ },
+ {
+  "input": [
+   {
+    "id": "o1",
+    "nested": {
+     "x": 1,
+     "y": {
+      "z": "deep"
+     }
+    },
+    "list": [
+     1,
+     2,
+     3
+    ],
+    "empty": [],
+    "nul": null,
+    "s": "has,comma",
+    "q": "say \"hi\"",
+    "nl": "a\nb"
+   }
+  ],
+  "options": {
+   "keys": [
+    "a",
+    "items.0.title",
+    "missing"
+   ],
+   "expandArrayObjects": true,
+   "emptyFieldValue": "",
+   "preventCsvInjection": true
+  },
+  "output": "a,items.0.title,missing\n,,"
+ },
+ {
+  "input": [
+   {
+    "items": [
+     {
+      "title": "A",
+      "qty": 1
+     },
+     {
+      "title": "B",
+      "qty": 2,
+      "extra": {
+       "k": "v"
+      }
+     }
+    ],
+    "addr": {}
+   }
+  ],
+  "options": {
+   "prependHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "items.0.title,items.0.qty,items.1.title,items.1.qty,items.1.extra.k,addr\nA,1,B,2,v,{}"
+ },
+ {
+  "input": [
+   {
+    "items": [
+     {
+      "title": "A",
+      "qty": 1
+     },
+     {
+      "title": "B",
+      "qty": 2,
+      "extra": {
+       "k": "v"
+      }
+     }
+    ],
+    "addr": {}
+   }
+  ],
+  "options": {
+   "prependHeader": false,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "A,1,B,2,v,{}"
+ },
+ {
+  "input": [
+   {
+    "items": [
+     {
+      "title": "A",
+      "qty": 1
+     },
+     {
+      "title": "B",
+      "qty": 2,
+      "extra": {
+       "k": "v"
+      }
+     }
+    ],
+    "addr": {}
+   }
+  ],
+  "options": {},
+  "output": "items,addr\n\"[{\"\"title\"\":\"\"A\"\",\"\"qty\"\":1},{\"\"title\"\":\"\"B\"\",\"\"qty\"\":2,\"\"extra\"\":{\"\"k\"\":\"\"v\"\"}}]\",{}"
+ },
+ {
+  "input": [
+   {
+    "items": [
+     {
+      "title": "A",
+      "qty": 1
+     },
+     {
+      "title": "B",
+      "qty": 2,
+      "extra": {
+       "k": "v"
+      }
+     }
+    ],
+    "addr": {}
+   }
+  ],
+  "options": {
+   "sortHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandArrayObjects": true,
+   "emptyFieldValue": ""
+  },
+  "output": "addr,items.0.qty,items.0.title,items.1.extra.k,items.1.qty,items.1.title\n{},1,A,v,2,B"
+ },
+ {
+  "input": [
+   {
+    "items": [
+     {
+      "title": "A",
+      "qty": 1
+     },
+     {
+      "title": "B",
+      "qty": 2,
+      "extra": {
+       "k": "v"
+      }
+     }
+    ],
+    "addr": {}
+   }
+  ],
+  "options": {
+   "keys": [
+    "a",
+    "items.0.title",
+    "missing"
+   ],
+   "expandArrayObjects": true,
+   "emptyFieldValue": "",
+   "preventCsvInjection": true
+  },
+  "output": "a,items.0.title,missing\n,A,"
+ },
+ {
+  "input": [
+   {
+    "dotted.key": "v",
+    "n": {
+     "in.ner": 5
+    }
+   }
+  ],
+  "options": {
+   "prependHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "dotted\\.key,n.in\\.ner\nv,5"
+ },
+ {
+  "input": [
+   {
+    "dotted.key": "v",
+    "n": {
+     "in.ner": 5
+    }
+   }
+  ],
+  "options": {
+   "prependHeader": false,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "v,5"
+ },
+ {
+  "input": [
+   {
+    "dotted.key": "v",
+    "n": {
+     "in.ner": 5
+    }
+   }
+  ],
+  "options": {},
+  "output": "dotted\\.key,n.in\\.ner\nv,5"
+ },
+ {
+  "input": [
+   {
+    "dotted.key": "v",
+    "n": {
+     "in.ner": 5
+    }
+   }
+  ],
+  "options": {
+   "sortHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandArrayObjects": true,
+   "emptyFieldValue": ""
+  },
+  "output": "dotted\\.key,n.in\\.ner\nv,5"
+ },
+ {
+  "input": [
+   {
+    "dotted.key": "v",
+    "n": {
+     "in.ner": 5
+    }
+   }
+  ],
+  "options": {
+   "keys": [
+    "a",
+    "items.0.title",
+    "missing"
+   ],
+   "expandArrayObjects": true,
+   "emptyFieldValue": "",
+   "preventCsvInjection": true
+  },
+  "output": "a,items.0.title,missing\n,,"
+ },
+ {
+  "input": [
+   {
+    "inj": "=SUM(A1)",
+    "inj2": "+1",
+    "inj3": "-5",
+    "inj4": "@x",
+    "inj5": " \t=cmd",
+    "num": "-12.5",
+    "e": "",
+    "z": 0,
+    "f": 1.5e-7,
+    "big": 1e+21,
+    "neg": -0.1
+   }
+  ],
+  "options": {
+   "prependHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "inj,inj2,inj3,inj4,inj5,num,e,z,f,big,neg\nSUM(A1),+1,-5,x,cmd,-12.5,,0,1.5e-7,1e+21,-0.1"
+ },
+ {
+  "input": [
+   {
+    "inj": "=SUM(A1)",
+    "inj2": "+1",
+    "inj3": "-5",
+    "inj4": "@x",
+    "inj5": " \t=cmd",
+    "num": "-12.5",
+    "e": "",
+    "z": 0,
+    "f": 1.5e-7,
+    "big": 1e+21,
+    "neg": -0.1
+   }
+  ],
+  "options": {
+   "prependHeader": false,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "SUM(A1),+1,-5,x,cmd,-12.5,,0,1.5e-7,1e+21,-0.1"
+ },
+ {
+  "input": [
+   {
+    "inj": "=SUM(A1)",
+    "inj2": "+1",
+    "inj3": "-5",
+    "inj4": "@x",
+    "inj5": " \t=cmd",
+    "num": "-12.5",
+    "e": "",
+    "z": 0,
+    "f": 1.5e-7,
+    "big": 1e+21,
+    "neg": -0.1
+   }
+  ],
+  "options": {},
+  "output": "inj,inj2,inj3,inj4,inj5,num,e,z,f,big,neg\n=SUM(A1),+1,-5,@x, \t=cmd,-12.5,,0,1.5e-7,1e+21,-0.1"
+ },
+ {
+  "input": [
+   {
+    "inj": "=SUM(A1)",
+    "inj2": "+1",
+    "inj3": "-5",
+    "inj4": "@x",
+    "inj5": " \t=cmd",
+    "num": "-12.5",
+    "e": "",
+    "z": 0,
+    "f": 1.5e-7,
+    "big": 1e+21,
+    "neg": -0.1
+   }
+  ],
+  "options": {
+   "sortHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandArrayObjects": true,
+   "emptyFieldValue": ""
+  },
+  "output": "big,e,f,inj,inj2,inj3,inj4,inj5,neg,num,z\n1e+21,,1.5e-7,=SUM(A1),+1,-5,@x, \t=cmd,-0.1,-12.5,0"
+ },
+ {
+  "input": [
+   {
+    "inj": "=SUM(A1)",
+    "inj2": "+1",
+    "inj3": "-5",
+    "inj4": "@x",
+    "inj5": " \t=cmd",
+    "num": "-12.5",
+    "e": "",
+    "z": 0,
+    "f": 1.5e-7,
+    "big": 1e+21,
+    "neg": -0.1
+   }
+  ],
+  "options": {
+   "keys": [
+    "a",
+    "items.0.title",
+    "missing"
+   ],
+   "expandArrayObjects": true,
+   "emptyFieldValue": "",
+   "preventCsvInjection": true
+  },
+  "output": "a,items.0.title,missing\n,,"
+ },
+ {
+  "input": [
+   {
+    "mixed": [
+     {
+      "a": 1
+     },
+     2,
+     "s"
+    ],
+    "arrs": [
+     [
+      1,
+      2
+     ],
+     [
+      3
+     ]
+    ]
+   },
+   {
+    "mixed": [],
+    "other": "o"
+   }
+  ],
+  "options": {
+   "prependHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "mixed.2,mixed.1,mixed.0.a,arrs.1,arrs.0,other\ns,2,1,3,\"[1,2]\",\n,,,,,o"
+ },
+ {
+  "input": [
+   {
+    "mixed": [
+     {
+      "a": 1
+     },
+     2,
+     "s"
+    ],
+    "arrs": [
+     [
+      1,
+      2
+     ],
+     [
+      3
+     ]
+    ]
+   },
+   {
+    "mixed": [],
+    "other": "o"
+   }
+  ],
+  "options": {
+   "prependHeader": false,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "s,2,1,3,\"[1,2]\",\n,,,,,o"
+ },
+ {
+  "input": [
+   {
+    "mixed": [
+     {
+      "a": 1
+     },
+     2,
+     "s"
+    ],
+    "arrs": [
+     [
+      1,
+      2
+     ],
+     [
+      3
+     ]
+    ]
+   },
+   {
+    "mixed": [],
+    "other": "o"
+   }
+  ],
+  "options": {},
+  "output": "mixed,arrs,other\n\"[{\"\"a\"\":1},2,\"\"s\"\"]\",\"[[1,2],[3]]\",undefined\n[],undefined,o"
+ },
+ {
+  "input": [
+   {
+    "mixed": [
+     {
+      "a": 1
+     },
+     2,
+     "s"
+    ],
+    "arrs": [
+     [
+      1,
+      2
+     ],
+     [
+      3
+     ]
+    ]
+   },
+   {
+    "mixed": [],
+    "other": "o"
+   }
+  ],
+  "options": {
+   "sortHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandArrayObjects": true,
+   "emptyFieldValue": ""
+  },
+  "output": "arrs.0,arrs.1,mixed.0.a,mixed.1,mixed.2,other\n\"[1,2]\",3,1,2,s,\n,,,,,o"
+ },
+ {
+  "input": [
+   {
+    "mixed": [
+     {
+      "a": 1
+     },
+     2,
+     "s"
+    ],
+    "arrs": [
+     [
+      1,
+      2
+     ],
+     [
+      3
+     ]
+    ]
+   },
+   {
+    "mixed": [],
+    "other": "o"
+   }
+  ],
+  "options": {
+   "keys": [
+    "a",
+    "items.0.title",
+    "missing"
+   ],
+   "expandArrayObjects": true,
+   "emptyFieldValue": "",
+   "preventCsvInjection": true
+  },
+  "output": "a,items.0.title,missing\n,,\n,,"
+ },
+ {
+  "input": [
+   {
+    "a": {
+     "b": []
+    },
+    "c": [
+     null,
+     ""
+    ],
+    "d": [
+     null,
+     "only"
+    ]
+   }
+  ],
+  "options": {
+   "prependHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "c.1,c.0,d.1,d.0\n,,only,"
+ },
+ {
+  "input": [
+   {
+    "a": {
+     "b": []
+    },
+    "c": [
+     null,
+     ""
+    ],
+    "d": [
+     null,
+     "only"
+    ]
+   }
+  ],
+  "options": {
+   "prependHeader": false,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": ",,only,"
+ },
+ {
+  "input": [
+   {
+    "a": {
+     "b": []
+    },
+    "c": [
+     null,
+     ""
+    ],
+    "d": [
+     null,
+     "only"
+    ]
+   }
+  ],
+  "options": {},
+  "output": "a.b,c,d\n[],\"[null,\"\"\"\"]\",\"[null,\"\"only\"\"]\""
+ },
+ {
+  "input": [
+   {
+    "a": {
+     "b": []
+    },
+    "c": [
+     null,
+     ""
+    ],
+    "d": [
+     null,
+     "only"
+    ]
+   }
+  ],
+  "options": {
+   "sortHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandArrayObjects": true,
+   "emptyFieldValue": ""
+  },
+  "output": "c.0,c.1,d.0,d.1\n,,,only"
+ },
+ {
+  "input": [
+   {
+    "a": {
+     "b": []
+    },
+    "c": [
+     null,
+     ""
+    ],
+    "d": [
+     null,
+     "only"
+    ]
+   }
+  ],
+  "options": {
+   "keys": [
+    "a",
+    "items.0.title",
+    "missing"
+   ],
+   "expandArrayObjects": true,
+   "emptyFieldValue": "",
+   "preventCsvInjection": true
+  },
+  "output": "a,items.0.title,missing\n\"{\"\"b\"\":[]}\",,"
+ },
+ {
+  "input": [
+   {
+    "Order_ID": "order_1",
+    "Display_ID": 1,
+    "Order status": "pending",
+    "Date": "2026-11-10T10:00:00.000Z",
+    "Subtotal": 10,
+    "Customer Email": ""
+   }
+  ],
+  "options": {
+   "prependHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "Order_ID,Display_ID,Order status,Date,Subtotal,Customer Email\norder_1,1,pending,2026-11-10T10:00:00.000Z,10,"
+ },
+ {
+  "input": [
+   {
+    "Order_ID": "order_1",
+    "Display_ID": 1,
+    "Order status": "pending",
+    "Date": "2026-11-10T10:00:00.000Z",
+    "Subtotal": 10,
+    "Customer Email": ""
+   }
+  ],
+  "options": {
+   "prependHeader": false,
+   "arrayIndexesAsKeys": true,
+   "expandNestedObjects": true,
+   "expandArrayObjects": true,
+   "unwindArrays": false,
+   "preventCsvInjection": true,
+   "emptyFieldValue": ""
+  },
+  "output": "order_1,1,pending,2026-11-10T10:00:00.000Z,10,"
+ },
+ {
+  "input": [
+   {
+    "Order_ID": "order_1",
+    "Display_ID": 1,
+    "Order status": "pending",
+    "Date": "2026-11-10T10:00:00.000Z",
+    "Subtotal": 10,
+    "Customer Email": ""
+   }
+  ],
+  "options": {},
+  "output": "Order_ID,Display_ID,Order status,Date,Subtotal,Customer Email\norder_1,1,pending,2026-11-10T10:00:00.000Z,10,"
+ },
+ {
+  "input": [
+   {
+    "Order_ID": "order_1",
+    "Display_ID": 1,
+    "Order status": "pending",
+    "Date": "2026-11-10T10:00:00.000Z",
+    "Subtotal": 10,
+    "Customer Email": ""
+   }
+  ],
+  "options": {
+   "sortHeader": true,
+   "arrayIndexesAsKeys": true,
+   "expandArrayObjects": true,
+   "emptyFieldValue": ""
+  },
+  "output": "Customer Email,Date,Display_ID,Order status,Order_ID,Subtotal\n,2026-11-10T10:00:00.000Z,1,pending,order_1,10"
+ },
+ {
+  "input": [
+   {
+    "Order_ID": "order_1",
+    "Display_ID": 1,
+    "Order status": "pending",
+    "Date": "2026-11-10T10:00:00.000Z",
+    "Subtotal": 10,
+    "Customer Email": ""
+   }
+  ],
+  "options": {
+   "keys": [
+    "a",
+    "items.0.title",
+    "missing"
+   ],
+   "expandArrayObjects": true,
+   "emptyFieldValue": "",
+   "preventCsvInjection": true
+  },
+  "output": "a,items.0.title,missing\n,,"
+ }
+]
