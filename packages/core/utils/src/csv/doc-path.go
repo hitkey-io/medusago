@@ -6,6 +6,7 @@
 package csv
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 
@@ -170,3 +171,5 @@ func EvaluatePath(obj any, kp string) any {
 
 // jsWhitespace is the whitespace String.prototype.trim and parseInt skip.
 var jsWhitespace = " \t\n\r\v\f" + string([]rune{0xa0, 0xfeff, 0x2028, 0x2029, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2007, 0x2008, 0x2009, 0x200a, 0x202f, 0x205f, 0x3000})
+
+func jsonValid(b []byte) bool { return json.Valid(b) }

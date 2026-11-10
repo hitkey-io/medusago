@@ -1,0 +1,209 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "up_good",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/uploads",
+    "files": [
+      {
+        "field": "files",
+        "name": "up_good.csv",
+        "type": "text/csv",
+        "content": "Product Id,Product Handle,Product Title,Product Status,Product Description,Product Tag 1,Product Metadata,Variant Id,Variant Title,Variant Sku,Variant Manage Inventory,Variant Price EUR,Variant Price Europe [EUR],Variant Option 1 Name,Variant Option 1 Value,Variant Weight\n,import-cap,Import Cap,published,\"A cap, imported\",,\"{\"\"source\"\":\"\"csv\"\"}\",,One Size,IMP-CAP-1,false,15,14,Size,One,120\nprod_01M70XZZZ49MK9W0NV0YSF74CE,hoodie,Imported Hoodie,draft,,,,variant_01M70Y000G904MD1KJ0SDSRS44,Default,HOODIE-DEF,true,30,,Default option,Default option value,\n"
+      }
+    ]
+  },
+  {
+    "name": "import_good",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports",
+    "body": {
+      "file_key": "{{up_good.files.0.id}}",
+      "originalname": "up_good.csv",
+      "extension": "csv",
+      "size": 100,
+      "mime_type": "text/csv"
+    }
+  },
+  {
+    "name": "confirm",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports/{{import_good.transaction_id}}/confirm",
+    "body": {}
+  },
+  {
+    "name": "confirm_unknown",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports/auto-unknown/confirm",
+    "body": {}
+  },
+  {
+    "name": "notifications",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,to,channel,template,data,status",
+    "until": "notifications.0"
+  },
+  {
+    "name": "cap",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products?handle=import-cap&fields=id,title,status,description,metadata,*variants,variants.prices.amount,variants.prices.currency_code,variants.prices.rules,variants.options.value,*options,options.values.value"
+  },
+  {
+    "name": "hoodie",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products/prod_01M70XZZZ49MK9W0NV0YSF74CE?fields=id,title,status,*variants,variants.prices.amount,variants.prices.currency_code"
+  },
+  {
+    "name": "up_bad_col",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/uploads",
+    "files": [
+      {
+        "field": "files",
+        "name": "up_bad_col.csv",
+        "type": "text/csv",
+        "content": "Product Handle,Product Colour\nx,red\n"
+      }
+    ]
+  },
+  {
+    "name": "import_bad_col",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports",
+    "body": {
+      "file_key": "{{up_bad_col.files.0.id}}",
+      "originalname": "up_bad_col.csv",
+      "extension": "csv",
+      "size": 100,
+      "mime_type": "text/csv"
+    }
+  },
+  {
+    "name": "up_bad_quote",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/uploads",
+    "files": [
+      {
+        "field": "files",
+        "name": "up_bad_quote.csv",
+        "type": "text/csv",
+        "content": "Product Handle,Product Title\n\"x\"y,T\n"
+      }
+    ]
+  },
+  {
+    "name": "import_bad_quote",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports",
+    "body": {
+      "file_key": "{{up_bad_quote.files.0.id}}",
+      "originalname": "up_bad_quote.csv",
+      "extension": "csv",
+      "size": 100,
+      "mime_type": "text/csv"
+    }
+  },
+  {
+    "name": "up_no_title",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/uploads",
+    "files": [
+      {
+        "field": "files",
+        "name": "up_no_title.csv",
+        "type": "text/csv",
+        "content": "Product Handle,Variant Title,Variant Price EUR\nno-title,V,1\n"
+      }
+    ]
+  },
+  {
+    "name": "import_no_title",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports",
+    "body": {
+      "file_key": "{{up_no_title.files.0.id}}",
+      "originalname": "up_no_title.csv",
+      "extension": "csv",
+      "size": 100,
+      "mime_type": "text/csv"
+    }
+  },
+  {
+    "name": "import_missing_body",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports",
+    "body": {
+      "file_key": "x"
+    }
+  },
+  {
+    "name": "legacy_import",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/import",
+    "files": [
+      {
+        "field": "file",
+        "name": "legacy.csv",
+        "type": "text/csv",
+        "content": "Product Handle;Product Title;Product Status;Variant Title;Variant Sku;Variant Price EUR;Variant Option 1 Name;Variant Option 1 Value\nlegacy-mug;Legacy Mug;published;Standard;MUG-1;9;Size;Standard\n"
+      }
+    ]
+  },
+  {
+    "name": "legacy_confirm",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/import/{{legacy_import.transaction_id}}/confirm",
+    "body": {}
+  },
+  {
+    "name": "legacy_notifications",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,data&order=created_at",
+    "until": "notifications.1"
+  },
+  {
+    "name": "mug",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products?handle=legacy-mug&fields=id,title,status,*variants,variants.prices.amount,variants.prices.currency_code"
+  },
+  {
+    "name": "legacy_no_file",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/import",
+    "body": {}
+  },
+  {
+    "name": "legacy_confirm_unknown",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/import/auto-x/confirm",
+    "body": {}
+  }
+]

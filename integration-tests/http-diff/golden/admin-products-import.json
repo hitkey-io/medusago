@@ -1,0 +1,459 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzMTIxNDMsImV4cCI6MTc5NDM5ODU0M30.Fd5hJltzktsqLLI2V7-E-DZuRGOSM8w_TYSfvhuEQi0"
+    }
+  },
+  "up_good": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "1794312143856-up_good.csv",
+          "url": "http://localhost:9000/static/1794312143856-up_good.csv"
+        }
+      ]
+    }
+  },
+  "import_good": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "transaction_id": "auto-01M72ND0ZK63M90JXA2B096ZFH",
+      "summary": {
+        "toCreate": 1,
+        "toUpdate": 1
+      }
+    }
+  },
+  "confirm": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "confirm_unknown": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Transaction auto-unknown could not be found."
+    }
+  },
+  "notifications": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "notifications": [
+        {
+          "id": "noti_01M72ND17FTF1EHZJX6MTQ1R0G",
+          "to": "",
+          "channel": "feed",
+          "template": "admin-ui",
+          "data": {
+            "title": "Product import",
+            "description": "Product import of file up_good.csv completed successfully!"
+          },
+          "status": "success"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "cap": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M72ND12YCMRRHQJTJ21S4MVX",
+          "title": "Import Cap",
+          "status": "published",
+          "description": "A cap, imported",
+          "metadata": {
+            "source": "csv"
+          },
+          "variants": [
+            {
+              "id": "variant_01M72ND14SV460T4Y4FGMS5KV9",
+              "title": "One Size",
+              "sku": "IMP-CAP-1",
+              "barcode": null,
+              "ean": null,
+              "upc": null,
+              "allow_backorder": false,
+              "manage_inventory": false,
+              "hs_code": null,
+              "origin_country": null,
+              "mid_code": null,
+              "material": null,
+              "weight": 120,
+              "length": null,
+              "height": null,
+              "width": null,
+              "metadata": null,
+              "variant_rank": 0,
+              "thumbnail": null,
+              "product_id": "prod_01M72ND12YCMRRHQJTJ21S4MVX",
+              "created_at": "2026-11-10T12:02:24.025Z",
+              "updated_at": "2026-11-10T12:02:24.025Z",
+              "deleted_at": null,
+              "options": [
+                {
+                  "value": "One"
+                }
+              ],
+              "prices": [
+                {
+                  "id": "price_01M72ND15N79ZSYHG24HPJ93X9",
+                  "amount": 15,
+                  "currency_code": "eur",
+                  "variant_id": "variant_01M72ND14SV460T4Y4FGMS5KV9",
+                  "rules": {}
+                },
+                {
+                  "id": "price_01M72ND15P8GCXBGQ2F6DNCVPZ",
+                  "amount": 14,
+                  "currency_code": "eur",
+                  "variant_id": "variant_01M72ND14SV460T4Y4FGMS5KV9",
+                  "rules": {}
+                }
+              ]
+            }
+          ],
+          "options": [
+            {
+              "id": "opt_01M72ND12Y2VA2X5J2KZ58MFZY",
+              "title": "Size",
+              "is_exclusive": true,
+              "metadata": null,
+              "created_at": "2026-11-10T12:02:23.967Z",
+              "updated_at": "2026-11-10T12:02:23.967Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "value": "One"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "hoodie": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product": {
+        "id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
+        "title": "Imported Hoodie",
+        "status": "draft",
+        "variants": [
+          {
+            "id": "variant_01M70Y000G904MD1KJ0SDSRS44",
+            "title": "Default",
+            "sku": "HOODIE-DEF",
+            "barcode": null,
+            "ean": null,
+            "upc": null,
+            "allow_backorder": false,
+            "manage_inventory": true,
+            "hs_code": null,
+            "origin_country": null,
+            "mid_code": null,
+            "material": null,
+            "weight": null,
+            "length": null,
+            "height": null,
+            "width": null,
+            "metadata": null,
+            "variant_rank": 0,
+            "thumbnail": null,
+            "product_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
+            "created_at": "2026-11-09T19:54:05.200Z",
+            "updated_at": "2026-11-10T12:02:24.044Z",
+            "deleted_at": null,
+            "prices": [
+              {
+                "id": "price_01M72ND16MN1Y7SGGC0NHSH1Y5",
+                "amount": 30,
+                "currency_code": "eur",
+                "variant_id": "variant_01M70Y000G904MD1KJ0SDSRS44",
+                "rules": {}
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "up_bad_col": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "1794312144199-up_bad_col.csv",
+          "url": "http://localhost:9000/static/1794312144199-up_bad_col.csv"
+        }
+      ]
+    }
+  },
+  "import_bad_col": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid column name(s) \"Product Colour\""
+    }
+  },
+  "up_bad_quote": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "1794312144240-up_bad_quote.csv",
+          "url": "http://localhost:9000/static/1794312144240-up_bad_quote.csv"
+        }
+      ]
+    }
+  },
+  "import_bad_quote": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid Closing Quote: got \"y\" at line 2 instead of delimiter, record delimiter, trimable character (if activated) or comment"
+    }
+  },
+  "up_no_title": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "1794312144273-up_no_title.csv",
+          "url": "http://localhost:9000/static/1794312144273-up_no_title.csv"
+        }
+      ]
+    }
+  },
+  "import_no_title": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Validation error: Invalid input: expected string, received undefined at \"title\""
+    }
+  },
+  "import_missing_body": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'originalname' is required; Field 'extension' is required; Field 'size' is required"
+    }
+  },
+  "legacy_import": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "transaction_id": "auto-01M72ND1DM3199MVTDFGNWDY4H",
+      "summary": {
+        "toCreate": 1,
+        "toUpdate": 0
+      }
+    }
+  },
+  "legacy_confirm": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "legacy_notifications": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "notifications": [
+        {
+          "id": "noti_01M72ND17FTF1EHZJX6MTQ1R0G",
+          "data": {
+            "title": "Product import",
+            "description": "Product import of file up_good.csv completed successfully!"
+          }
+        },
+        {
+          "id": "noti_01M72ND1J0DZ29C88Z2GX6E3Y7",
+          "data": {
+            "title": "Product import",
+            "description": "Product import of file legacy.csv completed successfully!"
+          }
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "mug": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M72ND1FK2HDPEYHH5QY3EZ11",
+          "title": "Legacy Mug",
+          "status": "published",
+          "variants": [
+            {
+              "id": "variant_01M72ND1GFP4FSMV0K57Z88A2N",
+              "title": "Standard",
+              "sku": "MUG-1",
+              "barcode": null,
+              "ean": null,
+              "upc": null,
+              "allow_backorder": false,
+              "manage_inventory": true,
+              "hs_code": null,
+              "origin_country": null,
+              "mid_code": null,
+              "material": null,
+              "weight": null,
+              "length": null,
+              "height": null,
+              "width": null,
+              "metadata": null,
+              "variant_rank": 0,
+              "thumbnail": null,
+              "product_id": "prod_01M72ND1FK2HDPEYHH5QY3EZ11",
+              "created_at": "2026-11-10T12:02:24.399Z",
+              "updated_at": "2026-11-10T12:02:24.399Z",
+              "deleted_at": null,
+              "prices": [
+                {
+                  "id": "price_01M72ND1H3ENF8M36HWAG8S16W",
+                  "amount": 9,
+                  "currency_code": "eur",
+                  "variant_id": "variant_01M72ND1GFP4FSMV0K57Z88A2N",
+                  "rules": {}
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "legacy_no_file": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "No file was uploaded for importing"
+    }
+  },
+  "legacy_confirm_unknown": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Transaction auto-x could not be found."
+    }
+  }
+}

@@ -4,7 +4,16 @@ package auth
 import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/http/middlewares"
+	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	authutils "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/utils"
+)
+
+// ResetPasswordRequest mirrors ResetPasswordRequest.
+var ResetPasswordRequest = zod.Object(
+	zod.F("identifier", zod.String()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Optional().Default(dal.NewRecord())),
 )
 
 func boolPtr(b bool) *bool { return &b }
@@ -55,7 +64,12 @@ var AuthRoutesMiddlewares = []medusahttp.MiddlewareRoute{
 	},
 	{
 		Methods:     []string{"POST"},
+		Matcher:     "/auth/:actor_type/:auth_provider/reset-password",
+		Middlewares: []medusahttp.MiddlewareFunction{authutils.ValidateScopeProviderAssociation(""), httputils.ValidateAndTransformBody(httputils.Schema(ResetPasswordRequest))},
+	},
+	{
+		Methods:     []string{"POST"},
 		Matcher:     "/auth/:actor_type/:auth_provider/update",
-		Middlewares: []medusahttp.MiddlewareFunction{authutils.ValidateScopeProviderAssociation("")},
+		Middlewares: []medusahttp.MiddlewareFunction{authutils.ValidateScopeProviderAssociation(""), authutils.ValidateToken()},
 	},
 }

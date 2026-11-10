@@ -74,6 +74,8 @@ type MedusaRequest struct {
 	Locals map[string]any
 	// Files mirrors req.files set by multer (nil = undefined).
 	Files []UploadedFile
+	// File mirrors req.file set by multer().single (nil = undefined).
+	File *UploadedFile
 }
 
 // UploadedFile mirrors Express.Multer.File (memory storage).

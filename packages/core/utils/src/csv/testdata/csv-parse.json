@@ -1,0 +1,123 @@
+[
+ {
+  "input": "a,b\n1,2\n3,4\n",
+  "records": [
+   {
+    "a": "1",
+    "b": "2"
+   },
+   {
+    "a": "3",
+    "b": "4"
+   }
+  ]
+ },
+ {
+  "input": "a,b\r\n1,2\r\n\r\n3,4",
+  "records": [
+   {
+    "a": "1",
+    "b": "2"
+   },
+   {
+    "a": "3",
+    "b": "4"
+   }
+  ]
+ },
+ {
+  "input": "a,b\n\"x,y\",\"he said \"\"hi\"\"\"\n",
+  "records": [
+   {
+    "a": "x,y",
+    "b": "he said \"hi\""
+   }
+  ]
+ },
+ {
+  "input": "a,b\n1\n",
+  "error": "Invalid Record Length: columns length is 2, got 1 on line 2"
+ },
+ {
+  "input": "a,b\n1,2,3\n",
+  "error": "Invalid Record Length: columns length is 2, got 3 on line 2"
+ },
+ {
+  "input": "a,b\n1,x\"y\n",
+  "error": "Invalid Opening Quote: a quote is found on field \"b\" at line 2, value is \"x\""
+ },
+ {
+  "input": "a,b\n\"1\"x,2\n",
+  "error": "Invalid Closing Quote: got \"x\" at line 2 instead of delimiter, record delimiter, trimable character (if activated) or comment"
+ },
+ {
+  "input": "a,b\n\"unclosed,2\n",
+  "error": "Quote Not Closed: the parsing is finished with an opening quote at line 2"
+ },
+ {
+  "input": "a,b\n\"multi\nline\",2\n3,4\n",
+  "records": [
+   {
+    "a": "multi\nline",
+    "b": "2"
+   },
+   {
+    "a": "3",
+    "b": "4"
+   }
+  ]
+ },
+ {
+  "input": "﻿Product Handle,Product Title\nh,T\n",
+  "records": [
+   {
+    "﻿Product Handle": "h",
+    "Product Title": "T"
+   }
+  ]
+ },
+ {
+  "input": "a,a\n1,2\n",
+  "records": [
+   {
+    "a": "2"
+   }
+  ]
+ },
+ {
+  "input": "a,b\n,\n\n,\n",
+  "records": [
+   {
+    "a": "",
+    "b": ""
+   },
+   {
+    "a": "",
+    "b": ""
+   }
+  ]
+ },
+ {
+  "input": "a\r1\r2",
+  "records": [
+   {
+    "a": "1"
+   },
+   {
+    "a": "2"
+   }
+  ]
+ },
+ {
+  "input": "a,b",
+  "records": []
+ },
+ {
+  "input": "",
+  "records": []
+ },
+ {
+  "input": "a,b\n1,2\n3,4\n5,6,7\n",
+  "error": "Invalid Record Length: columns length is 2, got 3 on line 4"
+ }
+]

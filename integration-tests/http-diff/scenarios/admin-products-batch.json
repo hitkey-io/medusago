@@ -1,0 +1,186 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "refs",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products?handle=t-shirt&fields=id,*shipping_profile"
+  },
+  {
+    "name": "to_delete",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products?fields=id",
+    "body": {
+      "title": "Temporary",
+      "shipping_profile_id": "{{refs.products.0.shipping_profile.id}}",
+      "options": [
+        {
+          "title": "Size",
+          "values": [
+            "One"
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "to_update",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products?fields=id,variants.id,options.id",
+    "body": {
+      "title": "Cap",
+      "shipping_profile_id": "{{refs.products.0.shipping_profile.id}}",
+      "options": [
+        {
+          "title": "Size",
+          "values": [
+            "One"
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "title": "One",
+          "options": {
+            "Size": "One"
+          },
+          "prices": [
+            {
+              "amount": 5,
+              "currency_code": "eur"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "batch",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/batch?fields=id,title,handle,status,*variants,variants.options.value,variants.prices.amount,variants.prices.currency_code,*options",
+    "body": {
+      "create": [
+        {
+          "title": "Scarf",
+          "shipping_profile_id": "{{refs.products.0.shipping_profile.id}}",
+          "status": "published",
+          "options": [
+            {
+              "title": "Color",
+              "values": [
+                "Grey"
+              ]
+            }
+          ],
+          "variants": [
+            {
+              "title": "Grey",
+              "options": {
+                "Color": "Grey"
+              },
+              "prices": [
+                {
+                  "amount": 20,
+                  "currency_code": "eur"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "update": [
+        {
+          "id": "{{to_update.product.id}}",
+          "title": "Cap v2",
+          "variants": [
+            {
+              "id": "{{to_update.product.variants.0.id}}",
+              "title": "One size",
+              "prices": [
+                {
+                  "amount": 6,
+                  "currency_code": "eur"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "delete": [
+        "{{to_delete.product.id}}"
+      ]
+    }
+  },
+  {
+    "name": "deleted_check",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products?id={{to_delete.product.id}}&fields=id"
+  },
+  {
+    "name": "batch_empty",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/batch?fields=id",
+    "body": {}
+  },
+  {
+    "name": "batch_invalid",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/batch",
+    "body": {
+      "update": [
+        {
+          "title": "No id"
+        }
+      ]
+    }
+  },
+  {
+    "name": "batch_options_removed",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/batch",
+    "body": {
+      "update": [
+        {
+          "id": "{{to_update.product.id}}",
+          "options": [
+            {
+              "title": "X",
+              "values": [
+                "Y"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "batch_missing",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/batch",
+    "body": {
+      "update": [
+        {
+          "id": "prod_missing",
+          "title": "X"
+        }
+      ]
+    }
+  }
+]

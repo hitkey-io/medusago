@@ -1,0 +1,41 @@
+[
+  {
+    "name": "system",
+    "method": "POST",
+    "path": "/hooks/payment/system_default",
+    "body": {
+      "type": "payment_intent.succeeded",
+      "data": {
+        "id": "evt_1"
+      }
+    }
+  },
+  {
+    "name": "system_prefixed",
+    "method": "POST",
+    "path": "/hooks/payment/pp_system_default",
+    "body": {}
+  },
+  {
+    "name": "unknown",
+    "method": "POST",
+    "path": "/hooks/payment/stripe",
+    "body": {
+      "x": 1
+    }
+  },
+  {
+    "name": "invalid_json",
+    "method": "POST",
+    "path": "/hooks/payment/system_default",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "not-json"
+  },
+  {
+    "name": "get",
+    "method": "GET",
+    "path": "/hooks/payment/system_default"
+  }
+]

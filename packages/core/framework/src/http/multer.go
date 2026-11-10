@@ -82,3 +82,22 @@ func (e *MulterError) Error() string {
 	}
 	return e.Code
 }
+
+// MulterSingle mirrors multer({ storage: memoryStorage() }).single(field):
+// one file of the field in req.File (a second one is an unexpected field).
+func MulterSingle(field string) MiddlewareFunction {
+	array := MulterArray(field)
+	return func(req *MedusaRequest, res *MedusaResponse, next NextFunction) error {
+		return array(req, res, func(err error) {
+			if err == nil && len(req.Files) > 1 {
+				err = &MulterError{Code: "LIMIT_UNEXPECTED_FILE", Field: field}
+			}
+			if err == nil && len(req.Files) == 1 {
+				f := req.Files[0]
+				req.File = &f
+			}
+			req.Files = nil
+			next(err)
+		})
+	}
+}

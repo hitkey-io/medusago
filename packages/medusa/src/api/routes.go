@@ -146,6 +146,7 @@ import (
 	producttypeid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-types/id_"
 	productvariantslist "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-variants"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products"
+	adminproductbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/batch"
 	adminproductexport "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/export"
 	productid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_"
 	imagevariantsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/images/image_id_/variants/batch"
@@ -158,6 +159,10 @@ import (
 	variantimagesbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/variant_id_/images/batch"
 	variantinventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/variant_id_/inventory-items"
 	variantinventoryitem "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/variants/variant_id_/inventory-items/inventory_item_id_"
+	adminproductimport "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/import"
+	adminproductimportlegacyconfirm "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/import/transaction_id_/confirm"
+	adminproductimports "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/imports"
+	adminproductimportconfirm "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/imports/transaction_id_/confirm"
 	adminpromotions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions"
 	promotionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/id_"
 	promotionbuyrulesbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/id_/buy-rules/batch"
@@ -166,6 +171,9 @@ import (
 	promotiontargetrulesbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/id_/target-rules/batch"
 	promotionruleattributes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/rule-attribute-options/rule_type_"
 	promotionrulevalues "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions/rule-value-options/rule_type_/rule_attribute_id_"
+	propertylabels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/property-labels"
+	propertylabelsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/property-labels/batch"
+	propertylabelid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/property-labels/id_"
 	refundreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons"
 	refundreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons/id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
@@ -219,7 +227,13 @@ import (
 	adminusers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
 	userid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/id_"
 	userauthproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/id_/auth-providers"
+	useridresetpassword "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/id_/reset-password"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/me"
+	viewsentities "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/views/entities"
+	viewscolumns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/views/entity_/columns"
+	viewsconfigurations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/views/entity_/configurations"
+	viewsconfigurationsactive "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/views/entity_/configurations/active"
+	viewsconfigurationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/views/entity_/configurations/id_"
 	workflowsexecutions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions"
 	workflowexecutionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/id_"
 	workflowexecutionfailure "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/workflow_id_/steps/failure"
@@ -227,10 +241,13 @@ import (
 	workflowexecutiontransaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/workflow_id_/transaction_id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_"
 	authregister "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_/register"
+	authresetpassword "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_/reset-password"
+	authupdate "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_/update"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/providers"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/session"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/token/refresh"
 	cloudauth "github.com/hitkey-io/medusago/packages/medusa/src/api/cloud/auth"
+	hookspaymentprovider "github.com/hitkey-io/medusago/packages/medusa/src/api/hooks/payment/provider_"
 	storecarts "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts"
 	storecartid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_"
 	storecartcomplete "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/complete"
@@ -373,7 +390,21 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/product-types/:id", Route: producttypeid.Route},
 		{Path: "/admin/product-variants", Route: productvariantslist.Route},
 		{Path: "/admin/products", Route: products.Route},
+		{Path: "/admin/views/entities", Route: viewsentities.Route},
+		{Path: "/admin/views/:entity/columns", Route: viewscolumns.Route},
+		{Path: "/admin/views/:entity/configurations", Route: viewsconfigurations.Route},
+		{Path: "/admin/views/:entity/configurations/active", Route: viewsconfigurationsactive.Route},
+		{Path: "/admin/views/:entity/configurations/:id", Route: viewsconfigurationid.Route},
+		{Path: "/admin/property-labels", Route: propertylabels.Route},
+		{Path: "/admin/property-labels/batch", Route: propertylabelsbatch.Route},
+		{Path: "/admin/property-labels/:id", Route: propertylabelid.Route},
+		{Path: "/hooks/payment/:provider", Route: hookspaymentprovider.Route},
+		{Path: "/admin/products/batch", Route: adminproductbatch.Route},
 		{Path: "/admin/products/export", Route: adminproductexport.Route},
+		{Path: "/admin/products/import", Route: adminproductimport.Route},
+		{Path: "/admin/products/import/:transaction_id/confirm", Route: adminproductimportlegacyconfirm.Route},
+		{Path: "/admin/products/imports", Route: adminproductimports.Route},
+		{Path: "/admin/products/imports/:transaction_id/confirm", Route: adminproductimportconfirm.Route},
 		{Path: "/admin/products/:id", Route: productid.Route},
 		{Path: "/admin/products/:id/options", Route: productoptionsroute.Route},
 		{Path: "/admin/products/:id/options/batch", Route: productoptionsbatch.Route},
@@ -489,6 +520,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/stores/:id", Route: storeid.Route},
 		{Path: "/admin/users", Route: adminusers.Route},
 		{Path: "/admin/users/:id", Route: userid.Route},
+		{Path: "/admin/users/:id/reset-password", Route: useridresetpassword.Route},
 		{Path: "/admin/users/me", Route: me.Route},
 		{Path: "/admin/users/:id/auth-providers", Route: userauthproviders.Route},
 		{Path: "/admin/invites", Route: admininvites.Route},
@@ -548,6 +580,8 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/invites/:id", Route: inviteid.Route},
 		{Path: "/admin/invites/:id/resend", Route: inviteresend.Route},
 		{Path: "/auth/:actor_type/:auth_provider", Route: auth_provider_.Route},
+		{Path: "/auth/:actor_type/:auth_provider/reset-password", Route: authresetpassword.Route},
+		{Path: "/auth/:actor_type/:auth_provider/update", Route: authupdate.Route},
 		{Path: "/auth/:actor_type/:auth_provider/register", Route: authregister.Route},
 		{Path: "/auth/:actor_type/providers", Route: providers.Route},
 		{Path: "/auth/session", Route: session.Route},

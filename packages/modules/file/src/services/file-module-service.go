@@ -106,3 +106,8 @@ func (s *FileModuleService) ListAndCountBySuffix(ctx context.Context, suffix str
 func (s *FileModuleService) GetUploadStream(ctx context.Context, filename, access string) (*localfile.UploadStream, error) {
 	return s.provider.GetUploadStream(filename, access)
 }
+
+// GetAsBuffer mirrors getAsBuffer.
+func (s *FileModuleService) GetAsBuffer(ctx context.Context, id string) ([]byte, error) {
+	return s.provider.GetAsBuffer(id)
+}

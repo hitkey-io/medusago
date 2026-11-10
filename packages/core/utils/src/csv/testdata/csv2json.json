@@ -1,0 +1,151 @@
+[
+ {
+  "input": "a,b\n1,2\n3,x",
+  "field": ",",
+  "output": [
+   {
+    "a": 1,
+    "b": 2
+   },
+   {
+    "a": 3,
+    "b": "x"
+   }
+  ]
+ },
+ {
+  "input": "Product Handle,Product Title,Variant Price EUR\nh,\"Title, with comma\",15\nh2,T2,",
+  "field": ",",
+  "output": [
+   {
+    "Product Handle": "h",
+    "Product Title": "Title, with comma",
+    "Variant Price EUR": 15
+   },
+   {
+    "Product Handle": "h2",
+    "Product Title": "T2",
+    "Variant Price EUR": ""
+   }
+  ]
+ },
+ {
+  "input": "a,b\n\"he said \"\"hi\"\"\",true\nnull,false\n",
+  "field": ",",
+  "output": [
+   {
+    "a": "he said \"hi\"",
+    "b": true
+   },
+   {
+    "a": null,
+    "b": false
+   }
+  ]
+ },
+ {
+  "input": "a;b\n1;2\n",
+  "field": ";",
+  "output": [
+   {
+    "a": 1,
+    "b": 2
+   }
+  ]
+ },
+ {
+  "input": "a|b\n1|\n",
+  "field": "|",
+  "output": [
+   {
+    "a": 1,
+    "b": ""
+   }
+  ]
+ },
+ {
+  "input": "a,b\r\n1,2\r\n",
+  "field": ",",
+  "output": [
+   {
+    "a": 1,
+    "b\r": 2
+   }
+  ]
+ },
+ {
+  "input": "a,b\n\"multi\nline\",2\n",
+  "field": ",",
+  "output": [
+   {
+    "a": "multi\nline",
+    "b": 2
+   }
+  ]
+ },
+ {
+  "input": "a,b,c\n1,,3\n,,\n",
+  "field": ",",
+  "output": [
+   {
+    "a": 1,
+    "b": "",
+    "c": 3
+   },
+   {
+    "a": "",
+    "b": "",
+    "c": ""
+   }
+  ]
+ },
+ {
+  "input": "x.y,z\n1,2\n",
+  "field": ",",
+  "output": [
+   {
+    "x": {
+     "y": 1
+    },
+    "z": 2
+   }
+  ]
+ },
+ {
+  "input": "a,b\n{\"k\":1},[1,2]\n",
+  "field": ",",
+  "output": [
+   {
+    "a": {
+     "k": 1
+    },
+    "b": "[1"
+   }
+  ]
+ },
+ {
+  "input": "a,b\n2026-11-10T10:00:00.000Z,\"2026-11-10T10:00:00.000Z\"\n",
+  "field": ",",
+  "output": [
+   {
+    "a": "2026-11-10T10:00:00.000Z",
+    "b": "2026-11-10T10:00:00.000Z"
+   }
+  ]
+ },
+ {
+  "input": "a\n",
+  "field": ",",
+  "output": []
+ },
+ {
+  "input": "a,b\n1\n",
+  "field": ",",
+  "output": [
+   {
+    "a": 1,
+    "b": "__undefined__"
+   }
+  ]
+ }
+]

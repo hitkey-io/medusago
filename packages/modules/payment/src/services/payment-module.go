@@ -385,3 +385,18 @@ func (s *PaymentModuleService) UpdatePaymentSession(ctx context.Context, data *d
 	}
 	return nil, nil
 }
+
+// GetWebhookActionAndData mirrors getWebhookActionAndData: the bundled
+// system provider does not support webhooks.
+func (s *PaymentModuleService) GetWebhookActionAndData(ctx context.Context, provider string, payload any) (*dal.Record, error) {
+	providerID := provider
+	if !strings.HasPrefix(providerID, "pp_") {
+		providerID = "pp_" + provider
+	}
+	if _, err := callProvider(providerID, "getWebhookActionAndData"); err != nil {
+		return nil, err
+	}
+	out := dal.NewRecord()
+	out.Set("action", "not_supported")
+	return out, nil
+}

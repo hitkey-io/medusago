@@ -6,8 +6,10 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
@@ -171,6 +173,20 @@ func ErrorHandler() medusahttp.ErrorHandlerFunction {
 			slog.Error("request failed", "path", req.Path(), "status", r.StatusCode, "error", err)
 		} else {
 			slog.Info(err.Error())
+		}
+		// errors carrying zod issues (validators run outside the request
+		// validation middlewares) answer with the issue messages
+		var ze *zod.ZodError
+		if errors.As(err, &ze) {
+			msgs := make([]string, len(ze.Issues))
+			for i, issue := range ze.Issues {
+				msgs[i] = zod.FromZodIssue(issue)
+			}
+			body := dal.NewRecord()
+			body.Set("type", common.MedusaErrorTypes.INVALID_DATA)
+			body.Set("message", strings.Join(msgs, "\n"))
+			_ = res.Status(r.StatusCode).JSON(body)
+			return
 		}
 		_ = res.Status(r.StatusCode).JSON(r.Body)
 	}

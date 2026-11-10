@@ -237,3 +237,18 @@ var AdminLinkProductOptions = zod.Object(
 	zod.F("remove", zod.Array(zod.String()).Optional()),
 	zod.F("update", zod.Array(AdminUpdateProductOptionValues).Optional()),
 )
+
+// AdminBatchUpdateProduct mirrors AdminBatchUpdateProduct.
+var AdminBatchUpdateProduct = UpdateProduct.Extend(zod.F("id", zod.String()))
+
+// AdminBatchProductsBody mirrors createBatchBody(CreateProduct, AdminBatchUpdateProduct).
+var AdminBatchProductsBody = utils.CreateBatchBody(CreateProduct, AdminBatchUpdateProduct, nil)
+
+// AdminImportProducts mirrors AdminImportProducts.
+var AdminImportProducts = zod.Object(
+	zod.F("file_key", zod.String()),
+	zod.F("originalname", zod.String()),
+	zod.F("extension", zod.String()),
+	zod.F("size", zod.Number()),
+	zod.F("mime_type", zod.String()),
+)

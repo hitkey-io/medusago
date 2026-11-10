@@ -1,0 +1,111 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "r0",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/entities"
+  },
+  {
+    "name": "r1",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/columns"
+  },
+  {
+    "name": "r2",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations"
+  },
+  {
+    "name": "r3",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations",
+    "body": {}
+  },
+  {
+    "name": "r4",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active"
+  },
+  {
+    "name": "r5",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active",
+    "body": {}
+  },
+  {
+    "name": "r6",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/vc_1"
+  },
+  {
+    "name": "r7",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/vc_1"
+  },
+  {
+    "name": "r8",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurationsx"
+  },
+  {
+    "name": "r9",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/columns",
+    "body": {}
+  },
+  {
+    "name": "r10",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels"
+  },
+  {
+    "name": "r11",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels",
+    "body": {}
+  },
+  {
+    "name": "r12",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels/pl_1"
+  },
+  {
+    "name": "r13",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/property-labels/pl_1"
+  },
+  {
+    "name": "r14",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels/batch",
+    "body": {}
+  },
+  {
+    "name": "unauth",
+    "method": "GET",
+    "path": "/admin/property-labels"
+  }
+]

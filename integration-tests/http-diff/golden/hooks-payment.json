@@ -1,0 +1,40 @@
+{
+  "system": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/plain; charset=utf-8"
+    },
+    "body": "OK"
+  },
+  "system_prefixed": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/plain; charset=utf-8"
+    },
+    "body": "OK"
+  },
+  "unknown": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8"
+    },
+    "body": "Webhook Error: Payment provider pp_stripe is not configured"
+  },
+  "invalid_json": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "message": "Unexpected token '\"', \"\"not-json\"\" is not valid JSON",
+      "type": "invalid_data"
+    }
+  },
+  "get": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "text/html; charset=utf-8"
+    },
+    "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot GET /hooks/payment/system_default</pre>\n</body>\n</html>\n"
+  }
+}

@@ -50,8 +50,10 @@ import (
 	taxregions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-regions"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/uploads"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
+	viewsconfigurations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/views/entity_/configurations"
 	workflowsexecutions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth"
+	hookspaymentprovider "github.com/hitkey-io/medusago/packages/medusa/src/api/hooks/payment/provider_"
 	storecartsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts"
 	storecollectionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections"
 	storecurrenciesmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies"
@@ -138,5 +140,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, customergroups.Middlewares...)
 	out = append(out, returnreasons.Middlewares...)
 	out = append(out, refundreasons.Middlewares...)
+	out = append(out, hookspaymentprovider.Middlewares...)
+	out = append(out, viewsconfigurations.Middlewares...)
 	return out
 }

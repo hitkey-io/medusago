@@ -3,6 +3,8 @@ package loaders
 import (
 	"context"
 	"fmt"
+	"github.com/hitkey-io/medusago/packages/medusa/src/subscribers"
+	eventbuslocal "github.com/hitkey-io/medusago/packages/modules/event-bus-local/src/services"
 	"log/slog"
 	nethttp "net/http"
 	"os"
@@ -186,6 +188,13 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 	c.Register(common.ContainerRegistrationKeys.QUERY, q)
 	c.Register(common.ContainerRegistrationKeys.LINK, link)
 	c.Register(common.ContainerRegistrationKeys.REMOTE_LINK, link)
+
+	// subscribers loader (packages/medusa/src/subscribers)
+	if bus, ok := c.Resolve(utilsmodulessdk.EVENT_BUS).(*eventbuslocal.LocalEventBusService); ok {
+		bus.Subscribe("payment.webhook_received", func(ctx context.Context, ev eventbuslocal.Event) error {
+			return subscribers.PaymentWebhookHandler(ctx, c, ev.Data)
+		})
+	}
 
 	app := medusahttp.NewApp()
 	app.NewRequest = func(r *nethttp.Request) *medusahttp.MedusaRequest {
