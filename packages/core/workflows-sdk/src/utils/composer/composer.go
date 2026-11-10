@@ -33,8 +33,10 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"reflect"
 	"runtime/debug"
 	"sync"
+	"time"
 
 	"github.com/oklog/ulid/v2"
 
@@ -99,6 +101,8 @@ type StepOptions struct {
 	Async               bool
 	BackgroundExecution bool
 	Store               bool
+	// Timeout (seconds) fails an async step still waiting for a response.
+	Timeout int
 }
 
 // Step is a step definition.
@@ -156,8 +160,11 @@ type Execution struct {
 	errors []error
 	hooks  *hookRegistry
 	// shared by the root run and its runAsStep workflows
-	journal        *journal
-	detacher       *detacher
+	journal  *journal
+	detacher *detacher
+	// partial is the result returned when the run detaches (the
+	// WorkflowResponse resolved from the steps that ran).
+	partial        any
 	rootWorkflowID string
 	rootOptions    WorkflowOptions
 }
@@ -265,14 +272,27 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 			break
 		}
 	}
-	if err == nil && s.Options.Async && !background {
+	// an async step whose handler returned nothing waits for
+	// setStepSuccess / setStepFailure; one that returned a response
+	// completes with it (upstream registers the returned response)
+	if err == nil && s.Options.Async && !background && isNilOutput(any(res.Output)) {
 		// waits for setStepSuccess / setStepFailure; the run returns to its
 		// caller meanwhile
 		ch := registerWaiter(waiterKey(e.rootWorkflowID, e.transactionID, action))
 		e.journal.wait(rec)
 		e.persist(TransactionStateInvoking)
 		e.detacher.detach()
-		r := <-ch
+		var r stepResult
+		if s.Options.Timeout > 0 {
+			select {
+			case r = <-ch:
+			case <-time.After(time.Duration(s.Options.Timeout) * time.Second):
+				takeWaiter(waiterKey(e.rootWorkflowID, e.transactionID, action))
+				r = stepResult{err: &TransactionStepTimeoutError{}}
+			}
+		} else {
+			r = <-ch
+		}
 		if r.err != nil {
 			err = r.err
 		} else {
@@ -403,6 +423,9 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 			w.finish(e, r.err, true)
 		}()
 		var zero O
+		if p, ok := e.partial.(O); ok {
+			zero = p
+		}
 		return zero, RunInfo{TransactionID: e.transactionID, RunID: e.journal.runID, State: TransactionStateInvoking, Detached: true}, nil
 	}
 }
@@ -499,4 +522,28 @@ func Parallelize(fns ...func() error) error {
 		}
 	}
 	return first
+}
+
+// SetPartialResult sets what run() returns when the run detaches before the
+// body finishes (the WorkflowResponse value already resolved by the steps
+// that ran before an async step).
+func SetPartialResult(e *Execution, v any) {
+	e.partial = v
+}
+
+// TransactionStepTimeoutError mirrors TransactionStepTimeoutError.
+type TransactionStepTimeoutError struct{}
+
+func (*TransactionStepTimeoutError) Error() string { return "Timeout error" }
+
+func isNilOutput(v any) bool {
+	if v == nil {
+		return true
+	}
+	rv := reflect.ValueOf(v)
+	switch rv.Kind() {
+	case reflect.Pointer, reflect.Map, reflect.Slice, reflect.Interface, reflect.Func, reflect.Chan:
+		return rv.IsNil()
+	}
+	return false
 }
