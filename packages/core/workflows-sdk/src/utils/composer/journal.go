@@ -86,6 +86,8 @@ type journal struct {
 	waiting   bool
 	state     string
 	version   int
+	// events receives the run's notifications (nil: not notified).
+	events func(WorkflowEvent)
 }
 
 func nowMillis() int64 { return time.Now().UnixMilli() }
@@ -127,7 +129,7 @@ func (j *journal) begin(action string, opts StepOptions, noCompensation bool) *s
 	r := &stepRecord{
 		id: id, action: action, uuid: ulid.Make().String(), depth: parent.depth + 1, next: []string{},
 		invokeState: stepStateInvoking, invokeStatus: stepStatusIdle, compState: stepStateDormant, compStatus: stepStatusIdle,
-		startedAt: now, lastAttempt: now, async: opts.Async, store: opts.Store, noCompensation: noCompensation,
+		attempts: 1, startedAt: now, lastAttempt: now, async: opts.Async, store: opts.Store, noCompensation: noCompensation,
 	}
 	if opts.Async {
 		j.hasAsync = true
@@ -136,6 +138,7 @@ func (j *journal) begin(action string, opts StepOptions, noCompensation bool) *s
 	j.steps = append(j.steps, r)
 	j.byID[id] = r
 	j.tip = r
+	j.emit("onStepBegin", r, nil)
 	return r
 }
 
@@ -156,6 +159,7 @@ func (j *journal) succeed(r *stepRecord, output any, hasOutput bool, compInput a
 	r.invokeState, r.invokeStatus = stepStateDone, stepStatusOK
 	r.lastAttempt = nowMillis()
 	j.invoke[r.action] = stepResponseEnvelope(output, hasOutput, compInput, hasComp)
+	j.emit("onStepSuccess", r, func(ev *WorkflowEvent) { ev.Response, ev.HasResponse = output, hasOutput })
 }
 
 func (j *journal) wait(r *stepRecord) {
@@ -163,6 +167,7 @@ func (j *journal) wait(r *stepRecord) {
 	defer j.mu.Unlock()
 	r.invokeState, r.invokeStatus = stepStateInvoking, stepStatusWaiting
 	j.waiting = true
+	j.emit("onStepAwaiting", r, nil)
 }
 
 func (j *journal) attempt(r *stepRecord, n int) {
@@ -195,6 +200,8 @@ func (j *journal) fail(r *stepRecord, err error) {
 	r.stepFailed = true
 	r.lastAttempt = nowMillis()
 	j.errors = append(j.errors, map[string]any{"action": r.action, "handlerType": "invoke", "error": serializeError(err)})
+	errs := j.errorsFor(r.action, "invoke")
+	j.emit("onStepFailure", r, func(ev *WorkflowEvent) { ev.Errors, ev.HasErrors = errs, true })
 }
 
 // revertAll mirrors the flow after compensation: every step that ran is
@@ -221,9 +228,19 @@ func (j *journal) compensated(r *stepRecord, err error) {
 		r.compState, r.compStatus = stepStateFailed, stepStatusPermanent
 		j.hasFailed = true
 		j.errors = append(j.errors, map[string]any{"action": r.action, "handlerType": "compensate", "error": serializeError(err)})
+		errs := j.errorsFor(r.action, "compensate")
+		j.emit("onCompensateStepFailure", r, func(ev *WorkflowEvent) { ev.Errors, ev.HasErrors = errs, true })
 		return
 	}
 	r.compState, r.compStatus = stepStateReverted, stepStatusOK
+	j.emit("onCompensateStepSuccess", r, nil)
+}
+
+// emitRun sends a run-level event (onBegin, onCompensateBegin, onFinish).
+func (j *journal) emitRun(eventType string, fill func(*WorkflowEvent)) {
+	j.mu.Lock()
+	defer j.mu.Unlock()
+	j.emit(eventType, nil, fill)
 }
 
 func (j *journal) setState(state string) {

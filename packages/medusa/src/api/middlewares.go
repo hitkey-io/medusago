@@ -54,6 +54,7 @@ import (
 	viewsconfigurations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/views/entity_/configurations"
 	workflowsexecutions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth"
+	cloudauthusers "github.com/hitkey-io/medusago/packages/medusa/src/api/cloud/auth/users"
 	hookspaymentprovider "github.com/hitkey-io/medusago/packages/medusa/src/api/hooks/payment/provider_"
 	storecartsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts"
 	storecollectionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections"
@@ -70,6 +71,7 @@ import (
 	storeproductsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/products"
 	storeregionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/regions"
 	storereasonsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons"
+	storereturnsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/returns"
 	storeshippingoptionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/shipping-options"
 )
 
@@ -95,6 +97,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, storepaymentprovidersmw.Middlewares...)
 	out = append(out, storepaymentcollectionsmw.Middlewares...)
 	out = append(out, storeordersmw.Middlewares...)
+	out = append(out, storereturnsmw.Middlewares...)
 	out = append(out, adminpaymentsmw.Middlewares...)
 	out = append(out, adminpcsmw.Middlewares...)
 	out = append(out, storeshippingoptionsmw.Middlewares...)
@@ -144,5 +147,6 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, hookspaymentprovider.Middlewares...)
 	out = append(out, viewsconfigurations.Middlewares...)
 	out = append(out, layoutzoneconfiguration.Middlewares...)
+	out = append(out, cloudauthusers.Middlewares...)
 	return out
 }

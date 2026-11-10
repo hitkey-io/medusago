@@ -1,0 +1,120 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "run_create",
+    "method": "POST",
+    "path": "/admin/workflows-executions/create-product-types/run",
+    "bearer": "login",
+    "body": {
+      "input": {
+        "product_types": [
+          {
+            "value": "run-type-a"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "run_create_tid",
+    "method": "POST",
+    "path": "/admin/workflows-executions/create-product-types/run",
+    "bearer": "login",
+    "body": {
+      "transaction_id": "tx-run-fixed",
+      "input": {
+        "product_types": [
+          {
+            "value": "run-type-b",
+            "metadata": {
+              "k": "v"
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "types",
+    "method": "GET",
+    "path": "/admin/product-types?q=run-type&order=value&fields=value,metadata",
+    "bearer": "login"
+  },
+  {
+    "name": "run_dup",
+    "method": "POST",
+    "path": "/admin/workflows-executions/create-product-types/run",
+    "bearer": "login",
+    "body": {
+      "input": {
+        "product_types": [
+          {
+            "value": "run-type-a"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "run_unknown",
+    "method": "POST",
+    "path": "/admin/workflows-executions/no-such-workflow/run",
+    "bearer": "login",
+    "body": {
+      "input": {}
+    }
+  },
+  {
+    "name": "run_bad_tid",
+    "method": "POST",
+    "path": "/admin/workflows-executions/create-product-types/run",
+    "bearer": "login",
+    "body": {
+      "transaction_id": 5
+    }
+  },
+  {
+    "name": "run_extra",
+    "method": "POST",
+    "path": "/admin/workflows-executions/create-product-types/run",
+    "bearer": "login",
+    "body": {
+      "foo": 1
+    }
+  },
+  {
+    "name": "run_delete",
+    "method": "POST",
+    "path": "/admin/workflows-executions/delete-product-types/run",
+    "bearer": "login",
+    "body": {
+      "input": {
+        "ids": [
+          "{{types.product_types.0.id}}"
+        ]
+      }
+    }
+  },
+  {
+    "name": "types_after",
+    "method": "GET",
+    "path": "/admin/product-types?q=run-type&order=value&fields=value",
+    "bearer": "login"
+  },
+  {
+    "name": "run_noauth",
+    "method": "POST",
+    "path": "/admin/workflows-executions/create-product-types/run",
+    "body": {
+      "input": {}
+    }
+  }
+]

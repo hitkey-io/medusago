@@ -9,9 +9,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 )
 
-var cartFieldsForCalculateShippingOptionsPrices = []string{"id", "locale", "currency_code", "region_id", "items.*", "items.variant.id", "items.variant.product.id", "items.variant.product.shipping_profile.id", "items.variant.weight", "items.variant.length", "items.variant.height", "items.variant.width", "items.variant.material", "items.product.id", "items.product.collection_id", "items.product.categories.id", "items.product.tags.id", "items.product.weight", "shipping_address.*"}
-
-var pricingCartFields = append(append([]string{}, cartFieldsForCalculateShippingOptionsPrices...), "sales_channel_id", "item_total", "total")
+var pricingCartFields = append(append([]string{}, CartFieldsForCalculateShippingOptionsPrices...), "sales_channel_id", "item_total", "total")
 
 var commonOptionsFields = []string{"id", "name", "price_type", "service_zone_id", "service_zone.fulfillment_set_id", "service_zone.fulfillment_set.type", "service_zone.fulfillment_set.location.address.*", "shipping_profile_id", "provider_id", "data", "type.id", "type.label", "type.description", "type.code", "provider.id", "provider.is_enabled", "rules.attribute", "rules.value", "rules.operator"}
 

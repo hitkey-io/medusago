@@ -158,6 +158,11 @@ func notFoundWaiting(key IdempotencyKey) error {
 	return common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, fmt.Sprintf("Transaction %s could not be found.", key.TransactionID))
 }
 
+// notFoundWorkflow mirrors the orchestrator's run() for an unknown id.
+func notFoundWorkflow(id string) error {
+	return common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, fmt.Sprintf("Workflow with id \"%s\" not found.", id))
+}
+
 // SetStepSuccess mirrors workflowEngine.setStepSuccess: the waiting async
 // step completes with the response and the workflow continues.
 func SetStepSuccess(key IdempotencyKey, response any) error {

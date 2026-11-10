@@ -37,9 +37,16 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/workflows-executions", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetWorkflowExecutionsParams, ListConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/workflows-executions/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/workflows-executions/:workflow_id/:transaction_id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/workflows-executions/:workflow_id/run", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateWorkflowsRun))}},
 	{Methods: []string{"POST"}, Matcher: "/admin/workflows-executions/:workflow_id/steps/success", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateWorkflowsAsyncResponse))}},
 	{Methods: []string{"POST"}, Matcher: "/admin/workflows-executions/:workflow_id/steps/failure", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateWorkflowsAsyncResponse))}},
 }
+
+// AdminCreateWorkflowsRun mirrors AdminCreateWorkflowsRun.
+var AdminCreateWorkflowsRun = zod.Object(
+	zod.F("input", zod.Any().Optional()),
+	zod.F("transaction_id", zod.String().Optional()),
+)
 
 // AdminCreateWorkflowsAsyncResponse mirrors AdminCreateWorkflowsAsyncResponse.
 var AdminCreateWorkflowsAsyncResponse = zod.Object(

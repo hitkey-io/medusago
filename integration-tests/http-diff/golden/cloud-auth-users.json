@@ -1,0 +1,62 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzMTQyMDAsImV4cCI6MTc5NDQwMDYwMH0.Yiumwg286CkKqRPgd9kV20gzd2o0tM3uh5gx0sx_n_E"
+    }
+  },
+  "registered": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "The user is already registered and cannot create a new account."
+    }
+  },
+  "register": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6IiIsImFjdG9yX3R5cGUiOiJ1c2VyIiwiYXV0aF9pZGVudGl0eV9pZCI6ImF1dGhpZF8wMU03MlFCU0pUQkNBQ1hUOURDUkNNOUNFUCIsImF1dGhfcHJvdmlkZXIiOiJlbWFpbHBhc3MiLCJtZmFfZW5hYmxlZCI6ZmFsc2UsIm1mYV9jaGFsbGVuZ2VfY29tcGxldGVkX2F0IjpudWxsLCJhcHBfbWV0YWRhdGEiOnt9LCJ1c2VyX21ldGFkYXRhIjp7fSwiaWF0IjoxNzk0MzE0MjAwLCJleHAiOjE3OTQ0MDA2MDB9.qZLLGhDNCsFWJ8cjY6tJu4aNJHNuh6O3c9RHYj8IruQ"
+    }
+  },
+  "no_email": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Email is required to create a user account."
+    }
+  },
+  "unauth": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "message": "Unauthorized"
+    }
+  },
+  "cloud_auth": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "enabled": false
+    }
+  }
+}

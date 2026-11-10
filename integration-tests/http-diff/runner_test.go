@@ -49,6 +49,10 @@ type Step struct {
 	// Unordered lists body keys whose arrays upstream returns in a
 	// nondeterministic order: they are compared sorted.
 	Unordered []string `json:"unordered,omitempty"`
+	// Ignore lists dotted body paths left out of the comparison: values that
+	// upstream computes nondeterministically (concurrent writes on one
+	// entity manager).
+	Ignore []string `json:"ignore,omitempty"`
 	// Files sends a multipart/form-data body with these files.
 	Files []StepFile `json:"files,omitempty"`
 	// Until repeats the request (for up to 30s) until this dotted body path
@@ -119,6 +123,30 @@ func multipartBody(files []StepFile) (io.Reader, string) {
 
 // fileTimestampRe matches the Date.now() prefix of local file keys.
 var fileTimestampRe = regexp.MustCompile(`\b1\d{12}-`)
+
+// dropIgnored removes the listed dotted paths from the body.
+func dropIgnored(rec any, paths []string) any {
+	r, ok := rec.(*dal.Record)
+	if !ok || len(paths) == 0 {
+		return rec
+	}
+	for _, path := range paths {
+		parts := strings.Split("body."+path, ".")
+		cur := r
+		for i, part := range parts {
+			if cur == nil {
+				break
+			}
+			if i == len(parts)-1 {
+				cur.Delete(part)
+				break
+			}
+			v, _ := cur.Get(part)
+			cur, _ = v.(*dal.Record)
+		}
+	}
+	return rec
+}
 
 // sortUnordered sorts the listed body arrays by their JSON encoding.
 func sortUnordered(rec any, keys []string) any {
@@ -640,8 +668,8 @@ func TestMatchUpstream(t *testing.T) {
 			wantP, gotP := newPlaceholders(), newPlaceholders()
 			for _, s := range steps {
 				want, _ := golden.Get(s.Name)
-				w := pretty(wantP.normalize(sortUnordered(want, s.Unordered)))
-				g := pretty(gotP.normalize(sortUnordered(asRecord(results[s.Name]), s.Unordered)))
+				w := pretty(wantP.normalize(sortUnordered(dropIgnored(want, s.Ignore), s.Unordered)))
+				g := pretty(gotP.normalize(sortUnordered(dropIgnored(asRecord(results[s.Name]), s.Ignore), s.Unordered)))
 				if w != g {
 					t.Errorf("%s: mismatch\n--- want\n%s\n--- got\n%s", s.Name, w, g)
 				}

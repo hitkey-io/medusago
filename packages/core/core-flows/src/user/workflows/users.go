@@ -109,3 +109,24 @@ var RemoveUserAccountWorkflow = composer.CreateWorkflow("remove-user-account",
 		}
 		return userID, nil
 	})
+
+// CreateUserAccountWorkflowInput mirrors CreateUserAccountWorkflowInput.
+type CreateUserAccountWorkflowInput struct {
+	AuthIdentityID any
+	UserData       *dal.Record
+}
+
+// CreateUserAccountWorkflow mirrors createUserAccountWorkflow.
+var CreateUserAccountWorkflow = composer.CreateWorkflow("create-user-account",
+	func(e *composer.Execution, in CreateUserAccountWorkflowInput) (*dal.Record, error) {
+		users, err := CreateUsersWorkflow.RunAsStep(e, CreateUsersWorkflowInput{Users: []*dal.Record{in.UserData}})
+		if err != nil {
+			return nil, err
+		}
+		user := users[0]
+		id, _ := user.Get("id")
+		if _, err := steps.SetAuthAppMetadataStep.Run(e, steps.SetAuthAppMetadataStepInput{AuthIdentityID: in.AuthIdentityID, ActorType: "user", Value: id}); err != nil {
+			return nil, err
+		}
+		return user, nil
+	})

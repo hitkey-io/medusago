@@ -39,7 +39,7 @@ func (w *Workflow[I, O]) CreateHook(e *Execution, name string, input any) error 
 func runHook(e *Execution, workflowID, name string, h HookHandler, ok bool, input any) (any, error) {
 	if !ok {
 		if e.journal != nil {
-			rec := e.journal.begin(name, StepOptions{}, true)
+			rec := e.journal.begin(name, StepOptions{}, false)
 			e.journal.attempt(rec, 1)
 			e.journal.succeed(rec, nil, false, nil, false)
 		}

@@ -1,0 +1,45 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "registered",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/cloud/auth/users",
+    "body": {}
+  },
+  {
+    "name": "register",
+    "method": "POST",
+    "path": "/auth/user/emailpass/register",
+    "body": {
+      "email": "newcomer@example.test",
+      "password": "secret123"
+    }
+  },
+  {
+    "name": "no_email",
+    "method": "POST",
+    "bearer": "register",
+    "path": "/cloud/auth/users",
+    "body": {}
+  },
+  {
+    "name": "unauth",
+    "method": "POST",
+    "path": "/cloud/auth/users",
+    "body": {}
+  },
+  {
+    "name": "cloud_auth",
+    "method": "GET",
+    "path": "/cloud/auth"
+  }
+]

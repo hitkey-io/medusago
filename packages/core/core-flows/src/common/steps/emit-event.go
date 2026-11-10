@@ -16,8 +16,8 @@ type EmitEventStepInput struct {
 }
 
 type emitted struct {
-	EventGroupID string
-	EventName    string
+	EventGroupID string `json:"eventGroupId"`
+	EventName    string `json:"eventName"`
 }
 
 // EmitEventStep mirrors emitEventStep: the events join the workflow's event

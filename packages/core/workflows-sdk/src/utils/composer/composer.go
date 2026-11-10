@@ -352,14 +352,18 @@ type Workflow[I, O any] struct {
 // CreateWorkflow mirrors createWorkflow(id, composer).
 func CreateWorkflow[I, O any](id string, body func(*Execution, I) (O, error)) *Workflow[I, O] {
 	registerWorkflow(id)
-	return &Workflow[I, O]{ID: id, body: body, hooks: newHookRegistry()}
+	w := &Workflow[I, O]{ID: id, body: body, hooks: newHookRegistry()}
+	registerRunner(w)
+	return w
 }
 
 // CreateWorkflowWithOptions mirrors createWorkflow({ name, store,
 // retentionTime, idempotent }, composer).
 func CreateWorkflowWithOptions[I, O any](id string, opts WorkflowOptions, body func(*Execution, I) (O, error)) *Workflow[I, O] {
 	registerWorkflow(id)
-	return &Workflow[I, O]{ID: id, Options: opts, body: body, hooks: newHookRegistry()}
+	w := &Workflow[I, O]{ID: id, Options: opts, body: body, hooks: newHookRegistry()}
+	registerRunner(w)
+	return w
 }
 
 // RunOptions mirrors the options of workflow(container).run().
@@ -368,6 +372,9 @@ type RunOptions struct {
 	TransactionID string
 	// EventGroupID defaults to a new ulid.
 	EventGroupID string
+	// Notify delivers the run's events to the workflow engine subscribers
+	// (runs started through the workflow engine).
+	Notify bool
 }
 
 // Run mirrors workflow(container).run({ input }): the result, or the first
@@ -395,6 +402,14 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 	runCtx := context.WithoutCancel(ctx)
 	e := &Execution{ctx: runCtx, container: c, workflowID: w.ID, transactionID: o.TransactionID, eventGroupID: o.EventGroupID, hooks: w.hooks,
 		journal: newJournal(input), detacher: newDetacher(), rootWorkflowID: w.ID, rootOptions: w.Options}
+	if o.Notify {
+		workflowID, transactionID := w.ID, o.TransactionID
+		e.journal.events = func(ev WorkflowEvent) {
+			ev.WorkflowID, ev.TransactionID = workflowID, transactionID
+			notifyEvent(ev)
+		}
+		e.journal.emitRun("onBegin", nil)
+	}
 	stored := w.Options.Store || w.Options.RetentionTime > 0
 	if stored {
 		e.persist(TransactionStateNotStarted)
@@ -411,6 +426,7 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 	select {
 	case r := <-done:
 		state := w.finish(e, r.err, stored)
+		e.emitFinish(r.out, r.err)
 		info := RunInfo{TransactionID: e.transactionID, RunID: e.journal.runID, State: state}
 		if r.err != nil {
 			var zero O
@@ -421,6 +437,7 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 		go func() {
 			r := <-done
 			w.finish(e, r.err, true)
+			e.emitFinish(r.out, r.err)
 		}()
 		var zero O
 		if p, ok := e.partial.(O); ok {
@@ -472,6 +489,7 @@ func (w *Workflow[I, O]) execute(e *Execution, input I) (O, error) {
 		return berr
 	})
 	if err != nil {
+		e.journal.emitRun("onCompensateBegin", nil)
 		e.compensate()
 		var zero O
 		if len(e.errors) > 0 {
@@ -546,4 +564,15 @@ func isNilOutput(v any) bool {
 		return rv.IsNil()
 	}
 	return false
+}
+
+// emitFinish mirrors the onFinish notification of the orchestrator's run():
+// the result (undefined for a failed run) and the transaction errors.
+func (e *Execution) emitFinish(out any, err error) {
+	e.journal.emitRun("onFinish", func(ev *WorkflowEvent) {
+		if err == nil {
+			ev.Result, ev.HasResult = out, true
+		}
+		ev.Errors, ev.HasErrors = append([]any{}, e.journal.errors...), true
+	})
 }

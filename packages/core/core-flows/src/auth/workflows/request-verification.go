@@ -3,6 +3,7 @@ package workflows
 import (
 	"context"
 
+	authsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/auth/steps"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -66,4 +67,10 @@ var RequestVerificationWorkflow = composer.CreateWorkflow("request-verification-
 			out.Set(k, v)
 		}
 		return out, nil
+	})
+
+// SetAuthAppMetadataWorkflow mirrors setAuthAppMetadataWorkflow.
+var SetAuthAppMetadataWorkflow = composer.CreateWorkflow("set-auth-app-metadata-workflow",
+	func(e *composer.Execution, in authsteps.SetAuthAppMetadataStepInput) (any, error) {
+		return authsteps.SetAuthAppMetadataStep.Run(e, in)
 	})

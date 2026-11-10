@@ -20,6 +20,15 @@ var AllowedStoreShippingOptionExtraFields = []string{"data", "type", "type.id", 
 
 var listExtra = append(append([]string{}, AllowedStoreShippingOptionExtraFields...), "service_zone", "service_zone.id", "service_zone.fulfillment_set_id", "service_zone.fulfillment_set", "service_zone.fulfillment_set.id", "service_zone.fulfillment_set.type", "service_zone.fulfillment_set.location", "service_zone.fulfillment_set.location.id", "service_zone.fulfillment_set.location.address", "service_zone.fulfillment_set.location.address.id", "service_zone.fulfillment_set.location.address.company", "service_zone.fulfillment_set.location.address.address_1", "service_zone.fulfillment_set.location.address.address_2", "service_zone.fulfillment_set.location.address.city", "service_zone.fulfillment_set.location.address.country_code", "service_zone.fulfillment_set.location.address.province", "service_zone.fulfillment_set.location.address.postal_code", "service_zone.fulfillment_set.location.address.phone", "service_zone.fulfillment_set.location.address.metadata", "service_zone.fulfillment_set.location.address.created_at", "service_zone.fulfillment_set.location.address.updated_at", "service_zone.fulfillment_set.location.address.deleted_at")
 
+// RetrieveConfig mirrors retrieveTransformQueryConfig.
+var RetrieveConfig = httputils.QueryConfig{Defaults: DefaultStoreShippingOptionsFields, Allowed: storeutils.BuildAllowedFields(DefaultStoreShippingOptionsFields, AllowedStoreShippingOptionExtraFields)}
+
+// StoreCalculateShippingOptionPrice mirrors StoreCalculateShippingOptionPrice.
+var StoreCalculateShippingOptionPrice = zod.Object(
+	zod.F("cart_id", zod.String()),
+	zod.F("data", zod.Record(zod.String(), zod.Unknown()).Optional()),
+).Strict()
+
 // ListConfig mirrors listTransformQueryConfig (no defaults).
 var ListConfig = httputils.QueryConfig{Allowed: storeutils.BuildAllowedFields(DefaultStoreShippingOptionsFields, listExtra), StoreRelationsLimit: 4, DefaultLimit: 20, IsList: true}
 
@@ -35,6 +44,10 @@ var StoreGetShippingOptions = utils.CreateFindParams(utils.FindParamsOptions{Off
 // Middlewares mirrors storeShippingOptionRoutesMiddlewares.
 var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/store/shipping-options", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(StoreGetShippingOptions, ListConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/store/shipping-options/:id/calculate", Middlewares: []medusahttp.MiddlewareFunction{
+		httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig),
+		httputils.ValidateAndTransformBody(httputils.Schema(StoreCalculateShippingOptionPrice)),
+	}},
 }
 
 // GET mirrors GET.

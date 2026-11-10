@@ -199,3 +199,25 @@ func (s *FulfillmentModuleService) CreateReturnFulfillment(ctx context.Context, 
 	fulfillment.Set("labels", []any{})
 	return fulfillment, nil
 }
+
+// CalculateShippingOptionsPrices mirrors calculateShippingOptionsPrices: every
+// provider's calculatePrice runs (promiseAll rejects with the first error).
+// The bundled manual provider cannot calculate prices.
+func (s *FulfillmentModuleService) CalculateShippingOptionsPrices(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	var firstErr error
+	out := make([]*dal.Record, 0, len(data))
+	for _, d := range data {
+		providerID := fmt.Sprint(get(d, "provider_id"))
+		err := s.providerCall(ctx, providerID)
+		if err == nil {
+			err = fmt.Errorf("Manual fulfillment does not support price calculation")
+		}
+		if firstErr == nil {
+			firstErr = err
+		}
+	}
+	if firstErr != nil {
+		return nil, firstErr
+	}
+	return out, nil
+}

@@ -236,10 +236,14 @@ import (
 	viewsconfigurationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/views/entity_/configurations/id_"
 	workflowsexecutions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions"
 	workflowexecutionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/id_"
+	workflowexecutionrun "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/workflow_id_/run"
 	workflowexecutionfailure "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/workflow_id_/steps/failure"
 	workflowexecutionsuccess "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/workflow_id_/steps/success"
+	workflowexecutionsubscribe "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/workflow_id_/subscribe"
 	workflowexecutiontransaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/workflow_id_/transaction_id_"
+	workflowexecutiontxsubscribe "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/workflow_id_/transaction_id_/subscribe"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_"
+	authcallback "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_/callback"
 	authregister "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_/register"
 	authresetpassword "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_/reset-password"
 	authupdate "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_/update"
@@ -254,6 +258,7 @@ import (
 	verificationconfirm "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/verification/confirm"
 	verificationrequest "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/verification/request"
 	cloudauth "github.com/hitkey-io/medusago/packages/medusa/src/api/cloud/auth"
+	cloudauthusers "github.com/hitkey-io/medusago/packages/medusa/src/api/cloud/auth/users"
 	hookspaymentprovider "github.com/hitkey-io/medusago/packages/medusa/src/api/hooks/payment/provider_"
 	storecarts "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts"
 	storecartid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_"
@@ -298,7 +303,9 @@ import (
 	storeregionid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/regions/id_"
 	storereasons "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons"
 	storereasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons/id_"
+	storereturns "github.com/hitkey-io/medusago/packages/medusa/src/api/store/returns"
 	storeshippingoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/shipping-options"
+	storeshippingoptionscalculate "github.com/hitkey-io/medusago/packages/medusa/src/api/store/shipping-options/id_/calculate"
 )
 
 // Routes lists the route files by URL path (the file tree of src/api).
@@ -331,6 +338,9 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/workflows-executions", Route: workflowsexecutions.Route},
 		{Path: "/admin/workflows-executions/:id", Route: workflowexecutionid.Route},
 		{Path: "/admin/workflows-executions/:workflow_id/:transaction_id", Route: workflowexecutiontransaction.Route},
+		{Path: "/admin/workflows-executions/:workflow_id/run", Route: workflowexecutionrun.Route},
+		{Path: "/admin/workflows-executions/:workflow_id/subscribe", Route: workflowexecutionsubscribe.Route},
+		{Path: "/admin/workflows-executions/:workflow_id/:transaction_id/subscribe", Route: workflowexecutiontxsubscribe.Route},
 		{Path: "/admin/workflows-executions/:workflow_id/steps/success", Route: workflowexecutionsuccess.Route},
 		{Path: "/admin/workflows-executions/:workflow_id/steps/failure", Route: workflowexecutionfailure.Route},
 		{Path: "/admin/customer-groups", Route: customergroups.Route},
@@ -562,8 +572,10 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/store/product-variants/:id", Route: storevariantid.Route},
 		{Path: "/store/products", Route: storeproducts.Route},
 		{Path: "/store/shipping-options", Route: storeshippingoptions.Route},
+		{Path: "/store/shipping-options/:id/calculate", Route: storeshippingoptionscalculate.Route},
 		{Path: "/store/products/:id", Route: storeproductid.Route},
 		{Path: "/store/regions", Route: storeregions.Route},
+		{Path: "/store/returns", Route: storereturns.Route},
 		{Path: "/store/regions/:id", Route: storeregionid.Route},
 		{Path: "/store/currencies", Route: storecurrencies.Route},
 		{Path: "/store/currencies/:code", Route: storecurrencycode.Route},
@@ -587,6 +599,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/invites/:id", Route: inviteid.Route},
 		{Path: "/admin/invites/:id/resend", Route: inviteresend.Route},
 		{Path: "/auth/:actor_type/:auth_provider", Route: auth_provider_.Route},
+		{Path: "/auth/:actor_type/:auth_provider/callback", Route: authcallback.Route},
 		{Path: "/auth/mfa/challenges/:id/verify", Route: mfachallengeverify.Route},
 		{Path: "/auth/mfa/factors", Route: mfafactors.Route},
 		{Path: "/auth/mfa/factors/:id", Route: mfafactorid.Route},
@@ -600,6 +613,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/auth/:actor_type/providers", Route: providers.Route},
 		{Path: "/auth/session", Route: session.Route},
 		{Path: "/cloud/auth", Route: cloudauth.Route},
+		{Path: "/cloud/auth/users", Route: cloudauthusers.Route},
 		{Path: "/auth/token/refresh", Route: refresh.Route},
 	}
 }

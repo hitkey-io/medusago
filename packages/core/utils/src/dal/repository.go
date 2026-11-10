@@ -98,6 +98,19 @@ func (m identityMap) get(e *dml.Entity, row Row) *instance {
 
 type sharedIdentityMapKey struct{}
 
+type noRelationRefreshKey struct{}
+
+// WithoutRelationRefresh makes finds keep the relations already initialized
+// on the shared identity map entities (MikroORM refresh: false).
+func WithoutRelationRefresh(ctx context.Context) context.Context {
+	return context.WithValue(WithSharedIdentityMap(ctx), noRelationRefreshKey{}, true)
+}
+
+func relationRefreshDisabled(ctx context.Context) bool {
+	v, _ := ctx.Value(noRelationRefreshKey{}).(bool)
+	return v
+}
+
 // WithSharedIdentityMap returns a context whose finds share one identity
 // map, like the queries of one MikroORM entity manager (a service method
 // decorated with @InjectManager).
@@ -514,6 +527,55 @@ func (t *fieldTree) at(path string) *fieldTree {
 // loadRelationSelecting loads a relation; the lazy formulas requested in
 // sel are selected along with the columns.
 func (r *Repository) loadRelationSelecting(ctx context.Context, parents []*instance, relation string, idm identityMap, withDeleted bool, order []OrderBy, sel *fieldTree, where ...*Record) ([]*instance, error) {
+	// Like MikroORM's EntityLoader (refresh: false), a relation already
+	// initialized on an entity of the identity map is not reloaded; its
+	// entities still take part in the nested populate. Opt-in
+	// (WithoutRelationRefresh): our writes do not add created entities to
+	// the loaded collections like MikroORM does.
+	if !relationRefreshDisabled(ctx) {
+		return r.loadRelationRows(ctx, parents, relation, idm, withDeleted, order, sel, where...)
+	}
+	var pending []*instance
+	var kept []*instance
+	keptSeen := map[*instance]bool{}
+	for _, p := range parents {
+		v, initialized := p.relations[relation]
+		if !initialized {
+			pending = append(pending, p)
+			continue
+		}
+		switch t := v.(type) {
+		case []*instance:
+			for _, c := range t {
+				if !keptSeen[c] {
+					keptSeen[c] = true
+					kept = append(kept, c)
+				}
+			}
+		case *instance:
+			if t != nil && !keptSeen[t] {
+				keptSeen[t] = true
+				kept = append(kept, t)
+			}
+		}
+	}
+	if len(pending) == 0 {
+		return kept, nil
+	}
+	loaded, err := r.loadRelationRows(ctx, pending, relation, idm, withDeleted, order, sel, where...)
+	if err != nil || len(kept) == 0 {
+		return loaded, err
+	}
+	for _, c := range loaded {
+		if !keptSeen[c] {
+			keptSeen[c] = true
+			kept = append(kept, c)
+		}
+	}
+	return kept, nil
+}
+
+func (r *Repository) loadRelationRows(ctx context.Context, parents []*instance, relation string, idm identityMap, withDeleted bool, order []OrderBy, sel *fieldTree, where ...*Record) ([]*instance, error) {
 	owner := parents[0].entity
 	join, err := r.Schema.ResolveJoin(owner, relation)
 	if err != nil {
