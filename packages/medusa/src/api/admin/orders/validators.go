@@ -1,6 +1,9 @@
 package orders
 
 import (
+	"math"
+	"strconv"
+
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/utils"
@@ -52,3 +55,34 @@ func adminGetOrdersParamsTransform(v any) (any, error) {
 // AdminGetOrdersParams mirrors AdminGetOrdersParams (a transform: not made
 // strict by zodValidator).
 var AdminGetOrdersParams = AdminGetOrdersParamsBase.Transform(adminGetOrdersParamsTransform)
+
+// AdminGetOrdersOrderParams mirrors AdminGetOrdersOrderParams.
+var AdminGetOrdersOrderParams = utils.CreateSelectParams().Merge(zod.Object(
+	zod.F("version", zod.Preprocess(func(v any) any {
+		if s, ok := v.(string); ok && s != "" {
+			return parseIntJS(s)
+		}
+		return v
+	}, zod.Number().Optional())),
+))
+
+// parseIntJS mirrors parseInt(value) (NaN for non-numeric strings).
+func parseIntJS(s string) any {
+	i := 0
+	for i < len(s) && (s[i] == ' ' || s[i] == '\t' || s[i] == '\n') {
+		i++
+	}
+	start := i
+	if i < len(s) && (s[i] == '-' || s[i] == '+') {
+		i++
+	}
+	digits := i
+	for i < len(s) && s[i] >= '0' && s[i] <= '9' {
+		i++
+	}
+	if i == digits {
+		return math.NaN()
+	}
+	f, _ := strconv.ParseFloat(s[start:i], 64)
+	return f
+}

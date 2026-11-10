@@ -143,6 +143,10 @@ import (
 	storecurrencies "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies"
 	storecurrencycode "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies/code_"
 	storecustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers"
+	storecartcomplete "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/complete"
+	storeorders "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders"
+	storeorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_"
+	adminorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_"
 	storecustomerme "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me"
 	storecustomeraddresses "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses"
 	storecustomeraddress "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses/address_id_"
@@ -277,6 +281,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/modules", Route: adminmodules.Route},
 		{Path: "/admin/notifications", Route: notifications.Route},
 		{Path: "/admin/orders", Route: orders.Route},
+		{Path: "/admin/orders/:id", Route: adminorderid.Route},
 		{Path: "/admin/regions", Route: regions.Route},
 		{Path: "/admin/regions/:id", Route: regionid.Route},
 		{Path: "/admin/sales-channels", Route: saleschannels.Route},
@@ -294,6 +299,9 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/store/carts/:id/line-items/:line_id", Route: storecartlineitem.Route},
 		{Path: "/store/carts/:id/promotions", Route: storecartpromotions.Route},
 		{Path: "/store/carts/:id/shipping-methods", Route: storecartshippingmethods.Route},
+		{Path: "/store/carts/:id/complete", Route: storecartcomplete.Route},
+		{Path: "/store/orders", Route: storeorders.Route},
+		{Path: "/store/orders/:id", Route: storeorderid.Route},
 		{Path: "/store/customers", Route: storecustomers.Route},
 		{Path: "/store/customers/me", Route: storecustomerme.Route},
 		{Path: "/store/customers/me/addresses", Route: storecustomeraddresses.Route},

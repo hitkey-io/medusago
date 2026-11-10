@@ -9,6 +9,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	"github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/utils"
 	commonvalidators "github.com/hitkey-io/medusago/packages/medusa/src/api/utils/common-validators"
 )
@@ -170,6 +171,7 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"POST"}, Matcher: "/store/carts/:id/shipping-methods", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(StoreAddCartShippingMethods)), query())},
 	{Methods: []string{"POST"}, Matcher: "/store/carts/:id/promotions", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(StoreCartPromotions)), query())},
 	{Methods: []string{"DELETE"}, Matcher: "/store/carts/:id/promotions", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(StoreCartPromotions)), query())},
+	{Methods: []string{"POST"}, Matcher: "/store/carts/:id/complete", Middlewares: mw(httputils.ValidateAndTransformQuery(orders.StoreGetOrderParams, orders.RetrieveConfig))},
 }
 
 // RefetchCart mirrors refetchCart.

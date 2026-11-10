@@ -7,11 +7,14 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/cockroachdb/apd/v3"
+
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
 	"github.com/hitkey-io/medusago/packages/modules/payment/src/models"
 )
 
@@ -173,4 +176,176 @@ func (s *PaymentModuleService) CreateAccountHolder(ctx context.Context, input *d
 		return nil, err
 	}
 	return created[0], nil
+}
+
+// currencyDigits mirrors Intl.NumberFormat(..., {style: "currency"})
+// .resolvedOptions().maximumFractionDigits for the currencies whose minor
+// unit is not 2 (ICU data); every other well-formed code has 2.
+var currencyDigits = map[string]int32{
+	"ADP": 0, "AFN": 0, "ALL": 0, "BIF": 0, "BYR": 0, "CLF": 4, "CLP": 0, "DJF": 0, "ESP": 0, "GNF": 0, "IQD": 0, "IRR": 0,
+	"ISK": 0, "ITL": 0, "JPY": 0, "KMF": 0, "KPW": 0, "KRW": 0, "LAK": 0, "LBP": 0, "LUF": 0, "MGA": 0, "MMK": 0, "PYG": 0,
+	"RSD": 0, "RWF": 0, "SLL": 0, "SOS": 0, "STD": 0, "SYP": 0, "TMM": 0, "TRL": 0, "UGX": 0, "UYI": 0, "UYW": 4, "VND": 0,
+	"VUV": 0, "XAF": 0, "XOF": 0, "XPF": 0, "YER": 0, "ZMK": 0, "ZWD": 0,
+	"BHD": 3, "JOD": 3, "KWD": 3, "LYD": 3, "OMR": 3, "TND": 3,
+}
+
+// roundToCurrencyPrecision mirrors roundToCurrencyPrecision.
+func roundToCurrencyPrecision(amount any, currencyCode string) *totals.BN {
+	v := totals.Convert(amount)
+	code := strings.ToUpper(currencyCode)
+	if len(code) != 3 {
+		return v
+	}
+	digits, ok := currencyDigits[code]
+	if !ok {
+		digits = 2
+	}
+	out := new(totals.BN)
+	ctx := apd.BaseContext.WithPrecision(100)
+	ctx.Rounding = apd.RoundHalfUp
+	_, _ = ctx.Quantize(out, v, -digits)
+	return out
+}
+
+// maybeUpdatePaymentCollection mirrors maybeUpdatePaymentCollection_.
+func (s *PaymentModuleService) maybeUpdatePaymentCollection(ctx context.Context, id any) error {
+	pc, err := s.Internal("PaymentCollection").Retrieve(ctx, id, utilsmodulessdk.FindConfig{
+		Select:    []string{"amount", "raw_amount", "status", "currency_code"},
+		Relations: []string{"payment_sessions", "payments.captures", "payments.refunds"},
+	})
+	if err != nil {
+		return err
+	}
+	sessions := recordList(get(pc, "payment_sessions"))
+	authorized, captured, refunded := totals.Convert(0), totals.Convert(0), totals.Convert(0)
+	for _, ps := range sessions {
+		if get(ps, "status") == "authorized" {
+			authorized = totals.Add(authorized, get(ps, "amount"))
+		}
+	}
+	for _, p := range recordList(get(pc, "payments")) {
+		for _, c := range recordList(get(p, "captures")) {
+			captured = totals.Add(captured, get(c, "amount"))
+		}
+		for _, r := range recordList(get(p, "refunds")) {
+			refunded = totals.Add(refunded, get(r, "amount"))
+		}
+	}
+	status := "awaiting"
+	if len(sessions) == 0 {
+		status = "not_paid"
+	}
+	code, _ := get(pc, "currency_code").(string)
+	if totals.Gt(authorized, 0) {
+		if totals.Gte(roundToCurrencyPrecision(authorized, code), roundToCurrencyPrecision(get(pc, "amount"), code)) {
+			status = "authorized"
+		} else {
+			status = "partially_authorized"
+		}
+	}
+	u := dal.NewRecord()
+	u.Set("id", id)
+	u.Set("status", status)
+	u.Set("authorized_amount", authorized)
+	u.Set("captured_amount", captured)
+	u.Set("refunded_amount", refunded)
+	if totals.Gte(roundToCurrencyPrecision(captured, code), roundToCurrencyPrecision(get(pc, "amount"), code)) {
+		u.Set("status", "completed")
+		u.Set("completed_at", dal.Now())
+	}
+	_, err = s.Internal("PaymentCollection").Update(ctx, []any{u})
+	return err
+}
+
+func recordList(v any) []*dal.Record {
+	switch l := v.(type) {
+	case []*dal.Record:
+		return l
+	case []any:
+		var out []*dal.Record
+		for _, x := range l {
+			if r, ok := x.(*dal.Record); ok {
+				out = append(out, r)
+			}
+		}
+		return out
+	}
+	return nil
+}
+
+// AuthorizePaymentSession mirrors authorizePaymentSession (bundled system
+// provider only).
+func (s *PaymentModuleService) AuthorizePaymentSession(ctx context.Context, id string, context_ *dal.Record) (*dal.Record, error) {
+	ctx = dal.WithSharedIdentityMap(ctx)
+	session, err := s.Internal("PaymentSession").Retrieve(ctx, id, utilsmodulessdk.FindConfig{
+		Select:    []string{"id", "data", "provider_id", "amount", "raw_amount", "currency_code", "authorized_at", "payment_collection_id"},
+		Relations: []string{"payment", "payment_collection"},
+	})
+	if err != nil {
+		return nil, err
+	}
+	if p, ok := get(session, "payment").(*dal.Record); ok && p != nil && get(session, "authorized_at") != nil {
+		return p, nil
+	}
+	res, err := callProvider(fmt.Sprint(get(session, "provider_id")), "authorizePayment")
+	if err != nil {
+		return nil, err
+	}
+	status := res.Status
+	if status == "pending_authorization" {
+		u := dal.NewRecord()
+		u.Set("id", id)
+		u.Set("status", status)
+		u.Set("data", res.Data)
+		if _, err := s.Internal("PaymentSession").Update(ctx, []any{u}); err != nil {
+			return nil, err
+		}
+		return nil, s.maybeUpdatePaymentCollection(ctx, get(session, "payment_collection_id"))
+	}
+	if status != "authorized" && status != "captured" {
+		u := dal.NewRecord()
+		u.Set("id", id)
+		u.Set("status", status)
+		u.Set("data", res.Data)
+		if _, err := s.Internal("PaymentSession").Update(ctx, []any{u}); err != nil {
+			return nil, err
+		}
+		return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, fmt.Sprintf("Session: %s was not authorized with the provider.", id))
+	}
+	var payment *dal.Record
+	err = s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
+		if status == "captured" {
+			return fmt.Errorf("captured payment sessions are not supported yet")
+		}
+		u := dal.NewRecord()
+		u.Set("id", id)
+		u.Set("data", res.Data)
+		u.Set("status", status)
+		if get(session, "authorized_at") == nil {
+			u.Set("authorized_at", dal.Now())
+		}
+		if _, err := tx.Internal("PaymentSession").Update(ctx, []any{u}); err != nil {
+			return err
+		}
+		p := dal.NewRecord()
+		p.Set("amount", get(session, "amount"))
+		p.Set("currency_code", lowerCode(get(session, "currency_code")))
+		p.Set("payment_session", id)
+		p.Set("payment_collection_id", get(session, "payment_collection_id"))
+		p.Set("provider_id", get(session, "provider_id"))
+		p.Set("data", res.Data)
+		created, err := tx.Internal("Payment").Create(ctx, []*dal.Record{p})
+		if err != nil {
+			return err
+		}
+		payment = created[0]
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if err := s.maybeUpdatePaymentCollection(ctx, get(session, "payment_collection_id")); err != nil {
+		return nil, err
+	}
+	return payment, nil
 }
