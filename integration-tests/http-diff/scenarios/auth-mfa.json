@@ -1,0 +1,257 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "factors_empty",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/auth/mfa/factors"
+  },
+  {
+    "name": "enroll",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/auth/mfa/factors",
+    "body": {
+      "provider": "totp",
+      "label": "Admin device",
+      "metadata": {
+        "device": "phone"
+      }
+    }
+  },
+  {
+    "name": "enroll_duplicate",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/auth/mfa/factors",
+    "body": {
+      "provider": "totp"
+    }
+  },
+  {
+    "name": "enroll_unknown",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/auth/mfa/factors",
+    "body": {
+      "provider": "recovery_code"
+    }
+  },
+  {
+    "name": "verify_wrong",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/auth/mfa/factors/{{enroll.mfa_factor.id}}/verify",
+    "body": {
+      "code": "000000"
+    }
+  },
+  {
+    "name": "recovery_before",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/auth/mfa/recovery-codes",
+    "body": {}
+  },
+  {
+    "name": "verify",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/auth/mfa/factors/{{enroll.mfa_factor.id}}/verify",
+    "body": {
+      "code": "__TOTP__"
+    },
+    "totp": "enroll.secret"
+  },
+  {
+    "name": "recovery",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/auth/mfa/recovery-codes",
+    "body": {
+      "count": 3
+    }
+  },
+  {
+    "name": "recovery_invalid",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/auth/mfa/recovery-codes",
+    "body": {
+      "count": 99
+    }
+  },
+  {
+    "name": "factors",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/auth/mfa/factors"
+  },
+  {
+    "name": "login_mfa",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "me_partial",
+    "method": "GET",
+    "bearer": "login_mfa",
+    "path": "/admin/users/me?fields=id"
+  },
+  {
+    "name": "challenge_wrong",
+    "method": "POST",
+    "bearer": "login_mfa",
+    "path": "/auth/mfa/challenges/{{login_mfa.mfa_challenge.id}}/verify",
+    "body": {
+      "method": "totp",
+      "code": "000000"
+    }
+  },
+  {
+    "name": "challenge_bad_method",
+    "method": "POST",
+    "bearer": "login_mfa",
+    "path": "/auth/mfa/challenges/{{login_mfa.mfa_challenge.id}}/verify",
+    "body": {
+      "method": "sms",
+      "code": "1"
+    }
+  },
+  {
+    "name": "challenge_recovery",
+    "method": "POST",
+    "bearer": "login_mfa",
+    "path": "/auth/mfa/challenges/{{login_mfa.mfa_challenge.id}}/verify",
+    "body": {
+      "method": "recovery_code",
+      "code": "{{recovery.recovery_codes.0}}"
+    }
+  },
+  {
+    "name": "challenge_again",
+    "method": "POST",
+    "bearer": "login_mfa",
+    "path": "/auth/mfa/challenges/{{login_mfa.mfa_challenge.id}}/verify",
+    "body": {
+      "method": "totp",
+      "code": "000000"
+    }
+  },
+  {
+    "name": "me_full",
+    "method": "GET",
+    "bearer": "challenge_recovery",
+    "path": "/admin/users/me?fields=id"
+  },
+  {
+    "name": "login_mfa2",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "challenge_totp",
+    "method": "POST",
+    "bearer": "login_mfa2",
+    "path": "/auth/mfa/challenges/{{login_mfa2.mfa_challenge.id}}/verify",
+    "body": {
+      "method": "totp",
+      "code": "__TOTP__"
+    },
+    "totp": "enroll.secret"
+  },
+  {
+    "name": "challenge_missing",
+    "method": "POST",
+    "bearer": "login_mfa2",
+    "path": "/auth/mfa/challenges/authmfachal_missing/verify",
+    "body": {
+      "method": "totp",
+      "code": "1"
+    }
+  },
+  {
+    "name": "disable",
+    "method": "DELETE",
+    "bearer": "challenge_totp",
+    "path": "/auth/mfa/factors/{{enroll.mfa_factor.id}}",
+    "body": {}
+  },
+  {
+    "name": "disable_missing",
+    "method": "DELETE",
+    "bearer": "challenge_totp",
+    "path": "/auth/mfa/factors/authmfa_missing",
+    "body": {}
+  },
+  {
+    "name": "login_plain",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "verification_request",
+    "method": "POST",
+    "bearer": "login_plain",
+    "path": "/auth/verification/request",
+    "body": {
+      "entity_id": "admin@medusa-test.com",
+      "entity_type": "email"
+    }
+  },
+  {
+    "name": "verification_request_again",
+    "method": "POST",
+    "bearer": "login_plain",
+    "path": "/auth/verification/request",
+    "body": {
+      "entity_id": "admin@medusa-test.com",
+      "entity_type": "email",
+      "metadata": {
+        "x": 1
+      }
+    }
+  },
+  {
+    "name": "verification_confirm_wrong",
+    "method": "POST",
+    "path": "/auth/verification/confirm",
+    "body": {
+      "code": "nope"
+    }
+  },
+  {
+    "name": "verification_invalid",
+    "method": "POST",
+    "bearer": "login_plain",
+    "path": "/auth/verification/request",
+    "body": {
+      "entity_id": ""
+    }
+  },
+  {
+    "name": "factors_unauth",
+    "method": "GET",
+    "path": "/auth/mfa/factors"
+  }
+]

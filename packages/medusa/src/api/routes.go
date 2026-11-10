@@ -244,8 +244,15 @@ import (
 	authresetpassword "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_/reset-password"
 	authupdate "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_/update"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/providers"
+	mfachallengeverify "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/mfa/challenges/id_/verify"
+	mfafactors "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/mfa/factors"
+	mfafactorid "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/mfa/factors/id_"
+	mfafactorverify "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/mfa/factors/id_/verify"
+	mfarecoverycodes "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/mfa/recovery-codes"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/session"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/token/refresh"
+	verificationconfirm "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/verification/confirm"
+	verificationrequest "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/verification/request"
 	cloudauth "github.com/hitkey-io/medusago/packages/medusa/src/api/cloud/auth"
 	hookspaymentprovider "github.com/hitkey-io/medusago/packages/medusa/src/api/hooks/payment/provider_"
 	storecarts "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts"
@@ -580,6 +587,13 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/invites/:id", Route: inviteid.Route},
 		{Path: "/admin/invites/:id/resend", Route: inviteresend.Route},
 		{Path: "/auth/:actor_type/:auth_provider", Route: auth_provider_.Route},
+		{Path: "/auth/mfa/challenges/:id/verify", Route: mfachallengeverify.Route},
+		{Path: "/auth/mfa/factors", Route: mfafactors.Route},
+		{Path: "/auth/mfa/factors/:id", Route: mfafactorid.Route},
+		{Path: "/auth/mfa/factors/:id/verify", Route: mfafactorverify.Route},
+		{Path: "/auth/mfa/recovery-codes", Route: mfarecoverycodes.Route},
+		{Path: "/auth/verification/request", Route: verificationrequest.Route},
+		{Path: "/auth/verification/confirm", Route: verificationconfirm.Route},
 		{Path: "/auth/:actor_type/:auth_provider/reset-password", Route: authresetpassword.Route},
 		{Path: "/auth/:actor_type/:auth_provider/update", Route: authupdate.Route},
 		{Path: "/auth/:actor_type/:auth_provider/register", Route: authregister.Route},

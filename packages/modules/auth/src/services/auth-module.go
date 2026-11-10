@@ -3,7 +3,6 @@ package services
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	authtypes "github.com/hitkey-io/medusago/packages/core/types/src/auth"
@@ -104,7 +103,7 @@ func (s *AuthModuleService) Authenticate(ctx context.Context, provider string, i
 	if err != nil {
 		return authtypes.AuthenticationResponse{Error: err.Error()}
 	}
-	res, err = s.applyMfaRequirement(ctx, res)
+	res, err = s.applyMfaRequirement(ctx, res, provider)
 	if err != nil {
 		return authtypes.AuthenticationResponse{Error: err.Error()}
 	}
@@ -147,31 +146,36 @@ func (s *AuthModuleService) ValidateCallback(ctx context.Context, provider strin
 	if err != nil {
 		return authtypes.AuthenticationResponse{Error: err.Error()}
 	}
-	res, err = s.applyMfaRequirement(ctx, res)
+	res, err = s.applyMfaRequirement(ctx, res, provider)
 	if err != nil {
 		return authtypes.AuthenticationResponse{Error: err.Error()}
 	}
 	return res
 }
 
-// applyMfaRequirement mirrors applyMfaRequirement_. MFA challenges are not
-// ported yet: an identity with enabled factors cannot sign in.
-func (s *AuthModuleService) applyMfaRequirement(ctx context.Context, res authtypes.AuthenticationResponse) (authtypes.AuthenticationResponse, error) {
+// applyMfaRequirement mirrors applyMfaRequirement_: an identity with
+// verifiable MFA methods gets a challenge instead of a session.
+func (s *AuthModuleService) applyMfaRequirement(ctx context.Context, res authtypes.AuthenticationResponse, authProvider string) (authtypes.AuthenticationResponse, error) {
 	if !res.Success || res.AuthIdentity == nil || res.Location != "" {
 		return res, nil
 	}
 	id, _ := res.AuthIdentity.Get("id")
-	f := dal.NewRecord()
-	f.Set("auth_identity_id", id)
-	f.Set("status", "enabled")
-	factors, err := s.Internal("AuthMfaFactor").List(ctx, f, utilsmodulessdk.FindConfig{Select: []string{"provider"}})
+	methods, err := s.availableMfaChallengeMethods(ctx, id)
 	if err != nil {
 		return res, err
 	}
-	if len(factors) > 0 {
-		return res, errors.New("MFA challenges are not supported yet")
+	if len(methods) == 0 {
+		return res, nil
 	}
-	return res, nil
+	var provider any
+	if authProvider != "" {
+		provider = authProvider
+	}
+	challenge, err := s.createAuthMfaChallenge(ctx, id, provider, nil)
+	if err != nil {
+		return res, err
+	}
+	return authtypes.AuthenticationResponse{Success: true, MfaChallenge: challenge, AuthIdentity: res.AuthIdentity}, nil
 }
 
 // identityService mirrors getAuthIdentityProviderService.

@@ -12,6 +12,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	mfautils "github.com/hitkey-io/medusago/packages/modules/auth/src/utils"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -53,6 +54,25 @@ type Step struct {
 	// Until repeats the request (for up to 30s) until this dotted body path
 	// resolves to a value: it waits for background workflows.
 	Until string `json:"until,omitempty"`
+	// Totp names a body path ("step.path") holding a TOTP secret: the
+	// current code replaces "__TOTP__" in the body.
+	Totp string `json:"totp,omitempty"`
+}
+
+var otpSecretRe = regexp.MustCompile(`secret=[A-Z2-7]+`)
+
+func maskRandom(v any) any {
+	switch t := v.(type) {
+	case string:
+		return "<random>"
+	case []any:
+		out := make([]any, len(t))
+		for i := range t {
+			out[i] = "<random>"
+		}
+		return out
+	}
+	return v
 }
 
 // lookupPath resolves a dotted path ("notifications.0.data") in a body.
@@ -199,7 +219,17 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 	retry:
 		var body io.Reader
 		if len(step.Body) > 0 {
-			body = strings.NewReader(resolveRefs(string(step.Body), bodies, false))
+			raw := resolveRefs(string(step.Body), bodies, false)
+			if step.Totp != "" {
+				stepName, path, _ := strings.Cut(step.Totp, ".")
+				secret := fmt.Sprint(lookupPath(bodies[stepName], path))
+				code, err := mfautils.GenerateTotpCode(secret, 6, 30, time.Now())
+				if err != nil {
+					t.Fatalf("%s: totp: %v", step.Name, err)
+				}
+				raw = strings.ReplaceAll(raw, "__TOTP__", code)
+			}
+			body = strings.NewReader(raw)
 		}
 		contentType := ""
 		if len(step.Body) > 0 {
@@ -430,6 +460,11 @@ func (p *placeholders) normalize(v any) any {
 				out.Set(k, "<timestamp>")
 			case k == "token":
 				out.Set(k, p.decodeToken(x))
+			case k == "secret" || k == "recovery_codes" || k == "token_hash":
+				// random TOTP secrets and recovery codes
+				out.Set(k, maskRandom(x))
+			case k == "otpauth_url":
+				out.Set(k, otpSecretRe.ReplaceAllString(fmt.Sprint(x), "secret=<secret>"))
 			default:
 				out.Set(k, p.normalize(x))
 			}
@@ -553,8 +588,13 @@ func scenarioFiles() []string {
 }
 
 // goServer starts the Go application on a fresh database holding seed.sql.
+// mfaEncryptionKey is the AUTH_MFA_ENCRYPTION_KEY both servers run with
+// (record.sh passes the same value to upstream).
+const mfaEncryptionKey = "http-diff-mfa-encryption-key"
+
 func goServer(t *testing.T, scenario string) string {
 	t.Helper()
+	t.Setenv("AUTH_MFA_ENCRYPTION_KEY", mfaEncryptionKey)
 	if base := os.Getenv("MEDUSA_HTTP_TARGET_URL"); base != "" {
 		return base
 	}
