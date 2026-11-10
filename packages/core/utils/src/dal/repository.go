@@ -50,6 +50,8 @@ type instance struct {
 	// sel is the field selection the instance was loaded with (nil: every
 	// field); a reference found in the identity map serializes these.
 	sel *fieldTree
+	// initChanged lists the columns @OnInit hooks changed after hydration.
+	initChanged map[string]bool
 }
 
 func (inst *instance) selectFields(t *fieldTree) {
@@ -84,12 +86,12 @@ func (m identityMap) get(e *dml.Entity, row Row) *instance {
 			}
 		}
 		if merged {
-			runOnInit(e.Meta.ClassName, inst.data)
+			m.initEntity(inst)
 		}
 		return inst
 	}
 	inst := &instance{entity: e, data: row, relations: map[string]any{}}
-	runOnInit(e.Meta.ClassName, row)
+	m.initEntity(inst)
 	m[key] = inst
 	return inst
 }

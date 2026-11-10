@@ -195,10 +195,22 @@ func findItem(order *dal.Record, id any) *dal.Record {
 	return nil
 }
 
+// setItemDetail mirrors orderItem.detail = item?.detail: an undefined detail
+// (no matching order item) drops the key.
+func setItemDetail(orderItem, item *dal.Record) {
+	if item != nil {
+		if d, ok := item.Get("detail"); ok {
+			orderItem.Set("detail", d)
+			return
+		}
+	}
+	orderItem.Delete("detail")
+}
+
 func formatOrderReturn(orderReturn, mainOrder *dal.Record) {
 	for _, orderItem := range records(get(orderReturn, "items")) {
 		item := findItem(mainOrder, get(orderItem, "item_id"))
-		orderItem.Set("detail", get(item, "detail"))
+		setItemDetail(orderItem, item)
 	}
 }
 
@@ -225,7 +237,7 @@ func formatClaim(claim *dal.Record) {
 		for _, orderItem := range kept {
 			item := findItem(order, get(orderItem, "item_id"))
 			cleanNestedRelations(item)
-			orderItem.Set("detail", get(item, "detail"))
+			setItemDetail(orderItem, item)
 		}
 		claim.Set("additional_items", toAny(kept))
 	}
@@ -242,7 +254,7 @@ func formatClaim(claim *dal.Record) {
 	for _, orderItem := range kept {
 		item := findItem(order, get(orderItem, "item_id"))
 		cleanNestedRelations(item)
-		orderItem.Set("detail", get(item, "detail"))
+		setItemDetail(orderItem, item)
 	}
 	claim.Set("claim_items", toAny(kept))
 }
@@ -252,7 +264,7 @@ func formatExchange(exchange *dal.Record) {
 	for _, orderItem := range records(get(exchange, "additional_items")) {
 		item := findItem(order, get(orderItem, "item_id"))
 		cleanNestedRelations(item)
-		orderItem.Set("detail", get(item, "detail"))
+		setItemDetail(orderItem, item)
 	}
 }
 
@@ -261,7 +273,7 @@ func formatReturn(returnOrder *dal.Record) {
 	for _, orderItem := range records(get(returnOrder, "items")) {
 		item := findItem(order, get(orderItem, "item_id"))
 		cleanNestedRelations(item)
-		orderItem.Set("detail", get(item, "detail"))
+		setItemDetail(orderItem, item)
 	}
 }
 

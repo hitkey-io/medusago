@@ -249,6 +249,9 @@ type OrderChangeReturn struct {
 
 // ConfirmOrderChange mirrors confirmOrderChange.
 func (s *OrderModuleService) ConfirmOrderChange(ctx context.Context, data []any) (*OrderChangeReturn, error) {
+	// one entity manager: the actions loaded with their order change keep
+	// its return_id in the @OnInit hook when they are marked applied
+	ctx = dal.WithSharedIdentityMap(ctx)
 	var out *OrderChangeReturn
 	err := s.InTransaction(ctx, func(m *utilsmodulessdk.MedusaService) error {
 		t := s.tx(m)
@@ -376,7 +379,9 @@ func (s *OrderModuleService) includeTaxLinesAndAdjustmentsToPreview(ctx context.
 	var addedSMIDs []any
 	sms := records(get(order, "shipping_methods"))
 	for _, sm := range sms {
-		if get(sm, "shipping_option_id") == nil {
+		// isDefined: a loaded null option id is defined (only methods of
+		// the preview that never had the key count as added)
+		if _, ok := sm.Get("shipping_option_id"); !ok {
 			addedSM[fmt.Sprint(get(sm, "id"))] = true
 			addedSMIDs = append(addedSMIDs, get(sm, "id"))
 		}

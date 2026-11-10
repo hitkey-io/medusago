@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"regexp"
 	"slices"
 	"strconv"
@@ -104,6 +105,37 @@ func (r *Repository) exec(ctx context.Context, sql string, args ...any) error {
 		return MapDBError(err)
 	}
 	return nil
+}
+
+func isJSONColumn(e *dml.Entity, column string) bool {
+	for _, p := range e.Meta.Properties {
+		if len(p.FieldNames) > 0 && p.FieldNames[0] == column && (p.ColumnType == "jsonb" || p.ColumnType == "json") {
+			return true
+		}
+	}
+	return false
+}
+
+// mergeObjectProperties mirrors MikroORM Utils.merge(target, source): plain
+// objects merge recursively (a missing key starts as {}, a non-object target
+// value is left as is), any other value replaces the target's.
+func mergeObjectProperties(target, source *Record) *Record {
+	for _, k := range source.Keys() {
+		v, _ := source.Get(k)
+		if sub, ok := v.(*Record); ok {
+			cur, has := target.Get(k)
+			if !has {
+				cur = NewRecord()
+				target.Set(k, cur)
+			}
+			if t, ok := cur.(*Record); ok {
+				mergeObjectProperties(t, sub)
+			}
+			continue
+		}
+		target.Set(k, v)
+	}
+	return target
 }
 
 // columnValue converts a value for a column: arrays go to Postgres array
@@ -482,7 +514,14 @@ func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, i
 	if err := r.insertRow(ctx, e, data); err != nil {
 		return nil, err
 	}
+	inserted := maps.Clone(data)
 	inst := idm.get(e, data)
+	// @BeforeCreate ran before the insert upstream; hooks changing columns
+	// of the inserted row are not applied afterwards
+	for column := range inst.initChanged {
+		data[column] = inserted[column]
+	}
+	inst.initChanged = nil
 	inst.data = data
 	inst.created = true
 
@@ -618,7 +657,7 @@ func (r *Repository) UpdateWith(ctx context.Context, opts FindOptions, dataFor f
 		if data == nil {
 			continue
 		}
-		if err := r.applyUpdate(ctx, inst, data, idm); err != nil {
+		if err := r.applyUpdate(ctx, inst, data, idm, true); err != nil {
 			return nil, err
 		}
 	}
@@ -629,12 +668,15 @@ func (r *Repository) UpdateWith(ctx context.Context, opts FindOptions, dataFor f
 // one-to-many collections given in data.
 // Nested objects created on the way join the identity map, so the updated
 // entity serializes them fully (MikroORM assigns the new entity instance).
-func (r *Repository) applyUpdate(ctx context.Context, inst *instance, data *Record, idm identityMap) error {
+//
+// mergeObjects mirrors assign(entity, data, { mergeObjectProperties: true })
+// of repository.update (upsert assigns without it).
+func (r *Repository) applyUpdate(ctx context.Context, inst *instance, data *Record, idm identityMap, mergeObjects bool) error {
 	data, err := r.createNestedToOne(ctx, inst.entity, data, idm)
 	if err != nil {
 		return err
 	}
-	if err := r.applyScalarUpdate(ctx, inst, data); err != nil {
+	if err := r.applyScalarUpdate(ctx, inst, data, mergeObjects); err != nil {
 		return err
 	}
 	return r.assignOneToManyCollections(ctx, inst, data)
@@ -642,17 +684,41 @@ func (r *Repository) applyUpdate(ctx context.Context, inst *instance, data *Reco
 
 // applyScalarUpdate writes the changed columns (MikroORM only flushes dirty
 // entities, refreshing updated_at).
-func (r *Repository) applyScalarUpdate(ctx context.Context, inst *instance, data *Record) error {
+func (r *Repository) applyScalarUpdate(ctx context.Context, inst *instance, data *Record, mergeObjects bool) error {
 	e := inst.entity
 	changed := Row{}
 	if err := r.assignFields(e, changed, data, false); err != nil {
 		return err
+	}
+	if mergeObjects {
+		for column, v := range changed {
+			next, ok := v.(*Record)
+			if !ok || !isJSONColumn(e, column) {
+				continue
+			}
+			current, ok := inst.data[column].(*Record)
+			if !ok {
+				continue
+			}
+			// the internal service assigns the mergeMetadata result to the
+			// entity before assign, so metadata ends up as given
+			if column == "metadata" {
+				continue
+			}
+			changed[column] = mergeObjectProperties(mergeObjectProperties(NewRecord(), current), next)
+		}
 	}
 	for column, v := range changed {
 		if sameValue(inst.data[column], v) {
 			delete(changed, column)
 		}
 	}
+	for column := range inst.initChanged {
+		if _, ok := changed[column]; !ok {
+			changed[column] = inst.data[column]
+		}
+	}
+	inst.initChanged = nil
 	if len(changed) == 0 {
 		return nil
 	}
@@ -718,7 +784,7 @@ func (r *Repository) Upsert(ctx context.Context, data []*Record) ([]*Record, err
 	for _, d := range data {
 		v, _ := d.Get(pk)
 		if inst, ok := existing[fmt.Sprint(v)]; ok && v != nil {
-			if err := r.applyUpdate(ctx, inst, d, idm); err != nil {
+			if err := r.applyUpdate(ctx, inst, d, idm, false); err != nil {
 				return nil, err
 			}
 			updated = append(updated, inst)
@@ -1020,7 +1086,7 @@ func (r *Repository) assignOneToManyCollections(ctx context.Context, inst *insta
 			if row, ok := existing[fmt.Sprint(id)]; ok && id != nil {
 				child := &instance{entity: target, data: row, relations: map[string]any{}}
 				item := it
-				updates = append(updates, func() error { return r.applyScalarUpdate(ctx, child, item) })
+				updates = append(updates, func() error { return r.applyScalarUpdate(ctx, child, item, false) })
 				continue
 			}
 			n := NewRecord()
