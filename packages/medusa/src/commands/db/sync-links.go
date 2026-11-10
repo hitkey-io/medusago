@@ -7,6 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
 	"github.com/hitkey-io/medusago/packages/modules/link-modules/src/definitions"
 	"github.com/hitkey-io/medusago/packages/modules/link-modules/src/migration"
 )
@@ -17,6 +18,19 @@ type SyncLinksOptions struct {
 	ExecuteAll bool
 	// ExecuteSafe skips delete and notify actions without asking.
 	ExecuteSafe bool
+}
+
+// SyncLinksCommand mirrors `medusa db:sync-links`.
+func SyncLinksCommand(ctx context.Context, cfg config.ConfigModule, opts SyncLinksOptions) error {
+	pool, err := connect(ctx, cfg)
+	if err != nil {
+		return err
+	}
+	defer pool.Close()
+	if err := EnsureDbExists(ctx, pool, slog.Default()); err != nil {
+		return err
+	}
+	return SyncLinks(ctx, pool, opts)
 }
 
 // SyncLinks mirrors syncLinks from sync-links.ts. There is no interactive

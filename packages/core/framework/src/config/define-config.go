@@ -90,6 +90,38 @@ type InputConfig struct {
 	FeatureFlags map[string]any `json:"featureFlags,omitempty" yaml:"featureFlags,omitempty"`
 	// Plugins mirrors config.plugins.
 	Plugins []PluginConfig `json:"plugins,omitempty" yaml:"plugins,omitempty"`
+	// Admin mirrors config.admin (the admin dashboard options).
+	Admin AdminInput `json:"admin,omitempty" yaml:"admin,omitempty"`
+}
+
+// AdminInput mirrors the user admin options (AdminOptions). Unset fields
+// take the defaults of normalizeAdminConfig.
+type AdminInput struct {
+	// Disable stops the server from serving the admin dashboard.
+	Disable *bool `json:"disable,omitempty" yaml:"disable,omitempty"`
+	// Path is where the dashboard is served (default "/app").
+	Path *string `json:"path,omitempty" yaml:"path,omitempty"`
+	// BackendURL is the URL the dashboard sends API requests to
+	// (default MEDUSA_BACKEND_URL or "/").
+	BackendURL *string `json:"backendUrl,omitempty" yaml:"backendUrl,omitempty"`
+	// StorefrontURL is used by the dashboard for storefront links.
+	StorefrontURL *string `json:"storefrontUrl,omitempty" yaml:"storefrontUrl,omitempty"`
+	// OutDir is accepted for compatibility; like upstream, the server and the
+	// build always use <root>/public/admin (or .medusa/admin for --admin-only).
+	OutDir *string `json:"outDir,omitempty" yaml:"outDir,omitempty"`
+	// MaxUploadFileSize is the upload limit of the dashboard in bytes
+	// (default 1 MiB; math.Inf(1) for no limit).
+	MaxUploadFileSize *float64 `json:"maxUploadFileSize,omitempty" yaml:"maxUploadFileSize,omitempty"`
+}
+
+// AdminOptions is the resolved config.admin.
+type AdminOptions struct {
+	Disable           bool
+	Path              string
+	BackendURL        string
+	StorefrontURL     string
+	OutDir            string
+	MaxUploadFileSize float64
 }
 
 // ConfigModule is the resolved configuration.
@@ -98,6 +130,39 @@ type ConfigModule struct {
 	Modules       []ModuleConfig
 	FeatureFlags  map[string]any
 	Plugins       []PluginConfig
+	Admin         AdminOptions
+}
+
+// defaultAdminURL mirrors DEFAULT_ADMIN_URL.
+const defaultAdminURL = "/"
+
+// normalizeAdminConfig mirrors normalizeAdminConfig: the defaults shallow
+// merged with the user options.
+func normalizeAdminConfig(in AdminInput) AdminOptions {
+	out := AdminOptions{
+		BackendURL:        envOr("MEDUSA_BACKEND_URL", defaultAdminURL),
+		Path:              "/app",
+		MaxUploadFileSize: 1024 * 1024,
+	}
+	if in.Disable != nil {
+		out.Disable = *in.Disable
+	}
+	if in.Path != nil {
+		out.Path = *in.Path
+	}
+	if in.BackendURL != nil {
+		out.BackendURL = *in.BackendURL
+	}
+	if in.StorefrontURL != nil {
+		out.StorefrontURL = *in.StorefrontURL
+	}
+	if in.OutDir != nil {
+		out.OutDir = *in.OutDir
+	}
+	if in.MaxUploadFileSize != nil {
+		out.MaxUploadFileSize = *in.MaxUploadFileSize
+	}
+	return out
 }
 
 const medusaCloudExecutionContext = "medusa-cloud"
@@ -160,7 +225,13 @@ func DefineConfig(input InputConfig) ConfigModule {
 		}
 	}
 
-	return ConfigModule{ProjectConfig: pc, Modules: modules, FeatureFlags: input.FeatureFlags, Plugins: resolvePlugins(input.Plugins)}
+	return ConfigModule{
+		ProjectConfig: pc,
+		Modules:       modules,
+		FeatureFlags:  input.FeatureFlags,
+		Plugins:       resolvePlugins(input.Plugins),
+		Admin:         normalizeAdminConfig(input.Admin),
+	}
 }
 
 // PluginConfig mirrors a resolved plugin entry { resolve, options }.

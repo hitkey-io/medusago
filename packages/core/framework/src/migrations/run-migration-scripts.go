@@ -64,23 +64,10 @@ func RunScripts(ctx context.Context, db *pgxpool.Pool, scripts []Script) error {
 	if err := ensureMigrationsTable(ctx, db); err != nil {
 		return err
 	}
-	finished := map[string]bool{}
-	rows, err := db.Query(ctx, `SELECT script_name, finished_at FROM `+migrationTableName)
+	finished, err := finishedScripts(ctx, db)
 	if err != nil {
 		return err
 	}
-	for rows.Next() {
-		var name string
-		var at *time.Time
-		if err := rows.Scan(&name, &at); err != nil {
-			rows.Close()
-			return err
-		}
-		if at != nil {
-			finished[name] = true
-		}
-	}
-	rows.Close()
 
 	for _, script := range scripts {
 		if finished[script.Name] {
@@ -91,6 +78,46 @@ func RunScripts(ctx context.Context, db *pgxpool.Pool, scripts []Script) error {
 		}
 	}
 	return nil
+}
+
+// finishedScripts returns the names of the scripts with a finished record.
+func finishedScripts(ctx context.Context, db *pgxpool.Pool) (map[string]bool, error) {
+	finished := map[string]bool{}
+	rows, err := db.Query(ctx, `SELECT script_name, finished_at FROM `+migrationTableName)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var name string
+		var at *time.Time
+		if err := rows.Scan(&name, &at); err != nil {
+			return nil, err
+		}
+		if at != nil {
+			finished[name] = true
+		}
+	}
+	return finished, rows.Err()
+}
+
+// GetPendingScripts mirrors ensureMigrationsTable + getPendingMigrations:
+// the names of the scripts that have not finished yet.
+func GetPendingScripts(ctx context.Context, db *pgxpool.Pool, scripts []Script) ([]string, error) {
+	if err := ensureMigrationsTable(ctx, db); err != nil {
+		return nil, err
+	}
+	finished, err := finishedScripts(ctx, db)
+	if err != nil {
+		return nil, err
+	}
+	var pending []string
+	for _, s := range scripts {
+		if !finished[s.Name] {
+			pending = append(pending, s.Name)
+		}
+	}
+	return pending, nil
 }
 
 func runScript(ctx context.Context, db *pgxpool.Pool, script Script) error {

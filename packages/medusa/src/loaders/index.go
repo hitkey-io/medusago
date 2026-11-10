@@ -32,6 +32,9 @@ import (
 type MedusaApp struct {
 	Container *container.MedusaContainer
 	Handler   nethttp.Handler
+	// App is the router behind Handler (routes and middlewares can be
+	// added to it by Options.OnLoad hooks).
+	App *medusahttp.App
 	Pool      *pgxpool.Pool
 	// shutdown mirrors the shutdown returned by the express loader.
 	shutdown []func()
@@ -222,10 +225,34 @@ type applicationStarter interface {
 	OnApplicationStart(ctx context.Context) error
 }
 
+// Options are the options of InitializeWithOptions.
+type Options struct {
+	// Directory is the project root (static files, admin build); defaults
+	// to the working directory.
+	Directory string
+	// SkipAdmin does not register the admin dashboard (like
+	// skipLoadingEntryPoints for `medusa exec`).
+	SkipAdmin bool
+	// OnLoad runs after the application is loaded, before it serves
+	// requests: the hook of a project to register its own routes,
+	// subscribers or container entries.
+	OnLoad []func(ctx context.Context, app *MedusaApp) error
+}
+
 // Initialize mirrors the loaders of `medusa start`: container, modules,
-// Query, the express loader and the API loader.
+// Query, the express loader, the admin loader and the API loader.
 func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error) {
+	return InitializeWithOptions(ctx, cfg, Options{})
+}
+
+// InitializeWithOptions is Initialize with options.
+func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Options) (*MedusaApp, error) {
 	logger := slog.Default()
+	if opts.Directory == "" {
+		if cwd, err := os.Getwd(); err == nil {
+			opts.Directory = cwd
+		}
+	}
 	pool, err := pgxpool.New(ctx, cfg.ProjectConfig.DatabaseURL)
 	if err != nil {
 		return nil, err
@@ -308,8 +335,8 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 	store, closeStore := sessionStore(cfg.ProjectConfig)
 	sessOpts.Store = store
 	app.Use("/", medusahttp.SessionMiddleware(sessOpts))
-	if cwd, err := os.Getwd(); err == nil {
-		app.Use("/static", medusahttp.Static("/static", filepath.Join(cwd, "static")))
+	if opts.Directory != "" {
+		app.Use("/static", medusahttp.Static("/static", filepath.Join(opts.Directory, "static")))
 	}
 	// start.ts registers the health check after the loaders; it is matched
 	// by path only, so its position does not change the routing.
@@ -332,5 +359,20 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 		res.Status(200).Send("OK")
 		return nil
 	})
-	return &MedusaApp{Container: c, Handler: app, Pool: pool, shutdown: []func(){closeStore}}, nil
+	medusaApp := &MedusaApp{Container: c, Handler: app, App: app, Pool: pool, shutdown: []func(){closeStore}}
+	// admin loader (upstream registers it once the bundler is imported, after
+	// the synchronous registrations).
+	if !opts.SkipAdmin {
+		if err := AdminLoader(app, cfg, opts.Directory, logger); err != nil {
+			medusaApp.Shutdown()
+			return nil, err
+		}
+	}
+	for _, hook := range opts.OnLoad {
+		if err := hook(ctx, medusaApp); err != nil {
+			medusaApp.Shutdown()
+			return nil, err
+		}
+	}
+	return medusaApp, nil
 }

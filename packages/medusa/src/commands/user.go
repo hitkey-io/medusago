@@ -22,13 +22,16 @@ type UserOptions struct {
 	ID       string
 	Invite   bool
 	Config   config.ConfigModule
+	// Directory and OnLoad are passed to the loaders.
+	Directory string
+	OnLoad    []func(ctx context.Context, app *loaders.MedusaApp) error
 }
 
 // User mirrors commands/user.ts: an invite (its token is logged) or a user
 // with an emailpass auth identity. RBAC roles are Enterprise and skipped.
 func User(opts UserOptions) error {
 	ctx := context.Background()
-	app, err := loaders.Initialize(ctx, opts.Config)
+	app, err := loaders.InitializeWithOptions(ctx, opts.Config, loaders.Options{Directory: opts.Directory, SkipAdmin: true, OnLoad: opts.OnLoad})
 	if err != nil {
 		return err
 	}
