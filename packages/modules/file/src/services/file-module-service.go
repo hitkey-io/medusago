@@ -101,3 +101,8 @@ func (s *FileModuleService) ListAndCountBySuffix(ctx context.Context, suffix str
 	}
 	return rows, len(rows), nil
 }
+
+// GetUploadStream mirrors getUploadStream.
+func (s *FileModuleService) GetUploadStream(ctx context.Context, filename, access string) (*localfile.UploadStream, error) {
+	return s.provider.GetUploadStream(filename, access)
+}

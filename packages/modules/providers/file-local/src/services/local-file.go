@@ -189,3 +189,33 @@ func (s *LocalFileService) GetPresignedUploadURL(filename string) (FileResult, e
 
 // UploadDir is the public upload directory (served under /static).
 func (s *LocalFileService) UploadDir() string { return s.uploadDir }
+
+// UploadStream mirrors getUploadStream: the file is created at once and
+// written through the returned writer; Close finishes it (the stream's
+// promise).
+type UploadStream struct {
+	File    *os.File
+	FileKey string
+	URL     string
+}
+
+// GetUploadStream mirrors getUploadStream.
+func (s *LocalFileService) GetUploadStream(filename, access string) (*UploadStream, error) {
+	if filename == "" {
+		return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "No filename provided")
+	}
+	baseDir := s.baseDir(access)
+	key, dir := s.newKey(filename, access)
+	if err := os.MkdirAll(filepath.Join(baseDir, dir), 0o755); err != nil {
+		return nil, err
+	}
+	p, err := filePath(baseDir, key)
+	if err != nil {
+		return nil, err
+	}
+	f, err := os.Create(p)
+	if err != nil {
+		return nil, err
+	}
+	return &UploadStream{File: f, FileKey: key, URL: s.fileURL(key)}, nil
+}
