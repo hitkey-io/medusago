@@ -18,6 +18,7 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "Commands:")
 	fmt.Fprintln(os.Stderr, "  start        Start the Medusa server")
 	fmt.Fprintln(os.Stderr, "  db:migrate   Run the module migrations")
+	fmt.Fprintln(os.Stderr, "  user         Create a user")
 }
 
 // loadConfig mirrors the config loader: medusa-config(.json) of the working
@@ -64,6 +65,23 @@ func main() {
 
 		cfg := loadConfig()
 		if err := db.Migrate(context.Background(), cfg, opts); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	case "user":
+		fs := flag.NewFlagSet("user", flag.ExitOnError)
+		opts := commands.UserOptions{}
+		fs.StringVar(&opts.Email, "e", "", "User's email.")
+		fs.StringVar(&opts.Email, "email", "", "User's email.")
+		fs.StringVar(&opts.Password, "p", "", "User's password.")
+		fs.StringVar(&opts.Password, "password", "", "User's password.")
+		fs.StringVar(&opts.ID, "i", "", "User's id.")
+		fs.StringVar(&opts.ID, "id", "", "User's id.")
+		fs.BoolVar(&opts.Invite, "invite", false, "If flag is set, an invitation will be created instead of a new user and the invite token will be returned.")
+		_ = fs.Parse(os.Args[2:])
+
+		opts.Config = loadConfig()
+		if err := commands.User(opts); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}

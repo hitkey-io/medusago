@@ -3,6 +3,7 @@ package loaders
 import (
 	"context"
 	"fmt"
+	defaultsworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/defaults/workflows"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/medusa/src/subscribers"
 	eventbuslocal "github.com/hitkey-io/medusago/packages/modules/event-bus-local/src/services"
@@ -274,6 +275,12 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 	// createQuery's indexModule
 	if index, ok := c.Resolve(utilsmodulessdk.INDEX).(query.IndexService); ok {
 		q.SetIndexModule(index)
+	}
+	// loaders/index.ts: createDefaultsWorkflow runs at every start, before
+	// the modules' onApplicationStart hooks.
+	if _, err := defaultsworkflows.CreateDefaultsWorkflow.Run(ctx, c, nil); err != nil {
+		pool.Close()
+		return nil, err
 	}
 	// MedusaApp onApplicationStart: the modules' hooks (the index module
 	// creates its partitions and synchronises the changed entities).
