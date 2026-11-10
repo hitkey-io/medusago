@@ -7,6 +7,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/utils"
+	commonvalidators "github.com/hitkey-io/medusago/packages/medusa/src/api/utils/common-validators"
 )
 
 func idLike() *zod.Schema {
@@ -86,3 +87,70 @@ func parseIntJS(s string) any {
 	f, _ := strconv.ParseFloat(s[start:i], 64)
 	return f
 }
+
+var orderItem = zod.Object(
+	zod.F("id", zod.String()),
+	zod.F("quantity", zod.Number()),
+)
+
+// OrderCreateFulfillment mirrors OrderCreateFulfillment.
+var OrderCreateFulfillment = zod.Object(
+	zod.F("items", zod.Array(orderItem).Min(1)),
+	zod.F("location_id", zod.String().Nullish()),
+	zod.F("shipping_option_id", zod.String().Optional()),
+	zod.F("no_notification", zod.Boolean().Optional()),
+	zod.F("delivery_address", commonvalidators.AddressPayload().Optional()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+)
+
+// AdminOrderCreateFulfillment mirrors AdminOrderCreateFulfillment.
+var AdminOrderCreateFulfillment = utils.WithAdditionalData(OrderCreateFulfillment)
+
+var label = zod.Object(
+	zod.F("tracking_number", zod.String()),
+	zod.F("tracking_url", commonvalidators.SafeHttpURL()),
+	zod.F("label_url", commonvalidators.SafeHttpURL()),
+)
+
+// OrderCreateShipment mirrors OrderCreateShipment.
+var OrderCreateShipment = zod.Object(
+	zod.F("items", zod.Array(orderItem)),
+	zod.F("labels", zod.Array(label).Optional()),
+	zod.F("no_notification", zod.Boolean().Optional()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+)
+
+// AdminOrderCreateShipment mirrors AdminOrderCreateShipment.
+var AdminOrderCreateShipment = utils.WithAdditionalData(OrderCreateShipment)
+
+// AdminMarkOrderFulfillmentAsDelivered mirrors AdminMarkOrderFulfillmentAsDelivered.
+var AdminMarkOrderFulfillmentAsDelivered = zod.Object(zod.F("no_notification", zod.Boolean().Optional()))
+
+// AdminOrderCancelFulfillment mirrors AdminOrderCancelFulfillment.
+var AdminOrderCancelFulfillment = utils.WithAdditionalData(zod.Object(zod.F("no_notification", zod.Boolean().Optional())))
+
+func versionParam() *zod.Schema {
+	return zod.Preprocess(func(v any) any {
+		if s, ok := v.(string); ok && s != "" {
+			return parseIntJS(s)
+		}
+		return v
+	}, zod.Number().Optional())
+}
+
+// AdminGetOrdersOrderItemsParams mirrors AdminGetOrdersOrderItemsParams.
+var AdminGetOrdersOrderItemsParams = utils.CreateSelectParams().Merge(zod.Object(
+	zod.F("id", zod.Union(zod.String(), zod.Array(zod.String())).Optional()),
+	zod.F("item_id", zod.Union(zod.String(), zod.Array(zod.String())).Optional()),
+	zod.F("version", versionParam()),
+))
+
+// AdminOrderChangesParams mirrors AdminOrderChangesParams.
+var AdminOrderChangesParams = utils.CreateSelectParams().Merge(zod.Object(
+	zod.F("id", zod.Union(zod.String(), zod.Array(zod.String())).Optional()),
+	zod.F("status", zod.Union(zod.String(), zod.Array(zod.String())).Optional()),
+	zod.F("change_type", zod.Union(zod.String(), zod.Array(zod.String())).Optional()),
+	zod.F("created_at", utils.CreateOperatorMap(nil, nil).Optional()),
+	zod.F("updated_at", utils.CreateOperatorMap(nil, nil).Optional()),
+	zod.F("deleted_at", utils.CreateOperatorMap(nil, nil).Optional()),
+))

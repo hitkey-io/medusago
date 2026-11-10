@@ -2,6 +2,7 @@
 package commonvalidators
 
 import (
+	"net/url"
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
@@ -76,4 +77,19 @@ func RecursivelyNormalizeSchema(transform func(any) (any, error)) func(any) (any
 		}
 		return r, nil
 	}
+}
+
+// SafeHttpURL mirrors safeHttpUrl.
+func SafeHttpURL() *zod.Schema {
+	return zod.String().Refine(func(v any) bool {
+		s, _ := v.(string)
+		if s == "" || s == "#" {
+			return true
+		}
+		u, err := url.Parse(s)
+		if err != nil || u.Scheme == "" {
+			return false
+		}
+		return u.Scheme == "http" || u.Scheme == "https"
+	}, "URL must use http: or https: scheme")
 }

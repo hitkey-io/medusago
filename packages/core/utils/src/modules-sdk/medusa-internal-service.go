@@ -390,3 +390,6 @@ func (s *InternalService) UpsertWithReplace(ctx context.Context, data []*dal.Rec
 	})
 	return out, err
 }
+
+// MergeMetadata mirrors mergeMetadata ("" removes a key).
+func MergeMetadata(current any, update *dal.Record) *dal.Record { return mergeMetadata(current, update) }

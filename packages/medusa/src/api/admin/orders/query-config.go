@@ -14,3 +14,15 @@ var DefaultAdminRetrieveOrderFields = append(append([]string{}, DefaultAdminOrde
 
 // RetrieveTransformQueryConfig mirrors retrieveTransformQueryConfig.
 var RetrieveTransformQueryConfig = httputils.QueryConfig{Defaults: DefaultAdminRetrieveOrderFields, Entity: "order"}
+
+// DefaultAdminRetrieveOrderChangesFields mirrors defaultAdminRetrieveOrderChangesFields.
+var DefaultAdminRetrieveOrderChangesFields = []string{"id", "order_id", "return_id", "claim_id", "exchange_id", "version", "change_type", "*actions", "description", "status", "internal_note", "created_by", "requested_by", "requested_at", "confirmed_by", "confirmed_at", "declined_by", "declined_reason", "metadata", "declined_at", "canceled_by", "canceled_at", "created_at", "updated_at", "carry_over_promotions", "no_notification"}
+
+// DefaultAdminOrderItemsFields mirrors defaultAdminOrderItemsFields.
+var DefaultAdminOrderItemsFields = []string{"id", "order_id", "item_id", "version", "*item"}
+
+// RetrieveOrderChangesTransformQueryConfig mirrors retrieveOrderChangesTransformQueryConfig.
+var RetrieveOrderChangesTransformQueryConfig = httputils.QueryConfig{Defaults: DefaultAdminRetrieveOrderChangesFields}
+
+// ListOrderItemsQueryConfig mirrors listOrderItemsQueryConfig.
+var ListOrderItemsQueryConfig = httputils.QueryConfig{Defaults: DefaultAdminOrderItemsFields, DefaultLimit: 100, IsList: true}

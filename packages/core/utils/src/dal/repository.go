@@ -358,7 +358,7 @@ func selectedColumns(e *dml.Entity, tree *fieldTree) []string {
 		if p.Persist != nil && !*p.Persist {
 			// a non persisted m:1 (its column belongs to the <name>_id
 			// property) still selects its foreign key
-			if tree.fields[p.Name] && (p.Kind == "m:1" || (p.Kind == "1:1" && p.Owner)) {
+			if tree.fields[p.Name] && (p.Kind == "m:1" || (p.Kind == "1:1" && p.Owner) || p.Kind == "scalar") {
 				for _, fn := range p.FieldNames {
 					add(fn)
 				}

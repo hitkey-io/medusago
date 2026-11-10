@@ -410,10 +410,11 @@ func (s *OrderModuleService) createOrders(ctx context.Context, data []*dal.Recor
 		withTotals.Set("items", optionalList(in, "items", items))
 		withTotals.Set("credit_lines", optionalList(in, "credit_lines", creditLines))
 		carttotals.DecorateCartTotals(withTotals, false)
-		summary, err := utils.CalculateOrderChange(withTotals, records(get(in, "transactions")), nil)
+		calc, err := utils.CalculateOrderChange(withTotals, records(get(in, "transactions")), nil, utils.ProcessOptions{})
 		if err != nil {
 			return nil, err
 		}
+		summary := calc.Summary
 		totals.CreateRawPropertiesFromBigNumber(summary, func() totals.Object { return dal.NewRecord() })
 		sumRec := dal.NewRecord()
 		sumRec.Set("totals", summary)

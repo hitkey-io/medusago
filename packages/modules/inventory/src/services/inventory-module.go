@@ -389,3 +389,38 @@ func (s *InventoryModuleService) ConfirmInventory(ctx context.Context, inventory
 	}
 	return totals.Gte(available, quantity), nil
 }
+
+// AdjustInventory mirrors adjustInventory (array input of
+// { inventoryItemId, locationId, adjustment }).
+func (s *InventoryModuleService) AdjustInventory(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	var results []*dal.Record
+	for _, d := range data {
+		var level *dal.Record
+		err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
+			f := dal.NewRecord()
+			f.Set("inventory_item_id", get(d, "inventoryItemId"))
+			f.Set("location_id", get(d, "locationId"))
+			levels, err := tx.Internal("InventoryLevel").List(ctx, f, utilsmodulessdk.FindConfig{})
+			if err != nil {
+				return err
+			}
+			if len(levels) == 0 {
+				return common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, fmt.Sprintf("Inventory level for item %v and location %v not found", get(d, "inventoryItemId"), get(d, "locationId")))
+			}
+			u := dal.NewRecord()
+			u.Set("id", get(levels[0], "id"))
+			u.Set("stocked_quantity", totals.Add(get(levels[0], "stocked_quantity"), get(d, "adjustment")))
+			res, err := tx.Internal("InventoryLevel").Update(ctx, u)
+			if err != nil {
+				return err
+			}
+			level, _ = res.(*dal.Record)
+			return nil
+		})
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, level)
+	}
+	return results, nil
+}

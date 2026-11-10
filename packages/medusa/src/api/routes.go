@@ -147,6 +147,13 @@ import (
 	storeorders "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders"
 	storeorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_"
 	adminorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_"
+	adminorderfulfillments "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/fulfillments"
+	adminorderfulfillmentcancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/fulfillments/fulfillment_id_/cancel"
+	adminordershipments "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/fulfillments/fulfillment_id_/shipments"
+	adminorderdelivered "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/fulfillments/fulfillment_id_/mark-as-delivered"
+	adminorderchanges "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/changes"
+	adminorderpreview "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/preview"
+	adminorderlineitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/line-items"
 	storecustomerme "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me"
 	storecustomeraddresses "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses"
 	storecustomeraddress "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses/address_id_"
@@ -282,6 +289,13 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/notifications", Route: notifications.Route},
 		{Path: "/admin/orders", Route: orders.Route},
 		{Path: "/admin/orders/:id", Route: adminorderid.Route},
+		{Path: "/admin/orders/:id/fulfillments", Route: adminorderfulfillments.Route},
+		{Path: "/admin/orders/:id/fulfillments/:fulfillment_id/cancel", Route: adminorderfulfillmentcancel.Route},
+		{Path: "/admin/orders/:id/fulfillments/:fulfillment_id/shipments", Route: adminordershipments.Route},
+		{Path: "/admin/orders/:id/fulfillments/:fulfillment_id/mark-as-delivered", Route: adminorderdelivered.Route},
+		{Path: "/admin/orders/:id/changes", Route: adminorderchanges.Route},
+		{Path: "/admin/orders/:id/preview", Route: adminorderpreview.Route},
+		{Path: "/admin/orders/:id/line-items", Route: adminorderlineitems.Route},
 		{Path: "/admin/regions", Route: regions.Route},
 		{Path: "/admin/regions/:id", Route: regionid.Route},
 		{Path: "/admin/sales-channels", Route: saleschannels.Route},
