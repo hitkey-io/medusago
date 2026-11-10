@@ -170,6 +170,14 @@ import (
 	adminorderpreview "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/preview"
 	adminorderlineitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/line-items"
 	adminreturns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns"
+	adminclaims "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims"
+	adminclaimid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_"
+	adminclaimitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/claim-items"
+	adminclaiminbounditems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/inbound/items"
+	adminclaiminboundshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/inbound/shipping-method"
+	adminclaimoutbounditems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/outbound/items"
+	adminclaimoutboundshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/outbound/shipping-method"
+	adminclaimrequest "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/request"
 	adminreturnid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_"
 	adminreturnrequestitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/request-items"
 	adminreturnshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/shipping-method"
@@ -335,6 +343,14 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/orders/:id/preview", Route: adminorderpreview.Route},
 		{Path: "/admin/orders/:id/line-items", Route: adminorderlineitems.Route},
 		{Path: "/admin/returns", Route: adminreturns.Route},
+		{Path: "/admin/claims", Route: adminclaims.Route},
+		{Path: "/admin/claims/:id", Route: adminclaimid.Route},
+		{Path: "/admin/claims/:id/claim-items", Route: adminclaimitems.Route},
+		{Path: "/admin/claims/:id/inbound/items", Route: adminclaiminbounditems.Route},
+		{Path: "/admin/claims/:id/inbound/shipping-method", Route: adminclaiminboundshipping.Route},
+		{Path: "/admin/claims/:id/outbound/items", Route: adminclaimoutbounditems.Route},
+		{Path: "/admin/claims/:id/outbound/shipping-method", Route: adminclaimoutboundshipping.Route},
+		{Path: "/admin/claims/:id/request", Route: adminclaimrequest.Route},
 		{Path: "/admin/returns/:id", Route: adminreturnid.Route},
 		{Path: "/admin/returns/:id/request-items", Route: adminreturnrequestitems.Route},
 		{Path: "/admin/returns/:id/shipping-method", Route: adminreturnshipping.Route},

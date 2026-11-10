@@ -89,11 +89,17 @@ func ApplyChangesToOrder(orders []*dal.Record, actionsMap map[string][]*dal.Reco
 			u.Set("version", version)
 			u.Set("quantity", get(orderItem, "quantity"))
 			u.Set("unit_price", coalesceAny(get(item, "unit_price"), get(orderItem, "unit_price")))
-			u.Set("compare_at_unit_price", coalesceAny(get(item, "compare_at_unit_price"), get(orderItem, "compare_at_unit_price")))
+			// a virtual item added by an action has undefined properties
+			// (dropped by JSON) where order items have nulls
+			if cmp := coalesceAny(get(item, "compare_at_unit_price"), get(orderItem, "compare_at_unit_price")); cmp != nil || isExisting || item.Has("compare_at_unit_price") {
+				u.Set("compare_at_unit_price", cmp)
+			}
 			for _, k := range []string{"fulfilled_quantity", "delivered_quantity", "shipped_quantity", "return_requested_quantity", "return_received_quantity", "return_dismissed_quantity", "written_off_quantity"} {
 				u.Set(k, orZero(get(orderItem, k)))
 			}
-			u.Set("metadata", get(orderItem, "metadata"))
+			if isExisting || orderItem.Has("metadata") {
+				u.Set("metadata", get(orderItem, "metadata"))
+			}
 			if version > orderVersion {
 				for _, adj := range records(get(item, "adjustments")) {
 					a := dal.NewRecord()

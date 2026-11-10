@@ -285,7 +285,9 @@ func init() {
 				existing.Set("claim_id", get(c.Action, "claim_id"))
 				existing.Set("exchange_id", get(c.Action, "exchange_id"))
 				existing.Set("unit_price", get(d, "unit_price"))
-				existing.Set("compare_at_unit_price", get(d, "compare_at_unit_price"))
+				if v, ok := d.Get("compare_at_unit_price"); ok {
+					existing.Set("compare_at_unit_price", v)
+				}
 				existing.Set("quantity", get(d, "quantity"))
 				if m, ok := d.Get("metadata"); ok {
 					existing.Set("metadata", m)

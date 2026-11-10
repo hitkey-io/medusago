@@ -8,7 +8,6 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 )
 
-
 type statusOps interface {
 	ListBySuffix(ctx context.Context, suffix string, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, error)
 	Cancel(ctx context.Context, ids []any) ([]*dal.Record, error)

@@ -16,7 +16,9 @@ type orderUpdater interface {
 	RegisterOrderChange(ctx context.Context, data []*dal.Record) ([]*dal.Record, error)
 }
 
-func updaterOf(c composer.Container) orderUpdater { return c.Resolve(utilsmodulessdk.ORDER).(orderUpdater) }
+func updaterOf(c composer.Container) orderUpdater {
+	return c.Resolve(utilsmodulessdk.ORDER).(orderUpdater)
+}
 
 // UpdateOrdersStepInput mirrors UpdateOrdersStepInput.
 type UpdateOrdersStepInput struct {

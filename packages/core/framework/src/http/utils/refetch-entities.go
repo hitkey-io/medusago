@@ -186,3 +186,15 @@ func RemoteQueryRetrieveRoute(entryPoint, key, notFound string) medusahttp.Route
 		return res.Status(200).JSON(out)
 	}
 }
+
+// RemoteQueryListOpts is RemoteQueryList with { throwIfKeyNotFound }.
+func RemoteQueryListOpts(ctx context.Context, scope medusahttp.MedusaContainer, entryPoint string, variables *dal.Record, fields []string, throwIfKeyNotFound bool) (*query.GraphResult, error) {
+	res, err := QueryOf(scope).RemoteQuery(ctx, query.RemoteQueryObjectFromString(query.RemoteQueryObjectConfig{EntryPoint: entryPoint, Variables: variables, Fields: fields}), joiner.Options{ThrowIfKeyNotFound: throwIfKeyNotFound})
+	if err != nil {
+		return nil, err
+	}
+	if res.Metadata == nil {
+		res.Metadata = dal.NewRecord()
+	}
+	return res, nil
+}

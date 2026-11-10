@@ -17,6 +17,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
+	adminclaims "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims"
 	adminreturns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns"
 	pricelists "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists"
 	pricepreferences "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-preferences"
@@ -103,6 +104,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, notifications.AdminNotificationRoutesMiddlewares...)
 	out = append(out, orders.AdminOrderRoutesMiddlewares...)
 	out = append(out, adminreturns.AdminReturnRoutesMiddlewares...)
+	out = append(out, adminclaims.AdminClaimRoutesMiddlewares...)
 	out = append(out, productcategories.Middlewares...)
 	out = append(out, configurations.LayoutConfigurationListRoutesMiddlewares...)
 	out = append(out, currencies.Middlewares...)

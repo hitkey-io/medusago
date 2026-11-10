@@ -204,10 +204,21 @@ func formatOrderReturn(orderReturn, mainOrder *dal.Record) {
 
 func formatClaim(claim *dal.Record) {
 	order := asRecord(get(claim, "order"))
+	// claim_items and additional_items load the same OrderClaimItem entities:
+	// a flag hydrated through one relation is visible through the other
+	additional := map[any]bool{}
+	for _, rel := range []string{"claim_items", "additional_items"} {
+		for _, it := range records(get(claim, rel)) {
+			if b, ok := get(it, "is_additional_item").(bool); ok {
+				additional[get(it, "id")] = b
+			}
+		}
+	}
+	isAdditional := func(it *dal.Record) bool { return additional[get(it, "id")] }
 	if v, ok := claim.Get("additional_items"); ok && v != nil {
 		var kept []*dal.Record
 		for _, it := range records(v) {
-			if b, _ := get(it, "is_additional_item").(bool); b {
+			if isAdditional(it) {
 				kept = append(kept, it)
 			}
 		}
@@ -224,7 +235,7 @@ func formatClaim(claim *dal.Record) {
 	}
 	var kept []*dal.Record
 	for _, it := range records(v) {
-		if b, _ := get(it, "is_additional_item").(bool); !b {
+		if !isAdditional(it) {
 			kept = append(kept, it)
 		}
 	}

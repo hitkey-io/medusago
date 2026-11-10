@@ -430,7 +430,15 @@ func (s *OrderModuleService) includeTaxLinesAndAdjustmentsToPreview(ctx context.
 				adjustments = []any{}
 			}
 			lineItem.Set("adjustments", adjustments)
-			detail := copyRecord(newItem)
+			// { ...newItem, ...item }: newItem.id is an undefined key first
+			detail := dal.NewRecord()
+			if !newItem.Has("id") {
+				detail.Set("id", get(item, "id"))
+			}
+			for _, k := range newItem.Keys() {
+				v, _ := newItem.Get(k)
+				detail.Set(k, v)
+			}
 			for _, k := range item.Keys() {
 				v, _ := item.Get(k)
 				detail.Set(k, v)
