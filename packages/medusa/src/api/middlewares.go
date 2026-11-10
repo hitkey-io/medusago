@@ -6,10 +6,12 @@ import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	apikeys "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/api-keys"
 	admincampaigns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/campaigns"
+	adminclaims "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections"
 	currencies "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/currencies"
 	customergroups "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups"
 	admincustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers"
+	adminexchanges "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges"
 	fulfillmentproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-providers"
 	fulfillmentsets "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets"
 	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
@@ -17,8 +19,8 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
-	adminclaims "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims"
-	adminreturns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns"
+	adminpcsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payment-collections"
+	adminpaymentsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments"
 	pricelists "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-lists"
 	pricepreferences "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/price-preferences"
 	productcategories "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-categories"
@@ -32,6 +34,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
 	adminreservations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/reservations"
 	returnreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons"
+	adminreturns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns"
 	saleschannels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels"
 	shippingoptiontypes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-option-types"
 	shippingoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-options"
@@ -49,6 +52,7 @@ import (
 	storecollectionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections"
 	storecurrenciesmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies"
 	storecustomersmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers"
+	storeordersmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders"
 	storepaymentcollectionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-collections"
 	storepaymentprovidersmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-providers"
 	storecategoriesmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-categories"
@@ -60,9 +64,6 @@ import (
 	storeregionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/regions"
 	storereasonsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons"
 	storeshippingoptionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/shipping-options"
-	storeordersmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders"
-	adminpaymentsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments"
-	adminpcsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payment-collections"
 )
 
 // Middlewares mirrors the default export of middlewares.ts.
@@ -105,6 +106,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, orders.AdminOrderRoutesMiddlewares...)
 	out = append(out, adminreturns.AdminReturnRoutesMiddlewares...)
 	out = append(out, adminclaims.AdminClaimRoutesMiddlewares...)
+	out = append(out, adminexchanges.AdminExchangeRoutesMiddlewares...)
 	out = append(out, productcategories.Middlewares...)
 	out = append(out, configurations.LayoutConfigurationListRoutesMiddlewares...)
 	out = append(out, currencies.Middlewares...)

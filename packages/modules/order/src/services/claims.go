@@ -57,3 +57,14 @@ func (s *OrderModuleService) DeleteOrderClaimItems(ctx context.Context, ids []an
 	_, err := s.Internal("OrderClaimItem").Delete(ctx, ids)
 	return err
 }
+
+// CreateOrderExchangeItems mirrors createOrderExchangeItems.
+func (s *OrderModuleService) CreateOrderExchangeItems(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	return s.Internal("OrderExchangeItem").Create(ctx, data)
+}
+
+// DeleteOrderExchangeItems mirrors deleteOrderExchangeItems.
+func (s *OrderModuleService) DeleteOrderExchangeItems(ctx context.Context, ids []any) error {
+	_, err := s.Internal("OrderExchangeItem").Delete(ctx, ids)
+	return err
+}
