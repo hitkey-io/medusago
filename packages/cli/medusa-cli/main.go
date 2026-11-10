@@ -20,6 +20,18 @@ func usage() {
 	fmt.Fprintln(os.Stderr, "  db:migrate   Run the module migrations")
 }
 
+// loadConfig mirrors the config loader: medusa-config(.json) of the working
+// directory passed through defineConfig.
+func loadConfig() config.ConfigModule {
+	cwd, _ := os.Getwd()
+	input, path, err := config.GetConfigFile(cwd, "medusa-config")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to load %s: %v\n", path, err)
+		os.Exit(1)
+	}
+	return config.DefineConfig(input)
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		usage()
@@ -36,7 +48,7 @@ func main() {
 		fs.IntVar(&opts.Port, "port", 9000, "Set port")
 		_ = fs.Parse(os.Args[2:])
 
-		opts.Config = config.DefineConfig(config.InputConfig{})
+		opts.Config = loadConfig()
 		if err := commands.Start(opts); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -50,7 +62,7 @@ func main() {
 		fs.BoolVar(&opts.ExecuteSafeLinks, "execute-safe-links", false, "Apply only safe link changes")
 		_ = fs.Parse(os.Args[2:])
 
-		cfg := config.DefineConfig(config.InputConfig{})
+		cfg := loadConfig()
 		if err := db.Migrate(context.Background(), cfg, opts); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)

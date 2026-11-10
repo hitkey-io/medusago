@@ -19,6 +19,7 @@ import (
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	ff "github.com/hitkey-io/medusago/packages/core/utils/src/feature-flags"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/ioredis"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api"
 	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/feature-flags"
@@ -30,10 +31,15 @@ type MedusaApp struct {
 	Container *container.MedusaContainer
 	Handler   nethttp.Handler
 	Pool      *pgxpool.Pool
+	// shutdown mirrors the shutdown returned by the express loader.
+	shutdown []func()
 }
 
 // Shutdown releases the resources.
 func (a *MedusaApp) Shutdown() {
+	for _, fn := range a.shutdown {
+		fn()
+	}
 	if a.Pool != nil {
 		a.Pool.Close()
 	}
@@ -137,18 +143,39 @@ func sessionOptions(cfg config.ProjectConfig) medusahttp.SessionOptions {
 		if co.MaxAge != nil {
 			o.Cookie.MaxAge = *co.MaxAge
 		}
+		if co.Partitioned != nil {
+			o.Cookie.Partitioned = *co.Partitioned
+		}
+		if co.Priority != "" {
+			o.Cookie.Priority = co.Priority
+		}
 		switch v := co.SameSite.(type) {
 		case string:
 			o.Cookie.SameSite = v
 		case bool:
 			if v {
-				o.Cookie.SameSite = "strict"
+				o.Cookie.SameSite = "true"
 			} else {
 				o.Cookie.SameSite = ""
 			}
 		}
 	}
 	return o
+}
+
+// sessionStore mirrors the store selection of the express loader: with
+// projectConfig.redisUrl, connect-redis over an ioredis client created with
+// redisOptions and the key prefix `${redisPrefix ?? ""}sess:`; otherwise
+// express-session's MemoryStore. The returned func disconnects the client.
+// (sessionOptions.dynamodbOptions, checked first upstream, is not ported.)
+func sessionStore(cfg config.ProjectConfig) (medusahttp.SessionStore, func()) {
+	if cfg.RedisURL == "" {
+		return medusahttp.NewMemoryStore(), func() {}
+	}
+	client := ioredis.New(cfg.RedisURL, cfg.RedisOptions)
+	prefix := cfg.RedisPrefix + "sess:"
+	store := medusahttp.NewRedisStore(medusahttp.RedisStoreOptions{Client: client, Prefix: &prefix})
+	return store, func() { _ = client.Close() }
 }
 
 // Initialize mirrors the loaders of `medusa start`: container, modules,
@@ -204,7 +231,10 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 		return req
 	}
 	// express loader
-	app.Use("/", medusahttp.SessionMiddleware(sessionOptions(cfg.ProjectConfig)))
+	sessOpts := sessionOptions(cfg.ProjectConfig)
+	store, closeStore := sessionStore(cfg.ProjectConfig)
+	sessOpts.Store = store
+	app.Use("/", medusahttp.SessionMiddleware(sessOpts))
 	if cwd, err := os.Getwd(); err == nil {
 		app.Use("/static", medusahttp.Static("/static", filepath.Join(cwd, "static")))
 	}
@@ -228,5 +258,5 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 		res.Status(200).Send("OK")
 		return nil
 	})
-	return &MedusaApp{Container: c, Handler: app, Pool: pool}, nil
+	return &MedusaApp{Container: c, Handler: app, Pool: pool, shutdown: []func(){closeStore}}, nil
 }

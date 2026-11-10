@@ -25,6 +25,14 @@ func joinPath(parts ...string) string { return strings.Join(parts, ".") }
 // CompileQuery mirrors compileQuery (cross module join pushdown and seed
 // data are handled separately).
 func CompileQuery(query *RemoteJoinerQuery, serviceConfig *ServiceConfig, catalog *GraphCatalog) (*QueryPlan, error) {
+	crossModuleJoins, residualFilters, residualOrder := extractCrossModuleJoins(query, serviceConfig, catalog)
+	if len(crossModuleJoins) > 0 {
+		query.Args = append(query.Args, Arg{Name: "__internal", Value: crossModuleJoins})
+	}
+	var residualHidden []ResidualHiddenProperty
+	if len(residualFilters) > 0 || len(residualOrder) > 0 {
+		residualHidden = consumeResiduals(query, serviceConfig, catalog, residualFilters, residualOrder)
+	}
 	primaryKeyArg, otherArgs, pkName := getPrimaryKeysAndOtherFilters(serviceConfig, query)
 
 	root := &ExpandProperty{
@@ -50,6 +58,10 @@ func CompileQuery(query *RemoteJoinerQuery, serviceConfig *ServiceConfig, catalo
 		PkName:        pkName,
 		PrimaryKeyArg: primaryKeyArg,
 		OtherArgs:     otherArgs,
+
+		ResidualFilters: residualFilters,
+		ResidualOrder:   residualOrder,
+		ResidualHidden:  residualHidden,
 	}, nil
 }
 

@@ -271,8 +271,7 @@ var SetOrderTaxLinesForItemsStep = composer.CreateStep("set-order-tax-lines-for-
 		return composer.NewStepResponse[any](nil), nil
 	}, nil)
 
-// CancelOrderReturnStep mirrors cancelOrderReturnStep (the revertLastVersion
-// compensation is not ported yet).
+// CancelOrderReturnStep mirrors cancelOrderReturnStep.
 var CancelOrderReturnStep = composer.CreateStep("cancel-order-return",
 	func(ctx composer.StepExecutionContext, data *dal.Record) (composer.StepResponse[any], error) {
 		svc, _ := ctx.Container.Resolve(utilsmodulessdk.ORDER).(interface {
@@ -281,5 +280,5 @@ var CancelOrderReturnStep = composer.CreateStep("cancel-order-return",
 		if _, err := svc.CancelReturn(ctx.Context, data); err != nil {
 			return composer.StepResponse[any]{}, err
 		}
-		return composer.NewStepResponse[any](nil), nil
-	}, nil)
+		return composer.NewStepResponse[any](nil, get(data, "order_id")), nil
+	}, RevertLastVersion)

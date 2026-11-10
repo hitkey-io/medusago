@@ -164,6 +164,12 @@ func ExecutePlan(ctx context.Context, plan *QueryPlan, fetcher DataFetcher, cata
 			ids = []any{plan.PrimaryKeyArg.Value}
 		}
 	}
+	// Residual filters are completed in memory: pagination moves after them.
+	var pagination *rootPagination
+	hasResiduals := len(plan.ResidualFilters) > 0 || len(plan.ResidualOrder) > 0
+	if hasResiduals {
+		pagination = extractRootPagination(plan.Root)
+	}
 	res, err := fetchData(ctx, fetcher, plan.Root, plan.PkName, ids, hasIDs, nil, opts)
 	if err != nil {
 		return nil, err
@@ -171,7 +177,52 @@ func ExecutePlan(ctx context.Context, plan *QueryPlan, fetcher DataFetcher, cata
 	if err := handleExpands(ctx, res.Rows, plan, fetcher, catalog, opts); err != nil {
 		return nil, err
 	}
-	return &Response{Data: res.Rows, Metadata: res.Metadata, Paged: res.Paged}, nil
+	if !hasResiduals {
+		return &Response{Data: res.Rows, Metadata: res.Metadata, Paged: res.Paged}, nil
+	}
+	data := res.Rows
+	if len(plan.ResidualFilters) > 0 {
+		if data, err = applyResidualFilters(data, plan.ResidualFilters); err != nil {
+			return nil, err
+		}
+	}
+	if len(plan.ResidualOrder) > 0 {
+		sortByResidualOrder(data, plan.ResidualOrder)
+	}
+	if len(plan.ResidualHidden) > 0 {
+		hideResidualProperties(data, plan.ResidualHidden)
+	}
+	count := len(data)
+	if pagination != nil {
+		skip := 0
+		if pagination.skip != nil {
+			skip = *pagination.skip
+		}
+		if skip > len(data) {
+			skip = len(data)
+		}
+		end := len(data)
+		if pagination.take != nil && skip+*pagination.take < end {
+			end = skip + *pagination.take
+		}
+		data = data[skip:end]
+		if pagination.withMetadata {
+			meta := dal.NewRecord()
+			if pagination.skip != nil {
+				meta.Set("skip", float64(*pagination.skip))
+			} else {
+				meta.Set("skip", nil)
+			}
+			if pagination.take != nil {
+				meta.Set("take", float64(*pagination.take))
+			} else {
+				meta.Set("take", nil)
+			}
+			meta.Set("count", float64(count))
+			return &Response{Data: data, Metadata: meta, Paged: true}, nil
+		}
+	}
+	return &Response{Data: data, Metadata: res.Metadata, Paged: res.Paged}, nil
 }
 
 type pathCtx struct {

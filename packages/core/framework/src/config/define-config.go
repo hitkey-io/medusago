@@ -47,6 +47,9 @@ type CookieOptions struct {
 	Path     string `json:"path" yaml:"path"`
 	HttpOnly *bool  `json:"httpOnly" yaml:"httpOnly"`
 	MaxAge   *int64 `json:"maxAge" yaml:"maxAge"`
+	// Partitioned and Priority are passed through to cookie.serialize.
+	Partitioned *bool  `json:"partitioned" yaml:"partitioned"`
+	Priority    string `json:"priority" yaml:"priority"`
 }
 
 // ProjectConfig mirrors projectConfig from medusa-config.
@@ -55,7 +58,10 @@ type ProjectConfig struct {
 	RedisURL    string     `json:"redisUrl" yaml:"redisUrl"`
 	HTTP        HttpConfig `json:"http" yaml:"http"`
 	// RedisPrefix prefixes the Redis keys (sessions: <prefix>sess:<sid>).
-	RedisPrefix    string          `json:"redisPrefix" yaml:"redisPrefix"`
+	RedisPrefix string `json:"redisPrefix" yaml:"redisPrefix"`
+	// RedisOptions are the ioredis options of the session store client
+	// (merged under the redisUrl values like `new Redis(redisUrl, redisOptions)`).
+	RedisOptions   map[string]any  `json:"redisOptions" yaml:"redisOptions"`
 	SessionOptions *SessionOptions `json:"sessionOptions" yaml:"sessionOptions"`
 	CookieOptions  *CookieOptions  `json:"cookieOptions" yaml:"cookieOptions"`
 }
@@ -93,6 +99,8 @@ type ConfigModule struct {
 	Plugins       []PluginConfig
 }
 
+const medusaCloudExecutionContext = "medusa-cloud"
+
 // DefineConfig mirrors defineConfig from define-config.ts: it fills project
 // defaults and merges the user modules over the default modules, keeping the
 // upstream order.
@@ -101,7 +109,8 @@ func DefineConfig(input InputConfig) ConfigModule {
 	if pc.DatabaseURL == "" {
 		pc.DatabaseURL = os.Getenv("DATABASE_URL")
 	}
-	if pc.RedisURL == "" {
+	// REDIS_URL is only a projectConfig default on Medusa Cloud.
+	if pc.RedisURL == "" && os.Getenv("EXECUTION_CONTEXT") == medusaCloudExecutionContext {
 		pc.RedisURL = os.Getenv("REDIS_URL")
 	}
 	if pc.HTTP.JwtSecret == "" {

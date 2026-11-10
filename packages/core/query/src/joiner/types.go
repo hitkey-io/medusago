@@ -6,6 +6,7 @@ package joiner
 import (
 	"context"
 
+	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
@@ -85,9 +86,27 @@ type FieldAliasEntry struct {
 
 // ServiceAlias is a flattened service alias.
 type ServiceAlias struct {
-	Name   string
-	Entity string
-	Args   map[string]any
+	Name     string
+	Entity   string
+	Args     map[string]any
+	Internal *AliasMetadata
+}
+
+// InternalRelation mirrors __internal.relations entries.
+type InternalRelation struct {
+	Entity          string `json:"entity"`
+	ForeignKey      string `json:"foreignKey"`
+	ForeignKeyOwner string `json:"foreignKeyOwner"`
+	IsList          bool   `json:"isList,omitempty"`
+}
+
+// AliasMetadata mirrors JoinerServiceConfigAlias.__internal (cross-module
+// join metadata of a DML entity).
+type AliasMetadata struct {
+	Crossjoinable []string                    `json:"crossjoinable,omitempty"`
+	TableName     string                      `json:"tableName,omitempty"`
+	Schema        string                      `json:"schema,omitempty"`
+	Relations     map[string]InternalRelation `json:"relations,omitempty"`
 }
 
 // ServiceConfig mirrors InternalJoinerServiceConfig. Relationships and
@@ -100,6 +119,7 @@ type ServiceConfig struct {
 	Alias          []ServiceAlias
 	IsLink         bool
 	IsReadOnlyLink bool
+	DatabaseConfig *joiner.DatabaseConfig
 	Relationships  *RelationshipMap
 	FieldAlias     map[string][]FieldAliasEntry
 }
@@ -203,6 +223,11 @@ type QueryPlan struct {
 	PkName        string
 	PrimaryKeyArg *Arg
 	OtherArgs     []Arg
+	// ResidualFilters are cross-module filters completed in memory;
+	// ResidualHidden lists the properties loaded only for them.
+	ResidualFilters []ResidualCrossModuleFilter
+	ResidualOrder   []ResidualOrderBy
+	ResidualHidden  []ResidualHiddenProperty
 }
 
 // FetchResult is what a data fetcher returns: rows, or rows with pagination

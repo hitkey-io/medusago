@@ -169,7 +169,11 @@ var PrepareAdjustmentsFromPromotionActionsStep = composer.CreateStep("prepare-ad
 				r := dal.NewRecord()
 				r.Set("code", Get(a, "code"))
 				r.Set("amount", totals.JSONNumber(Get(a, "amount")))
-				r.Set("is_tax_inclusive", Get(a, "is_tax_inclusive"))
+				// buy-get actions carry is_tax_inclusive only when true
+				// (undefined is dropped between steps)
+				if a.Has("is_tax_inclusive") {
+					r.Set("is_tax_inclusive", Get(a, "is_tax_inclusive"))
+				}
 				r.Set("item_id", Get(a, "item_id"))
 				r.Set("promotion_id", promoIDs[Get(a, "code")])
 				out.LineItemAdjustmentsToCreate = append(out.LineItemAdjustmentsToCreate, r)

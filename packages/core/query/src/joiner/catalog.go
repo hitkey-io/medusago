@@ -1,6 +1,7 @@
 package joiner
 
 import (
+	"encoding/json"
 	"fmt"
 	"slices"
 	"strings"
@@ -64,6 +65,7 @@ func NewGraphCatalog(configs []*joiner.ModuleJoinerConfig, relationMap RelationM
 			PrimaryKeys:    cfg.PrimaryKeys,
 			IsLink:         cfg.IsLink,
 			IsReadOnlyLink: cfg.IsReadOnlyLink,
+			DatabaseConfig: cfg.DatabaseConfig,
 			Relationships:  newRelationshipMap(),
 			FieldAlias:     map[string][]FieldAliasEntry{},
 		}
@@ -86,8 +88,15 @@ func NewGraphCatalog(configs []*joiner.ModuleJoinerConfig, relationMap RelationM
 		if !isReadOnly {
 			// indexAliases: flatten alias names.
 			for _, a := range e.src.Alias {
+				var internal *AliasMetadata
+				if len(a.Internal) > 0 {
+					internal = &AliasMetadata{}
+					if err := json.Unmarshal(a.Internal, internal); err != nil {
+						return nil, fmt.Errorf("invalid __internal of alias %v: %w", a.Name, err)
+					}
+				}
 				for _, name := range a.Name {
-					e.svc.Alias = append(e.svc.Alias, ServiceAlias{Name: name, Entity: a.Entity, Args: a.Args})
+					e.svc.Alias = append(e.svc.Alias, ServiceAlias{Name: name, Entity: a.Entity, Args: a.Args, Internal: internal})
 				}
 			}
 			for _, alias := range e.svc.Alias {
@@ -204,6 +213,24 @@ func (c *GraphCatalog) GetServiceConfig(serviceName, serviceAlias, entity string
 		return c.cache["alias_"+serviceAlias]
 	}
 	return c.cache[serviceName]
+}
+
+// GetAliasMetadata mirrors getAliasMetadata: the __internal metadata of
+// the alias entry matching the entity.
+func (c *GraphCatalog) GetAliasMetadata(entity string) *AliasMetadata {
+	if entity == "" {
+		return nil
+	}
+	svc := c.GetServiceConfig("", "", entity)
+	if svc == nil {
+		return nil
+	}
+	for _, a := range svc.Alias {
+		if a.Entity == entity && a.Internal != nil {
+			return a.Internal
+		}
+	}
+	return nil
 }
 
 // GetEntity mirrors getEntity.

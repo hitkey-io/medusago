@@ -2,7 +2,7 @@ package steps
 
 import (
 	"context"
-	"log/slog"
+	"fmt"
 
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -18,13 +18,17 @@ type registrar interface {
 
 func registrarOf(c composer.Container) registrar { return c.Resolve(utilsmodulessdk.ORDER).(registrar) }
 
-// revertLastVersion is the compensation of the register steps (the order
-// module's revertLastVersion is not ported yet).
-func revertLastVersion(ctx composer.StepExecutionContext, orderID any) error {
-	if orderID != nil {
-		slog.Error("revertLastVersion is not supported yet")
+// RevertLastVersion is the compensation shared by the register, cancel and
+// complete-return steps: `if (!orderId) return; await
+// service.revertLastVersion(orderId)`.
+func RevertLastVersion(ctx composer.StepExecutionContext, orderID any) error {
+	if orderID == nil || orderID == "" {
+		return nil
 	}
-	return nil
+	svc := ctx.Container.Resolve(utilsmodulessdk.ORDER).(interface {
+		RevertLastVersion(ctx context.Context, orderID string) error
+	})
+	return svc.RevertLastVersion(ctx.Context, fmt.Sprint(orderID))
 }
 
 func registerStep(name string, fn func(r registrar, ctx context.Context, data *dal.Record) error) *composer.Step[*dal.Record, any] {
@@ -34,7 +38,7 @@ func registerStep(name string, fn func(r registrar, ctx context.Context, data *d
 				return composer.StepResponse[any]{}, err
 			}
 			return composer.NewStepResponse[any](nil, get(data, "order_id")), nil
-		}, revertLastVersion)
+		}, RevertLastVersion)
 }
 
 // RegisterOrderFulfillmentStep mirrors registerOrderFulfillmentStep.

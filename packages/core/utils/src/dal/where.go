@@ -90,6 +90,12 @@ func (q *queryBuilder) where(e *dml.Entity, alias string, filter *Record, path s
 		value, _ := filter.Get(key)
 		var c string
 		var err error
+		if raw, ok := value.(RawFilter); ok {
+			if c = raw(alias, q.arg); c != "" {
+				conds = append(conds, c)
+			}
+			continue
+		}
 		switch key {
 		case "$and", "$or":
 			c, err = q.logical(e, alias, key, value, path)

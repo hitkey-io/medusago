@@ -15,6 +15,9 @@ import (
 type OrderBy struct {
 	Field     string
 	Direction string // ASC or DESC
+	// Raw orders by a SQL expression of the root alias (cross-module
+	// ordering subqueries).
+	Raw func(alias string) string
 }
 
 // FindOptions mirrors DAL.FindOptions as produced by buildQuery.
@@ -32,6 +35,9 @@ type FindOptions struct {
 	// JoinedStrategy mirrors MikroORM's JOINED load strategy: the foreign
 	// keys joining partially selected collections are not hydrated.
 	JoinedStrategy bool
+	// CrossModuleJoins mirrors options.__internal.crossModuleJoins: filters
+	// on tables of other modules pushed down as EXISTS conditions.
+	CrossModuleJoins []*CrossModuleJoinSpec
 }
 
 // Repository reads the rows of one model, reproducing the queries and the
@@ -144,6 +150,10 @@ func hasDeletedAt(e *dml.Entity) bool {
 
 // Find mirrors repository.find.
 func (r *Repository) Find(ctx context.Context, opts FindOptions) ([]*Record, error) {
+	opts, err := r.augmentCrossModuleJoins(opts)
+	if err != nil {
+		return nil, err
+	}
 	opts = r.pruneFindOptions(opts)
 	roots, idm, err := r.find(ctx, opts)
 	if err != nil {
@@ -157,12 +167,50 @@ func (r *Repository) Find(ctx context.Context, opts FindOptions) ([]*Record, err
 
 // FindAndCount mirrors repository.findAndCount.
 func (r *Repository) FindAndCount(ctx context.Context, opts FindOptions) ([]*Record, int, error) {
+	opts, err := r.augmentCrossModuleJoins(opts)
+	if err != nil {
+		return nil, 0, err
+	}
 	records, err := r.Find(ctx, opts)
 	if err != nil {
 		return nil, 0, err
 	}
 	count, err := r.count(ctx, opts)
 	return records, count, err
+}
+
+// augmentCrossModuleJoins mirrors augmentFindOptionsWithCrossModuleJoins:
+// the root where becomes { $and: [where, ...exists] }.
+func (r *Repository) augmentCrossModuleJoins(opts FindOptions) (FindOptions, error) {
+	if len(opts.CrossModuleJoins) == 0 {
+		return opts, nil
+	}
+	pk := "id"
+	if len(r.Entity.Meta.PrimaryKey) > 0 {
+		pk = r.Entity.Meta.PrimaryKey[0]
+	}
+	filters, err := CrossModuleExistsFilters(opts.CrossModuleJoins, r.Entity.Meta.Collection, pk, opts.WithDeleted)
+	if err != nil {
+		return opts, err
+	}
+	opts.Order = crossModuleOrder(opts.Order, opts.CrossModuleJoins, r.Entity.Meta.Collection, pk, opts.WithDeleted)
+	opts.CrossModuleJoins = nil
+	if len(filters) == 0 {
+		return opts, nil
+	}
+	var and []any
+	if opts.Where != nil && opts.Where.Len() > 0 {
+		and = append(and, opts.Where)
+	}
+	for i, f := range filters {
+		cond := NewRecord()
+		cond.Set(fmt.Sprintf("__cross_module_%d", i), f)
+		and = append(and, cond)
+	}
+	where := NewRecord()
+	where.Set("$and", and)
+	opts.Where = where
+	return opts, nil
 }
 
 func (r *Repository) count(ctx context.Context, opts FindOptions) (int, error) {
@@ -197,7 +245,7 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 	relationOrder := map[string][]OrderBy{}
 	var rootOrder []OrderBy
 	for _, o := range opts.Order {
-		if i := strings.LastIndex(o.Field, "."); i > 0 {
+		if i := strings.LastIndex(o.Field, "."); i > 0 && o.Raw == nil {
 			relationOrder[o.Field[:i]] = append(relationOrder[o.Field[:i]], OrderBy{Field: o.Field[i+1:], Direction: o.Direction})
 			continue
 		}
@@ -424,6 +472,10 @@ func (r *Repository) orderSQL(order []OrderBy, alias string) (string, error) {
 	}
 	parts := make([]string, len(order))
 	for i, o := range order {
+		if o.Raw != nil {
+			parts[i] = o.Raw(alias) + " " + strings.ToLower(o.Direction)
+			continue
+		}
 		c, err := r.orderColumn(o.Field, alias)
 		if err != nil {
 			return "", err

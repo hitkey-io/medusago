@@ -2,7 +2,7 @@ package steps
 
 import (
 	"context"
-	"log/slog"
+	"fmt"
 
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -63,27 +63,37 @@ type ConfirmOrderChangesInput struct {
 	ConfirmedBy any
 }
 
-// ConfirmOrderChangesStep mirrors confirmOrderChanges (the undoLastChange
-// compensation is not ported yet).
+// ConfirmOrderChangesStep mirrors confirmOrderChanges.
 var ConfirmOrderChangesStep = composer.CreateStep("confirm-order-changes",
 	func(ctx composer.StepExecutionContext, in ConfirmOrderChangesInput) (composer.StepResponse[any], error) {
 		var data []any
+		var currentChanges []*dal.Record
 		for _, c := range in.Changes {
 			u := dal.NewRecord()
 			u.Set("id", get(c, "id"))
 			u.Set("confirmed_by", in.ConfirmedBy)
 			data = append(data, u)
+			current := dal.NewRecord()
+			current.Set("id", get(c, "id"))
+			current.Set("confirmed_by", in.ConfirmedBy)
+			current.Set("order_id", in.OrderID)
+			current.Set("status", get(c, "status"))
+			currentChanges = append(currentChanges, current)
 		}
 		if err := ctx.Container.Resolve(utilsmodulessdk.ORDER).(confirmer).ConfirmOrderChangeRecords(ctx.Context, data); err != nil {
 			return composer.StepResponse[any]{}, err
 		}
-		return composer.NewStepResponse[any](nil, any(in.OrderID)), nil
+		return composer.NewStepResponse[any](nil, any(currentChanges)), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
-		if data != nil {
-			slog.Error("undoLastChange is not supported yet")
+		currentChanges, _ := data.([]*dal.Record)
+		if len(currentChanges) == 0 {
+			return nil
 		}
-		return nil
+		svc := ctx.Container.Resolve(utilsmodulessdk.ORDER).(interface {
+			UndoLastChange(ctx context.Context, orderID string, lastOrderChange *dal.Record) error
+		})
+		return svc.UndoLastChange(ctx.Context, fmt.Sprint(get(currentChanges[0], "order_id")), currentChanges[0])
 	})
 
 // DeclineOrderChangeStep mirrors declineOrderChangeStep (the

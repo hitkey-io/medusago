@@ -1,0 +1,648 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "pk",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys",
+    "body": {
+      "title": "Store",
+      "type": "publishable"
+    }
+  },
+  {
+    "name": "channels",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/sales-channels?order=name&fields=id,name"
+  },
+  {
+    "name": "link",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys/{{pk.api_key.id}}/sales-channels?fields=id",
+    "body": {
+      "add": [
+        "{{channels.sales_channels.0.id}}"
+      ]
+    }
+  },
+  {
+    "name": "regions",
+    "method": "GET",
+    "path": "/store/regions?order=name&fields=id,name",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "products",
+    "method": "GET",
+    "path": "/store/products?fields=id,title,variants.id,variants.sku&order=title",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "bad_no_buy_rules",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code,type,is_tax_inclusive,application_method.type,application_method.value,application_method.max_quantity,application_method.apply_to_quantity,application_method.buy_rules_min_quantity,application_method.buy_rules.attribute,application_method.buy_rules.values.value,application_method.target_rules.attribute",
+    "body": {
+      "code": "BAD1",
+      "type": "buyget",
+      "status": "active",
+      "application_method": {
+        "type": "percentage",
+        "target_type": "items",
+        "allocation": "each",
+        "value": 100,
+        "max_quantity": 1,
+        "apply_to_quantity": 1,
+        "buy_rules_min_quantity": 2,
+        "target_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.0.id}}"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "bad_max_quantity",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code,type,is_tax_inclusive,application_method.type,application_method.value,application_method.max_quantity,application_method.apply_to_quantity,application_method.buy_rules_min_quantity,application_method.buy_rules.attribute,application_method.buy_rules.values.value,application_method.target_rules.attribute",
+    "body": {
+      "code": "BAD2",
+      "type": "buyget",
+      "status": "active",
+      "application_method": {
+        "type": "percentage",
+        "target_type": "items",
+        "allocation": "each",
+        "value": 100,
+        "max_quantity": 1,
+        "apply_to_quantity": 2,
+        "buy_rules_min_quantity": 2,
+        "buy_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.1.id}}"
+            ]
+          }
+        ],
+        "target_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.0.id}}"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "bad_no_max_quantity",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code,type,is_tax_inclusive,application_method.type,application_method.value,application_method.max_quantity,application_method.apply_to_quantity,application_method.buy_rules_min_quantity,application_method.buy_rules.attribute,application_method.buy_rules.values.value,application_method.target_rules.attribute",
+    "body": {
+      "code": "BAD3",
+      "type": "buyget",
+      "status": "active",
+      "application_method": {
+        "type": "percentage",
+        "target_type": "items",
+        "allocation": "each",
+        "value": 100,
+        "apply_to_quantity": 1,
+        "buy_rules_min_quantity": 2,
+        "buy_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.1.id}}"
+            ]
+          }
+        ],
+        "target_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.0.id}}"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "bad_no_target_rules",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code,type,is_tax_inclusive,application_method.type,application_method.value,application_method.max_quantity,application_method.apply_to_quantity,application_method.buy_rules_min_quantity,application_method.buy_rules.attribute,application_method.buy_rules.values.value,application_method.target_rules.attribute",
+    "body": {
+      "code": "BAD4",
+      "type": "buyget",
+      "status": "active",
+      "application_method": {
+        "type": "percentage",
+        "target_type": "items",
+        "allocation": "each",
+        "value": 100,
+        "max_quantity": 1,
+        "apply_to_quantity": 1,
+        "buy_rules_min_quantity": 2,
+        "buy_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.1.id}}"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "b2g1",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code,type,is_tax_inclusive,application_method.type,application_method.value,application_method.max_quantity,application_method.apply_to_quantity,application_method.buy_rules_min_quantity,application_method.buy_rules.attribute,application_method.buy_rules.values.value,application_method.target_rules.attribute",
+    "body": {
+      "code": "B2G1",
+      "type": "buyget",
+      "status": "active",
+      "application_method": {
+        "type": "percentage",
+        "target_type": "items",
+        "allocation": "each",
+        "value": 100,
+        "max_quantity": 1,
+        "apply_to_quantity": 1,
+        "buy_rules_min_quantity": 2,
+        "buy_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.1.id}}"
+            ]
+          }
+        ],
+        "target_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.0.id}}"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "bxgx",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code,type,is_tax_inclusive,application_method.type,application_method.value,application_method.max_quantity,application_method.apply_to_quantity,application_method.buy_rules_min_quantity,application_method.buy_rules.attribute,application_method.buy_rules.values.value,application_method.target_rules.attribute",
+    "body": {
+      "code": "BXGX",
+      "type": "buyget",
+      "status": "active",
+      "application_method": {
+        "type": "fixed",
+        "target_type": "items",
+        "allocation": "each",
+        "value": 3,
+        "currency_code": "eur",
+        "max_quantity": 2,
+        "apply_to_quantity": 1,
+        "buy_rules_min_quantity": 1,
+        "buy_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.1.id}}"
+            ]
+          }
+        ],
+        "target_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.1.id}}"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "incl",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code,type,is_tax_inclusive,application_method.type,application_method.value,application_method.max_quantity,application_method.apply_to_quantity,application_method.buy_rules_min_quantity,application_method.buy_rules.attribute,application_method.buy_rules.values.value,application_method.target_rules.attribute",
+    "body": {
+      "code": "INCL20",
+      "type": "buyget",
+      "status": "active",
+      "is_tax_inclusive": true,
+      "application_method": {
+        "type": "percentage",
+        "target_type": "items",
+        "allocation": "each",
+        "value": 20,
+        "max_quantity": 3,
+        "apply_to_quantity": 1,
+        "buy_rules_min_quantity": 1,
+        "buy_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.0.id}}"
+            ]
+          }
+        ],
+        "target_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.1.id}}"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "pct10",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code",
+    "body": {
+      "code": "PCT10",
+      "type": "standard",
+      "status": "active",
+      "application_method": {
+        "type": "percentage",
+        "target_type": "items",
+        "allocation": "each",
+        "value": 10,
+        "max_quantity": 5,
+        "target_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.1.id}}"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "draft_bg",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code,status",
+    "body": {
+      "code": "DRAFTBG",
+      "type": "buyget",
+      "status": "draft",
+      "application_method": {
+        "type": "percentage",
+        "target_type": "items",
+        "allocation": "each",
+        "value": 50,
+        "max_quantity": 1,
+        "apply_to_quantity": 1,
+        "buy_rules_min_quantity": 1,
+        "buy_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.1.id}}"
+            ]
+          }
+        ],
+        "target_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.1.id}}"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "tax_region",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/tax-regions?country_code=de&fields=id"
+  },
+  {
+    "name": "rate_default",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/tax-rates?fields=id",
+    "body": {
+      "tax_region_id": "{{tax_region.tax_regions.0.id}}",
+      "name": "DE VAT",
+      "code": "DE19",
+      "rate": 19,
+      "is_default": true
+    }
+  },
+  {
+    "name": "cart",
+    "method": "POST",
+    "path": "/store/carts?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "region_id": "{{regions.regions.0.id}}",
+      "email": "buyer@example.test",
+      "shipping_address": {
+        "country_code": "de"
+      },
+      "items": [
+        {
+          "variant_id": "{{products.products.1.variants.0.id}}",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "name": "apply_b2g1_no_target",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "B2G1"
+      ]
+    }
+  },
+  {
+    "name": "add_pants",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/line-items?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "variant_id": "{{products.products.0.variants.1.id}}",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "shirt_qty1",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/line-items/{{cart.cart.items.0.id}}?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "quantity": 1
+    }
+  },
+  {
+    "name": "shirt_qty2",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/line-items/{{cart.cart.items.0.id}}?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "quantity": 2
+    }
+  },
+  {
+    "name": "shirt_qty4",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/line-items/{{cart.cart.items.0.id}}?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "quantity": 4
+    }
+  },
+  {
+    "name": "apply_bxgx",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "BXGX"
+      ]
+    }
+  },
+  {
+    "name": "apply_pct10",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "PCT10"
+      ]
+    }
+  },
+  {
+    "name": "apply_incl",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "INCL20"
+      ]
+    }
+  },
+  {
+    "name": "apply_draft",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "DRAFTBG"
+      ]
+    }
+  },
+  {
+    "name": "shirt_qty3",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/line-items/{{cart.cart.items.0.id}}?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "quantity": 3
+    }
+  },
+  {
+    "name": "remove_b2g1",
+    "method": "DELETE",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "B2G1"
+      ]
+    }
+  },
+  {
+    "name": "update_bxgx",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions/{{bxgx.promotion.id}}?fields=id,code,application_method.max_quantity,application_method.buy_rules_min_quantity",
+    "body": {
+      "application_method": {
+        "max_quantity": 3,
+        "buy_rules_min_quantity": 2
+      }
+    }
+  },
+  {
+    "name": "shirt_qty6",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/line-items/{{cart.cart.items.0.id}}?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "quantity": 6
+    }
+  },
+  {
+    "name": "replace",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "B2G1",
+        "BXGX"
+      ]
+    }
+  },
+  {
+    "name": "bg_budget",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code,campaign.budget.limit",
+    "body": {
+      "code": "BGBUDGET",
+      "type": "buyget",
+      "status": "active",
+      "campaign": {
+        "name": "Buy-get budget",
+        "campaign_identifier": "BGBUDGET",
+        "budget": {
+          "type": "spend",
+          "limit": 2,
+          "currency_code": "eur"
+        }
+      },
+      "application_method": {
+        "type": "percentage",
+        "target_type": "items",
+        "allocation": "each",
+        "value": 50,
+        "currency_code": "eur",
+        "max_quantity": 1,
+        "apply_to_quantity": 1,
+        "buy_rules_min_quantity": 1,
+        "buy_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.0.id}}"
+            ]
+          }
+        ],
+        "target_rules": [
+          {
+            "attribute": "items.product.id",
+            "operator": "in",
+            "values": [
+              "{{products.products.1.id}}"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "apply_budget",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,subtotal,discount_total,discount_subtotal,discount_tax_total,tax_total,item_total,promotions.code,items.id,items.quantity,items.unit_price,items.total,items.discount_total,items.adjustments.code,items.adjustments.amount,items.adjustments.is_tax_inclusive",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "BGBUDGET"
+      ]
+    }
+  },
+  {
+    "name": "final",
+    "method": "GET",
+    "path": "/store/carts/{{cart.cart.id}}",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  }
+]

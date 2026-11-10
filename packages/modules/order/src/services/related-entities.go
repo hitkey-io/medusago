@@ -81,13 +81,14 @@ func (s *OrderModuleService) findRelated(ctx context.Context, className string, 
 		populateWhere["order.shipping_methods.shipping_method.adjustments"] = r
 	}
 	fc := utilsmodulessdk.FindConfig{
-		Relations:      populate,
-		Take:           config.Take,
-		Skip:           config.Skip,
-		Order:          config.Order,
-		WithDeleted:    config.WithDeleted,
-		PopulateWhere:  populateWhere,
-		JoinedStrategy: joined,
+		Relations:        populate,
+		Take:             config.Take,
+		Skip:             config.Skip,
+		Order:            config.Order,
+		WithDeleted:      config.WithDeleted,
+		PopulateWhere:    populateWhere,
+		JoinedStrategy:   joined,
+		CrossModuleJoins: config.CrossModuleJoins,
 	}
 	if conf.HasFields {
 		fields := append([]string{}, conf.Fields...)

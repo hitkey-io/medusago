@@ -140,6 +140,8 @@ func (f *ModuleDataFetcher) Fetch(ctx context.Context, expand *joiner.ExpandProp
 			}
 		case "withDeleted":
 			config.WithDeleted, _ = a.Value.(bool)
+		case "__internal":
+			config.CrossModuleJoins, _ = a.Value.([]*dal.CrossModuleJoinSpec)
 		case "context":
 			if a.Value != nil {
 				filters.Set("context", a.Value)

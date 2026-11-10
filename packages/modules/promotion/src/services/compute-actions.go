@@ -614,8 +614,7 @@ func applyPromotionToShippingMethods(promotion *dal.Record, methods []*dal.Recor
 	return actions
 }
 
-// ComputeActions mirrors computeActions (buy-get promotions are not
-// supported yet).
+// ComputeActions mirrors computeActions.
 func (s *PromotionModuleService) ComputeActions(ctx context.Context, promotionCodes []string, applicationContext *dal.Record, options ComputeActionOptions) ([]*dal.Record, error) {
 	actions := []*dal.Record{}
 	items := crecords(cget(applicationContext, "items"))
@@ -699,12 +698,10 @@ func (s *PromotionModuleService) ComputeActions(ctx context.Context, promotionCo
 		}
 	}
 	sort.SliceStable(toApply, func(i, j int) bool {
-		bi, bj := cstr(toApply[i], "type") == "buyget", cstr(toApply[j], "type") == "buyget"
-		if bi != bj {
-			return bi
-		}
-		return number(cget(crec(toApply[i], "application_method"), "value")) > number(cget(crec(toApply[j], "application_method"), "value"))
+		return sortByBuyGetType(toApply[i], toApply[j]) < 0
 	})
+	eligibleBuyItemMap := newEligibleItemsByCode()
+	eligibleTargetItemMap := newEligibleItemsByCode()
 	applied := map[string]any{}
 	for _, pa := range toApply {
 		promotion := byPromoCode[cstr(pa, "code")]
@@ -760,7 +757,13 @@ func (s *PromotionModuleService) ComputeActions(ctx context.Context, promotionCo
 		}
 		switch cstr(promotion, "type") {
 		case "buyget":
-			return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "Buy-get promotions are not supported yet")
+			_, itemsDefined := applicationContext.Get("items")
+			itemsDefined = itemsDefined && cget(applicationContext, "items") != nil
+			buyGetActions, err := getComputedActionsForBuyGet(promotion, items, itemsDefined, applied, eligibleBuyItemMap, eligibleTargetItemMap, usage)
+			if err != nil {
+				return nil, err
+			}
+			actions = append(actions, buyGetActions...)
 		case "standard":
 			target := cstr(am, "target_type")
 			override := ""

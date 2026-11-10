@@ -361,12 +361,11 @@ func cancelRelatedStep(name string, cancel func(svc relatedCanceler, ctx context
 			if err := cancel(svc, ctx.Context, data); err != nil {
 				return composer.StepResponse[any]{}, err
 			}
-			return composer.NewStepResponse[any](nil), nil
-		}, nil)
+			return composer.NewStepResponse[any](nil, g(data, "order_id")), nil
+		}, ordersteps.RevertLastVersion)
 }
 
-// CancelOrderClaimStep mirrors cancelOrderClaimStep (the revertLastVersion
-// compensation is not ported yet).
+// CancelOrderClaimStep mirrors cancelOrderClaimStep.
 var CancelOrderClaimStep = cancelRelatedStep("cancel-order-claim", func(svc relatedCanceler, ctx context.Context, data *dal.Record) error {
 	_, err := svc.CancelClaim(ctx, data)
 	return err

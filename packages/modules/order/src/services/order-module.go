@@ -225,12 +225,13 @@ func (s *OrderModuleService) findOrders(ctx context.Context, filters *dal.Record
 	}
 
 	fc := utilsmodulessdk.FindConfig{
-		Relations:     conf.Populate,
-		Take:          config.Take,
-		Skip:          config.Skip,
-		Order:         config.Order,
-		WithDeleted:   config.WithDeleted,
-		PopulateWhere: populateWhere,
+		Relations:        conf.Populate,
+		Take:             config.Take,
+		Skip:             config.Skip,
+		Order:            config.Order,
+		WithDeleted:      config.WithDeleted,
+		PopulateWhere:    populateWhere,
+		CrossModuleJoins: config.CrossModuleJoins,
 		// base-repository-find: JOINED unless paginated or counted
 		JoinedStrategy: !withCount && config.Take == nil && (config.Skip == nil || *config.Skip == 0),
 	}

@@ -38,7 +38,7 @@ var CreateCompleteReturnStep = composer.CreateStep("create-complete-return",
 		if orderID == nil {
 			return nil
 		}
-		return revertLastVersion(ctx, orderID)
+		return RevertLastVersion(ctx, orderID)
 	})
 
 // ReceiveReturnStep mirrors receiveReturnStep.
@@ -59,5 +59,5 @@ var ReceiveReturnStep = composer.CreateStep("receive-return",
 		if orderID == nil {
 			return nil
 		}
-		return revertLastVersion(ctx, orderID)
+		return RevertLastVersion(ctx, orderID)
 	})
