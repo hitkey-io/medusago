@@ -1,0 +1,738 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "list_empty",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations"
+  },
+  {
+    "name": "active_empty",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active"
+  },
+  {
+    "name": "create_noname",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations",
+    "body": {
+      "configuration": {
+        "visible_columns": [],
+        "column_order": []
+      }
+    }
+  },
+  {
+    "name": "create_empty_name",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations",
+    "body": {
+      "name": "",
+      "configuration": {
+        "visible_columns": [],
+        "column_order": []
+      }
+    }
+  },
+  {
+    "name": "create_missing_config",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations",
+    "body": {
+      "name": "Missing"
+    }
+  },
+  {
+    "name": "create_unknown_key",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations",
+    "body": {
+      "name": "Unknown",
+      "color": "red",
+      "configuration": {
+        "visible_columns": [],
+        "column_order": []
+      }
+    }
+  },
+  {
+    "name": "create_bad_widths",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations",
+    "body": {
+      "name": "Bad",
+      "configuration": {
+        "visible_columns": [
+          "id"
+        ],
+        "column_order": [
+          "id"
+        ],
+        "column_widths": {
+          "id": "wide"
+        }
+      }
+    }
+  },
+  {
+    "name": "create_a",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations",
+    "body": {
+      "name": "Open orders",
+      "configuration": {
+        "visible_columns": [
+          "display_id",
+          "status"
+        ],
+        "column_order": [
+          "status",
+          "display_id"
+        ],
+        "column_widths": {
+          "display_id": 120
+        },
+        "filters": {
+          "status": [
+            "pending"
+          ],
+          "region": {
+            "id": "reg_1"
+          }
+        },
+        "sorting": {
+          "id": "created_at",
+          "desc": true
+        },
+        "search": "",
+        "extra_flag": true
+      }
+    }
+  },
+  {
+    "name": "active_after_a",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active"
+  },
+  {
+    "name": "create_b",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations",
+    "body": {
+      "name": "Compact",
+      "set_active": true,
+      "configuration": {
+        "visible_columns": [
+          "id"
+        ],
+        "column_order": [
+          "id"
+        ],
+        "sorting": null
+      }
+    }
+  },
+  {
+    "name": "active_b",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active"
+  },
+  {
+    "name": "create_default",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations",
+    "body": {
+      "is_system_default": true,
+      "configuration": {
+        "visible_columns": [
+          "display_id"
+        ],
+        "column_order": [
+          "display_id"
+        ]
+      }
+    }
+  },
+  {
+    "name": "create_default_dup",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations",
+    "body": {
+      "is_system_default": true,
+      "name": "Again",
+      "configuration": {
+        "visible_columns": [
+          "status"
+        ],
+        "column_order": [
+          "status"
+        ]
+      }
+    }
+  },
+  {
+    "name": "create_products",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/products/configurations?fields=id,entity,name",
+    "body": {
+      "name": "Products view",
+      "configuration": {
+        "visible_columns": [
+          "title"
+        ],
+        "column_order": [
+          "title"
+        ]
+      }
+    }
+  },
+  {
+    "name": "list_all",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations"
+  },
+  {
+    "name": "list_bool_filter",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations?is_system_default=true"
+  },
+  {
+    "name": "list_name",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations?name=Compact&fields=id,name,user_id"
+  },
+  {
+    "name": "list_paged",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations?limit=1&offset=1&order=-created_at"
+  },
+  {
+    "name": "list_products",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/products/configurations"
+  },
+  {
+    "name": "get_a",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_a.view_configuration.id}}"
+  },
+  {
+    "name": "get_a_fields",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_a.view_configuration.id}}?fields=id,configuration"
+  },
+  {
+    "name": "get_wrong_entity",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/products/configurations/{{create_a.view_configuration.id}}"
+  },
+  {
+    "name": "get_missing",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/vconf_missing"
+  },
+  {
+    "name": "update_a_name",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_a.view_configuration.id}}",
+    "body": {
+      "name": "Open orders v2",
+      "set_active": true
+    }
+  },
+  {
+    "name": "active_a",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active"
+  },
+  {
+    "name": "update_a_config",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_a.view_configuration.id}}",
+    "body": {
+      "configuration": {
+        "visible_columns": [
+          "status"
+        ],
+        "extra_key": 1
+      }
+    }
+  },
+  {
+    "name": "get_a2",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_a.view_configuration.id}}"
+  },
+  {
+    "name": "update_b_config_active",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_b.view_configuration.id}}",
+    "body": {
+      "set_active": true,
+      "configuration": {
+        "column_order": [
+          "id"
+        ],
+        "search": "abc"
+      }
+    }
+  },
+  {
+    "name": "active_after_b_update",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active"
+  },
+  {
+    "name": "update_b_empty_config",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_b.view_configuration.id}}",
+    "body": {
+      "name": "Compact v2",
+      "configuration": {}
+    }
+  },
+  {
+    "name": "update_default",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_default.view_configuration.id}}",
+    "body": {
+      "name": "Default"
+    }
+  },
+  {
+    "name": "update_missing",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/vconf_missing",
+    "body": {
+      "name": "x"
+    }
+  },
+  {
+    "name": "update_invalid",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_a.view_configuration.id}}",
+    "body": {
+      "configuration": {
+        "sorting": {
+          "id": 1
+        }
+      }
+    }
+  },
+  {
+    "name": "set_active_default",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active",
+    "body": {
+      "view_configuration_id": "{{create_default.view_configuration.id}}"
+    }
+  },
+  {
+    "name": "active_default",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active"
+  },
+  {
+    "name": "set_active_wrong_entity",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active",
+    "body": {
+      "view_configuration_id": "{{create_products.view_configuration.id}}"
+    }
+  },
+  {
+    "name": "set_active_missing",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active",
+    "body": {
+      "view_configuration_id": "vconf_missing"
+    }
+  },
+  {
+    "name": "set_active_invalid",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active",
+    "body": {}
+  },
+  {
+    "name": "clear_active",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active",
+    "body": {
+      "view_configuration_id": null
+    }
+  },
+  {
+    "name": "active_cleared",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active"
+  },
+  {
+    "name": "delete_default",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_default.view_configuration.id}}"
+  },
+  {
+    "name": "active_after_delete",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active"
+  },
+  {
+    "name": "set_active_b",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active",
+    "body": {
+      "view_configuration_id": "{{create_b.view_configuration.id}}"
+    }
+  },
+  {
+    "name": "delete_b",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_b.view_configuration.id}}"
+  },
+  {
+    "name": "active_after_delete_b",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active"
+  },
+  {
+    "name": "delete_a",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_a.view_configuration.id}}"
+  },
+  {
+    "name": "delete_a_again",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/{{create_a.view_configuration.id}}"
+  },
+  {
+    "name": "active_none",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations/active"
+  },
+  {
+    "name": "list_final",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/views/orders/configurations"
+  },
+  {
+    "name": "pl_list_empty",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels"
+  },
+  {
+    "name": "pl_create",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels",
+    "body": {
+      "entity": "Order",
+      "property": "display_id",
+      "label": "Order number",
+      "description": "Shown in tables"
+    }
+  },
+  {
+    "name": "pl_create2",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels",
+    "body": {
+      "entity": "Order",
+      "property": "email",
+      "label": "Customer email",
+      "description": null
+    }
+  },
+  {
+    "name": "pl_create_dup",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels",
+    "body": {
+      "entity": "Order",
+      "property": "display_id",
+      "label": "Duplicate"
+    }
+  },
+  {
+    "name": "pl_create_invalid",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels",
+    "body": {
+      "entity": "",
+      "property": "x",
+      "label": "y"
+    }
+  },
+  {
+    "name": "pl_create_missing",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels",
+    "body": {
+      "entity": "Order"
+    }
+  },
+  {
+    "name": "pl_create_fields",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels?fields=id,label",
+    "body": {
+      "entity": "Customer",
+      "property": "first_name",
+      "label": "First name"
+    }
+  },
+  {
+    "name": "pl_list",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels"
+  },
+  {
+    "name": "pl_list_filter",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels?entity=Order&property=email"
+  },
+  {
+    "name": "pl_list_q",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels?q=mail"
+  },
+  {
+    "name": "pl_list_paged",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels?limit=1&offset=1&order=property"
+  },
+  {
+    "name": "pl_list_bad_limit",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels?limit=abc"
+  },
+  {
+    "name": "pl_list_unknown",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels?label=x"
+  },
+  {
+    "name": "pl_get",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels/{{pl_create.property_label.id}}"
+  },
+  {
+    "name": "pl_get_fields",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels/{{pl_create.property_label.id}}?fields=label,description"
+  },
+  {
+    "name": "pl_get_missing",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels/plbl_missing"
+  },
+  {
+    "name": "pl_update",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels/{{pl_create.property_label.id}}",
+    "body": {
+      "label": "Display ID"
+    }
+  },
+  {
+    "name": "pl_update_desc",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels/{{pl_create.property_label.id}}",
+    "body": {
+      "description": "Updated"
+    }
+  },
+  {
+    "name": "pl_update_null_desc",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels/{{pl_create.property_label.id}}",
+    "body": {
+      "description": null
+    }
+  },
+  {
+    "name": "pl_update_empty_label",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels/{{pl_create.property_label.id}}",
+    "body": {
+      "label": ""
+    }
+  },
+  {
+    "name": "pl_update_missing",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels/plbl_missing",
+    "body": {
+      "label": "x"
+    }
+  },
+  {
+    "name": "pl_batch",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels/batch",
+    "body": {
+      "create": [
+        {
+          "entity": "Product",
+          "property": "title",
+          "label": "Name"
+        }
+      ],
+      "update": [
+        {
+          "id": "{{pl_create2.property_label.id}}",
+          "label": "Email address"
+        }
+      ],
+      "delete": [
+        "{{pl_create.property_label.id}}"
+      ]
+    }
+  },
+  {
+    "name": "pl_batch_empty",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels/batch",
+    "body": {}
+  },
+  {
+    "name": "pl_batch_delete_missing",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels/batch",
+    "body": {
+      "delete": [
+        "plbl_missing"
+      ]
+    }
+  },
+  {
+    "name": "pl_batch_update_missing",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels/batch",
+    "body": {
+      "update": [
+        {
+          "id": "plbl_missing",
+          "label": "x"
+        }
+      ]
+    }
+  },
+  {
+    "name": "pl_batch_invalid",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/property-labels/batch",
+    "body": {
+      "create": [
+        {
+          "entity": "Order"
+        }
+      ]
+    }
+  },
+  {
+    "name": "pl_list_after_batch",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels"
+  },
+  {
+    "name": "pl_delete",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/property-labels/{{pl_create2.property_label.id}}"
+  },
+  {
+    "name": "pl_delete_missing",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/property-labels/plbl_missing"
+  },
+  {
+    "name": "pl_list_final",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/property-labels"
+  }
+]

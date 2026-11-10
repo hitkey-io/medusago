@@ -12,6 +12,7 @@ import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
+	settingsservices "github.com/hitkey-io/medusago/packages/modules/settings/src/services"
 )
 
 func first(ctx context.Context, svc *utilsmodulessdk.MedusaService, model string, filters *dal.Record) (*dal.Record, error) {
@@ -85,7 +86,7 @@ func getConfigurations(ctx context.Context, svc *utilsmodulessdk.MedusaService, 
 
 // GET mirrors GET.
 func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
-	svc := req.Scope.Resolve(utilsmodulessdk.SETTINGS).(*utilsmodulessdk.MedusaService)
+	svc := settingsservices.Of(req.Scope.Resolve(utilsmodulessdk.SETTINGS)).MedusaService
 	out, err := getConfigurations(req.Ctx(), svc, req.Params["zone"], req.AuthString("actor_id"))
 	if err != nil {
 		return err

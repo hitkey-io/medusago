@@ -35,6 +35,7 @@ import (
 	productvariants "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-variants"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products"
 	adminpromotions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/promotions"
+	propertylabels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/property-labels"
 	refundreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/refund-reasons"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/regions"
 	adminreservations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/reservations"
@@ -145,6 +146,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, returnreasons.Middlewares...)
 	out = append(out, refundreasons.Middlewares...)
 	out = append(out, hookspaymentprovider.Middlewares...)
+	out = append(out, propertylabels.AdminPropertyLabelsMiddlewares...)
 	out = append(out, viewsconfigurations.Middlewares...)
 	out = append(out, layoutzoneconfiguration.Middlewares...)
 	out = append(out, cloudauthusers.Middlewares...)

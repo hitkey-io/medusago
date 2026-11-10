@@ -7,15 +7,23 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
+	settingsservices "github.com/hitkey-io/medusago/packages/modules/settings/src/services"
 )
 
 // The settings module service methods the layout steps use
 // (SettingsModuleService: setLayoutConfiguration, setUserPreference, ...),
-// on the generic settings module service.
+// on the generated settings module service.
 
 func settings(c composer.Container) *utilsmodulessdk.MedusaService {
-	s, _ := c.Resolve(utilsmodulessdk.SETTINGS).(*utilsmodulessdk.MedusaService)
-	return s
+	if s := settingsservices.Of(c.Resolve(utilsmodulessdk.SETTINGS)); s != nil {
+		return s.MedusaService
+	}
+	return nil
+}
+
+// settingsModule resolves the settings module service.
+func settingsModule(c composer.Container) *settingsservices.SettingsModuleService {
+	return settingsservices.Of(c.Resolve(utilsmodulessdk.SETTINGS))
 }
 
 func firstRow(ctx context.Context, svc *utilsmodulessdk.MedusaService, model string, filters *dal.Record, sel []string) (*dal.Record, error) {
@@ -69,27 +77,7 @@ func upsertLayoutConfiguration(ctx context.Context, svc *utilsmodulessdk.MedusaS
 
 // setUserPreference mirrors setUserPreference.
 func setUserPreference(ctx context.Context, svc *utilsmodulessdk.MedusaService, userID, key string, value any) error {
-	f := dal.NewRecord()
-	f.Set("user_id", userID)
-	f.Set("key", key)
-	existing, err := firstRow(ctx, svc, "UserPreference", f, []string{"id"})
-	if err != nil {
-		return err
-	}
-	if existing != nil {
-		id, _ := existing.Get("id")
-		u := dal.NewRecord()
-		u.Set("id", id)
-		u.Set("value", value)
-		_, err = svc.Internal("UserPreference").Update(ctx, []any{u})
-		return err
-	}
-	c := dal.NewRecord()
-	c.Set("user_id", userID)
-	c.Set("key", key)
-	c.Set("value", value)
-	_, err = svc.Internal("UserPreference").Create(ctx, []*dal.Record{c})
-	return err
+	return settingsservices.Of(svc).SetUserPreference(ctx, userID, key, value)
 }
 
 // getActiveLayoutScope mirrors getActiveLayoutScope (nil when unset).

@@ -24,31 +24,26 @@ func EnsureViewConfigurationsEnabled(req *medusahttp.MedusaRequest, res *medusah
 	return nil
 }
 
-// NotPorted answers the view configuration routes when the flag is on:
-// the settings module (view configurations, property labels, entity
-// discovery) is not ported yet.
+// EnsureViewEntityReadable mirrors ensureViewEntityReadable: a no-op when
+// RBAC is not installed (RBAC is not ported).
+func EnsureViewEntityReadable(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, next medusahttp.NextFunction) error {
+	next(nil)
+	return nil
+}
+
+// SystemDefaultViewConfigurationMessage mirrors
+// SYSTEM_DEFAULT_VIEW_CONFIGURATION_MESSAGE.
+const SystemDefaultViewConfigurationMessage = "Only super admins can manage system default view configurations"
+
+// RequireSuperAdmin mirrors requireSuperAdmin(when, message): a no-op when
+// RBAC is not installed (RBAC is not ported).
+func RequireSuperAdmin(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, next medusahttp.NextFunction) error {
+	next(nil)
+	return nil
+}
+
+// NotPorted answers the view routes that are not ported yet (entity
+// discovery: /admin/views/entities and /admin/views/:entity/columns).
 func NotPorted(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	return common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "View configurations are not supported yet")
-}
-
-// Route is the route file.
-var Route = medusahttp.Route{GET: NotPorted, POST: NotPorted}
-
-func mw(method, matcher string) medusahttp.MiddlewareRoute {
-	return medusahttp.MiddlewareRoute{Methods: []string{method}, Matcher: matcher, Middlewares: []medusahttp.MiddlewareFunction{EnsureViewConfigurationsEnabled}}
-}
-
-// Middlewares mirrors the view configuration and property label
-// middlewares (the flag guard).
-var Middlewares = []medusahttp.MiddlewareRoute{
-	mw("GET", "/admin/views/entities"),
-	{Methods: []string{"GET", "POST", "DELETE"}, Matcher: "/admin/views/*/configurations*", Middlewares: []medusahttp.MiddlewareFunction{EnsureViewConfigurationsEnabled}},
-	{Methods: []string{"GET", "POST"}, Matcher: "/admin/views/*/columns", Middlewares: []medusahttp.MiddlewareFunction{EnsureViewConfigurationsEnabled}},
-	mw("GET", "/admin/views/:entity/columns"),
-	mw("GET", "/admin/property-labels"),
-	mw("POST", "/admin/property-labels"),
-	mw("GET", "/admin/property-labels/:id"),
-	mw("POST", "/admin/property-labels/:id"),
-	mw("DELETE", "/admin/property-labels/:id"),
-	mw("POST", "/admin/property-labels/batch"),
 }

@@ -1,0 +1,1704 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzMjU2MTQsImV4cCI6MTc5NDQxMjAxNH0.ZFaTslsOnA2DnNXRe_fn5cQ_glLgH5XT58hTm_X517E"
+    }
+  },
+  "list_empty": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configurations": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "active_empty": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": null,
+      "is_default_active": true,
+      "default_type": "code"
+    }
+  },
+  "create_noname": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Name is required unless creating a system default view"
+    }
+  },
+  "create_empty_name": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Name is required unless creating a system default view"
+    }
+  },
+  "create_missing_config": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'configuration' is required"
+    }
+  },
+  "create_unknown_key": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'color'"
+    }
+  },
+  "create_bad_widths": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Expected type: 'number' for field 'configuration, column_widths, id', got: 'wide'"
+    }
+  },
+  "create_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+        "entity": "orders",
+        "name": "Open orders",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "search": "",
+          "filters": {
+            "region": {
+              "id": "reg_1"
+            },
+            "status": [
+              "pending"
+            ]
+          },
+          "sorting": {
+            "id": "created_at",
+            "desc": true
+          },
+          "extra_flag": true,
+          "column_order": [
+            "status",
+            "display_id"
+          ],
+          "column_widths": {
+            "display_id": 120
+          },
+          "visible_columns": [
+            "display_id",
+            "status"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.660Z",
+        "updated_at": "2026-11-10T15:46:54.660Z"
+      }
+    }
+  },
+  "active_after_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+        "entity": "orders",
+        "name": "Open orders",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "search": "",
+          "filters": {
+            "region": {
+              "id": "reg_1"
+            },
+            "status": [
+              "pending"
+            ]
+          },
+          "sorting": {
+            "id": "created_at",
+            "desc": true
+          },
+          "extra_flag": true,
+          "column_order": [
+            "status",
+            "display_id"
+          ],
+          "column_widths": {
+            "display_id": 120
+          },
+          "visible_columns": [
+            "display_id",
+            "status"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.660Z",
+        "updated_at": "2026-11-10T15:46:54.660Z",
+        "deleted_at": null
+      },
+      "is_default_active": false
+    }
+  },
+  "create_b": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M732842HD36YFW5TQK8S1C6S",
+        "entity": "orders",
+        "name": "Compact",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "sorting": null,
+          "column_order": [
+            "id"
+          ],
+          "visible_columns": [
+            "id"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.673Z",
+        "updated_at": "2026-11-10T15:46:54.673Z"
+      }
+    }
+  },
+  "active_b": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M732842HD36YFW5TQK8S1C6S",
+        "entity": "orders",
+        "name": "Compact",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "sorting": null,
+          "column_order": [
+            "id"
+          ],
+          "visible_columns": [
+            "id"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.673Z",
+        "updated_at": "2026-11-10T15:46:54.673Z",
+        "deleted_at": null
+      },
+      "is_default_active": false
+    }
+  },
+  "create_default": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M73284362SS3EDXMJ68X3D55",
+        "entity": "orders",
+        "name": null,
+        "user_id": null,
+        "is_system_default": true,
+        "configuration": {
+          "column_order": [
+            "display_id"
+          ],
+          "visible_columns": [
+            "display_id"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.694Z",
+        "updated_at": "2026-11-10T15:46:54.694Z"
+      }
+    }
+  },
+  "create_default_dup": {
+    "status": 422,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "code": "invalid_request_error",
+      "type": "duplicate_error",
+      "message": "A system default view configuration already exists for entity: orders"
+    }
+  },
+  "create_products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M732844AWQ1FS1TRP94GBWQ5",
+        "entity": "products",
+        "name": "Products view"
+      }
+    }
+  },
+  "list_all": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configurations": [
+        {
+          "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+          "entity": "orders",
+          "name": "Open orders",
+          "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+          "is_system_default": false,
+          "configuration": {
+            "search": "",
+            "filters": {
+              "region": {
+                "id": "reg_1"
+              },
+              "status": [
+                "pending"
+              ]
+            },
+            "sorting": {
+              "id": "created_at",
+              "desc": true
+            },
+            "extra_flag": true,
+            "column_order": [
+              "status",
+              "display_id"
+            ],
+            "column_widths": {
+              "display_id": 120
+            },
+            "visible_columns": [
+              "display_id",
+              "status"
+            ]
+          },
+          "created_at": "2026-11-10T15:46:54.660Z",
+          "updated_at": "2026-11-10T15:46:54.660Z"
+        },
+        {
+          "id": "vconf_01M732842HD36YFW5TQK8S1C6S",
+          "entity": "orders",
+          "name": "Compact",
+          "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+          "is_system_default": false,
+          "configuration": {
+            "sorting": null,
+            "column_order": [
+              "id"
+            ],
+            "visible_columns": [
+              "id"
+            ]
+          },
+          "created_at": "2026-11-10T15:46:54.673Z",
+          "updated_at": "2026-11-10T15:46:54.673Z"
+        },
+        {
+          "id": "vconf_01M73284362SS3EDXMJ68X3D55",
+          "entity": "orders",
+          "name": null,
+          "user_id": null,
+          "is_system_default": true,
+          "configuration": {
+            "column_order": [
+              "display_id"
+            ],
+            "visible_columns": [
+              "display_id"
+            ]
+          },
+          "created_at": "2026-11-10T15:46:54.694Z",
+          "updated_at": "2026-11-10T15:46:54.694Z"
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "list_bool_filter": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Expected type: 'boolean' for field 'is_system_default', got: 'true'"
+    }
+  },
+  "list_name": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configurations": [
+        {
+          "id": "vconf_01M732842HD36YFW5TQK8S1C6S",
+          "name": "Compact",
+          "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "list_paged": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configurations": [
+        {
+          "id": "vconf_01M732842HD36YFW5TQK8S1C6S",
+          "entity": "orders",
+          "name": "Compact",
+          "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+          "is_system_default": false,
+          "configuration": {
+            "sorting": null,
+            "column_order": [
+              "id"
+            ],
+            "visible_columns": [
+              "id"
+            ]
+          },
+          "created_at": "2026-11-10T15:46:54.673Z",
+          "updated_at": "2026-11-10T15:46:54.673Z"
+        }
+      ],
+      "count": 3,
+      "offset": 1,
+      "limit": 1
+    }
+  },
+  "list_products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configurations": [
+        {
+          "id": "vconf_01M732844AWQ1FS1TRP94GBWQ5",
+          "entity": "products",
+          "name": "Products view",
+          "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+          "is_system_default": false,
+          "configuration": {
+            "column_order": [
+              "title"
+            ],
+            "visible_columns": [
+              "title"
+            ]
+          },
+          "created_at": "2026-11-10T15:46:54.730Z",
+          "updated_at": "2026-11-10T15:46:54.730Z"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "get_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+        "entity": "orders",
+        "name": "Open orders",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "search": "",
+          "filters": {
+            "region": {
+              "id": "reg_1"
+            },
+            "status": [
+              "pending"
+            ]
+          },
+          "sorting": {
+            "id": "created_at",
+            "desc": true
+          },
+          "extra_flag": true,
+          "column_order": [
+            "status",
+            "display_id"
+          ],
+          "column_widths": {
+            "display_id": 120
+          },
+          "visible_columns": [
+            "display_id",
+            "status"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.660Z",
+        "updated_at": "2026-11-10T15:46:54.660Z"
+      }
+    }
+  },
+  "get_a_fields": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+        "configuration": {
+          "search": "",
+          "filters": {
+            "region": {
+              "id": "reg_1"
+            },
+            "status": [
+              "pending"
+            ]
+          },
+          "sorting": {
+            "id": "created_at",
+            "desc": true
+          },
+          "extra_flag": true,
+          "column_order": [
+            "status",
+            "display_id"
+          ],
+          "column_widths": {
+            "display_id": 120
+          },
+          "visible_columns": [
+            "display_id",
+            "status"
+          ]
+        }
+      }
+    }
+  },
+  "get_wrong_entity": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "View configuration with id: vconf_01M7328424XA3D8M0H1XZPKMAE not found"
+    }
+  },
+  "get_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "View configuration with id: vconf_missing not found"
+    }
+  },
+  "update_a_name": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+        "entity": "orders",
+        "name": "Open orders v2",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "search": "",
+          "filters": {
+            "region": {
+              "id": "reg_1"
+            },
+            "status": [
+              "pending"
+            ]
+          },
+          "sorting": {
+            "id": "created_at",
+            "desc": true
+          },
+          "extra_flag": true,
+          "column_order": [
+            "status",
+            "display_id"
+          ],
+          "column_widths": {
+            "display_id": 120
+          },
+          "visible_columns": [
+            "display_id",
+            "status"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.660Z",
+        "updated_at": "2026-11-10T15:46:54.764Z"
+      }
+    }
+  },
+  "active_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+        "entity": "orders",
+        "name": "Open orders v2",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "search": "",
+          "filters": {
+            "region": {
+              "id": "reg_1"
+            },
+            "status": [
+              "pending"
+            ]
+          },
+          "sorting": {
+            "id": "created_at",
+            "desc": true
+          },
+          "extra_flag": true,
+          "column_order": [
+            "status",
+            "display_id"
+          ],
+          "column_widths": {
+            "display_id": 120
+          },
+          "visible_columns": [
+            "display_id",
+            "status"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.660Z",
+        "updated_at": "2026-11-10T15:46:54.764Z",
+        "deleted_at": null
+      },
+      "is_default_active": false
+    }
+  },
+  "update_a_config": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+        "entity": "orders",
+        "name": "Open orders v2",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "search": "",
+          "filters": {},
+          "sorting": null,
+          "column_order": [],
+          "column_widths": {},
+          "visible_columns": [
+            "status"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.660Z",
+        "updated_at": "2026-11-10T15:46:54.793Z"
+      }
+    }
+  },
+  "get_a2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+        "entity": "orders",
+        "name": "Open orders v2",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "search": "",
+          "filters": {},
+          "sorting": null,
+          "column_order": [],
+          "column_widths": {},
+          "visible_columns": [
+            "status"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.660Z",
+        "updated_at": "2026-11-10T15:46:54.793Z"
+      }
+    }
+  },
+  "update_b_config_active": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M732842HD36YFW5TQK8S1C6S",
+        "entity": "orders",
+        "name": "Compact",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "search": "abc",
+          "filters": {},
+          "sorting": null,
+          "column_order": [
+            "id"
+          ],
+          "column_widths": {},
+          "visible_columns": []
+        },
+        "created_at": "2026-11-10T15:46:54.673Z",
+        "updated_at": "2026-11-10T15:46:54.811Z"
+      }
+    }
+  },
+  "active_after_b_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+        "entity": "orders",
+        "name": "Open orders v2",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "search": "",
+          "filters": {},
+          "sorting": null,
+          "column_order": [],
+          "column_widths": {},
+          "visible_columns": [
+            "status"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.660Z",
+        "updated_at": "2026-11-10T15:46:54.793Z",
+        "deleted_at": null
+      },
+      "is_default_active": false
+    }
+  },
+  "update_b_empty_config": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M732842HD36YFW5TQK8S1C6S",
+        "entity": "orders",
+        "name": "Compact v2",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "search": "",
+          "filters": {},
+          "sorting": null,
+          "column_order": [],
+          "column_widths": {},
+          "visible_columns": []
+        },
+        "created_at": "2026-11-10T15:46:54.673Z",
+        "updated_at": "2026-11-10T15:46:54.827Z"
+      }
+    }
+  },
+  "update_default": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M73284362SS3EDXMJ68X3D55",
+        "entity": "orders",
+        "name": "Default",
+        "user_id": null,
+        "is_system_default": true,
+        "configuration": {
+          "column_order": [
+            "display_id"
+          ],
+          "visible_columns": [
+            "display_id"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.694Z",
+        "updated_at": "2026-11-10T15:46:54.835Z"
+      }
+    }
+  },
+  "update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "View configuration with id: vconf_missing not found"
+    }
+  },
+  "update_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Expected type: 'string' for field 'configuration, sorting, id', got: '1'; Field 'configuration, sorting, desc' is required"
+    }
+  },
+  "set_active_default": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "success": true
+    }
+  },
+  "active_default": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M73284362SS3EDXMJ68X3D55",
+        "entity": "orders",
+        "name": "Default",
+        "user_id": null,
+        "is_system_default": true,
+        "configuration": {
+          "column_order": [
+            "display_id"
+          ],
+          "visible_columns": [
+            "display_id"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.694Z",
+        "updated_at": "2026-11-10T15:46:54.835Z",
+        "deleted_at": null
+      },
+      "is_default_active": true,
+      "default_type": "system"
+    }
+  },
+  "set_active_wrong_entity": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "View configuration vconf_01M732844AWQ1FS1TRP94GBWQ5 is not for entity orders"
+    }
+  },
+  "set_active_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "ViewConfiguration with id: vconf_missing was not found"
+    }
+  },
+  "set_active_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'view_configuration_id' is required"
+    }
+  },
+  "clear_active": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "success": true
+    }
+  },
+  "active_cleared": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M73284362SS3EDXMJ68X3D55",
+        "entity": "orders",
+        "name": "Default",
+        "user_id": null,
+        "is_system_default": true,
+        "configuration": {
+          "column_order": [
+            "display_id"
+          ],
+          "visible_columns": [
+            "display_id"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.694Z",
+        "updated_at": "2026-11-10T15:46:54.835Z",
+        "deleted_at": null
+      },
+      "is_default_active": true,
+      "default_type": "system"
+    }
+  },
+  "delete_default": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "vconf_01M73284362SS3EDXMJ68X3D55",
+      "object": "view_configuration",
+      "deleted": true
+    }
+  },
+  "active_after_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": null,
+      "is_default_active": true,
+      "default_type": "code"
+    }
+  },
+  "set_active_b": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "success": true
+    }
+  },
+  "delete_b": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "vconf_01M732842HD36YFW5TQK8S1C6S",
+      "object": "view_configuration",
+      "deleted": true
+    }
+  },
+  "active_after_delete_b": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": {
+        "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+        "entity": "orders",
+        "name": "Open orders v2",
+        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "is_system_default": false,
+        "configuration": {
+          "search": "",
+          "filters": {},
+          "sorting": null,
+          "column_order": [],
+          "column_widths": {},
+          "visible_columns": [
+            "status"
+          ]
+        },
+        "created_at": "2026-11-10T15:46:54.660Z",
+        "updated_at": "2026-11-10T15:46:54.793Z",
+        "deleted_at": null
+      },
+      "is_default_active": false
+    }
+  },
+  "delete_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "vconf_01M7328424XA3D8M0H1XZPKMAE",
+      "object": "view_configuration",
+      "deleted": true
+    }
+  },
+  "delete_a_again": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "View configuration with id: vconf_01M7328424XA3D8M0H1XZPKMAE not found"
+    }
+  },
+  "active_none": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configuration": null,
+      "is_default_active": true,
+      "default_type": "code"
+    }
+  },
+  "list_final": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "view_configurations": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "pl_list_empty": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_labels": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "pl_create": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_label": {
+        "id": "plbl_01M73284A5ZT64TRTHM6TANJ5A",
+        "entity": "Order",
+        "property": "display_id",
+        "label": "Order number",
+        "description": "Shown in tables",
+        "created_at": "2026-11-10T15:46:54.917Z",
+        "updated_at": "2026-11-10T15:46:54.917Z"
+      }
+    }
+  },
+  "pl_create2": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_label": {
+        "id": "plbl_01M73284ADPTCHN4BAK2CXTEB3",
+        "entity": "Order",
+        "property": "email",
+        "label": "Customer email",
+        "description": null,
+        "created_at": "2026-11-10T15:46:54.925Z",
+        "updated_at": "2026-11-10T15:46:54.925Z"
+      }
+    }
+  },
+  "pl_create_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Property label with entity: Order, property: display_id, already exists."
+    }
+  },
+  "pl_create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Value for field 'entity' too small, expected at least: '1'"
+    }
+  },
+  "pl_create_missing": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'property' is required; Field 'label' is required"
+    }
+  },
+  "pl_create_fields": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_label": {
+        "id": "plbl_01M73284BSM8RNP5BF2H80M3PA",
+        "label": "First name"
+      }
+    }
+  },
+  "pl_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_labels": [
+        {
+          "id": "plbl_01M73284A5ZT64TRTHM6TANJ5A",
+          "entity": "Order",
+          "property": "display_id",
+          "label": "Order number",
+          "description": "Shown in tables",
+          "created_at": "2026-11-10T15:46:54.917Z",
+          "updated_at": "2026-11-10T15:46:54.917Z"
+        },
+        {
+          "id": "plbl_01M73284ADPTCHN4BAK2CXTEB3",
+          "entity": "Order",
+          "property": "email",
+          "label": "Customer email",
+          "description": null,
+          "created_at": "2026-11-10T15:46:54.925Z",
+          "updated_at": "2026-11-10T15:46:54.925Z"
+        },
+        {
+          "id": "plbl_01M73284BSM8RNP5BF2H80M3PA",
+          "entity": "Customer",
+          "property": "first_name",
+          "label": "First name",
+          "description": null,
+          "created_at": "2026-11-10T15:46:54.970Z",
+          "updated_at": "2026-11-10T15:46:54.970Z"
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "pl_list_filter": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_labels": [
+        {
+          "id": "plbl_01M73284ADPTCHN4BAK2CXTEB3",
+          "entity": "Order",
+          "property": "email",
+          "label": "Customer email",
+          "description": null,
+          "created_at": "2026-11-10T15:46:54.925Z",
+          "updated_at": "2026-11-10T15:46:54.925Z"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "pl_list_q": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_labels": [
+        {
+          "id": "plbl_01M73284ADPTCHN4BAK2CXTEB3",
+          "entity": "Order",
+          "property": "email",
+          "label": "Customer email",
+          "description": null,
+          "created_at": "2026-11-10T15:46:54.925Z",
+          "updated_at": "2026-11-10T15:46:54.925Z"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "pl_list_paged": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_labels": [
+        {
+          "id": "plbl_01M73284ADPTCHN4BAK2CXTEB3",
+          "entity": "Order",
+          "property": "email",
+          "label": "Customer email",
+          "description": null,
+          "created_at": "2026-11-10T15:46:54.925Z",
+          "updated_at": "2026-11-10T15:46:54.925Z"
+        }
+      ],
+      "count": 3,
+      "offset": 1,
+      "limit": 1
+    }
+  },
+  "pl_list_bad_limit": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Expected type: 'number' for field 'limit', got: 'abc'"
+    }
+  },
+  "pl_list_unknown": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'label'"
+    }
+  },
+  "pl_get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_label": {
+        "id": "plbl_01M73284A5ZT64TRTHM6TANJ5A",
+        "entity": "Order",
+        "property": "display_id",
+        "label": "Order number",
+        "description": "Shown in tables",
+        "created_at": "2026-11-10T15:46:54.917Z",
+        "updated_at": "2026-11-10T15:46:54.917Z"
+      }
+    }
+  },
+  "pl_get_fields": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_label": {
+        "label": "Order number",
+        "description": "Shown in tables",
+        "id": "plbl_01M73284A5ZT64TRTHM6TANJ5A"
+      }
+    }
+  },
+  "pl_get_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Property label with id: plbl_missing not found"
+    }
+  },
+  "pl_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_label": {
+        "id": "plbl_01M73284A5ZT64TRTHM6TANJ5A",
+        "entity": "Order",
+        "property": "display_id",
+        "label": "Display ID",
+        "description": "Shown in tables",
+        "created_at": "2026-11-10T15:46:54.917Z",
+        "updated_at": "2026-11-10T15:46:54.998Z"
+      }
+    }
+  },
+  "pl_update_desc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_label": {
+        "id": "plbl_01M73284A5ZT64TRTHM6TANJ5A",
+        "entity": "Order",
+        "property": "display_id",
+        "label": "Display ID",
+        "description": "Updated",
+        "created_at": "2026-11-10T15:46:54.917Z",
+        "updated_at": "2026-11-10T15:46:55.009Z"
+      }
+    }
+  },
+  "pl_update_null_desc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_label": {
+        "id": "plbl_01M73284A5ZT64TRTHM6TANJ5A",
+        "entity": "Order",
+        "property": "display_id",
+        "label": "Display ID",
+        "description": "Updated",
+        "created_at": "2026-11-10T15:46:54.917Z",
+        "updated_at": "2026-11-10T15:46:55.009Z"
+      }
+    }
+  },
+  "pl_update_empty_label": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Value for field 'label' too small, expected at least: '1'"
+    }
+  },
+  "pl_update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "PropertyLabel with id \"plbl_missing\" not found"
+    }
+  },
+  "pl_batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "id": "plbl_01M73284DRHEJCZFHX2XWND2ET",
+          "entity": "Product",
+          "property": "title",
+          "label": "Name",
+          "description": null,
+          "created_at": "2026-11-10T15:46:55.032Z",
+          "updated_at": "2026-11-10T15:46:55.032Z"
+        }
+      ],
+      "updated": [
+        {
+          "id": "plbl_01M73284ADPTCHN4BAK2CXTEB3",
+          "entity": "Order",
+          "property": "email",
+          "label": "Email address",
+          "description": null,
+          "created_at": "2026-11-10T15:46:54.925Z",
+          "updated_at": "2026-11-10T15:46:55.034Z"
+        }
+      ],
+      "deleted": [
+        {
+          "id": "plbl_01M73284A5ZT64TRTHM6TANJ5A",
+          "object": "property_label",
+          "deleted": true
+        }
+      ]
+    }
+  },
+  "pl_batch_empty": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [],
+      "updated": [],
+      "deleted": []
+    }
+  },
+  "pl_batch_delete_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [],
+      "updated": [],
+      "deleted": [
+        {
+          "id": "plbl_missing",
+          "object": "property_label",
+          "deleted": true
+        }
+      ]
+    }
+  },
+  "pl_batch_update_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "PropertyLabel with id \"plbl_missing\" not found"
+    }
+  },
+  "pl_batch_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'create, 0, property' is required; Field 'create, 0, label' is required"
+    }
+  },
+  "pl_list_after_batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_labels": [
+        {
+          "id": "plbl_01M73284ADPTCHN4BAK2CXTEB3",
+          "entity": "Order",
+          "property": "email",
+          "label": "Email address",
+          "description": null,
+          "created_at": "2026-11-10T15:46:54.925Z",
+          "updated_at": "2026-11-10T15:46:55.034Z"
+        },
+        {
+          "id": "plbl_01M73284BSM8RNP5BF2H80M3PA",
+          "entity": "Customer",
+          "property": "first_name",
+          "label": "First name",
+          "description": null,
+          "created_at": "2026-11-10T15:46:54.970Z",
+          "updated_at": "2026-11-10T15:46:54.970Z"
+        },
+        {
+          "id": "plbl_01M73284DRHEJCZFHX2XWND2ET",
+          "entity": "Product",
+          "property": "title",
+          "label": "Name",
+          "description": null,
+          "created_at": "2026-11-10T15:46:55.032Z",
+          "updated_at": "2026-11-10T15:46:55.032Z"
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "pl_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "plbl_01M73284ADPTCHN4BAK2CXTEB3",
+      "object": "property_label",
+      "deleted": true
+    }
+  },
+  "pl_delete_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "plbl_missing",
+      "object": "property_label",
+      "deleted": true
+    }
+  },
+  "pl_list_final": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "property_labels": [
+        {
+          "id": "plbl_01M73284BSM8RNP5BF2H80M3PA",
+          "entity": "Customer",
+          "property": "first_name",
+          "label": "First name",
+          "description": null,
+          "created_at": "2026-11-10T15:46:54.970Z",
+          "updated_at": "2026-11-10T15:46:54.970Z"
+        },
+        {
+          "id": "plbl_01M73284DRHEJCZFHX2XWND2ET",
+          "entity": "Product",
+          "property": "title",
+          "label": "Name",
+          "description": null,
+          "created_at": "2026-11-10T15:46:55.032Z",
+          "updated_at": "2026-11-10T15:46:55.032Z"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}
