@@ -5,6 +5,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/modules-sdk/src"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	typesjoiner "github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	typesmodulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -34,7 +35,8 @@ func NewDefaultQueryAndLink(db dal.Querier, registered map[string]any) (*query.Q
 	linkServices := map[string]*services.LinkModuleService{}
 	svcs := map[string]query.ModuleService{}
 	moduleServices := map[string]any{}
-	for _, cfg := range modulessdk.DefaultJoinerConfigs {
+	configs, relationMap := queryConfigs(registered)
+	for _, cfg := range configs {
 		if cfg.IsReadOnlyLink || cfg.ServiceName == "" {
 			continue
 		}
@@ -78,9 +80,38 @@ func NewDefaultQueryAndLink(db dal.Querier, registered map[string]any) (*query.Q
 		svcs[cfg.ServiceName] = query.MedusaServiceAdapter{Service: svc}
 		moduleServices[cfg.ServiceName] = svc
 	}
-	q, err := query.New(modulessdk.DefaultJoinerConfigs, joiner.RelationMap(modulessdk.DefaultRelationMap), svcs)
+	q, err := query.New(configs, relationMap, svcs)
 	if err != nil {
 		return nil, nil, err
 	}
-	return q, modulessdk.NewLink(modulessdk.DefaultJoinerConfigs, linkServices, moduleServices), nil
+	if _, ok := registered[utilsmodulessdk.TRANSLATION]; ok {
+		q.EnableTranslations()
+	}
+	return q, modulessdk.NewLink(configs, linkServices, moduleServices), nil
+}
+
+// queryConfigs returns the joiner configs and relation map of the loaded
+// modules: the default configuration plus what the feature flagged modules
+// add when they are registered (translation).
+func queryConfigs(registered map[string]any) ([]*typesjoiner.ModuleJoinerConfig, joiner.RelationMap) {
+	if _, ok := registered[utilsmodulessdk.TRANSLATION]; !ok {
+		return modulessdk.DefaultJoinerConfigs, joiner.RelationMap(modulessdk.DefaultRelationMap)
+	}
+	configs := append(append([]*typesjoiner.ModuleJoinerConfig{}, modulessdk.DefaultJoinerConfigs...), modulessdk.TranslationJoinerConfigs...)
+	relations := joiner.RelationMap{}
+	for entity, props := range modulessdk.DefaultRelationMap {
+		relations[entity] = map[string]string{}
+		for k, v := range props {
+			relations[entity][k] = v
+		}
+	}
+	for entity, props := range modulessdk.TranslationRelationMap {
+		if relations[entity] == nil {
+			relations[entity] = map[string]string{}
+		}
+		for k, v := range props {
+			relations[entity][k] = v
+		}
+	}
+	return configs, relations
 }

@@ -96,6 +96,11 @@ func (q *queryBuilder) where(e *dml.Entity, alias string, filter *Record, path s
 			}
 			continue
 		}
+		if raw, ok := value.(RawWhere); ok {
+			c = raw.compile(q)
+			conds = append(conds, c)
+			continue
+		}
 		switch key {
 		case "$and", "$or":
 			c, err = q.logical(e, alias, key, value, path)
@@ -121,6 +126,28 @@ func (q *queryBuilder) where(e *dml.Entity, alias string, filter *Record, path s
 		}
 	}
 	return strings.Join(conds, " and "), nil
+}
+
+// RawWhere is a filter written in SQL, like a MikroORM raw() filter key
+// (e.g. { [raw("translations::text ILIKE ?", [v])]: [] }). The filter key
+// is free; each "?" binds the next argument.
+type RawWhere struct {
+	SQL  string
+	Args []any
+}
+
+func (r RawWhere) compile(q *queryBuilder) string {
+	var b strings.Builder
+	i := 0
+	for _, ch := range r.SQL {
+		if ch == '?' && i < len(r.Args) {
+			b.WriteString(q.arg(r.Args[i]))
+			i++
+			continue
+		}
+		b.WriteRune(ch)
+	}
+	return b.String()
 }
 
 func (q *queryBuilder) logical(e *dml.Entity, alias, op string, value any, path string) (string, error) {

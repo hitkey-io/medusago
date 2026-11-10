@@ -112,7 +112,9 @@ func inferLinkType(j *resolvedJoin, c correlateSpec) string {
 	return "pivot"
 }
 
-func hasTargetFilters(j *resolvedJoin) bool { return j.Target.Filters != nil && j.Target.Filters.Len() > 0 }
+func hasTargetFilters(j *resolvedJoin) bool {
+	return j.Target.Filters != nil && j.Target.Filters.Len() > 0
+}
 
 func joinRequiresFilter(j *resolvedJoin, children map[string][]*resolvedJoin) bool {
 	if hasTargetFilters(j) {

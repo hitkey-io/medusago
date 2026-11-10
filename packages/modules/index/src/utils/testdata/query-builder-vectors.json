@@ -1,0 +1,946 @@
+[
+  {
+    "name": "status",
+    "input": {
+      "name": "status",
+      "entity": "product",
+      "filters": {
+        "status": [
+          "published"
+        ]
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[]) order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[])",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @> ANY(ARRAY[''{\"status\":\"published\"}'']::JSONB[])') AS estimate_count"
+  },
+  {
+    "name": "q",
+    "input": {
+      "name": "q",
+      "entity": "product",
+      "filters": {
+        "q": "shirt",
+        "variants": {}
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" where (t_0.document_tsv @@ plainto_tsquery('simple', 'shirt') OR \"t_1_1\".document_tsv @@ plainto_tsquery('simple', 'shirt')) order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\"",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" where (t_0.document_tsv @@ plainto_tsquery(''simple'', ''shirt'') OR \"t_1_1\".document_tsv @@ plainto_tsquery(''simple'', ''shirt''))') AS estimate_count"
+  },
+  {
+    "name": "q_quote",
+    "input": {
+      "name": "q_quote",
+      "entity": "product",
+      "filters": {
+        "q": "it's a\\b",
+        "variants": {}
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 10
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" where (t_0.document_tsv @@ plainto_tsquery('simple', E'it''s a\\\\b') OR \"t_1_1\".document_tsv @@ plainto_tsquery('simple', E'it''s a\\\\b')) order by \"t_0\".\"id\" ASC limit 10) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\"",
+    "sqlCount": "SELECT count_estimate(E'select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" where (t_0.document_tsv @@ plainto_tsquery(''simple'', E''it''''s a\\\\\\\\b'') OR \"t_1_1\".document_tsv @@ plainto_tsquery(''simple'', E''it''''s a\\\\\\\\b''))') AS estimate_count"
+  },
+  {
+    "name": "q_empty",
+    "input": {
+      "name": "q_empty",
+      "entity": "product",
+      "filters": {
+        "q": ""
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 10
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" order by \"t_0\".\"id\" ASC limit 10) AS paginated_ids ON t_0.id = paginated_ids.id",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\"') AS estimate_count"
+  },
+  {
+    "name": "sales_channels",
+    "input": {
+      "name": "sales_channels",
+      "entity": "product",
+      "filters": {
+        "sales_channels": {
+          "id": [
+            "sc_1"
+          ]
+        }
+      },
+      "pagination": {
+        "skip": 1,
+        "take": 1,
+        "order": {
+          "title": "DESC"
+        }
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\", MAX((t_0.data->>'title')) AS \"product.title_agg\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.id IN ('sc_1') group by \"t_0\".\"id\" order by \"product.title_agg\" DESC limit 1 offset 1) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.id IN ('sc_1') order by (t_0.data->>'title') DESC",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.id IN (''sc_1'') group by \"t_0\".\"id\"') AS estimate_count"
+  },
+  {
+    "name": "sales_channels_two",
+    "input": {
+      "name": "sales_channels_two",
+      "entity": "product",
+      "filters": {
+        "sales_channels": {
+          "id": [
+            "sc_1",
+            "sc_2"
+          ]
+        },
+        "status": [
+          "published"
+        ]
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 20,
+        "order": {
+          "created_at": "ASC"
+        }
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\", MIN((t_0.data->>'created_at')::timestamp) AS \"product.created_at_agg\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.id IN ('sc_1','sc_2') and t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[]) group by \"t_0\".\"id\" order by \"product.created_at_agg\" ASC limit 20) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.id IN ('sc_1','sc_2') and t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[]) order by (t_0.data->>'created_at')::timestamp ASC",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.id IN (''sc_1'',''sc_2'') and t_0.data @> ANY(ARRAY[''{\"status\":\"published\"}'']::JSONB[]) group by \"t_0\".\"id\"') AS estimate_count"
+  },
+  {
+    "name": "price_list",
+    "input": {
+      "name": "price_list",
+      "entity": "product",
+      "filters": {
+        "variants": {
+          "prices": {
+            "price_list_id": [
+              "x"
+            ]
+          }
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @> ANY(ARRAY['{\"price_list_id\":\"x\"}']::JSONB[]) order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @> ANY(ARRAY['{\"price_list_id\":\"x\"}']::JSONB[])",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @> ANY(ARRAY[''{\"price_list_id\":\"x\"}'']::JSONB[])') AS estimate_count"
+  },
+  {
+    "name": "id_in",
+    "input": {
+      "name": "id_in",
+      "entity": "product",
+      "filters": {
+        "id": [
+          "foo"
+        ]
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.id IN ('foo') order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.id IN ('foo')",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.id IN (''foo'')') AS estimate_count"
+  },
+  {
+    "name": "id_eq",
+    "input": {
+      "name": "id_eq",
+      "entity": "product",
+      "filters": {
+        "id": "foo"
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.id = 'foo' order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.id = 'foo'",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.id = ''foo''') AS estimate_count"
+  },
+  {
+    "name": "title_eq",
+    "input": {
+      "name": "title_eq",
+      "entity": "product",
+      "filters": {
+        "title": "Medusa T-Shirt"
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @> '{\"title\":\"Medusa T-Shirt\"}'::jsonb order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @> '{\"title\":\"Medusa T-Shirt\"}'::jsonb",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @> ''{\"title\":\"Medusa T-Shirt\"}''::jsonb') AS estimate_count"
+  },
+  {
+    "name": "handle_in",
+    "input": {
+      "name": "handle_in",
+      "entity": "product",
+      "filters": {
+        "handle": [
+          "t-shirt",
+          "sweatpants"
+        ]
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @> ANY(ARRAY['{\"handle\":\"t-shirt\"}','{\"handle\":\"sweatpants\"}']::JSONB[]) order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @> ANY(ARRAY['{\"handle\":\"t-shirt\"}','{\"handle\":\"sweatpants\"}']::JSONB[])",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @> ANY(ARRAY[''{\"handle\":\"t-shirt\"}'',''{\"handle\":\"sweatpants\"}'']::JSONB[])') AS estimate_count"
+  },
+  {
+    "name": "giftcard",
+    "input": {
+      "name": "giftcard",
+      "entity": "product",
+      "filters": {
+        "is_giftcard": false
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @> '{\"is_giftcard\":false}'::jsonb order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @> '{\"is_giftcard\":false}'::jsonb",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @> ''{\"is_giftcard\":false}''::jsonb') AS estimate_count"
+  },
+  {
+    "name": "giftcard_true",
+    "input": {
+      "name": "giftcard_true",
+      "entity": "product",
+      "filters": {
+        "is_giftcard": "true"
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @> '{\"is_giftcard\":true}'::jsonb order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @> '{\"is_giftcard\":true}'::jsonb",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @> ''{\"is_giftcard\":true}''::jsonb') AS estimate_count"
+  },
+  {
+    "name": "created_gt",
+    "input": {
+      "name": "created_gt",
+      "entity": "product",
+      "filters": {
+        "created_at": {
+          "$gt": "2020-01-01T00:00:00.000Z"
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @@ '$.created_at > \"2020-01-01T00:00:00.000Z\"' order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @@ '$.created_at > \"2020-01-01T00:00:00.000Z\"'",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @@ ''$.created_at > \"2020-01-01T00:00:00.000Z\"''') AS estimate_count"
+  },
+  {
+    "name": "created_range",
+    "input": {
+      "name": "created_range",
+      "entity": "product",
+      "filters": {
+        "created_at": {
+          "$gte": "2020-01-01",
+          "$lt": "2030-01-01T10:00:00Z"
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @@ '$.created_at >= \"2020-01-01T00:00:00.000Z\"' and t_0.data @@ '$.created_at < \"2030-01-01T10:00:00.000Z\"' order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @@ '$.created_at >= \"2020-01-01T00:00:00.000Z\"' and t_0.data @@ '$.created_at < \"2030-01-01T10:00:00.000Z\"'",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @@ ''$.created_at >= \"2020-01-01T00:00:00.000Z\"'' and t_0.data @@ ''$.created_at < \"2030-01-01T10:00:00.000Z\"''') AS estimate_count"
+  },
+  {
+    "name": "updated_lte",
+    "input": {
+      "name": "updated_lte",
+      "entity": "product",
+      "filters": {
+        "updated_at": {
+          "$lte": "2030-01-01T00:00:00.000Z"
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50,
+        "order": {
+          "updated_at": "DESC"
+        }
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\", MAX((t_0.data->>'updated_at')::timestamp) AS \"product.updated_at_agg\" from \"cat_product\" as \"t_0\" where t_0.data @@ '$.updated_at <= \"2030-01-01T00:00:00.000Z\"' group by \"t_0\".\"id\" order by \"product.updated_at_agg\" DESC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @@ '$.updated_at <= \"2030-01-01T00:00:00.000Z\"' order by (t_0.data->>'updated_at')::timestamp DESC",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @@ ''$.updated_at <= \"2030-01-01T00:00:00.000Z\"'' group by \"t_0\".\"id\"') AS estimate_count"
+  },
+  {
+    "name": "title_ilike",
+    "input": {
+      "name": "title_ilike",
+      "entity": "product",
+      "filters": {
+        "title": {
+          "$ilike": "%shirt%"
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @@ '$.title like_regex \".*shirt.*\" flag \"i\"' order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @@ '$.title like_regex \".*shirt.*\" flag \"i\"'",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @@ ''$.title like_regex \".*shirt.*\" flag \"i\"''') AS estimate_count"
+  },
+  {
+    "name": "title_like",
+    "input": {
+      "name": "title_like",
+      "entity": "product",
+      "filters": {
+        "title": {
+          "$like": "Medusa_T%"
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @@ '$.title like_regex \"Medusa.T.*\"' order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @@ '$.title like_regex \"Medusa.T.*\"'",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @@ ''$.title like_regex \"Medusa.T.*\"''') AS estimate_count"
+  },
+  {
+    "name": "title_ne",
+    "input": {
+      "name": "title_ne",
+      "entity": "product",
+      "filters": {
+        "title": {
+          "$ne": "x"
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @@ '$.title != \"x\"' order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @@ '$.title != \"x\"'",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @@ ''$.title != \"x\"''') AS estimate_count"
+  },
+  {
+    "name": "title_ne_null",
+    "input": {
+      "name": "title_ne_null",
+      "entity": "product",
+      "filters": {
+        "external_id": {
+          "$ne": null
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @@ '$.external_id != null' order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @@ '$.external_id != null'",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @@ ''$.external_id != null''') AS estimate_count"
+  },
+  {
+    "name": "title_eq_null",
+    "input": {
+      "name": "title_eq_null",
+      "entity": "product",
+      "filters": {
+        "external_id": {
+          "$eq": null
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @@ '$.external_id == null' order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @@ '$.external_id == null'",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @@ ''$.external_id == null''') AS estimate_count"
+  },
+  {
+    "name": "title_null",
+    "input": {
+      "name": "title_null",
+      "entity": "product",
+      "filters": {
+        "external_id": null
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @> '{\"external_id\":null}'::jsonb order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @> '{\"external_id\":null}'::jsonb",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @> ''{\"external_id\":null}''::jsonb') AS estimate_count"
+  },
+  {
+    "name": "id_op_in",
+    "input": {
+      "name": "id_op_in",
+      "entity": "product",
+      "filters": {
+        "id": {
+          "$in": [
+            "a",
+            "b"
+          ]
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.id IN ('a','b') order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.id IN ('a','b')",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.id IN (''a'',''b'')') AS estimate_count"
+  },
+  {
+    "name": "id_op_nin",
+    "input": {
+      "name": "id_op_nin",
+      "entity": "product",
+      "filters": {
+        "id": {
+          "$nin": [
+            "a"
+          ]
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.id NOT IN ('a') order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.id NOT IN ('a')",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.id NOT IN (''a'')') AS estimate_count"
+  },
+  {
+    "name": "status_nin",
+    "input": {
+      "name": "status_nin",
+      "entity": "product",
+      "filters": {
+        "status": {
+          "$nin": [
+            "draft",
+            "rejected"
+          ]
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where NOT EXISTS (SELECT 1 FROM unnest(ARRAY['{\"status\":\"draft\"}','{\"status\":\"rejected\"}']::JSONB[]) AS v(val) WHERE t_0.data @> v.val) order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where NOT EXISTS (SELECT 1 FROM unnest(ARRAY['{\"status\":\"draft\"}','{\"status\":\"rejected\"}']::JSONB[]) AS v(val) WHERE t_0.data @> v.val)",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where NOT EXISTS (SELECT 1 FROM unnest(ARRAY[''{\"status\":\"draft\"}'',''{\"status\":\"rejected\"}'']::JSONB[]) AS v(val) WHERE t_0.data @> v.val)') AS estimate_count"
+  },
+  {
+    "name": "status_op_in",
+    "input": {
+      "name": "status_op_in",
+      "entity": "product",
+      "filters": {
+        "status": {
+          "$in": [
+            "published"
+          ]
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[]) order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[])",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @> ANY(ARRAY[''{\"status\":\"published\"}'']::JSONB[])') AS estimate_count"
+  },
+  {
+    "name": "id_ne",
+    "input": {
+      "name": "id_ne",
+      "entity": "product",
+      "filters": {
+        "id": {
+          "$ne": "a"
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where (t_0.id) != 'a' order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where (t_0.id) != 'a'",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where (t_0.id) != ''a''') AS estimate_count"
+  },
+  {
+    "name": "id_eq_op",
+    "input": {
+      "name": "id_eq_op",
+      "entity": "product",
+      "filters": {
+        "id": {
+          "$eq": "a"
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.id = 'a' order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.id = 'a'",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.id = ''a''') AS estimate_count"
+  },
+  {
+    "name": "or",
+    "input": {
+      "name": "or",
+      "entity": "product",
+      "filters": {
+        "$or": [
+          {
+            "title": "a"
+          },
+          {
+            "handle": "b"
+          }
+        ]
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where ((t_0.data @> '{\"title\":\"a\"}'::jsonb) or (t_0.data @> '{\"handle\":\"b\"}'::jsonb)) order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where ((t_0.data @> '{\"title\":\"a\"}'::jsonb) or (t_0.data @> '{\"handle\":\"b\"}'::jsonb))",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where ((t_0.data @> ''{\"title\":\"a\"}''::jsonb) or (t_0.data @> ''{\"handle\":\"b\"}''::jsonb))') AS estimate_count"
+  },
+  {
+    "name": "and",
+    "input": {
+      "name": "and",
+      "entity": "product",
+      "filters": {
+        "$and": [
+          {
+            "title": {
+              "$ilike": "%a%"
+            }
+          },
+          {
+            "status": [
+              "published"
+            ]
+          }
+        ]
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where ((t_0.data @@ '$.title like_regex \".*a.*\" flag \"i\"') and (t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[]))) order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where ((t_0.data @@ '$.title like_regex \".*a.*\" flag \"i\"') and (t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[])))",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where ((t_0.data @@ ''$.title like_regex \".*a.*\" flag \"i\"'') and (t_0.data @> ANY(ARRAY[''{\"status\":\"published\"}'']::JSONB[])))') AS estimate_count"
+  },
+  {
+    "name": "not",
+    "input": {
+      "name": "not",
+      "entity": "product",
+      "filters": {
+        "$not": {
+          "title": "a"
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "error": "Could not find entity for path: product.$not. It might not be indexed."
+  },
+  {
+    "name": "nested_or",
+    "input": {
+      "name": "nested_or",
+      "entity": "product",
+      "filters": {
+        "variants": {
+          "$or": [
+            {
+              "sku": "a"
+            },
+            {
+              "sku": "b"
+            }
+          ]
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" where ((t_1_1.data @> '{\"sku\":\"a\"}'::jsonb) or (t_1_1.data @> '{\"sku\":\"b\"}'::jsonb)) order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" where ((t_1_1.data @> '{\"sku\":\"a\"}'::jsonb) or (t_1_1.data @> '{\"sku\":\"b\"}'::jsonb))",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" where ((t_1_1.data @> ''{\"sku\":\"a\"}''::jsonb) or (t_1_1.data @> ''{\"sku\":\"b\"}''::jsonb))') AS estimate_count"
+  },
+  {
+    "name": "variants_sku",
+    "input": {
+      "name": "variants_sku",
+      "entity": "product",
+      "filters": {
+        "variants": {
+          "sku": [
+            "SHIRT-S-BLACK"
+          ]
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50,
+        "order": {
+          "variants": {
+            "sku": "ASC"
+          }
+        }
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\", MIN((t_1_1.data->>'sku')) AS \"product.variants.sku_agg\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" where t_1_1.data @> ANY(ARRAY['{\"sku\":\"SHIRT-S-BLACK\"}']::JSONB[]) group by \"t_0\".\"id\" order by \"product.variants.sku_agg\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" where t_1_1.data @> ANY(ARRAY['{\"sku\":\"SHIRT-S-BLACK\"}']::JSONB[]) order by (t_1_1.data->>'sku') ASC",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" where t_1_1.data @> ANY(ARRAY[''{\"sku\":\"SHIRT-S-BLACK\"}'']::JSONB[]) group by \"t_0\".\"id\"') AS estimate_count"
+  },
+  {
+    "name": "order_flat_nested",
+    "input": {
+      "name": "order_flat_nested",
+      "entity": "product",
+      "filters": {},
+      "pagination": {
+        "skip": 0,
+        "take": 5,
+        "order": {
+          "variants.sku": "DESC"
+        }
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\", MAX((t_1_1.data->>'sku')) AS \"product.variants.sku_agg\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" group by \"t_0\".\"id\" order by \"product.variants.sku_agg\" DESC limit 5) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" order by (t_1_1.data->>'sku') DESC",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" group by \"t_0\".\"id\"') AS estimate_count"
+  },
+  {
+    "name": "order_two",
+    "input": {
+      "name": "order_two",
+      "entity": "product",
+      "filters": {
+        "status": [
+          "published"
+        ]
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 5,
+        "order": {
+          "title": "ASC",
+          "created_at": "DESC"
+        }
+      }
+    },
+    "error": "Order by only supports one key per object."
+  },
+  {
+    "name": "order_id",
+    "input": {
+      "name": "order_id",
+      "entity": "product",
+      "filters": {},
+      "pagination": {
+        "skip": 2,
+        "take": 5,
+        "order": {
+          "id": "DESC"
+        }
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" order by t_0.id DESC limit 5 offset 2) AS paginated_ids ON t_0.id = paginated_ids.id order by t_0.id DESC",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\"') AS estimate_count"
+  },
+  {
+    "name": "no_filters",
+    "input": {
+      "name": "no_filters",
+      "entity": "product",
+      "filters": {},
+      "pagination": {
+        "skip": 0,
+        "take": 15
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" order by \"t_0\".\"id\" ASC limit 15) AS paginated_ids ON t_0.id = paginated_ids.id",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\"') AS estimate_count"
+  },
+  {
+    "name": "no_pagination",
+    "input": {
+      "name": "no_pagination",
+      "entity": "product",
+      "filters": {
+        "status": [
+          "published"
+        ]
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[]) order by \"t_0\".\"id\" ASC) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[])",
+    "sqlCount": null
+  },
+  {
+    "name": "take_only",
+    "input": {
+      "name": "take_only",
+      "entity": "product",
+      "filters": {
+        "status": [
+          "published"
+        ]
+      },
+      "pagination": {
+        "take": 3
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[]) order by \"t_0\".\"id\" ASC limit 3) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[])",
+    "sqlCount": null
+  },
+  {
+    "name": "prices_amount",
+    "input": {
+      "name": "prices_amount",
+      "entity": "product",
+      "filters": {
+        "variants": {
+          "prices": {
+            "amount": {
+              "$gt": 10
+            },
+            "currency_code": "usd"
+          }
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @@ '$.amount > 10' and t_2_2_0.data @> '{\"currency_code\":\"usd\"}'::jsonb order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @@ '$.amount > 10' and t_2_2_0.data @> '{\"currency_code\":\"usd\"}'::jsonb",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @@ ''$.amount > 10'' and t_2_2_0.data @> ''{\"currency_code\":\"usd\"}''::jsonb') AS estimate_count"
+  },
+  {
+    "name": "sc_disabled",
+    "input": {
+      "name": "sc_disabled",
+      "entity": "product",
+      "filters": {
+        "sales_channels": {
+          "is_disabled": false
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.data @> '{\"is_disabled\":false}'::jsonb order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.data @> '{\"is_disabled\":false}'::jsonb",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.data @> ''{\"is_disabled\":false}''::jsonb') AS estimate_count"
+  },
+  {
+    "name": "join_filters",
+    "input": {
+      "name": "join_filters",
+      "entity": "product",
+      "filters": {
+        "status": [
+          "published"
+        ]
+      },
+      "joinFilters": {
+        "variants": {
+          "sku": "x"
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[]) order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @> ANY(ARRAY['{\"status\":\"published\"}']::JSONB[])",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @> ANY(ARRAY[''{\"status\":\"published\"}'']::JSONB[])') AS estimate_count"
+  },
+  {
+    "name": "variant_entity",
+    "input": {
+      "name": "variant_entity",
+      "entity": "product_variant",
+      "filters": {
+        "sku": "x",
+        "product": {
+          "status": [
+            "published"
+          ]
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "error": "Could not find entity for path: product_variant.product. It might not be indexed."
+  },
+  {
+    "name": "variant_prices",
+    "input": {
+      "name": "variant_prices",
+      "entity": "product_variant",
+      "filters": {
+        "prices": {
+          "currency_code": "eur"
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product_variant.id\" from \"cat_productvariant\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_productvariant\" as \"t_0\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_3_1_2_ref\" on \"t_3_1_2_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_3_1_2\" on \"t_3_1_2\".\"id\" = \"t_3_1_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_3_1_2\".\"id\" left join \"cat_priceset\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_price\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.data @> '{\"currency_code\":\"eur\"}'::jsonb order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_3_1_2_ref\" on \"t_3_1_2_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_3_1_2\" on \"t_3_1_2\".\"id\" = \"t_3_1_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_3_1_2\".\"id\" left join \"cat_priceset\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_price\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.data @> '{\"currency_code\":\"eur\"}'::jsonb",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_productvariant\" as \"t_0\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_3_1_2_ref\" on \"t_3_1_2_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_3_1_2\" on \"t_3_1_2\".\"id\" = \"t_3_1_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_3_1_2\".\"id\" left join \"cat_priceset\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_price\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" where t_1_1_0.data @> ''{\"currency_code\":\"eur\"}''::jsonb') AS estimate_count"
+  },
+  {
+    "name": "store_like",
+    "input": {
+      "name": "store_like",
+      "entity": "product",
+      "filters": {
+        "status": "published",
+        "sales_channels": {
+          "id": [
+            "sc_1"
+          ]
+        },
+        "q": "shirt",
+        "variants": {}
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50,
+        "order": {
+          "created_at": "DESC"
+        }
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\", MAX((t_0.data->>'created_at')::timestamp) AS \"product.created_at_agg\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" left join \"cat_pivot_productproductvariant\" as \"t_3_1_ref\" on \"t_3_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_3_1\" on \"t_3_1\".\"id\" = \"t_3_1_ref\".\"child_id\" where (t_0.document_tsv @@ plainto_tsquery('simple', 'shirt') OR \"t_2_1_1\".document_tsv @@ plainto_tsquery('simple', 'shirt') OR \"t_1_1_0\".document_tsv @@ plainto_tsquery('simple', 'shirt') OR \"t_3_1\".document_tsv @@ plainto_tsquery('simple', 'shirt')) and t_0.data @> '{\"status\":\"published\"}'::jsonb and t_1_1_0.id IN ('sc_1') group by \"t_0\".\"id\" order by \"product.created_at_agg\" DESC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" left join \"cat_pivot_productproductvariant\" as \"t_3_1_ref\" on \"t_3_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_3_1\" on \"t_3_1\".\"id\" = \"t_3_1_ref\".\"child_id\" where t_0.data @> '{\"status\":\"published\"}'::jsonb and t_1_1_0.id IN ('sc_1') order by (t_0.data->>'created_at')::timestamp DESC",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productlinkproductsaleschannel\" as \"t_2_1_1_ref\" on \"t_2_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_linkproductsaleschannel\" as \"t_2_1_1\" on \"t_2_1_1\".\"id\" = \"t_2_1_1_ref\".\"child_id\" left join \"cat_pivot_linkproductsaleschannelsaleschannel\" as \"t_1_1_0_ref\" on \"t_1_1_0_ref\".\"parent_id\" = \"t_2_1_1\".\"id\" left join \"cat_saleschannel\" as \"t_1_1_0\" on \"t_1_1_0\".\"id\" = \"t_1_1_0_ref\".\"child_id\" left join \"cat_pivot_productproductvariant\" as \"t_3_1_ref\" on \"t_3_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_3_1\" on \"t_3_1\".\"id\" = \"t_3_1_ref\".\"child_id\" where (t_0.document_tsv @@ plainto_tsquery(''simple'', ''shirt'') OR \"t_2_1_1\".document_tsv @@ plainto_tsquery(''simple'', ''shirt'') OR \"t_1_1_0\".document_tsv @@ plainto_tsquery(''simple'', ''shirt'') OR \"t_3_1\".document_tsv @@ plainto_tsquery(''simple'', ''shirt'')) and t_0.data @> ''{\"status\":\"published\"}''::jsonb and t_1_1_0.id IN (''sc_1'') group by \"t_0\".\"id\"') AS estimate_count"
+  },
+  {
+    "name": "empty_in",
+    "input": {
+      "name": "empty_in",
+      "entity": "product",
+      "filters": {
+        "id": []
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\"') AS estimate_count"
+  },
+  {
+    "name": "flat_keys",
+    "input": {
+      "name": "flat_keys",
+      "entity": "product",
+      "filters": {
+        "variants.sku": "x",
+        "sales_channels.id": "sc_1"
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" where t_0.data @> '{\"variants\":{\"sku\":\"x\"}}'::jsonb and t_0.id = 'sc_1' order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id where t_0.data @> '{\"variants\":{\"sku\":\"x\"}}'::jsonb and t_0.id = 'sc_1'",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" where t_0.data @> ''{\"variants\":{\"sku\":\"x\"}}''::jsonb and t_0.id = ''sc_1''') AS estimate_count"
+  },
+  {
+    "name": "amount_eq",
+    "input": {
+      "name": "amount_eq",
+      "entity": "product",
+      "filters": {
+        "variants": {
+          "prices": {
+            "amount": 10
+          }
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @> '{\"amount\":10}'::jsonb order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @> '{\"amount\":10}'::jsonb",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @> ''{\"amount\":10}''::jsonb') AS estimate_count"
+  },
+  {
+    "name": "amount_in",
+    "input": {
+      "name": "amount_in",
+      "entity": "product",
+      "filters": {
+        "variants": {
+          "prices": {
+            "amount": [
+              10,
+              "20.5"
+            ]
+          }
+        }
+      },
+      "pagination": {
+        "skip": 0,
+        "take": 50
+      }
+    },
+    "sql": "select \"t_0\".\"id\" as \"product.id\" from \"cat_product\" as \"t_0\" INNER JOIN (select distinct \"t_0\".\"id\" from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @> ANY(ARRAY['{\"amount\":10}','{\"amount\":20.5}']::JSONB[]) order by \"t_0\".\"id\" ASC limit 50) AS paginated_ids ON t_0.id = paginated_ids.id left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @> ANY(ARRAY['{\"amount\":10}','{\"amount\":20.5}']::JSONB[])",
+    "sqlCount": "SELECT count_estimate('select 1 from \"cat_product\" as \"t_0\" left join \"cat_pivot_productproductvariant\" as \"t_1_1_ref\" on \"t_1_1_ref\".\"parent_id\" = \"t_0\".\"id\" left join \"cat_productvariant\" as \"t_1_1\" on \"t_1_1\".\"id\" = \"t_1_1_ref\".\"child_id\" left join \"cat_pivot_productvariantlinkproductvariantpriceset\" as \"t_4_2_2_ref\" on \"t_4_2_2_ref\".\"parent_id\" = \"t_1_1\".\"id\" left join \"cat_linkproductvariantpriceset\" as \"t_4_2_2\" on \"t_4_2_2\".\"id\" = \"t_4_2_2_ref\".\"child_id\" left join \"cat_pivot_linkproductvariantpricesetpriceset\" as \"t_3_2_1_ref\" on \"t_3_2_1_ref\".\"parent_id\" = \"t_4_2_2\".\"id\" left join \"cat_priceset\" as \"t_3_2_1\" on \"t_3_2_1\".\"id\" = \"t_3_2_1_ref\".\"child_id\" left join \"cat_pivot_pricesetprice\" as \"t_2_2_0_ref\" on \"t_2_2_0_ref\".\"parent_id\" = \"t_3_2_1\".\"id\" left join \"cat_price\" as \"t_2_2_0\" on \"t_2_2_0\".\"id\" = \"t_2_2_0_ref\".\"child_id\" where t_2_2_0.data @> ANY(ARRAY[''{\"amount\":10}'',''{\"amount\":20.5}'']::JSONB[])') AS estimate_count"
+  }
+]

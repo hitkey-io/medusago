@@ -128,9 +128,19 @@ var CreateCartWorkflow = composer.CreateWorkflow("create-cart",
 		if err != nil {
 			return nil, err
 		}
-		lineItems := make([]any, len(vi.LineItems))
-		for i, li := range vi.LineItems {
-			lineItems[i] = Get(li, "data")
+		itemsToCreate := make([]*dal.Record, 0, len(vi.LineItems))
+		for _, li := range vi.LineItems {
+			if d, ok := Get(li, "data").(*dal.Record); ok {
+				itemsToCreate = append(itemsToCreate, d)
+			}
+		}
+		translatedItems, err := commonsteps.GetTranslatedLineItemsStep.Run(e, commonsteps.GetTranslatedLineItemsStepInput{Items: itemsToCreate, Variants: vi.Variants, Locale: Str(input, "locale")})
+		if err != nil {
+			return nil, err
+		}
+		lineItems := make([]any, len(translatedItems))
+		for i, li := range translatedItems {
+			lineItems[i] = li
 		}
 		cartInput.Set("items", lineItems)
 		vh := dal.NewRecord()

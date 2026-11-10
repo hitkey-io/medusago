@@ -2,16 +2,32 @@
 package searchindexes
 
 import (
+	"context"
+
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 )
 
-// GET mirrors GET. The search module is registered by default
-// (defineConfig) and the default app defines no search index, so
-// listIndexes returns [] (index definitions are not ported yet).
+type indexLister interface {
+	ListIndexes(ctx context.Context) ([]*dal.Record, error)
+}
+
+// GET mirrors GET: the registered search indexes (the search module is
+// registered by default; the default app defines no search index).
 func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	out := dal.NewRecord()
-	out.Set("search_indexes", []any{})
+	searchModule, _ := req.Scope.Resolve(utilsmodulessdk.SEARCH).(indexLister)
+	if searchModule == nil {
+		out.Set("search_indexes", []any{})
+		out.Set("enabled", false)
+		return res.JSON(out)
+	}
+	indexes, err := searchModule.ListIndexes(req.Ctx())
+	if err != nil {
+		return err
+	}
+	out.Set("search_indexes", indexes)
 	out.Set("enabled", true)
 	return res.JSON(out)
 }

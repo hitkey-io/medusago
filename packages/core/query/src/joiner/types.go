@@ -247,4 +247,7 @@ type DataFetcher interface {
 type Options struct {
 	ThrowIfKeyNotFound      bool
 	ThrowIfRelationNotFound bool
+	// Locale mirrors the locale option of query.graph: the result is
+	// translated (applyTranslations) when set.
+	Locale string
 }

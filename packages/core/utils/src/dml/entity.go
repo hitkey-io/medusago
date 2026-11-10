@@ -171,5 +171,6 @@ func MustParseEntity(data string) *Entity {
 	if err := dec.Decode(&e); err != nil {
 		panic(fmt.Sprintf("invalid DML entity: %v", err))
 	}
+	registerTranslatableFields(&e)
 	return &e
 }

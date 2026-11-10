@@ -164,7 +164,12 @@ func (f *ModuleDataFetcher) Fetch(ctx context.Context, expand *joiner.ExpandProp
 			}
 			return &joiner.FetchResult{Rows: []any{}}, nil
 		}
-		filters.Set(keyField, ids)
+		if op, ok := ids[0].(*dal.Record); ok && len(ids) == 1 {
+			// an operator map ({ $gt: cursor }) is passed as is
+			filters.Set(keyField, op)
+		} else {
+			filters.Set(keyField, ids)
+		}
 		if !hasPagination {
 			config.Take = nil
 		}

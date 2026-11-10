@@ -154,5 +154,5 @@ var ListShippingOptionsForCartWithPricingWorkflow = composer.CreateWorkflow("lis
 		if out == nil {
 			out = []*dal.Record{}
 		}
-		return out, nil
+		return commonsteps.GetTranslatedShippingOptionsStep.Run(e, commonsteps.GetTranslatedShippingOptionsStepInput{ShippingOptions: out, Locale: Str(cart, "locale")})
 	})

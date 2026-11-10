@@ -501,8 +501,7 @@ var FetchShippingOptionForDraftOrderWorkflow = composer.CreateWorkflow("fetch-sh
 		return rec(res.Data), nil
 	})
 
-// AddDraftOrderShippingMethodsWorkflow mirrors addDraftOrderShippingMethodsWorkflow
-// (translations are not ported).
+// AddDraftOrderShippingMethodsWorkflow mirrors addDraftOrderShippingMethodsWorkflow.
 var AddDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow("add-draft-order-shipping-methods",
 	func(e *composer.Execution, in *dal.Record) (*dal.Record, error) {
 		orderID := g(in, "order_id")
@@ -521,6 +520,9 @@ var AddDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow("add-draft-or
 			OrderID: g(order, "id"), ShippingOptionID: g(in, "shipping_option_id"), CurrencyCode: g(order, "currency_code"),
 		})
 		if err != nil {
+			return nil, err
+		}
+		if option, err = orderworkflows.TranslateShippingOption(e, option, g(order, "locale")); err != nil {
 			return nil, err
 		}
 		related := dal.NewRecord()

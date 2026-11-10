@@ -268,6 +268,9 @@ var CreateOrderEditShippingMethodWorkflow = composer.CreateWorkflow("create-orde
 		if len(options) > 0 {
 			option = options[0]
 		}
+		if option, err = TranslateShippingOption(e, option, g(order, "locale")); err != nil {
+			return nil, err
+		}
 		related := dal.NewRecord()
 		related.Set("order_id", g(order, "id"))
 		customPrice := g(in, "custom_amount")

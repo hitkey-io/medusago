@@ -157,7 +157,11 @@ var AddOrderLineItemsWorkflow = composer.CreateWorkflow("order-add-line-items",
 		for _, li := range vi.LineItems {
 			items = append(items, rec(g(li, "data")))
 		}
-		return ordersteps.CreateOrderLineItemsStep.Run(e, items)
+		translatedItems, err := commonsteps.GetTranslatedLineItemsStep.Run(e, commonsteps.GetTranslatedLineItemsStepInput{Items: items, Variants: vi.Variants, Locale: str(g(order, "locale"))})
+		if err != nil {
+			return nil, err
+		}
+		return ordersteps.CreateOrderLineItemsStep.Run(e, translatedItems)
 	})
 
 func queryClaim(e *composer.Execution, name string, id any, fields []string) (*dal.Record, error) {
@@ -647,6 +651,9 @@ var CreateClaimShippingMethodWorkflow = composer.CreateWorkflow("create-claim-sh
 			OrderID: g(order, "id"), ShippingOptionID: g(in, "shipping_option_id"), CurrencyCode: g(order, "currency_code"), Context: c,
 		})
 		if err != nil {
+			return nil, err
+		}
+		if option, err = TranslateShippingOption(e, option, g(order, "locale")); err != nil {
 			return nil, err
 		}
 		if _, err := createClaimShippingMethodValidationStep.Run(e, changeValidationInput{order, claim, orderChange}); err != nil {

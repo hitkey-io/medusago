@@ -22,6 +22,10 @@ type Route struct {
 type RouteFile struct {
 	Path  string
 	Route Route
+	// FeatureFlag mirrors defineFileConfig({ isDisabled: () =>
+	// !FeatureFlag.isFeatureEnabled(key) }): the route file is skipped
+	// unless the flag is enabled.
+	FeatureFlag string
 }
 
 // RouteDescriptor mirrors RouteDescriptor.
@@ -111,6 +115,9 @@ type ApiLoaderOptions struct {
 	BaseRestrictedFields []string
 	StoreRelationsLimit  int
 	CoreErrorHandler     ErrorHandlerFunction
+	// IsFeatureEnabled resolves the feature flags of RouteFile.FeatureFlag
+	// (nil: every flagged route file is disabled).
+	IsFeatureEnabled func(key string) bool
 }
 
 // AuthenticateOptions mirrors the options of authenticate().
@@ -205,12 +212,22 @@ func LoadAPI(app *App, o ApiLoaderOptions) {
 	})
 
 	var routes []RouteDescriptor
+	disabledFiles := map[string]bool{}
 	for _, f := range o.Routes {
+		if f.FeatureFlag != "" && (o.IsFeatureEnabled == nil || !o.IsFeatureEnabled(f.FeatureFlag)) {
+			disabledFiles[f.Path] = true
+			continue
+		}
 		routes = append(routes, routeDescriptors(f)...)
 	}
 	var middlewares []MiddlewareDescriptor
 	var bodyParserRoutes []BodyParserConfigRoute
 	for _, mr := range o.Middlewares {
+		// #isRouteFileDisabled: method middlewares of a disabled route file
+		// are not registered.
+		if mr.Methods != nil && mr.MatcherRe == nil && disabledFiles[mr.Matcher] {
+			continue
+		}
 		if mr.BodyParser != nil {
 			methods := mr.Methods
 			if methods == nil {

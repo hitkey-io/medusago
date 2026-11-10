@@ -224,6 +224,9 @@ var CreateReturnShippingMethodWorkflow = composer.CreateWorkflow("create-return-
 		if err != nil {
 			return nil, err
 		}
+		if option, err = TranslateShippingOption(e, option, g(order, "locale")); err != nil {
+			return nil, err
+		}
 		if _, err := createReturnShippingMethodValidationStep.Run(e, changeValidationInput{order, orderReturn, orderChange}); err != nil {
 			return nil, err
 		}

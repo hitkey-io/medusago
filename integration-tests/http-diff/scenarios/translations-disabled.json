@@ -1,0 +1,14 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "translations", "method": "GET", "bearer": "login", "path": "/admin/translations" },
+  { "name": "translations_bad_query", "method": "GET", "bearer": "login", "path": "/admin/translations?limit=abc" },
+  { "name": "batch", "method": "POST", "bearer": "login", "path": "/admin/translations/batch", "body": { "create": [] } },
+  { "name": "settings", "method": "GET", "bearer": "login", "path": "/admin/translations/settings" },
+  { "name": "statistics", "method": "GET", "bearer": "login", "path": "/admin/translations/statistics?locales=fr-FR&entity_types=product" },
+  { "name": "entities", "method": "GET", "bearer": "login", "path": "/admin/translations/entities?type=product" },
+  { "name": "entities_no_type", "method": "GET", "bearer": "login", "path": "/admin/translations/entities" },
+  { "name": "locales", "method": "GET", "bearer": "login", "path": "/admin/locales" },
+  { "name": "locale", "method": "GET", "bearer": "login", "path": "/admin/locales/fr-FR" },
+  { "name": "store_locales", "method": "GET", "path": "/store/locales" },
+  { "name": "stores", "method": "GET", "bearer": "login", "path": "/admin/stores?fields=id,name" }
+]

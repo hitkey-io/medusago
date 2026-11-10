@@ -403,6 +403,9 @@ var CreateExchangeShippingMethodWorkflow = composer.CreateWorkflow("create-excha
 		if err != nil {
 			return nil, err
 		}
+		if option, err = TranslateShippingOption(e, option, g(order, "locale")); err != nil {
+			return nil, err
+		}
 		if _, err := createExchangeShippingMethodValidationStep.Run(e, changeValidationInput{order, exchange, orderChange}); err != nil {
 			return nil, err
 		}

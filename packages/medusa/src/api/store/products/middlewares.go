@@ -9,6 +9,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	storeutils "github.com/hitkey-io/medusago/packages/medusa/src/api/store/utils"
 	productmw "github.com/hitkey-io/medusago/packages/medusa/src/api/utils/middlewares/products"
+	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/feature-flags"
 )
 
 var allowed = storeutils.BuildAllowedFields(DefaultStoreProductFields, AllowedStoreProductExtraFields)
@@ -22,8 +23,13 @@ var (
 var productSalesChannelLink = httputils.LinkFilterOptions{EntryPoint: "product_sales_channel", ResourceID: "product_id", FilterableField: "sales_channel_id"}
 
 // applyMaybeLinkFilterIfNecessary mirrors applyMaybeLinkFilterIfNecessary
-// (index engine disabled).
+// (the index engine filters on sales channels itself).
 func applyMaybeLinkFilterIfNecessary(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, next medusahttp.NextFunction) error {
+	canUseIndex := !(featureflags.IsPresent(get(req.FilterableFields, "tags")) || featureflags.IsPresent(get(req.FilterableFields, "categories")))
+	if indexEngineEnabled(req) && canUseIndex {
+		next(nil)
+		return nil
+	}
 	p := dal.NewRecord()
 	p.Set("skip", float64(0))
 	p.Set("take", float64(1))

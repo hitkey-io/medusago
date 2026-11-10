@@ -66,7 +66,11 @@ var UpdateTaxLinesWorkflow = composer.CreateWorkflow("update-tax-lines",
 		if err != nil {
 			return nil, err
 		}
-		if _, err := steps.SetTaxLinesForItemsStep.Run(e, steps.SetTaxLinesInput{Cart: cart, ItemTaxLines: lines.LineItemTaxLines, ShippingTaxLines: lines.ShippingMethodsTaxLines}); err != nil {
+		translated, err := commonsteps.GetTranslatedTaxLinesStep.Run(e, commonsteps.GetTranslatedTaxLinesStepInput{ItemTaxLines: lines.LineItemTaxLines, ShippingTaxLines: lines.ShippingMethodsTaxLines, Locale: Str(cart, "locale")})
+		if err != nil {
+			return nil, err
+		}
+		if _, err := steps.SetTaxLinesForItemsStep.Run(e, steps.SetTaxLinesInput{Cart: cart, ItemTaxLines: translated.ItemTaxLines, ShippingTaxLines: translated.ShippingTaxLines}); err != nil {
 			return nil, err
 		}
 		return nil, nil

@@ -1,0 +1,489 @@
+// Code generated from the schema object representation @medusajs/index
+// builds for its default schema (buildSchemaObjectRepresentation over the
+// joiner configs of the default modules and links), dumped from the
+// reference application. DO NOT EDIT.
+
+package utils
+
+// defaultSchemaObjectRepresentationJSON is the extracted representation of
+// defaultSchema (default-schema.ts).
+const defaultSchemaObjectRepresentationJSON = `{
+  "entities": [
+    {
+      "key": "Product",
+      "entity": "Product",
+      "alias": "product",
+      "fields": [
+        "id",
+        "title",
+        "handle",
+        "status",
+        "type_id",
+        "collection_id",
+        "is_giftcard",
+        "external_id",
+        "created_at",
+        "updated_at"
+      ],
+      "listeners": [
+        "product.product.created",
+        "product.product.updated",
+        "product.product.deleted",
+        "product.product.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": []
+    },
+    {
+      "key": "ProductVariant",
+      "entity": "ProductVariant",
+      "alias": "product_variant",
+      "fields": [
+        "id",
+        "product_id",
+        "sku",
+        "product.id"
+      ],
+      "listeners": [
+        "product.product-variant.created",
+        "product.product-variant.updated",
+        "product.product-variant.deleted",
+        "product.product-variant.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Product",
+          "inSchemaRef": null,
+          "targetProp": "variants",
+          "inverseSideProp": "product",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "Price",
+      "entity": "Price",
+      "alias": "price",
+      "fields": [
+        "id",
+        "amount",
+        "currency_code",
+        "price_list_id",
+        "price_set.id"
+      ],
+      "listeners": [
+        "pricing.price.created",
+        "pricing.price.updated",
+        "pricing.price.deleted",
+        "pricing.price.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "pricing",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "PriceSet",
+          "inSchemaRef": "ProductVariant",
+          "targetProp": "prices",
+          "inverseSideProp": "price_set",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "LinkProductVariantPriceSet",
+      "entity": "LinkProductVariantPriceSet",
+      "alias": "product_variant_price_set",
+      "fields": [
+        "id",
+        "variant_id",
+        "price_set_id"
+      ],
+      "listeners": [
+        "LinkProductVariantPriceSet.attached",
+        "LinkProductVariantPriceSet.detached"
+      ],
+      "moduleConfig": {
+        "serviceName": "ProductVariantPricingPriceSetLink",
+        "isLink": true,
+        "primaryKeys": [
+          "id",
+          "variant_id",
+          "price_set_id"
+        ],
+        "relationships": [
+          {
+            "serviceName": "product",
+            "foreignKey": "variant_id"
+          },
+          {
+            "serviceName": "pricing",
+            "foreignKey": "price_set_id"
+          }
+        ]
+      },
+      "parents": [
+        {
+          "ref": "ProductVariant",
+          "inSchemaRef": null,
+          "targetProp": "product_variant_price_set",
+          "inverseSideProp": "variant",
+          "isList": false,
+          "isInverse": false
+        }
+      ]
+    },
+    {
+      "key": "PriceSet",
+      "entity": "PriceSet",
+      "alias": "price_set",
+      "fields": [
+        "id"
+      ],
+      "listeners": [
+        "pricing.price-set.created",
+        "pricing.price-set.updated",
+        "pricing.price-set.deleted",
+        "pricing.price-set.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "pricing",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "LinkProductVariantPriceSet",
+          "inSchemaRef": null,
+          "targetProp": "price_set",
+          "inverseSideProp": "variant_link",
+          "isList": false,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "SalesChannel",
+      "entity": "SalesChannel",
+      "alias": "sales_channel",
+      "fields": [
+        "id",
+        "is_disabled"
+      ],
+      "listeners": [
+        "sales_channel.sales-channel.created",
+        "sales_channel.sales-channel.updated",
+        "sales_channel.sales-channel.deleted",
+        "sales_channel.sales-channel.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "sales_channel",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "LinkProductSalesChannel",
+          "inSchemaRef": "Product",
+          "targetProp": "sales_channels",
+          "inverseSideProp": "products_link",
+          "isList": false,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "LinkProductSalesChannel",
+      "entity": "LinkProductSalesChannel",
+      "alias": "product_sales_channel",
+      "fields": [
+        "id",
+        "product_id",
+        "sales_channel_id"
+      ],
+      "listeners": [
+        "LinkProductSalesChannel.attached",
+        "LinkProductSalesChannel.detached"
+      ],
+      "moduleConfig": {
+        "serviceName": "ProductProductSalesChannelSalesChannelLink",
+        "isLink": true,
+        "primaryKeys": [
+          "id",
+          "product_id",
+          "sales_channel_id"
+        ],
+        "relationships": [
+          {
+            "serviceName": "product",
+            "foreignKey": "product_id"
+          },
+          {
+            "serviceName": "sales_channel",
+            "foreignKey": "sales_channel_id"
+          }
+        ]
+      },
+      "parents": [
+        {
+          "ref": "Product",
+          "inSchemaRef": null,
+          "targetProp": "product_sales_channel",
+          "inverseSideProp": "product",
+          "isList": false,
+          "isInverse": false
+        }
+      ]
+    }
+  ],
+  "propertiesMap": [
+    {
+      "path": "product",
+      "ref": "Product",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants",
+      "ref": "ProductVariant",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant",
+      "ref": "ProductVariant",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants.product_variant_price_set.price_set.prices",
+      "ref": "Price",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant.product_variant_price_set.price_set.prices",
+      "ref": "Price",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant_price_set.price_set.prices",
+      "ref": "Price",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "price_set.prices",
+      "ref": "Price",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product.variants.prices",
+      "ref": "Price",
+      "shortCutOf": "product.variants.product_variant_price_set.price_set.prices",
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant.prices",
+      "ref": "Price",
+      "shortCutOf": "product_variant.product_variant_price_set.price_set.prices",
+      "isInverse": false,
+      "isList": true
+    },
+    {
+      "path": "price",
+      "ref": "Price",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants.product_variant_price_set",
+      "ref": "LinkProductVariantPriceSet",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "product_variant.product_variant_price_set",
+      "ref": "LinkProductVariantPriceSet",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "product_variant_price_set",
+      "ref": "LinkProductVariantPriceSet",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants.product_variant_price_set.price_set",
+      "ref": "PriceSet",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_variant.product_variant_price_set.price_set",
+      "ref": "PriceSet",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_variant_price_set.price_set",
+      "ref": "PriceSet",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "price_set",
+      "ref": "PriceSet",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.product_sales_channel.sales_channels",
+      "ref": "SalesChannel",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_sales_channel.sales_channels",
+      "ref": "SalesChannel",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product.sales_channels",
+      "ref": "SalesChannel",
+      "shortCutOf": "product.product_sales_channel.sales_channels",
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "sales_channel",
+      "ref": "SalesChannel",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.product_sales_channel",
+      "ref": "LinkProductSalesChannel",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "product_sales_channel",
+      "ref": "LinkProductSalesChannel",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    }
+  ],
+  "linkableKeys": {
+    "product": {
+      "product_id": "Product",
+      "product_variant_id": "ProductVariant",
+      "product_option_id": "ProductOption",
+      "product_option_value_id": "ProductOptionValue",
+      "product_type_id": "ProductType",
+      "product_tag_id": "ProductTag",
+      "product_collection_id": "ProductCollection",
+      "product_category_id": "ProductCategory",
+      "product_image_id": "ProductImage",
+      "variant_id": "ProductVariant"
+    },
+    "pricing": {
+      "price_set_id": "PriceSet",
+      "price_list_id": "PriceList",
+      "price_id": "Price",
+      "price_preference_id": "PricePreference"
+    },
+    "ProductVariantPricingPriceSetLink": {},
+    "sales_channel": {
+      "sales_channel_id": "SalesChannel"
+    },
+    "ProductProductSalesChannelSalesChannelLink": {}
+  },
+  "types": {
+    "Product": {
+      "id": "ID",
+      "title": "String",
+      "handle": "String",
+      "status": "String",
+      "type_id": "String",
+      "collection_id": "String",
+      "is_giftcard": "Boolean",
+      "external_id": "String",
+      "created_at": "DateTime",
+      "updated_at": "DateTime",
+      "variants": "[ProductVariant]",
+      "sales_channels": "[SalesChannel]"
+    },
+    "ProductVariant": {
+      "id": "ID",
+      "product_id": "String",
+      "sku": "String",
+      "prices": "[Price]"
+    },
+    "Price": {
+      "id": "ID",
+      "amount": "Float",
+      "currency_code": "String",
+      "price_list_id": "String"
+    },
+    "SalesChannel": {
+      "id": "ID",
+      "is_disabled": "Boolean"
+    }
+  }
+}`

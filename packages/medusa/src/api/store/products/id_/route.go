@@ -44,7 +44,7 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 		Filters: filters,
 		Context: products.PricingQueryContext(req),
 		Fields:  req.QueryConfig.Fields,
-	}, joiner.Options{})
+	}, joiner.Options{Locale: req.Locale})
 	if err != nil {
 		return err
 	}

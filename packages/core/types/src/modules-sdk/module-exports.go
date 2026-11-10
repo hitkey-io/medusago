@@ -29,6 +29,13 @@ type ModuleExports struct {
 	Service func(opts ServiceOptions) (any, error)
 	// NewProvider builds a module provider instance from its options.
 	NewProvider func(opts ProviderOptions) (any, error)
+	// LoadersOnStart runs the Loaders when the application starts too.
+	// Upstream runs the loaders of every module whenever it is loaded; in Go
+	// only the modules setting this do so far (db:migrate runs all).
+	LoadersOnStart bool
+	// OnApplicationStart mirrors the service's __hooks.onApplicationStart:
+	// it runs with the module service once the application is loaded.
+	OnApplicationStart func(ctx context.Context, service any) error
 }
 
 // Resolver resolves container registrations.

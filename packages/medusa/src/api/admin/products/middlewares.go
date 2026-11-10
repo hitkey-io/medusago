@@ -11,7 +11,7 @@ import (
 var AdminProductRoutesMiddlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/products", Middlewares: []medusahttp.MiddlewareFunction{
 		httputils.ValidateAndTransformQuery(AdminGetProductsParams, ListProductQueryConfig),
-		httputils.MaybeApplyLinkFilter(httputils.LinkFilterOptions{EntryPoint: "product_sales_channel", ResourceID: "product_id", FilterableField: "sales_channel_id"}),
+		skipWithIndexEngine(httputils.MaybeApplyLinkFilter(httputils.LinkFilterOptions{EntryPoint: "product_sales_channel", ResourceID: "product_id", FilterableField: "sales_channel_id"})),
 		MaybeApplyPriceListsFilter(),
 	}},
 	{Methods: []string{"POST"}, Matcher: "/admin/products", Middlewares: []medusahttp.MiddlewareFunction{

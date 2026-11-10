@@ -67,9 +67,9 @@ func copyFilters(r *dal.Record) *dal.Record {
 	return out
 }
 
-// Graph runs query.graph.
-func Graph(ctx context.Context, scope medusahttp.MedusaContainer, in query.GraphInput) (*query.GraphResult, error) {
-	r, err := httputils.QueryOf(scope).Graph(ctx, in, joiner.Options{})
+// Graph runs query.graph with { locale } (the request locale).
+func Graph(ctx context.Context, scope medusahttp.MedusaContainer, in query.GraphInput, locale string) (*query.GraphResult, error) {
+	r, err := httputils.QueryOf(scope).Graph(ctx, in, joiner.Options{Locale: locale})
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func GraphListRoute(entity, key string, published, zeroMeta bool) medusahttp.Rou
 		if published {
 			in.Context = PublishedProductsContext()
 		}
-		r, err := Graph(req.Ctx(), req.Scope, in)
+		r, err := Graph(req.Ctx(), req.Scope, in, req.Locale)
 		if err != nil {
 			return err
 		}
@@ -122,7 +122,7 @@ func GraphRetrieveRoute(entity, key, notFound string, published bool) medusahttp
 		if published {
 			in.Context = PublishedProductsContext()
 		}
-		r, err := Graph(req.Ctx(), req.Scope, in)
+		r, err := Graph(req.Ctx(), req.Scope, in, req.Locale)
 		if err != nil {
 			return err
 		}

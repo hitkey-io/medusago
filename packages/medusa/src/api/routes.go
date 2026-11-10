@@ -71,6 +71,8 @@ import (
 	adminfulfillmentsroute "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillments"
 	adminfulfillmentcancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillments/id_/cancel"
 	adminfulfillmentshipment "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillments/id_/shipment"
+	adminindexdetails "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/index/details"
+	adminindexsync "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/index/sync"
 	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
 	admininventoryexport "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/export"
 	inventoryitemid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_"
@@ -84,6 +86,8 @@ import (
 	inviteresend "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/invites/id_/resend"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/zone_/configuration"
+	adminlocales "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/locales"
+	adminlocalecode "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/locales/code_"
 	adminmodules "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/modules"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
 	notificationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications/id_"
@@ -199,7 +203,10 @@ import (
 	saleschannels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels"
 	saleschannelid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_"
 	saleschannelproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_/products"
+	adminsearch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/search"
 	searchindexes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/search-indexes"
+	searchindexid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/search-indexes/id_"
+	searchindexreindex "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/search-indexes/id_/reindex"
 	shippingoptiontypes "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-option-types"
 	shippingoptiontypeid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-option-types/id_"
 	shippingoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/shipping-options"
@@ -221,6 +228,12 @@ import (
 	taxraterule "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-rates/id_/rules/rule_id_"
 	taxregions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-regions"
 	taxregionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/tax-regions/id_"
+	admintranslations "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/translations"
+	admintranslationsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/translations/batch"
+	admintranslationsentities "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/translations/entities"
+	admintranslationssettings "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/translations/settings"
+	admintranslationssettingsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/translations/settings/batch"
+	admintranslationsstatistics "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/translations/statistics"
 	adminuploads "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/uploads"
 	uploadid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/uploads/id_"
 	uploadpresigned "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/uploads/presigned-urls"
@@ -277,6 +290,7 @@ import (
 	storecustomerme "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me"
 	storecustomeraddresses "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses"
 	storecustomeraddress "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses/address_id_"
+	storelocales "github.com/hitkey-io/medusago/packages/medusa/src/api/store/locales"
 	storeorders "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders"
 	storeorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_"
 	storeordertransferaccept "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_/transfer/accept"
@@ -392,6 +406,11 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/return-reasons", Route: returnreasons.Route},
 		{Path: "/admin/return-reasons/:id", Route: returnreasonid.Route},
 		{Path: "/admin/search-indexes", Route: searchindexes.Route},
+		{Path: "/admin/search-indexes/:id", Route: searchindexid.Route},
+		{Path: "/admin/search-indexes/:id/reindex", Route: searchindexreindex.Route},
+		{Path: "/admin/search", Route: adminsearch.Route},
+		{Path: "/admin/index/details", Route: adminindexdetails.Route},
+		{Path: "/admin/index/sync", Route: adminindexsync.Route},
 		{Path: "/admin/price-preferences", Route: pricepreferences.Route},
 		{Path: "/admin/price-preferences/:id", Route: pricepreferenceid.Route},
 		{Path: "/admin/product-categories", Route: productcategories.Route},
@@ -575,6 +594,15 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/store/shipping-options/:id/calculate", Route: storeshippingoptionscalculate.Route},
 		{Path: "/store/products/:id", Route: storeproductid.Route},
 		{Path: "/store/regions", Route: storeregions.Route},
+		{Path: "/store/locales", Route: storelocales.Route, FeatureFlag: admintranslations.FeatureFlag},
+		{Path: "/admin/translations", Route: admintranslations.Route, FeatureFlag: admintranslations.FeatureFlag},
+		{Path: "/admin/translations/batch", Route: admintranslationsbatch.Route, FeatureFlag: admintranslations.FeatureFlag},
+		{Path: "/admin/translations/entities", Route: admintranslationsentities.Route},
+		{Path: "/admin/translations/settings", Route: admintranslationssettings.Route, FeatureFlag: admintranslations.FeatureFlag},
+		{Path: "/admin/translations/settings/batch", Route: admintranslationssettingsbatch.Route, FeatureFlag: admintranslations.FeatureFlag},
+		{Path: "/admin/translations/statistics", Route: admintranslationsstatistics.Route, FeatureFlag: admintranslations.FeatureFlag},
+		{Path: "/admin/locales", Route: adminlocales.Route, FeatureFlag: admintranslations.FeatureFlag},
+		{Path: "/admin/locales/:code", Route: adminlocalecode.Route, FeatureFlag: admintranslations.FeatureFlag},
 		{Path: "/store/returns", Route: storereturns.Route},
 		{Path: "/store/regions/:id", Route: storeregionid.Route},
 		{Path: "/store/currencies", Route: storecurrencies.Route},

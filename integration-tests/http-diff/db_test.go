@@ -40,7 +40,7 @@ func setupDatabase(t *testing.T, name string) string {
 	u, _ := url.Parse(admin)
 	u.Path = "/" + name
 	dbURL := u.String()
-	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{DatabaseURL: dbURL}})
+	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{DatabaseURL: dbURL}, Modules: scenarioModules()})
 	if err := db.Migrate(ctx, cfg, db.MigrateOptions{}); err != nil {
 		t.Fatal(err)
 	}
@@ -118,4 +118,15 @@ func isGenerated(s string) (bool, string) {
 		return !strings.Contains(seedText, "'"+pg+"+00'"), "date"
 	}
 	return false, ""
+}
+
+// scenarioModules are the modules a scenario's environment adds to the
+// default configuration, like the reference application's
+// medusa-config.js: the index engine needs the index module besides its
+// feature flag (MEDUSA_FF_INDEX_ENGINE=true).
+func scenarioModules() []config.ModuleConfig {
+	if os.Getenv("MEDUSA_FF_INDEX_ENGINE") == "true" {
+		return []config.ModuleConfig{{Key: "index", Resolve: "@medusajs/medusa/index-module"}}
+	}
+	return nil
 }

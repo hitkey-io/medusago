@@ -140,7 +140,7 @@ func WrapVariantsWithTaxPrices(req *medusahttp.MedusaRequest, variants []any) er
 func Graph(req *medusahttp.MedusaRequest, filters *dal.Record, pagination *dal.Record) (*query.GraphResult, bool, error) {
 	fields, withInventory := productmw.PrepareInventoryQuantityFields(req.QueryConfig.Fields, "")
 	req.QueryConfig.Fields = fields
-	r, err := httputils.QueryOf(req.Scope).Graph(req.Ctx(), query.GraphInput{Entity: "variant", Fields: req.QueryConfig.Fields, Filters: filters, Pagination: pagination, Context: PricingContext(req)}, joiner.Options{})
+	r, err := httputils.QueryOf(req.Scope).Graph(req.Ctx(), query.GraphInput{Entity: "variant", Fields: req.QueryConfig.Fields, Filters: filters, Pagination: pagination, Context: PricingContext(req)}, joiner.Options{Locale: req.Locale})
 	return r, withInventory, err
 }
 

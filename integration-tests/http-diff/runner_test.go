@@ -49,6 +49,10 @@ type Step struct {
 	// Unordered lists body keys whose arrays upstream returns in a
 	// nondeterministic order: they are compared sorted.
 	Unordered []string `json:"unordered,omitempty"`
+	// SortBy maps body keys whose arrays upstream returns in a
+	// nondeterministic order (e.g. by generated id) to the item field they
+	// are compared sorted by.
+	SortBy map[string]string `json:"sortby,omitempty"`
 	// Ignore lists dotted body paths left out of the comparison: values that
 	// upstream computes nondeterministically (concurrent writes on one
 	// entity manager).
@@ -171,6 +175,38 @@ func sortUnordered(rec any, keys []string) any {
 			c, _ := dal.MarshalValue(sorted[j])
 			return string(a) < string(c)
 		})
+		b.Set(k, sorted)
+	}
+	return rec
+}
+
+// sortByField sorts the listed body arrays by the string form of an item
+// field.
+func sortByField(rec any, keys map[string]string) any {
+	r, ok := rec.(*dal.Record)
+	if !ok || len(keys) == 0 {
+		return rec
+	}
+	body, _ := r.Get("body")
+	b, ok := body.(*dal.Record)
+	if !ok {
+		return rec
+	}
+	for k, field := range keys {
+		v, _ := b.Get(k)
+		arr, ok := v.([]any)
+		if !ok {
+			continue
+		}
+		sorted := append([]any{}, arr...)
+		key := func(item any) string {
+			if ir, ok := item.(*dal.Record); ok {
+				fv, _ := ir.Get(field)
+				return fmt.Sprint(fv)
+			}
+			return ""
+		}
+		sort.SliceStable(sorted, func(i, j int) bool { return key(sorted[i]) < key(sorted[j]) })
 		b.Set(k, sorted)
 	}
 	return rec
@@ -635,6 +671,10 @@ func scenarioEnv(t *testing.T, scenario string) map[string]string {
 			continue
 		}
 		if k, v, ok := strings.Cut(line, "="); ok {
+			// TEMPLATE_DB only selects record.sh's template database.
+			if strings.TrimSpace(k) == "TEMPLATE_DB" {
+				continue
+			}
 			out[strings.TrimSpace(k)] = strings.TrimSpace(v)
 		}
 	}
@@ -655,7 +695,7 @@ func goServer(t *testing.T, scenario string) string {
 	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{
 		DatabaseURL: dbURL,
 		HTTP:        config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
-	}})
+	}, Modules: scenarioModules()})
 	app, err := loaders.Initialize(context.Background(), cfg)
 	if err != nil {
 		t.Fatal(err)
@@ -692,8 +732,8 @@ func TestMatchUpstream(t *testing.T) {
 			wantP, gotP := newPlaceholders(), newPlaceholders()
 			for _, s := range steps {
 				want, _ := golden.Get(s.Name)
-				w := pretty(wantP.normalize(sortUnordered(dropIgnored(want, s.Ignore), s.Unordered)))
-				g := pretty(gotP.normalize(sortUnordered(dropIgnored(asRecord(results[s.Name]), s.Ignore), s.Unordered)))
+				w := pretty(wantP.normalize(sortByField(sortUnordered(dropIgnored(want, s.Ignore), s.Unordered), s.SortBy)))
+				g := pretty(gotP.normalize(sortByField(sortUnordered(dropIgnored(asRecord(results[s.Name]), s.Ignore), s.Unordered), s.SortBy)))
 				if w != g {
 					t.Errorf("%s: mismatch\n--- want\n%s\n--- got\n%s", s.Name, w, g)
 				}

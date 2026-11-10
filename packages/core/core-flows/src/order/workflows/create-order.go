@@ -241,8 +241,12 @@ var CreateOrderWorkflow = composer.CreateWorkflow("create-orders",
 		if _, err := cartsteps.ValidateLineItemPricesStep.Run(e, lineItems); err != nil {
 			return nil, err
 		}
+		translatedLineItems, err := commonsteps.GetTranslatedLineItemsStep.Run(e, commonsteps.GetTranslatedLineItemsStepInput{Items: lineItems, Variants: variants, Locale: str(g(input, "locale"))})
+		if err != nil {
+			return nil, err
+		}
 		toCreate := copyRec(orderInput)
-		toCreate.Set("items", lineItems)
+		toCreate.Set("items", translatedLineItems)
 		orders, err := ordersteps.CreateOrdersStep.Run(e, []*dal.Record{toCreate})
 		if err != nil {
 			return nil, err

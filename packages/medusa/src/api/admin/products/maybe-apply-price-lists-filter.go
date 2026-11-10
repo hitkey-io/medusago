@@ -15,6 +15,12 @@ func MaybeApplyPriceListsFilter() medusahttp.MiddlewareFunction {
 			next(nil)
 			return nil
 		}
+		// With the index engine (and no tags/categories filter forcing the
+		// regular list), the route filters on variants.prices.price_list_id.
+		if indexEngineEnabled(req) && !truthy(filterValue(ff, "tags")) && !truthy(filterValue(ff, "categories")) {
+			next(nil)
+			return nil
+		}
 		ff.Delete("price_list_id")
 		f := dal.NewRecord()
 		f.Set("price_list_id", ids)
@@ -61,4 +67,19 @@ func MaybeApplyPriceListsFilter() medusahttp.MiddlewareFunction {
 		next(nil)
 		return nil
 	}
+}
+
+// truthy mirrors JavaScript truthiness for filter values.
+func truthy(v any) bool {
+	switch t := v.(type) {
+	case nil:
+		return false
+	case string:
+		return t != ""
+	case bool:
+		return t
+	case float64:
+		return t != 0
+	}
+	return true
 }

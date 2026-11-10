@@ -111,8 +111,12 @@ var UpdateOrderTaxLinesWorkflow = composer.CreateWorkflow("update-order-tax-line
 		if err != nil {
 			return nil, err
 		}
+		translated, err := commonsteps.GetTranslatedTaxLinesStep.Run(e, commonsteps.GetTranslatedTaxLinesStepInput{ItemTaxLines: lines.LineItemTaxLines, ShippingTaxLines: lines.ShippingMethodsTaxLines, Locale: str(g(order, "locale"))})
+		if err != nil {
+			return nil, err
+		}
 		if _, err := ordersteps.SetOrderTaxLinesForItemsStep.Run(e, ordersteps.SetOrderTaxLinesInput{
-			Order: order, ItemTaxLines: lines.LineItemTaxLines, ShippingTaxLines: lines.ShippingMethodsTaxLines, IsFullReplacement: isFullOrder,
+			Order: order, ItemTaxLines: translated.ItemTaxLines, ShippingTaxLines: translated.ShippingTaxLines, IsFullReplacement: isFullOrder,
 		}); err != nil {
 			return nil, err
 		}

@@ -28,8 +28,8 @@ var updateOrderValidationStep = composer.CreateStep("update-order-validation",
 		return composer.NewStepResponse[any](nil), nil
 	}, nil)
 
-// UpdateOrderWorkflow mirrors updateOrderWorkflow (the locale translation
-// steps are no-ops without the translation feature).
+// UpdateOrderWorkflow mirrors updateOrderWorkflow (the locale-changed
+// translation steps of the translation feature are not ported).
 var UpdateOrderWorkflow = composer.CreateWorkflow("update-order-workflow",
 	func(e *composer.Execution, input *dal.Record) (any, error) {
 		f := dal.NewRecord()

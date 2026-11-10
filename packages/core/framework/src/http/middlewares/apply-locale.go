@@ -1,37 +1,12 @@
 package middlewares
 
 import (
-	"regexp"
-	"strings"
-
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 )
 
-var scriptSubtag = regexp.MustCompile(`^[a-zA-Z]{4}$`)
-
-func upperCaseFirst(s string) string {
-	if s == "" {
-		return s
-	}
-	return strings.ToUpper(s[:1]) + s[1:]
-}
-
 // NormalizeLocale mirrors normalizeLocale.
-func NormalizeLocale(locale string) string {
-	segments := strings.Split(locale, "-")
-	switch len(segments) {
-	case 1:
-		return strings.ToLower(segments[0])
-	case 2:
-		if scriptSubtag.MatchString(segments[1]) {
-			return strings.ToLower(segments[0]) + "-" + upperCaseFirst(strings.ToLower(segments[1]))
-		}
-		return strings.ToLower(segments[0]) + "-" + strings.ToUpper(segments[1])
-	case 3:
-		return strings.ToLower(segments[0]) + "-" + upperCaseFirst(strings.ToLower(segments[1])) + "-" + strings.ToUpper(segments[2])
-	}
-	return locale
-}
+func NormalizeLocale(locale string) string { return common.NormalizeLocale(locale) }
 
 // ApplyLocale mirrors applyLocale: ?locale= (removed from the query) or the
 // x-medusa-locale header.

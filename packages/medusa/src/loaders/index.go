@@ -3,6 +3,7 @@ package loaders
 import (
 	"context"
 	"fmt"
+	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/medusa/src/subscribers"
 	eventbuslocal "github.com/hitkey-io/medusago/packages/modules/event-bus-local/src/services"
 	"log/slog"
@@ -85,6 +86,43 @@ func LoadModules(ctx context.Context, c *container.MedusaContainer, pool *pgxpoo
 			continue
 		}
 		c.Register(mc.Key, svc)
+	}
+	return nil
+}
+
+// runStartHooks runs, for the enabled modules, the loaders that also run at
+// start (LoadersOnStart), then the onApplicationStart hooks.
+func runStartHooks(ctx context.Context, c *container.MedusaContainer, pool *pgxpool.Pool, cfg config.ConfigModule, logger *slog.Logger) error {
+	type started struct {
+		key string
+		exp modulessdk.ModuleExports
+	}
+	var enabled []started
+	for _, mc := range cfg.Modules {
+		if mc.Disable {
+			continue
+		}
+		exp, ok := modules.Registry[mc.Resolve]
+		if !ok {
+			continue
+		}
+		enabled = append(enabled, started{key: mc.Key, exp: *exp})
+		if !exp.LoadersOnStart {
+			continue
+		}
+		for _, load := range exp.Loaders {
+			if err := load(ctx, modulessdk.LoaderOptions{DB: pool, Logger: logger}); err != nil {
+				return fmt.Errorf("%s loader: %w", mc.Key, err)
+			}
+		}
+	}
+	for _, m := range enabled {
+		if m.exp.OnApplicationStart == nil {
+			continue
+		}
+		if err := m.exp.OnApplicationStart(ctx, c.Resolve(m.key)); err != nil {
+			return fmt.Errorf("%s onApplicationStart: %w", m.key, err)
+		}
 	}
 	return nil
 }
@@ -178,6 +216,11 @@ func sessionStore(cfg config.ProjectConfig) (medusahttp.SessionStore, func()) {
 	return store, func() { _ = client.Close() }
 }
 
+// applicationStarter is a module service with an onApplicationStart hook.
+type applicationStarter interface {
+	OnApplicationStart(ctx context.Context) error
+}
+
 // Initialize mirrors the loaders of `medusa start`: container, modules,
 // Query, the express loader and the API loader.
 func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error) {
@@ -216,11 +259,34 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 	c.Register(common.ContainerRegistrationKeys.LINK, link)
 	c.Register(common.ContainerRegistrationKeys.REMOTE_LINK, link)
 
+	if err := runStartHooks(ctx, c, pool, cfg, logger); err != nil {
+		pool.Close()
+		return nil, err
+	}
+
 	// subscribers loader (packages/medusa/src/subscribers)
 	if bus, ok := c.Resolve(utilsmodulessdk.EVENT_BUS).(*eventbuslocal.LocalEventBusService); ok {
 		bus.Subscribe("payment.webhook_received", func(ctx context.Context, ev eventbuslocal.Event) error {
 			return subscribers.PaymentWebhookHandler(ctx, c, ev.Data)
 		})
+	}
+
+	// createQuery's indexModule
+	if index, ok := c.Resolve(utilsmodulessdk.INDEX).(query.IndexService); ok {
+		q.SetIndexModule(index)
+	}
+	// MedusaApp onApplicationStart: the modules' hooks (the index module
+	// creates its partitions and synchronises the changed entities).
+	for _, mc := range cfg.Modules {
+		if mc.Disable {
+			continue
+		}
+		if starter, ok := c.Resolve(mc.Key).(applicationStarter); ok {
+			if err := starter.OnApplicationStart(ctx); err != nil {
+				pool.Close()
+				return nil, err
+			}
+		}
 	}
 
 	app := medusahttp.NewApp()
@@ -253,6 +319,7 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 		CoreErrorHandler:     middlewares.ErrorHandler(),
 		StorePublishableKey:  middlewares.EnsurePublishableApiKey,
 		StoreLocale:          middlewares.ApplyLocale,
+		IsFeatureEnabled:     flagRouter.IsFeatureEnabled,
 	})
 	app.Handle("GET", "/health", func(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, _ medusahttp.NextFunction) error {
 		res.Status(200).Send("OK")

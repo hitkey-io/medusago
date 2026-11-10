@@ -19,7 +19,7 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 			f.Set(k, v)
 		}
 	}
-	r, err := storeutils.Graph(req.Ctx(), req.Scope, query.GraphInput{Entity: "product_category", Fields: req.QueryConfig.Fields, Filters: f, Context: storeutils.PublishedProductsContext()})
+	r, err := storeutils.Graph(req.Ctx(), req.Scope, query.GraphInput{Entity: "product_category", Fields: req.QueryConfig.Fields, Filters: f, Context: storeutils.PublishedProductsContext()}, req.Locale)
 	if err != nil {
 		return err
 	}

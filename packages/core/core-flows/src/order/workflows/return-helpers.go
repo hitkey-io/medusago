@@ -439,3 +439,18 @@ var CreateOrUpdateOrderPaymentCollectionWorkflow = composer.CreateWorkflow("crea
 		}
 		return nil, nil
 	})
+
+// TranslateShippingOption mirrors getTranslatedShippingOptionsStep({
+// shippingOptions: [shippingOption], locale }) of the shipping method
+// workflows: the option translated in the order locale.
+func TranslateShippingOption(e *composer.Execution, option *dal.Record, locale any) (*dal.Record, error) {
+	if option == nil {
+		_, err := commonsteps.GetTranslatedShippingOptionsStep.Run(e, commonsteps.GetTranslatedShippingOptionsStepInput{ShippingOptions: []*dal.Record{}, Locale: str(locale)})
+		return nil, err
+	}
+	out, err := commonsteps.GetTranslatedShippingOptionsStep.Run(e, commonsteps.GetTranslatedShippingOptionsStepInput{ShippingOptions: []*dal.Record{option}, Locale: str(locale)})
+	if err != nil || len(out) == 0 {
+		return nil, err
+	}
+	return out[0], nil
+}

@@ -4,6 +4,7 @@ package config
 import (
 	"os"
 
+	ff "github.com/hitkey-io/medusago/packages/core/utils/src/feature-flags"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 )
 
@@ -144,7 +145,7 @@ func DefineConfig(input InputConfig) ConfigModule {
 		pc.HTTP.AuthMethodsPerActor["user"] = []string{"emailpass"}
 	}
 
-	modules := defaultModules()
+	modules := defaultModules(input.FeatureFlags)
 	for _, um := range input.Modules {
 		replaced := false
 		for i := range modules {
@@ -206,8 +207,23 @@ func mod(key string, providers ...ModuleProviderConfig) ModuleConfig {
 	return ModuleConfig{Key: key, Resolve: modulessdk.MODULE_PACKAGE_NAMES[key], Providers: providers}
 }
 
+// featureFlagEnabled resolves a feature flag like registerFeatureFlag
+// (environment first, then projectConfig.featureFlags).
+//
+// Upstream evaluates FeatureFlag.isFeatureEnabled while the configuration
+// file is loaded, before the core flags are registered, so a stock
+// configuration keeps the translation module disabled whatever the flag;
+// the documented setup adds the module and sets the flag. Here the flag
+// alone enables the module (the reference application adds the module when
+// MEDUSA_FF_TRANSLATION is set).
+func featureFlagEnabled(featureFlags map[string]any, key, envKey string) bool {
+	router := ff.NewFlagRouter()
+	ff.RegisterFeatureFlag(ff.FlagSettings{Key: key, EnvKey: envKey}, featureFlags, router)
+	return router.IsFeatureEnabled(key)
+}
+
 // defaultModules mirrors the self-hosted default modules of define-config.ts.
-func defaultModules() []ModuleConfig {
+func defaultModules(featureFlags map[string]any) []ModuleConfig {
 	return []ModuleConfig{
 		mod(modulessdk.STOCK_LOCATION),
 		mod(modulessdk.INVENTORY),
@@ -228,7 +244,7 @@ func defaultModules() []ModuleConfig {
 		{
 			Key:     modulessdk.TRANSLATION,
 			Resolve: modulessdk.MODULE_PACKAGE_NAMES[modulessdk.TRANSLATION],
-			Disable: true, // enabled by the "translation" feature flag upstream
+			Disable: !featureFlagEnabled(featureFlags, "translation", "MEDUSA_FF_TRANSLATION"),
 		},
 		mod(modulessdk.AUTH, ModuleProviderConfig{Resolve: "@medusajs/medusa/auth-emailpass", ID: "emailpass"}),
 		mod(modulessdk.USER),

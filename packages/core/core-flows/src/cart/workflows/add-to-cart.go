@@ -119,11 +119,25 @@ var AddToCartWorkflow = composer.CreateWorkflow("add-to-cart",
 		if _, err := ConfirmVariantInventoryWorkflow.RunAsStep(e, ConfirmVariantInventoryInput{SalesChannelID: Str(cart, "sales_channel_id"), Variants: variants, Items: in.Items, ItemsToUpdate: toConfirm}); err != nil {
 			return nil, err
 		}
+		variantsByID := map[any]*dal.Record{}
+		for _, v := range variants {
+			variantsByID[Get(v, "id")] = v
+		}
+		var itemsToCreateVariants []*dal.Record
+		for _, i := range actions.ItemsToCreate {
+			if v, ok := variantsByID[Get(i, "variant_id")]; ok && Get(i, "variant_id") != nil {
+				itemsToCreateVariants = append(itemsToCreateVariants, v)
+			}
+		}
+		translatedItemsToCreate, err := commonsteps.GetTranslatedLineItemsStep.Run(e, commonsteps.GetTranslatedLineItemsStepInput{Items: actions.ItemsToCreate, Variants: itemsToCreateVariants, Locale: Str(cart, "locale")})
+		if err != nil {
+			return nil, err
+		}
 		var created, updated []*dal.Record
 		err = composer.Parallelize(
 			func() error {
 				var err error
-				created, err = steps.CreateLineItemsStep.Run(e, steps.LineItemsInput{ID: Str(cart, "id"), Items: actions.ItemsToCreate})
+				created, err = steps.CreateLineItemsStep.Run(e, steps.LineItemsInput{ID: Str(cart, "id"), Items: translatedItemsToCreate})
 				return err
 			},
 			func() error {
@@ -207,6 +221,11 @@ var RefreshCartItemsWorkflow = composer.CreateWorkflow("refresh-cart-items",
 		}
 		if _, err := UpdateCartPromotionsWorkflow.RunAsStep(e, UpdateCartPromotionsInput{CartID: in.CartID, PromoCodes: codes, Action: steps.PromotionActionReplace}); err != nil {
 			return nil, err
+		}
+		if in.Locale != "" {
+			if _, err := steps.UpdateCartItemsTranslationsStep.Run(e, steps.UpdateCartItemsTranslationsStepInput{CartID: in.CartID, Locale: in.Locale, Items: Records(Get(refetched, "items"))}); err != nil {
+				return nil, err
+			}
 		}
 		if _, err := RefreshPaymentCollectionForCartWorkflow.RunAsStep(e, RefreshPaymentCollectionInput{Cart: refetched}); err != nil {
 			return nil, err
@@ -337,6 +356,10 @@ var UpsertTaxLinesWorkflow = composer.CreateWorkflow("upsert-tax-lines",
 		if err != nil {
 			return nil, err
 		}
-		_, err = steps.UpsertTaxLinesForItemsStep.Run(e, steps.SetTaxLinesInput{Cart: cart, ItemTaxLines: lines.LineItemTaxLines, ShippingTaxLines: lines.ShippingMethodsTaxLines})
+		translated, err := commonsteps.GetTranslatedTaxLinesStep.Run(e, commonsteps.GetTranslatedTaxLinesStepInput{ItemTaxLines: lines.LineItemTaxLines, ShippingTaxLines: lines.ShippingMethodsTaxLines, Locale: Str(cart, "locale")})
+		if err != nil {
+			return nil, err
+		}
+		_, err = steps.UpsertTaxLinesForItemsStep.Run(e, steps.SetTaxLinesInput{Cart: cart, ItemTaxLines: translated.ItemTaxLines, ShippingTaxLines: translated.ShippingTaxLines})
 		return nil, err
 	})
