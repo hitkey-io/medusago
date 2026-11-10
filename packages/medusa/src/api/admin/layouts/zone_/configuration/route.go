@@ -4,6 +4,11 @@ package configuration
 import (
 	"context"
 
+	"github.com/hitkey-io/medusago/packages/core/core-flows/src/settings/steps"
+	"github.com/hitkey-io/medusago/packages/core/core-flows/src/settings/workflows"
+	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
+
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -88,5 +93,51 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	return res.JSON(out)
 }
 
-// Route is the route file (POST and DELETE need workflows, not ported yet).
-var Route = medusahttp.Route{GET: GET}
+// POST mirrors POST.
+func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+	body, _ := req.ValidatedBody.(*dal.Record)
+	isDefault, _ := body.Get("is_default")
+	cfg, _ := body.Get("configuration")
+	in := steps.SetLayoutConfigurationStepInput{Zone: req.Params["zone"], UserID: req.AuthString("actor_id"), Configuration: recordOrNil(cfg)}
+	in.IsDefault, _ = isDefault.(bool)
+	if _, err := workflows.SetLayoutConfigurationWorkflow.Run(req.Ctx(), req.Scope, in); err != nil {
+		return err
+	}
+	return GET(req, res)
+}
+
+func recordOrNil(v any) *dal.Record {
+	r, _ := v.(*dal.Record)
+	return r
+}
+
+// DELETE mirrors DELETE.
+func DELETE(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+	if _, err := workflows.ClearLayoutConfigurationWorkflow.Run(req.Ctx(), req.Scope, steps.ClearLayoutConfigurationStepInput{Zone: req.Params["zone"], UserID: req.AuthString("actor_id")}); err != nil {
+		return err
+	}
+	out := dal.NewRecord()
+	out.Set("success", true)
+	return res.JSON(out)
+}
+
+// Route is the route file.
+var Route = medusahttp.Route{GET: GET, POST: POST, DELETE: DELETE}
+
+var layoutWidgetPreference = zod.Object(
+	zod.F("hidden", zod.Boolean().Optional()),
+	zod.F("section", zod.String().Optional()),
+	zod.F("order", zod.Number().Optional()),
+)
+
+// AdminSetLayoutConfiguration mirrors AdminSetLayoutConfiguration.
+var AdminSetLayoutConfiguration = zod.Object(
+	zod.F("is_default", zod.Boolean().Optional().Default(false)),
+	zod.F("configuration", zod.Object(zod.F("widgets", zod.Record(zod.String(), layoutWidgetPreference)))),
+)
+
+// Middlewares mirrors layoutConfigurationRoutesMiddlewares (requireSuperAdmin
+// is a no-op without RBAC).
+var Middlewares = []medusahttp.MiddlewareRoute{
+	{Methods: []string{"POST"}, Matcher: "/admin/layouts/:zone/configuration", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminSetLayoutConfiguration))}},
+}

@@ -1,0 +1,113 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "initial",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/layouts/product.details/configuration"
+  },
+  {
+    "name": "set_personal",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/layouts/product.details/configuration",
+    "body": {
+      "configuration": {
+        "widgets": {
+          "a": {
+            "hidden": true
+          },
+          "b": {
+            "section": "side",
+            "order": 2
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "replace_personal",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/layouts/product.details/configuration",
+    "body": {
+      "configuration": {
+        "widgets": {
+          "b": {
+            "order": 1
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "set_default",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/layouts/product.details/configuration",
+    "body": {
+      "is_default": true,
+      "configuration": {
+        "widgets": {
+          "c": {
+            "hidden": false
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "after_default",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/layouts/product.details/configuration"
+  },
+  {
+    "name": "clear",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/layouts/product.details/configuration"
+  },
+  {
+    "name": "after_clear",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/layouts/product.details/configuration"
+  },
+  {
+    "name": "invalid",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/layouts/product.details/configuration",
+    "body": {
+      "configuration": {
+        "widgets": {
+          "a": {
+            "hidden": "yes"
+          }
+        }
+      }
+    }
+  },
+  {
+    "name": "missing",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/layouts/product.details/configuration",
+    "body": {}
+  },
+  {
+    "name": "list",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/layouts/configurations"
+  }
+]
