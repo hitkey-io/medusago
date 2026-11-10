@@ -47,6 +47,7 @@ import (
 	storecollectionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections"
 	storecurrenciesmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies"
 	storecustomersmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers"
+	storepaymentcollectionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-collections"
 	storepaymentprovidersmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-providers"
 	storecategoriesmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-categories"
 	storeoptionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-options"
@@ -79,6 +80,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, storereasonsmw.Middlewares...)
 	out = append(out, storeoptionsmw.Middlewares...)
 	out = append(out, storepaymentprovidersmw.Middlewares...)
+	out = append(out, storepaymentcollectionsmw.Middlewares...)
 	out = append(out, storeshippingoptionsmw.Middlewares...)
 	out = append(out, storeproductsmw.Middlewares...)
 	out = append(out, storevariantsmw.Middlewares...)

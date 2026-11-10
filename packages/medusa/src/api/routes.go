@@ -146,6 +146,8 @@ import (
 	storecustomerme "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me"
 	storecustomeraddresses "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses"
 	storecustomeraddress "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses/address_id_"
+	storepaymentcollections "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-collections"
+	storepaymentsessions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-collections/id_/payment-sessions"
 	storepaymentproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-providers"
 	storecategories "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-categories"
 	storecategoryid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-categories/id_"
@@ -296,6 +298,8 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/store/customers/me", Route: storecustomerme.Route},
 		{Path: "/store/customers/me/addresses", Route: storecustomeraddresses.Route},
 		{Path: "/store/customers/me/addresses/:address_id", Route: storecustomeraddress.Route},
+		{Path: "/store/payment-collections", Route: storepaymentcollections.Route},
+		{Path: "/store/payment-collections/:id/payment-sessions", Route: storepaymentsessions.Route},
 		{Path: "/store/payment-providers", Route: storepaymentproviders.Route},
 		{Path: "/store/product-variants", Route: storevariants.Route},
 		{Path: "/store/product-variants/:id", Route: storevariantid.Route},

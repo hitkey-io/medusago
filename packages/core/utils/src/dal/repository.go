@@ -595,6 +595,10 @@ func (r *Repository) loadRelationSelecting(ctx context.Context, parents []*insta
 		if len(where) > 0 && where[0] != nil {
 			for _, k := range where[0].Keys() {
 				v, _ := where[0].Get(k)
+				if raw, ok := v.(RawCondition); ok {
+					cond += " and " + raw(`"t0"`)
+					continue
+				}
 				column := k
 				if p, ok := target.MetaProperty(k); ok && len(p.FieldNames) > 0 {
 					column = p.FieldNames[0]
@@ -639,6 +643,11 @@ func (r *Repository) loadRelationSelecting(ctx context.Context, parents []*insta
 	}
 	return children, nil
 }
+
+// RawCondition is a populateWhere condition written in SQL; it receives the
+// quoted alias of the loaded relation (MikroORM raw fragments with an alias
+// callback).
+type RawCondition func(alias string) string
 
 func extraColumns(cols []string) string {
 	if len(cols) == 0 {

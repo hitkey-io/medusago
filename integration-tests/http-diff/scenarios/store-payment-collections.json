@@ -1,0 +1,249 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "pk",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys",
+    "body": {
+      "title": "Store",
+      "type": "publishable"
+    }
+  },
+  {
+    "name": "channels",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/sales-channels?order=name&fields=id,name"
+  },
+  {
+    "name": "link",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys/{{pk.api_key.id}}/sales-channels?fields=id",
+    "body": {
+      "add": [
+        "{{channels.sales_channels.0.id}}"
+      ]
+    }
+  },
+  {
+    "name": "regions",
+    "method": "GET",
+    "path": "/store/regions?order=name&fields=id,name",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "products",
+    "method": "GET",
+    "path": "/store/products?fields=id,title,variants.id&order=title",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "cart",
+    "method": "POST",
+    "path": "/store/carts?fields=id,total",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "region_id": "{{regions.regions.0.id}}",
+      "items": [
+        {
+          "variant_id": "{{products.products.1.variants.0.id}}",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "name": "pc",
+    "method": "POST",
+    "path": "/store/payment-collections",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "cart_id": "{{cart.cart.id}}"
+    }
+  },
+  {
+    "name": "pc_again",
+    "method": "POST",
+    "path": "/store/payment-collections?fields=id,amount,status,payment_providers.id",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "cart_id": "{{cart.cart.id}}"
+    }
+  },
+  {
+    "name": "pc_missing_cart",
+    "method": "POST",
+    "path": "/store/payment-collections",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "cart_id": "cart_missing"
+    }
+  },
+  {
+    "name": "pc_bad",
+    "method": "POST",
+    "path": "/store/payment-collections",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "cart": "x"
+    }
+  },
+  {
+    "name": "session",
+    "method": "POST",
+    "path": "/store/payment-collections/{{pc.payment_collection.id}}/payment-sessions",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "provider_id": "pp_system_default",
+      "data": {
+        "note": "x"
+      }
+    }
+  },
+  {
+    "name": "session_bad_provider",
+    "method": "POST",
+    "path": "/store/payment-collections/{{pc.payment_collection.id}}/payment-sessions",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "provider_id": "pp_stripe_stripe"
+    }
+  },
+  {
+    "name": "session_again",
+    "method": "POST",
+    "path": "/store/payment-collections/{{pc.payment_collection.id}}/payment-sessions?fields=id,payment_sessions.provider_id,payment_sessions.status,payment_sessions.data",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "provider_id": "pp_system_default"
+    }
+  },
+  {
+    "name": "cart_with_pc",
+    "method": "GET",
+    "path": "/store/carts/{{cart.cart.id}}?fields=id,total,payment_collection.id,payment_collection.amount,payment_collection.currency_code,payment_collection.status,payment_collection.payment_sessions.id,payment_collection.payment_sessions.amount,payment_collection.payment_sessions.provider_id,payment_collection.payment_sessions.status",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "add_item",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/line-items?fields=id,total,payment_collection.id,payment_collection.amount,payment_collection.currency_code,payment_collection.status,payment_collection.payment_sessions.id,payment_collection.payment_sessions.amount,payment_collection.payment_sessions.provider_id,payment_collection.payment_sessions.status",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "variant_id": "{{products.products.0.variants.1.id}}",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "register",
+    "method": "POST",
+    "path": "/auth/customer/emailpass/register",
+    "body": {
+      "email": "payer@example.test",
+      "password": "secret"
+    }
+  },
+  {
+    "name": "customer",
+    "method": "POST",
+    "path": "/store/customers?fields=id",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "email": "payer@example.test"
+    },
+    "bearer": "register"
+  },
+  {
+    "name": "customer_login",
+    "method": "POST",
+    "path": "/auth/customer/emailpass",
+    "body": {
+      "email": "payer@example.test",
+      "password": "secret"
+    }
+  },
+  {
+    "name": "cart2",
+    "method": "POST",
+    "path": "/store/carts?fields=id,customer_id,email",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "region_id": "{{regions.regions.0.id}}",
+      "items": [
+        {
+          "variant_id": "{{products.products.1.variants.0.id}}",
+          "quantity": 1
+        }
+      ]
+    },
+    "bearer": "customer_login"
+  },
+  {
+    "name": "pc2",
+    "method": "POST",
+    "path": "/store/payment-collections?fields=id",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "cart_id": "{{cart2.cart.id}}"
+    },
+    "bearer": "customer_login"
+  },
+  {
+    "name": "session2",
+    "method": "POST",
+    "path": "/store/payment-collections/{{pc2.payment_collection.id}}/payment-sessions?fields=id,payment_sessions.provider_id,payment_sessions.status,payment_sessions.data,payment_sessions.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "provider_id": "pp_system_default"
+    },
+    "bearer": "customer_login"
+  },
+  {
+    "name": "account_holders",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/customers/{{customer.customer.id}}?fields=id,email"
+  }
+]

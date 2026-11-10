@@ -206,7 +206,9 @@ var RefreshPaymentCollectionForCartWorkflow = composer.CreateWorkflow("refresh-p
 			update = Get(pc, "currency_code") != Get(cart, "currency_code")
 		}
 		if update {
-			return nil, errNotSupported("refreshing payment collections")
+			if err := refreshPaymentCollection(e, cart); err != nil {
+				return nil, err
+			}
 		}
 		return nil, nil
 	})

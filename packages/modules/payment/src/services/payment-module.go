@@ -167,7 +167,6 @@ func (s *PaymentModuleService) CreateAccountHolder(ctx context.Context, input *d
 	row := dal.NewRecord()
 	row.Set("external_id", get(customer, "id"))
 	row.Set("email", get(customer, "email"))
-	row.Set("data", nil)
 	row.Set("provider_id", provider)
 	created, err := s.Internal("AccountHolder").Create(ctx, []*dal.Record{row})
 	if err != nil {
