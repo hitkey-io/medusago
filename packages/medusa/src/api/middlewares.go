@@ -15,10 +15,12 @@ import (
 	adminexchanges "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges"
 	fulfillmentproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-providers"
 	fulfillmentsets "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets"
+	adminfulfillments "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillments"
 	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/invites"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/layouts/configurations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
+	adminorderchanges "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-changes"
 	adminorderedits "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
 	adminpcsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payment-collections"
@@ -111,6 +113,8 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, adminexchanges.AdminExchangeRoutesMiddlewares...)
 	out = append(out, adminorderedits.AdminOrderEditRoutesMiddlewares...)
 	out = append(out, admindraftorders.AdminDraftOrderRoutesMiddlewares...)
+	out = append(out, adminfulfillments.AdminFulfillmentsRoutesMiddlewares...)
+	out = append(out, adminorderchanges.AdminOrderChangesMiddlewares...)
 	out = append(out, productcategories.Middlewares...)
 	out = append(out, configurations.LayoutConfigurationListRoutesMiddlewares...)
 	out = append(out, currencies.Middlewares...)

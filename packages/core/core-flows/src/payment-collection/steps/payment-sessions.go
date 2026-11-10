@@ -21,6 +21,7 @@ type PaymentService interface {
 	CreatePaymentSession(ctx context.Context, collectionID string, input *dal.Record) (*dal.Record, error)
 	DeletePaymentSession(ctx context.Context, id any) error
 	CreateAccountHolder(ctx context.Context, input *dal.Record) (*dal.Record, error)
+	UpdatePaymentSession(ctx context.Context, data *dal.Record) (*dal.Record, error)
 }
 
 // PaymentOf resolves the payment module service.
@@ -236,5 +237,56 @@ var CreatePaymentCollectionsStep = composer.CreateStep("create-payment-collectio
 			return nil
 		}
 		_, err := PaymentOf(ctx.Container).Internal("PaymentCollection").Delete(ctx.Context, ids)
+		return err
+	})
+
+// ValidatePaymentSessionUpdateInput mirrors ValidatePaymentSessionUpdateStepInput.
+type ValidatePaymentSessionUpdateInput struct {
+	PaymentCollectionID any
+	PaymentSessionID    any
+	PaymentSession      *dal.Record
+}
+
+// ValidatePaymentSessionUpdateStep mirrors validatePaymentSessionUpdateStep.
+var ValidatePaymentSessionUpdateStep = composer.CreateStep("validate-payment-session-update",
+	func(ctx composer.StepExecutionContext, in ValidatePaymentSessionUpdateInput) (composer.StepResponse[any], error) {
+		session := in.PaymentSession
+		if session == nil || g(session, "payment_collection_id") != in.PaymentCollectionID {
+			return composer.StepResponse[any]{}, common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND,
+				fmt.Sprintf("Payment session with id: %v was not found in payment collection %v", in.PaymentSessionID, in.PaymentCollectionID))
+		}
+		switch g(session, "status") {
+		case "pending", "requires_more", "error":
+		default:
+			return composer.StepResponse[any]{}, common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED,
+				fmt.Sprintf("Payment session with id: %v can't be updated because its status is %v", g(session, "id"), g(session, "status")))
+		}
+		return composer.NewStepResponse[any](nil), nil
+	}, nil)
+
+// UpdatePaymentSessionStep mirrors updatePaymentSessionStep.
+var UpdatePaymentSessionStep = composer.CreateStep("update-payment-session",
+	func(ctx composer.StepExecutionContext, in *dal.Record) (composer.StepResponse[*dal.Record], error) {
+		svc := PaymentOf(ctx.Container)
+		prev, err := svc.Internal("PaymentSession").Retrieve(ctx.Context, g(in, "id"), utilsmodulessdk.FindConfig{Select: []string{"id", "amount", "currency_code", "data"}})
+		if err != nil {
+			return composer.StepResponse[*dal.Record]{}, err
+		}
+		u := dal.NewRecord()
+		for _, k := range []string{"id", "amount", "currency_code", "data"} {
+			u.Set(k, g(in, k))
+		}
+		session, err := svc.UpdatePaymentSession(ctx.Context, u)
+		if err != nil {
+			return composer.StepResponse[*dal.Record]{}, err
+		}
+		return composer.NewStepResponse(session, any(prev)), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		prev, _ := data.(*dal.Record)
+		if prev == nil {
+			return nil
+		}
+		_, err := PaymentOf(ctx.Container).UpdatePaymentSession(ctx.Context, prev)
 		return err
 	})

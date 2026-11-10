@@ -3,6 +3,7 @@ package workflows
 import (
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/payment-collection/steps"
+	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -110,7 +111,10 @@ var CreatePaymentSessionsWorkflow = composer.CreateWorkflow("create-payment-sess
 			if billing == nil && len(addresses) > 0 {
 				billing = addresses[0]
 			}
-			paymentCustomer.Set("billing_address", billing)
+			// addresses?.[0] is undefined without addresses: the key is dropped
+			if billing != nil {
+				paymentCustomer.Set("billing_address", billing)
+			}
 			var existing *dal.Record
 			for _, ah := range recs(g(customer, "account_holders")) {
 				if g(ah, "provider_id") == in.ProviderID {
@@ -172,4 +176,45 @@ var CreatePaymentSessionsWorkflow = composer.CreateWorkflow("create-payment-sess
 			return nil, err
 		}
 		return steps.CreatePaymentSessionStep.Run(e, sessionIn)
+	})
+
+// UpdatePaymentSessionClientDataInput mirrors UpdatePaymentSessionClientDataWorkflowInput.
+type UpdatePaymentSessionClientDataInput struct {
+	PaymentCollectionID any
+	PaymentSessionID    any
+	ClientData          any
+}
+
+// UpdatePaymentSessionClientDataWorkflow mirrors updatePaymentSessionClientDataWorkflow.
+var UpdatePaymentSessionClientDataWorkflow = composer.CreateWorkflow("update-payment-session-client-data",
+	func(e *composer.Execution, in UpdatePaymentSessionClientDataInput) (*dal.Record, error) {
+		f := dal.NewRecord()
+		f.Set("id", in.PaymentSessionID)
+		res, err := commonsteps.UseQueryGraphStep.Config("get-payment-session", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
+			GraphInput: query.GraphInput{Entity: "payment_session", Fields: []string{"id", "payment_collection_id", "status", "amount", "currency_code", "data"}, Filters: f},
+		})
+		if err != nil {
+			return nil, err
+		}
+		var session *dal.Record
+		if list := recs(res.Data); len(list) > 0 {
+			session = list[0]
+		}
+		if _, err := steps.ValidatePaymentSessionUpdateStep.Run(e, steps.ValidatePaymentSessionUpdateInput{PaymentCollectionID: in.PaymentCollectionID, PaymentSessionID: in.PaymentSessionID, PaymentSession: session}); err != nil {
+			return nil, err
+		}
+		data := dal.NewRecord()
+		if d, ok := g(session, "data").(*dal.Record); ok && d != nil {
+			for _, k := range d.Keys() {
+				v, _ := d.Get(k)
+				data.Set(k, v)
+			}
+		}
+		data.Set("client", in.ClientData)
+		u := dal.NewRecord()
+		u.Set("id", g(session, "id"))
+		u.Set("amount", g(session, "amount"))
+		u.Set("currency_code", g(session, "currency_code"))
+		u.Set("data", data)
+		return steps.UpdatePaymentSessionStep.Run(e, u)
 	})

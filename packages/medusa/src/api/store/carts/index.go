@@ -5,6 +5,7 @@ import (
 
 	cartworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/workflows"
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/http/middlewares"
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
@@ -171,6 +172,11 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"POST"}, Matcher: "/store/carts/:id/shipping-methods", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(StoreAddCartShippingMethods)), query())},
 	{Methods: []string{"POST"}, Matcher: "/store/carts/:id/promotions", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(StoreCartPromotions)), query())},
 	{Methods: []string{"DELETE"}, Matcher: "/store/carts/:id/promotions", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(StoreCartPromotions)), query())},
+	{Methods: []string{"POST"}, Matcher: "/store/carts/:id/customer", Middlewares: mw(
+		middlewares.Authenticate([]string{"customer"}, []string{"session", "bearer"}, medusahttp.AuthenticateOptions{}),
+		httputils.ValidateAndTransformBody(httputils.Schema(StoreUpdateCartCustomer)), query(),
+	)},
+	{Methods: []string{"POST"}, Matcher: "/store/carts/:id/taxes", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(StoreCalculateCartTaxes)), query())},
 	{Methods: []string{"POST"}, Matcher: "/store/carts/:id/complete", Middlewares: mw(httputils.ValidateAndTransformQuery(orders.StoreGetOrderParams, orders.RetrieveConfig))},
 }
 
@@ -237,3 +243,9 @@ func Get(r *dal.Record, k string) any {
 	v, _ := r.Get(k)
 	return v
 }
+
+// StoreUpdateCartCustomer mirrors StoreUpdateCartCustomer.
+var StoreUpdateCartCustomer = zod.Object()
+
+// StoreCalculateCartTaxes mirrors StoreCalculateCartTaxes.
+var StoreCalculateCartTaxes = utils.CreateSelectParams()

@@ -349,3 +349,39 @@ func (s *PaymentModuleService) AuthorizePaymentSession(ctx context.Context, id s
 	}
 	return payment, nil
 }
+
+// UpdatePaymentSession mirrors updatePaymentSession: the provider data
+// replaces the session data (assigned with mergeObjectProperties) and an
+// omitted metadata is assigned as undefined.
+func (s *PaymentModuleService) UpdatePaymentSession(ctx context.Context, data *dal.Record) (*dal.Record, error) {
+	session, err := s.Internal("PaymentSession").Retrieve(ctx, get(data, "id"), utilsmodulessdk.FindConfig{Select: []string{"id", "status", "data", "provider_id"}})
+	if err != nil {
+		return nil, err
+	}
+	res, err := callProvider(fmt.Sprint(get(session, "provider_id")), "updatePayment")
+	if err != nil {
+		return nil, err
+	}
+	u := dal.NewRecord()
+	u.Set("id", get(session, "id"))
+	u.Set("amount", get(data, "amount"))
+	u.Set("currency_code", lowerCode(get(data, "currency_code")))
+	u.Set("data", res.Data)
+	status := get(data, "status")
+	if status == nil && res.Status != "" {
+		status = res.Status
+	}
+	if status == nil {
+		status = get(session, "status")
+	}
+	u.Set("status", status)
+	u.Set("metadata", get(data, "metadata"))
+	updated, err := s.Internal("PaymentSession").Update(ctx, []any{u})
+	if err != nil {
+		return nil, err
+	}
+	if list, ok := updated.([]*dal.Record); ok && len(list) > 0 {
+		return list[0], nil
+	}
+	return nil, nil
+}

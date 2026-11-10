@@ -67,6 +67,9 @@ import (
 	fulfillmentsetid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets/id_"
 	fulfillmentsetzones "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets/id_/service-zones"
 	fulfillmentsetzone "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-sets/id_/service-zones/zone_id_"
+	adminfulfillmentsroute "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillments"
+	adminfulfillmentcancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillments/id_/cancel"
+	adminfulfillmentshipment "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillments/id_/shipment"
 	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
 	inventoryitemid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_"
 	inventorylevels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_/location-levels"
@@ -82,6 +85,7 @@ import (
 	adminmodules "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/modules"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications"
 	notificationid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/notifications/id_"
+	adminorderchangeid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-changes/id_"
 	adminorderedits "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits"
 	adminordereditid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_"
 	adminordereditconfirm "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/confirm"
@@ -223,10 +227,12 @@ import (
 	storecarts "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts"
 	storecartid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_"
 	storecartcomplete "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/complete"
+	storecartcustomer "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/customer"
 	storecartlineitems "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/line-items"
 	storecartlineitem "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/line-items/line_id_"
 	storecartpromotions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/promotions"
 	storecartshippingmethods "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/shipping-methods"
+	storecarttaxes "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/taxes"
 	storecollections "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections"
 	storecollectionid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections/id_"
 	storecurrencies "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies"
@@ -243,6 +249,7 @@ import (
 	storeordertransferrequest "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_/transfer/request"
 	storepaymentcollections "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-collections"
 	storepaymentsessions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-collections/id_/payment-sessions"
+	storepaymentsessionid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-collections/id_/payment-sessions/session_id_"
 	storepaymentproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-providers"
 	storecategories "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-categories"
 	storecategoryid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/product-categories/id_"
@@ -400,6 +407,10 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/exchanges", Route: adminexchanges.Route},
 		{Path: "/admin/order-edits", Route: adminorderedits.Route},
 		{Path: "/admin/draft-orders", Route: admindraftorders.Route},
+		{Path: "/admin/fulfillments", Route: adminfulfillmentsroute.Route},
+		{Path: "/admin/fulfillments/:id/cancel", Route: adminfulfillmentcancel.Route},
+		{Path: "/admin/fulfillments/:id/shipment", Route: adminfulfillmentshipment.Route},
+		{Path: "/admin/order-changes/:id", Route: adminorderchangeid.Route},
 		{Path: "/admin/draft-orders/:id", Route: admindraftorderid.Route},
 		{Path: "/admin/draft-orders/:id/convert-to-order", Route: admindraftorderconvert.Route},
 		{Path: "/admin/draft-orders/:id/edit", Route: admindraftorderedit.Route},
@@ -477,6 +488,9 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/store/carts/:id/complete", Route: storecartcomplete.Route},
 		{Path: "/store/orders", Route: storeorders.Route},
 		{Path: "/store/orders/:id", Route: storeorderid.Route},
+		{Path: "/store/carts/:id/customer", Route: storecartcustomer.Route},
+		{Path: "/store/carts/:id/taxes", Route: storecarttaxes.Route},
+		{Path: "/store/payment-collections/:id/payment-sessions/:session_id", Route: storepaymentsessionid.Route},
 		{Path: "/admin/orders/:id/transfer", Route: adminordertransfer.Route},
 		{Path: "/admin/orders/:id/transfer/guest", Route: adminordertransferguest.Route},
 		{Path: "/admin/orders/:id/transfer/cancel", Route: adminordertransfercancel.Route},

@@ -32,6 +32,7 @@ func mw(fns ...medusahttp.MiddlewareFunction) []medusahttp.MiddlewareFunction { 
 var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"POST"}, Matcher: "/store/payment-collections", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(StoreCreatePaymentCollection)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig))},
 	{Methods: []string{"POST"}, Matcher: "/store/payment-collections/:id/payment-sessions", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(StoreCreatePaymentSession)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig))},
+	{Methods: []string{"POST"}, Matcher: "/store/payment-collections/:id/payment-sessions/:session_id", Middlewares: mw(httputils.ValidateAndTransformBody(httputils.Schema(StoreUpdatePaymentSession)), httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig))},
 }
 
 func collectionForCart(req *medusahttp.MedusaRequest, cartID any) (any, error) {
@@ -82,3 +83,6 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 
 // Route is route.ts.
 var Route = medusahttp.Route{POST: POST}
+
+// StoreUpdatePaymentSession mirrors StoreUpdatePaymentSession.
+var StoreUpdatePaymentSession = zod.Object(zod.F("client_data", zod.Record(zod.String(), zod.Unknown())))
