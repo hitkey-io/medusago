@@ -476,6 +476,7 @@ func applyShortcuts(items []any, parsed *ExpandMap, shortcuts []ShortcutSpec) {
 				continue
 			}
 			var current any = locRec
+			defined := true
 			var parentRemove *removal
 			curPath := append([]string{BasePath}, alias.Location...)
 			for _, prop := range propPath {
@@ -486,14 +487,21 @@ func applyShortcuts(items []any, parsed *ExpandMap, shortcuts []ShortcutSpec) {
 				if cfg := parsed.Get(strings.Join(curPath, ".")); cfg != nil && cfg.IsAliasMapping && parentRemove == nil {
 					parentRemove = &removal{target: current, prop: prop}
 				}
-				current = getChildren(current, prop)
+				if rec, ok := current.(*dal.Record); ok {
+					v, ok := rec.Get(prop)
+					current, defined = v, ok
+				} else {
+					current = getChildren(current, prop)
+					defined = true
+				}
 			}
 			if list, isList := current.([]any); isList {
 				if len(list) < 2 && !alias.IsList {
 					if len(list) == 1 {
 						locRec.Set(alias.Property, list[0])
 					} else {
-						locRec.Set(alias.Property, nil)
+						// [].shift() is undefined: JSON omits the key
+						locRec.Delete(alias.Property)
 					}
 				} else {
 					locRec.Set(alias.Property, list)
@@ -504,6 +512,8 @@ func applyShortcuts(items []any, parsed *ExpandMap, shortcuts []ShortcutSpec) {
 				} else {
 					locRec.Set(alias.Property, []any{})
 				}
+			} else if current == nil && !defined {
+				locRec.Delete(alias.Property)
 			} else {
 				locRec.Set(alias.Property, current)
 			}

@@ -57,6 +57,9 @@ func NewBigNumberWithPrecision(value any, precision int) (*BigNumber, error) {
 	case *BigNumber:
 		*b = *v
 		return b, nil
+	case *apd.Decimal:
+		// a bignumber.js value
+		b.decimal.Set(v)
 	case BigNumberRawValue:
 		if _, _, err := b.decimal.SetString(v.Value); err != nil {
 			return nil, invalidValue(v.Value)
@@ -107,9 +110,17 @@ func (b *BigNumber) Numeric() float64 {
 	return f
 }
 
-// MarshalJSON mirrors toJSON: a BigNumber serializes as a number.
+// MarshalJSON mirrors toJSON: the full bignumber value as a number (not the
+// toPrecision raw value), 0 within MEDUSA_EPSILON.
 func (b *BigNumber) MarshalJSON() ([]byte, error) {
-	return json.Marshal(b.Numeric())
+	f, err := strconv.ParseFloat(b.decimal.Text('f'), 64)
+	if err != nil {
+		f = b.Numeric()
+	}
+	if math.Abs(f) <= MedusaEpsilon {
+		f = 0
+	}
+	return json.Marshal(f)
 }
 
 // String mirrors toString.

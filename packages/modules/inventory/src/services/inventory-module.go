@@ -356,3 +356,36 @@ func (s *InventoryModuleService) RestoreReservationItems(ctx context.Context, id
 		return s.adjustForReservations(ctx, reservations, false)
 	})
 }
+
+// RetrieveAvailableQuantity mirrors retrieveAvailableQuantity.
+func (s *InventoryModuleService) RetrieveAvailableQuantity(ctx context.Context, inventoryItemID any, locationIDs []any) (*totals.BN, error) {
+	if len(locationIDs) == 0 {
+		return totals.Convert(0), nil
+	}
+	if _, err := s.Internal("InventoryItem").Retrieve(ctx, inventoryItemID, utilsmodulessdk.FindConfig{Select: []string{"id"}}); err != nil {
+		return nil, err
+	}
+	f := dal.NewRecord()
+	f.Set("location_id", locationIDs)
+	f.Set("inventory_item_id", inventoryItemID)
+	levels, err := s.Internal("InventoryLevel").List(ctx, f, utilsmodulessdk.FindConfig{})
+	if err != nil {
+		return nil, err
+	}
+	parts := []any{0}
+	for _, l := range levels {
+		st, _ := l.Get("raw_stocked_quantity")
+		rs, _ := l.Get("raw_reserved_quantity")
+		parts = append(parts, totals.Sub(st, rs))
+	}
+	return totals.Add(parts...), nil
+}
+
+// ConfirmInventory mirrors confirmInventory.
+func (s *InventoryModuleService) ConfirmInventory(ctx context.Context, inventoryItemID any, locationIDs []any, quantity any) (bool, error) {
+	available, err := s.RetrieveAvailableQuantity(ctx, inventoryItemID, locationIDs)
+	if err != nil {
+		return false, err
+	}
+	return totals.Gte(available, quantity), nil
+}

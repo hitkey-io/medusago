@@ -75,7 +75,7 @@ func isOperatorObject(r *Record) bool {
 		return false
 	}
 	for _, k := range r.Keys() {
-		if !strings.HasPrefix(k, "$") {
+		if !strings.HasPrefix(k, "$") || k == "$and" || k == "$or" || k == "$not" {
 			return false
 		}
 	}

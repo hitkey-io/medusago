@@ -132,6 +132,12 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/session"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/token/refresh"
 	cloudauth "github.com/hitkey-io/medusago/packages/medusa/src/api/cloud/auth"
+	storecarts "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts"
+	storecartid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_"
+	storecartlineitems "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/line-items"
+	storecartlineitem "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/line-items/line_id_"
+	storecartpromotions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/promotions"
+	storecartshippingmethods "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts/id_/shipping-methods"
 	storecollections "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections"
 	storecollectionid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections/id_"
 	storecurrencies "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies"
@@ -157,6 +163,7 @@ import (
 	storeregionid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/regions/id_"
 	storereasons "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons"
 	storereasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons/id_"
+	storeshippingoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/shipping-options"
 )
 
 // Routes lists the route files by URL path (the file tree of src/api).
@@ -279,6 +286,12 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/users/:id/auth-providers", Route: userauthproviders.Route},
 		{Path: "/admin/invites", Route: admininvites.Route},
 		{Path: "/admin/uploads", Route: adminuploads.Route},
+		{Path: "/store/carts", Route: storecarts.Route},
+		{Path: "/store/carts/:id", Route: storecartid.Route},
+		{Path: "/store/carts/:id/line-items", Route: storecartlineitems.Route},
+		{Path: "/store/carts/:id/line-items/:line_id", Route: storecartlineitem.Route},
+		{Path: "/store/carts/:id/promotions", Route: storecartpromotions.Route},
+		{Path: "/store/carts/:id/shipping-methods", Route: storecartshippingmethods.Route},
 		{Path: "/store/customers", Route: storecustomers.Route},
 		{Path: "/store/customers/me", Route: storecustomerme.Route},
 		{Path: "/store/customers/me/addresses", Route: storecustomeraddresses.Route},
@@ -287,6 +300,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/store/product-variants", Route: storevariants.Route},
 		{Path: "/store/product-variants/:id", Route: storevariantid.Route},
 		{Path: "/store/products", Route: storeproducts.Route},
+		{Path: "/store/shipping-options", Route: storeshippingoptions.Route},
 		{Path: "/store/products/:id", Route: storeproductid.Route},
 		{Path: "/store/regions", Route: storeregions.Route},
 		{Path: "/store/regions/:id", Route: storeregionid.Route},

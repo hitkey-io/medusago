@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"time"
 
@@ -167,6 +168,22 @@ func parseDate(v any) any {
 	return v
 }
 
+// numberValue converts bignumber values assigned to number properties to
+// JavaScript numbers.
+func numberValue(v any) any {
+	switch t := v.(type) {
+	case *totals.BigNumber:
+		return t.Numeric()
+	case *totals.BN:
+		f, err := strconv.ParseFloat(t.String(), 64)
+		if err != nil {
+			return v
+		}
+		return f
+	}
+	return v
+}
+
 // bigNumberColumns sets the numeric and raw columns of a BigNumber field.
 func bigNumberColumns(data Row, name string, value any) error {
 	if value == nil {
@@ -241,6 +258,8 @@ func (r *Repository) assignFields(e *dml.Entity, data Row, input *Record, create
 			}
 		case "dateTime":
 			data[fieldColumn(e, p.Name)] = parseDate(value)
+		case "number":
+			data[fieldColumn(e, p.Name)] = numberValue(value)
 		default:
 			data[fieldColumn(e, p.Name)] = value
 		}
@@ -412,9 +431,9 @@ func (r *Repository) Create(ctx context.Context, inputs []*Record) ([]*Record, e
 	return out, nil
 }
 
-func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, idm identityMap) (*instance, error) {
-	// Nested owning to-one objects without a primary key are new entities
-	// (MikroORM cascade persist): they are inserted first and referenced.
+// createNestedToOne inserts the nested owning to-one objects without a
+// primary key (MikroORM cascade persist) and replaces them with references.
+func (r *Repository) createNestedToOne(ctx context.Context, e *dml.Entity, input *Record, idm identityMap) (*Record, error) {
 	for _, rel := range e.Meta.Properties {
 		if (rel.Kind != "m:1" && !(rel.Kind == "1:1" && rel.Owner)) || len(rel.FieldNames) == 0 {
 			continue
@@ -444,6 +463,14 @@ func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, i
 		ref.Set("id", child.data[fieldColumn(target, "id")])
 		copyInput.Set(rel.Name, ref)
 		input = copyInput
+	}
+	return input, nil
+}
+
+func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, idm identityMap) (*instance, error) {
+	input, err := r.createNestedToOne(ctx, e, input, idm)
+	if err != nil {
+		return nil, err
 	}
 	data := Row{}
 	if err := r.assignFields(e, data, input, true); err != nil {
@@ -601,6 +628,10 @@ func (r *Repository) UpdateWith(ctx context.Context, opts FindOptions, dataFor f
 // applyUpdate assigns data to a loaded entity: scalar columns, then the
 // one-to-many collections given in data.
 func (r *Repository) applyUpdate(ctx context.Context, inst *instance, data *Record) error {
+	data, err := r.createNestedToOne(ctx, inst.entity, data, identityMap{})
+	if err != nil {
+		return err
+	}
 	if err := r.applyScalarUpdate(ctx, inst, data); err != nil {
 		return err
 	}

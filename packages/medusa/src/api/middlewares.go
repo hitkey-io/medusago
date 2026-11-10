@@ -43,6 +43,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users"
 	workflowsexecutions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth"
+	storecartsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts"
 	storecollectionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/collections"
 	storecurrenciesmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/currencies"
 	storecustomersmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers"
@@ -55,6 +56,7 @@ import (
 	storeproductsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/products"
 	storeregionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/regions"
 	storereasonsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons"
+	storeshippingoptionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/shipping-options"
 )
 
 // Middlewares mirrors the default export of middlewares.ts.
@@ -66,6 +68,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, users.AdminUserRoutesMiddlewares...)
 	out = append(out, invites.AdminInviteRoutesMiddlewares...)
 	out = append(out, uploads.Middlewares...)
+	out = append(out, storecartsmw.Middlewares...)
 	out = append(out, storecustomersmw.Middlewares...)
 	out = append(out, storeregionsmw.Middlewares...)
 	out = append(out, storecurrenciesmw.Middlewares...)
@@ -76,6 +79,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, storereasonsmw.Middlewares...)
 	out = append(out, storeoptionsmw.Middlewares...)
 	out = append(out, storepaymentprovidersmw.Middlewares...)
+	out = append(out, storeshippingoptionsmw.Middlewares...)
 	out = append(out, storeproductsmw.Middlewares...)
 	out = append(out, storevariantsmw.Middlewares...)
 	out = append(out, stores.AdminStoreRoutesMiddlewares...)

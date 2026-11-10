@@ -785,3 +785,15 @@ func (s *Schema) Email() *Schema {
 		}
 	})
 }
+
+// Gt mirrors .gt(n) on numbers.
+func (s *Schema) Gt(n float64) *Schema {
+	return addCheck(s, func(p *payload) {
+		if f, ok := p.value.(float64); ok && !(f > n) {
+			p.issues = append(p.issues, &Issue{Code: "too_small", Minimum: n, Origin: s.kind, Continue: true, Message: fmt.Sprintf("Too small: expected number to be >%s", JSString(n))})
+		}
+	})
+}
+
+// Gte mirrors .gte(n).
+func (s *Schema) Gte(n float64) *Schema { return s.Min(n) }
