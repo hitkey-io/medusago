@@ -1067,10 +1067,14 @@ func (r *Repository) assignOneToManyCollections(ctx context.Context, inst *insta
 				keep[fmt.Sprint(id)] = true
 			}
 		}
+		// MikroORM only removes the items of an initialized collection: an
+		// entity loaded without the relation keeps its current items
 		var orphans []string
-		for _, row := range rows {
-			if id := fmt.Sprint(row["id"]); !keep[id] {
-				orphans = append(orphans, id)
+		if _, loaded := inst.relations[mp.Name]; loaded {
+			for _, row := range rows {
+				if id := fmt.Sprint(row["id"]); !keep[id] {
+					orphans = append(orphans, id)
+				}
 			}
 		}
 		if len(orphans) > 0 {

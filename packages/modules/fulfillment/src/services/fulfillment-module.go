@@ -281,6 +281,9 @@ func idSet(rs []*dal.Record) map[string]bool {
 
 // UpdateFulfillmentSets mirrors updateFulfillmentSets.
 func (s *FulfillmentModuleService) UpdateFulfillmentSets(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	// one transaction manager: collections loaded in the method are the
+	// initialized ones its updates replace
+	ctx = dal.WithSharedIdentityMap(ctx)
 	var out []*dal.Record
 	err := s.tx(ctx, func(t *FulfillmentModuleService) error {
 		if len(data) == 0 {
@@ -369,6 +372,9 @@ func (s *FulfillmentModuleService) UpdateFulfillmentSets(ctx context.Context, da
 
 // UpdateServiceZones mirrors updateServiceZones(idOrSelector, data).
 func (s *FulfillmentModuleService) UpdateServiceZones(ctx context.Context, idOrSelector any, data *dal.Record) ([]*dal.Record, error) {
+	// one transaction manager: collections loaded in the method are the
+	// initialized ones its updates replace
+	ctx = dal.WithSharedIdentityMap(ctx)
 	var out []*dal.Record
 	err := s.tx(ctx, func(t *FulfillmentModuleService) error {
 		var in []*dal.Record
@@ -478,6 +484,9 @@ func (s *FulfillmentModuleService) updateServiceZones(ctx context.Context, data 
 
 // UpsertServiceZones mirrors upsertServiceZones.
 func (s *FulfillmentModuleService) UpsertServiceZones(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	// one transaction manager: collections loaded in the method are the
+	// initialized ones its updates replace
+	ctx = dal.WithSharedIdentityMap(ctx)
 	var out []*dal.Record
 	err := s.tx(ctx, func(t *FulfillmentModuleService) error {
 		var forCreate, forUpdate []*dal.Record
@@ -509,6 +518,9 @@ func (s *FulfillmentModuleService) UpsertServiceZones(ctx context.Context, data 
 
 // UpdateShippingOptions mirrors updateShippingOptions(idOrSelector, data).
 func (s *FulfillmentModuleService) UpdateShippingOptions(ctx context.Context, idOrSelector any, data *dal.Record) ([]*dal.Record, error) {
+	// one transaction manager: collections loaded in the method are the
+	// initialized ones its updates replace
+	ctx = dal.WithSharedIdentityMap(ctx)
 	var out []*dal.Record
 	err := s.tx(ctx, func(t *FulfillmentModuleService) error {
 		var in []*dal.Record
@@ -628,6 +640,9 @@ func (s *FulfillmentModuleService) updateShippingOptions(ctx context.Context, da
 
 // UpsertShippingOptions mirrors upsertShippingOptions.
 func (s *FulfillmentModuleService) UpsertShippingOptions(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	// one transaction manager: collections loaded in the method are the
+	// initialized ones its updates replace
+	ctx = dal.WithSharedIdentityMap(ctx)
 	var out []*dal.Record
 	err := s.tx(ctx, func(t *FulfillmentModuleService) error {
 		var forCreate, forUpdate []*dal.Record

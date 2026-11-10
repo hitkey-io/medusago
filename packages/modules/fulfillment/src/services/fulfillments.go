@@ -56,6 +56,9 @@ func (s *FulfillmentModuleService) CreateFulfillment(ctx context.Context, data *
 
 // UpdateFulfillment mirrors updateFulfillment.
 func (s *FulfillmentModuleService) UpdateFulfillment(ctx context.Context, id any, data *dal.Record) (*dal.Record, error) {
+	// one transaction manager: the labels loaded first are the initialized
+	// collection the update replaces
+	ctx = dal.WithSharedIdentityMap(ctx)
 	var out *dal.Record
 	err := s.tx(ctx, func(t *FulfillmentModuleService) error {
 		existing, err := t.Internal("Fulfillment").Retrieve(ctx, id, utilsmodulessdk.FindConfig{Relations: []string{"items", "labels"}})
