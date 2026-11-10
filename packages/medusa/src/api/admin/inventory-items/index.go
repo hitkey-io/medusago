@@ -56,6 +56,7 @@ var AdminGetInventoryLocationLevelsParams = utils.CreateFindParams(utils.FindPar
 // Middlewares mirrors adminInventoryRoutesMiddlewares (reads).
 var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/inventory-items", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetInventoryItemsParams, ListConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/inventory-items/export", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetInventoryItemsParams, ListConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/inventory-items/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/inventory-items/:id/location-levels", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetInventoryLocationLevelsParams, ListLocationLevelsConfig)}},
 }

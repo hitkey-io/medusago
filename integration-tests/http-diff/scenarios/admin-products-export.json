@@ -1,0 +1,71 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "channels",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/sales-channels?order=name&fields=id"
+  },
+  {
+    "name": "export",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/export"
+  },
+  {
+    "name": "n1",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,to,channel,template,data,provider_id,status&order=created_at",
+    "until": "notifications.0"
+  },
+  {
+    "name": "file",
+    "method": "GET",
+    "path": "{{n1.notifications.0.data.file.url}}"
+  },
+  {
+    "name": "export_prices",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/export?fields=title,handle,*variants,variants.prices.*,variants.options.*,options.*,images.url,tags.value,*sales_channels,categories.id,type_id,collection_id"
+  },
+  {
+    "name": "n2",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,data&order=created_at",
+    "until": "notifications.1"
+  },
+  {
+    "name": "file_prices",
+    "method": "GET",
+    "path": "{{n2.notifications.1.data.file.url}}"
+  },
+  {
+    "name": "export_channel",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/export?fields=title,variants.sku&sales_channel_id[]={{channels.sales_channels.0.id}}"
+  },
+  {
+    "name": "n3",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,data&order=created_at",
+    "until": "notifications.2"
+  },
+  {
+    "name": "file_channel",
+    "method": "GET",
+    "path": "{{n3.notifications.2.data.file.url}}"
+  }
+]

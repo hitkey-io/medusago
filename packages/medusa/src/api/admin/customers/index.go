@@ -16,6 +16,13 @@ var DefaultAdminCustomerFields = []string{"id", "company_name", "first_name", "l
 var (
 	RetrieveConfig = httputils.QueryConfig{Defaults: DefaultAdminCustomerFields, Entity: "customer"}
 	ListConfig     = httputils.QueryConfig{Defaults: DefaultAdminCustomerFields, IsList: true, Entity: "customer"}
+	ExportConfig   = httputils.QueryConfig{Defaults: DefaultAdminCustomerFields, IsList: true, Entity: "customer"}
+)
+
+// AdminExportCustomer mirrors AdminExportCustomer.
+var AdminExportCustomer = zod.Object(
+	zod.F("format", zod.Enum("csv", "json").Optional()),
+	zod.F("batch_size", zod.Union(zod.Number(), zod.String()).Optional()),
 )
 
 // AdminCustomerGroupInCustomerParams mirrors AdminCustomerGroupInCustomerParams.
@@ -53,7 +60,12 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/customers/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
 }
 
-func init() { Middlewares = append(Middlewares, WriteMiddlewares...) }
+func init() {
+	Middlewares = append(Middlewares, WriteMiddlewares...)
+	Middlewares = append(Middlewares, medusahttp.MiddlewareRoute{Methods: []string{"POST"}, Matcher: "/admin/customers/export", Middlewares: []medusahttp.MiddlewareFunction{
+		httputils.ValidateAndTransformBody(httputils.Schema(AdminExportCustomer)), httputils.ValidateAndTransformQuery(AdminCustomersParams, ExportConfig),
+	}})
+}
 
 // Route is route.ts.
 var Route = medusahttp.Route{GET: httputils.RemoteQueryListRoute("customers", "customers"), POST: POST}

@@ -2,9 +2,12 @@
 package workflowsexecutions
 
 import (
+	"strings"
+
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/utils"
 )
 
@@ -33,6 +36,36 @@ var AdminGetWorkflowExecutionsParams = utils.CreateFindParams(utils.FindParamsOp
 var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/workflows-executions", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetWorkflowExecutionsParams, ListConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/workflows-executions/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
+	{Methods: []string{"GET"}, Matcher: "/admin/workflows-executions/:workflow_id/:transaction_id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(utils.CreateSelectParams(), RetrieveConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/workflows-executions/:workflow_id/steps/success", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateWorkflowsAsyncResponse))}},
+	{Methods: []string{"POST"}, Matcher: "/admin/workflows-executions/:workflow_id/steps/failure", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminCreateWorkflowsAsyncResponse))}},
+}
+
+// AdminCreateWorkflowsAsyncResponse mirrors AdminCreateWorkflowsAsyncResponse.
+var AdminCreateWorkflowsAsyncResponse = zod.Object(
+	zod.F("transaction_id", zod.String()),
+	zod.F("step_id", zod.String()),
+	zod.F("response", zod.Any().Optional()),
+	zod.F("compensate_input", zod.Any().Optional()),
+	zod.F("action", zod.Preprocess(func(v any) any { return strings.ToLower(jsString(v)) }, zod.Enum("invoke", "compensate").Optional()).Optional()),
+)
+
+// jsString mirrors val + "".
+func jsString(v any) string {
+	switch t := v.(type) {
+	case nil:
+		return "null"
+	case string:
+		return t
+	case bool:
+		if t {
+			return "true"
+		}
+		return "false"
+	case float64:
+		return totals.JSNumberToString(t)
+	}
+	return "[object Object]"
 }
 
 // Route is route.ts.

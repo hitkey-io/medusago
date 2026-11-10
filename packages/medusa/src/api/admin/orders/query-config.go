@@ -29,3 +29,9 @@ var ListOrderItemsQueryConfig = httputils.QueryConfig{Defaults: DefaultAdminOrde
 
 // ListShippingOptionsQueryConfig mirrors listShippingOptionsQueryConfig.
 var ListShippingOptionsQueryConfig = httputils.QueryConfig{DefaultLimit: 100, IsList: true}
+
+// DefaultAdminExportOrderFields mirrors defaultAdminExportOrderFields.
+var DefaultAdminExportOrderFields = []string{"id", "display_id", "status", "created_at", "updated_at", "email", "currency_code", "region_id", "subtotal", "tax_total", "shipping_total", "discount_total", "gift_card_total", "total", "*customer", "*shipping_address", "*billing_address", "*sales_channel", "*items", "*shipping_methods", "*payment_collections", "*fulfillments"}
+
+// ExportTransformQueryConfig mirrors exportTransformQueryConfig.
+var ExportTransformQueryConfig = httputils.QueryConfig{Defaults: DefaultAdminExportOrderFields, IsList: true, Entity: "order"}

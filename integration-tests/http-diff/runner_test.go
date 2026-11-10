@@ -23,8 +23,10 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
@@ -48,6 +50,28 @@ type Step struct {
 	Unordered []string `json:"unordered,omitempty"`
 	// Files sends a multipart/form-data body with these files.
 	Files []StepFile `json:"files,omitempty"`
+	// Until repeats the request (for up to 30s) until this dotted body path
+	// resolves to a value: it waits for background workflows.
+	Until string `json:"until,omitempty"`
+}
+
+// lookupPath resolves a dotted path ("notifications.0.data") in a body.
+func lookupPath(v any, path string) any {
+	for _, part := range strings.Split(path, ".") {
+		switch t := v.(type) {
+		case *dal.Record:
+			v, _ = t.Get(part)
+		case []any:
+			i, err := strconv.Atoi(part)
+			if err != nil || i < 0 || i >= len(t) {
+				return nil
+			}
+			v = t[i]
+		default:
+			return nil
+		}
+	}
+	return v
 }
 
 // StepFile is one file of a multipart step.
@@ -164,6 +188,15 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 	bodies := map[string]any{}
 	for _, step := range steps {
 		step.Path = resolveRefs(step.Path, bodies, true)
+		// absolute URLs from bodies (file urls) are requested on the target
+		if strings.HasPrefix(step.Path, "http%3A") {
+			step.Path, _ = url.QueryUnescape(step.Path)
+		}
+		if u, err := url.Parse(step.Path); err == nil && u.IsAbs() {
+			step.Path = u.RequestURI()
+		}
+		deadline := time.Now().Add(30 * time.Second)
+	retry:
 		var body io.Reader
 		if len(step.Body) > 0 {
 			body = strings.NewReader(resolveRefs(string(step.Body), bodies, false))
@@ -223,6 +256,10 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 			} else {
 				rec.Body = string(raw)
 			}
+		}
+		if step.Until != "" && lookupPath(rec.Body, step.Until) == nil && time.Now().Before(deadline) {
+			time.Sleep(200 * time.Millisecond)
+			goto retry
 		}
 		out[step.Name] = rec
 		bodies[step.Name] = rec.Body
@@ -325,7 +362,12 @@ func TestRecord(t *testing.T) {
 
 var _ = encode
 
-var embeddedIDRe = regexp.MustCompile(`[a-z]+_[0-9A-HJKMNP-TV-Z]{26}`)
+var (
+	embeddedIDRe = regexp.MustCompile(`[a-z]+_[0-9A-HJKMNP-TV-Z]{26}`)
+	// Date.prototype.toString: the zone name is ICU's, in the system locale
+	jsDateZoneRe   = regexp.MustCompile(`(GMT[+-]\d{4}) \([^)]*\)`)
+	embeddedDateRe = regexp.MustCompile(`\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{3})?Z`)
+)
 
 // placeholders maps generated values to stable names within a scenario.
 type placeholders struct {
@@ -342,12 +384,19 @@ func (p *placeholders) of(s string) string {
 	gen, kind := isGenerated(s)
 	if !gen {
 		if kind == "" && len(s) > 30 {
-			// generated ids inside messages
-			return embeddedIDRe.ReplaceAllStringFunc(s, func(id string) string {
+			// generated ids and dates inside messages (and CSV files)
+			s = embeddedIDRe.ReplaceAllStringFunc(s, func(id string) string {
 				if g, k := isGenerated(id); g && k == "id" {
 					return p.of(id)
 				}
 				return id
+			})
+			s = jsDateZoneRe.ReplaceAllString(s, "$1 (<zone>)")
+			return embeddedDateRe.ReplaceAllStringFunc(s, func(d string) string {
+				if g, k := isGenerated(d); g && k == "date" {
+					return "<date>"
+				}
+				return d
 			})
 		}
 		return s

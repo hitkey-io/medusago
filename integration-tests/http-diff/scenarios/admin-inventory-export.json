@@ -1,0 +1,53 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "items",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/inventory-items?fields=id,sku&order=sku"
+  },
+  {
+    "name": "export",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/inventory-items/export"
+  },
+  {
+    "name": "n1",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,to,channel,template,data,provider_id,status&order=created_at",
+    "until": "notifications.0"
+  },
+  {
+    "name": "file",
+    "method": "GET",
+    "path": "{{n1.notifications.0.data.file.url}}"
+  },
+  {
+    "name": "export_fields",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/inventory-items/export?fields=id,sku,title,location_levels.stocked_quantity,location_levels.location_id&sku[]={{items.inventory_items.0.sku}}"
+  },
+  {
+    "name": "n2",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,data&order=created_at",
+    "until": "notifications.1"
+  },
+  {
+    "name": "file_fields",
+    "method": "GET",
+    "path": "{{n2.notifications.1.data.file.url}}"
+  }
+]

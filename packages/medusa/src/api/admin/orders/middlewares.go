@@ -9,6 +9,7 @@ import (
 // routes only).
 var AdminOrderRoutesMiddlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET"}, Matcher: "/admin/orders", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetOrdersParams, ListTransformQueryConfig)}},
+	{Methods: []string{"POST"}, Matcher: "/admin/orders/export", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetOrdersParams, ExportTransformQueryConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/orders/:id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetOrdersOrderParams, RetrieveTransformQueryConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/orders/:id/line-items", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminGetOrdersOrderItemsParams, ListOrderItemsQueryConfig)}},
 	{Methods: []string{"GET"}, Matcher: "/admin/orders/:id/changes", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminOrderChangesParams, RetrieveOrderChangesTransformQueryConfig)}},

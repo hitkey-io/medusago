@@ -1,0 +1,151 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzMDk2OTcsImV4cCI6MTc5NDM5NjA5N30.QuAYdN1utMunff_MbJwOFrzv89tM0EOGHLMsns8S-kU"
+    }
+  },
+  "items": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_items": [
+        {
+          "id": "iitem_01M70Y000RWHQWDA346PAVDVTB",
+          "sku": "PANTS-L"
+        },
+        {
+          "id": "iitem_01M70Y000RZ502C3BB7AG00VH9",
+          "sku": "SHIRT-M-WHITE"
+        },
+        {
+          "id": "iitem_01M70Y000R77AV02RWX3KTV1ZY",
+          "sku": "SHIRT-S-BLACK"
+        },
+        {
+          "id": "iitem_01M70Y000R2AMXZA0THMKM80BA",
+          "sku": null
+        }
+      ],
+      "count": 4,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "export": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "transaction_id": "auto-01M72K2C9VYG2TGMXJGEFEGJB9"
+    }
+  },
+  "n1": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "notifications": [
+        {
+          "id": "noti_01M72K2CBSE7K35H2NPXABTRBA",
+          "to": "",
+          "channel": "feed",
+          "template": "admin-ui",
+          "data": {
+            "file": {
+              "url": "http://localhost:9000/static/private-1794309697885-1794309697885-inventory-item-exports.csv",
+              "filename": "1794309697885-inventory-item-exports.csv",
+              "mimeType": "text/csv"
+            },
+            "title": "Inventory export",
+            "description": "Inventory export completed successfully!"
+          },
+          "provider_id": "local",
+          "status": "success"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "file": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/csv; charset=UTF-8"
+    },
+    "body": "Item Id,Item Sku,Item Title,Item Description,Item Thumbnail,Item Origin Country,Item Hs Code,Item Requires Shipping,Item Mid Code,Item Material,Item Unit Of Measure,Item Weight,Item Length,Item Height,Item Width,Item Reserved Quantity,Item Stocked Quantity,Item Created At,Item Updated At,Variant Id,Variant Title,Variant Barcode,Variant Ean,Variant Upc,Location [European Warehouse] Stocked Quantity,Location [European Warehouse] Reserved Quantity,Location [European Warehouse] Available Quantity\niitem_01M70Y000R2AMXZA0THMKM80BA,,Default,Default,,,,true,,,,,,,,0,10,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),variant_01M70Y000G904MD1KJ0SDSRS44,Default,,,,10,0,10\niitem_01M70Y000R77AV02RWX3KTV1ZY,SHIRT-S-BLACK,S / Black,S / Black,,,,true,,,,,,,,0,20,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),variant_01M70Y000GD1GFQ2A5BCFM4S8Q,S / Black,,,,20,0,20\niitem_01M70Y000RWHQWDA346PAVDVTB,PANTS-L,L,L,,,,true,,,,,,,,0,30,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),variant_01M70Y000GM1QZKX7G9P8G7G1S,L,,,,30,0,30\niitem_01M70Y000RZ502C3BB7AG00VH9,SHIRT-M-WHITE,M / White,M / White,,,,true,,,,,,,,0,40,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),variant_01M70Y000GR2HDG6AHJXMDD8MS,M / White,,,,40,0,40"
+  },
+  "export_fields": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "transaction_id": "auto-01M72K2CHNWGCHXNMS4HDRTHGN"
+    }
+  },
+  "n2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "notifications": [
+        {
+          "id": "noti_01M72K2CBSE7K35H2NPXABTRBA",
+          "data": {
+            "file": {
+              "url": "http://localhost:9000/static/private-1794309697885-1794309697885-inventory-item-exports.csv",
+              "filename": "1794309697885-inventory-item-exports.csv",
+              "mimeType": "text/csv"
+            },
+            "title": "Inventory export",
+            "description": "Inventory export completed successfully!"
+          }
+        },
+        {
+          "id": "noti_01M72K2CN32FVB3M0CPMETX4PW",
+          "data": {
+            "file": {
+              "url": "http://localhost:9000/static/private-1794309698171-1794309698170-inventory-item-exports.csv",
+              "filename": "1794309698170-inventory-item-exports.csv",
+              "mimeType": "text/csv"
+            },
+            "title": "Inventory export",
+            "description": "Inventory export completed successfully!"
+          }
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "file_fields": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/csv; charset=UTF-8"
+    },
+    "body": "Item Id,Item Sku,Item Title,Variant Id,Variant Title,Variant Barcode,Variant Ean,Variant Upc,Location [European Warehouse] Stocked Quantity,Location [European Warehouse] Reserved Quantity,Location [European Warehouse] Available Quantity\niitem_01M70Y000RWHQWDA346PAVDVTB,PANTS-L,L,variant_01M70Y000GM1QZKX7G9P8G7G1S,L,,,,30,,"
+  }
+}

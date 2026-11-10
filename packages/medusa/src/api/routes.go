@@ -32,6 +32,7 @@ import (
 	customergroupid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups/id_"
 	customergroupcustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customer-groups/id_/customers"
 	admincustomers "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers"
+	admincustomerexport "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/export"
 	customerid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_"
 	customeraddresses "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_/addresses"
 	customeraddress "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/customers/id_/addresses/address_id_"
@@ -71,6 +72,7 @@ import (
 	adminfulfillmentcancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillments/id_/cancel"
 	adminfulfillmentshipment "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillments/id_/shipment"
 	inventoryitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items"
+	admininventoryexport "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/export"
 	inventoryitemid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_"
 	inventorylevels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_/location-levels"
 	inventorylevelbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/inventory-items/id_/location-levels/batch"
@@ -96,6 +98,7 @@ import (
 	adminordereditshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/shipping-method"
 	adminordereditshippingaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/shipping-method/action_id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
+	adminorderexport "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/export"
 	adminorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_"
 	adminorderarchive "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/archive"
 	adminordercancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/cancel"
@@ -143,6 +146,7 @@ import (
 	producttypeid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-types/id_"
 	productvariantslist "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/product-variants"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products"
+	adminproductexport "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/export"
 	productid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_"
 	imagevariantsbatch "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/images/image_id_/variants/batch"
 	productoptionsroute "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/products/id_/options"
@@ -218,6 +222,9 @@ import (
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/users/me"
 	workflowsexecutions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions"
 	workflowexecutionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/id_"
+	workflowexecutionfailure "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/workflow_id_/steps/failure"
+	workflowexecutionsuccess "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/workflow_id_/steps/success"
+	workflowexecutiontransaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/workflows-executions/workflow_id_/transaction_id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_"
 	authregister "github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/auth_provider_/register"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/auth/actor_type_/providers"
@@ -299,9 +306,13 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/promotions/:id/buy-rules/batch", Route: promotionbuyrulesbatch.Route},
 		{Path: "/admin/workflows-executions", Route: workflowsexecutions.Route},
 		{Path: "/admin/workflows-executions/:id", Route: workflowexecutionid.Route},
+		{Path: "/admin/workflows-executions/:workflow_id/:transaction_id", Route: workflowexecutiontransaction.Route},
+		{Path: "/admin/workflows-executions/:workflow_id/steps/success", Route: workflowexecutionsuccess.Route},
+		{Path: "/admin/workflows-executions/:workflow_id/steps/failure", Route: workflowexecutionfailure.Route},
 		{Path: "/admin/customer-groups", Route: customergroups.Route},
 		{Path: "/admin/customer-groups/:id", Route: customergroupid.Route},
 		{Path: "/admin/customers", Route: admincustomers.Route},
+		{Path: "/admin/customers/export", Route: admincustomerexport.Route},
 		{Path: "/admin/customers/:id", Route: customerid.Route},
 		{Path: "/admin/customers/:id/addresses", Route: customeraddresses.Route},
 		{Path: "/admin/customers/:id/addresses/:address_id", Route: customeraddress.Route},
@@ -310,6 +321,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/currencies/:code", Route: currencycode.Route},
 		{Path: "/admin/feature-flags", Route: featureflags.Route},
 		{Path: "/admin/inventory-items", Route: inventoryitems.Route},
+		{Path: "/admin/inventory-items/export", Route: admininventoryexport.Route},
 		{Path: "/admin/inventory-items/:id", Route: inventoryitemid.Route},
 		{Path: "/admin/inventory-items/:id/location-levels", Route: inventorylevels.Route},
 		{Path: "/admin/inventory-items/:id/location-levels/batch", Route: inventorylevelbatch.Route},
@@ -361,6 +373,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/product-types/:id", Route: producttypeid.Route},
 		{Path: "/admin/product-variants", Route: productvariantslist.Route},
 		{Path: "/admin/products", Route: products.Route},
+		{Path: "/admin/products/export", Route: adminproductexport.Route},
 		{Path: "/admin/products/:id", Route: productid.Route},
 		{Path: "/admin/products/:id/options", Route: productoptionsroute.Route},
 		{Path: "/admin/products/:id/options/batch", Route: productoptionsbatch.Route},
@@ -379,6 +392,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/modules", Route: adminmodules.Route},
 		{Path: "/admin/notifications", Route: notifications.Route},
 		{Path: "/admin/orders", Route: orders.Route},
+		{Path: "/admin/orders/export", Route: adminorderexport.Route},
 		{Path: "/admin/orders/:id", Route: adminorderid.Route},
 		{Path: "/admin/orders/:id/cancel", Route: adminordercancel.Route},
 		{Path: "/admin/orders/:id/credit-lines", Route: adminordercreditlines.Route},

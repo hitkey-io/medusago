@@ -1,0 +1,83 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "export_json",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/customers/export",
+    "body": {}
+  },
+  {
+    "name": "n1",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,to,channel,template,data,provider_id,status&order=created_at",
+    "until": "notifications.0"
+  },
+  {
+    "name": "file_json",
+    "method": "GET",
+    "path": "{{n1.notifications.0.data.file.url}}"
+  },
+  {
+    "name": "export_csv",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/customers/export?order=email",
+    "body": {
+      "format": "csv",
+      "batch_size": 1
+    }
+  },
+  {
+    "name": "n2",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,data&order=created_at",
+    "until": "notifications.1"
+  },
+  {
+    "name": "file_csv",
+    "method": "GET",
+    "path": "{{n2.notifications.1.data.file.url}}"
+  },
+  {
+    "name": "export_filtered",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/customers/export?has_account=false&fields=id,email",
+    "body": {
+      "format": "csv",
+      "batch_size": "2x"
+    }
+  },
+  {
+    "name": "n3",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,data&order=created_at",
+    "until": "notifications.2"
+  },
+  {
+    "name": "file_filtered",
+    "method": "GET",
+    "path": "{{n3.notifications.2.data.file.url}}"
+  },
+  {
+    "name": "export_invalid",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/customers/export",
+    "body": {
+      "format": "xml"
+    }
+  }
+]
