@@ -620,9 +620,33 @@ func scenarioFiles() []string {
 // (record.sh passes the same value to upstream).
 const mfaEncryptionKey = "http-diff-mfa-encryption-key"
 
+// scenarioEnv reads scenarios/<name>.env (KEY=VALUE lines, e.g. feature
+// flags): both servers run with these variables (record.sh exports them).
+func scenarioEnv(t *testing.T, scenario string) map[string]string {
+	t.Helper()
+	out := map[string]string{}
+	data, err := os.ReadFile(filepath.Join("scenarios", scenario+".env"))
+	if err != nil {
+		return out
+	}
+	for _, line := range strings.Split(string(data), "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		if k, v, ok := strings.Cut(line, "="); ok {
+			out[strings.TrimSpace(k)] = strings.TrimSpace(v)
+		}
+	}
+	return out
+}
+
 func goServer(t *testing.T, scenario string) string {
 	t.Helper()
 	t.Setenv("AUTH_MFA_ENCRYPTION_KEY", mfaEncryptionKey)
+	for k, v := range scenarioEnv(t, scenario) {
+		t.Setenv(k, v)
+	}
 	if base := os.Getenv("MEDUSA_HTTP_TARGET_URL"); base != "" {
 		return base
 	}
