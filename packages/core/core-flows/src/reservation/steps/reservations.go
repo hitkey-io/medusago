@@ -112,3 +112,30 @@ var DeleteReservationsStep = composer.CreateStep("delete-reservations",
 		}
 		return service(ctx.Container).RestoreReservationItems(ctx.Context, ids)
 	})
+
+type byLineItem interface {
+	DeleteReservationItemsByLineItem(ctx context.Context, lineItemIDs []any) error
+	RestoreReservationItemsByLineItem(ctx context.Context, lineItemIDs []any) error
+}
+
+// DeleteReservationsByLineItemsStep mirrors deleteReservationsByLineItemsStep.
+var DeleteReservationsByLineItemsStep = composer.CreateStep("delete-reservations-by-line-items",
+	func(ctx composer.StepExecutionContext, lineItemIDs []any) (composer.StepResponse[[]any], error) {
+		f := dal.NewRecord()
+		f.Set("line_item_id", lineItemIDs)
+		rows, err := service(ctx.Container).ListBySuffix(ctx.Context, "ReservationItems", f, utilsmodulessdk.FindConfig{Select: []string{"id", "inventory_item_id"}})
+		if err != nil {
+			return composer.StepResponse[[]any]{}, err
+		}
+		if err := ctx.Container.Resolve(utilsmodulessdk.INVENTORY).(byLineItem).DeleteReservationItemsByLineItem(ctx.Context, lineItemIDs); err != nil {
+			return composer.StepResponse[[]any]{}, err
+		}
+		return composer.NewStepResponse(commonsteps.RecordIDs(rows), any(lineItemIDs)), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		ids, _ := data.([]any)
+		if len(ids) == 0 {
+			return nil
+		}
+		return ctx.Container.Resolve(utilsmodulessdk.INVENTORY).(byLineItem).RestoreReservationItemsByLineItem(ctx.Context, ids)
+	})

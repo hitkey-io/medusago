@@ -713,3 +713,9 @@ func setDefined(dst *dal.Record, key string, src *dal.Record, srcKey string) {
 		dst.Set(key, v)
 	}
 }
+
+// ConfirmOrderChangeRecords confirms changes given as ids or { id, ... }.
+func (s *OrderModuleService) ConfirmOrderChangeRecords(ctx context.Context, data []any) error {
+	_, err := s.ConfirmOrderChange(ctx, data)
+	return err
+}

@@ -147,6 +147,14 @@ import (
 	storeorders "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders"
 	storeorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_"
 	adminorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_"
+	adminordercancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/cancel"
+	adminordercomplete "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/complete"
+	adminorderarchive "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/archive"
+	adminpayments "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments"
+	adminpaymentid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments/id_"
+	adminpaymentcapture "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments/id_/capture"
+	adminpaymentrefund "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments/id_/refund"
+	adminpaymentproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments/payment-providers"
 	adminorderfulfillments "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/fulfillments"
 	adminorderfulfillmentcancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/fulfillments/fulfillment_id_/cancel"
 	adminordershipments "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/fulfillments/fulfillment_id_/shipments"
@@ -289,6 +297,14 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/notifications", Route: notifications.Route},
 		{Path: "/admin/orders", Route: orders.Route},
 		{Path: "/admin/orders/:id", Route: adminorderid.Route},
+		{Path: "/admin/orders/:id/cancel", Route: adminordercancel.Route},
+		{Path: "/admin/orders/:id/complete", Route: adminordercomplete.Route},
+		{Path: "/admin/orders/:id/archive", Route: adminorderarchive.Route},
+		{Path: "/admin/payments", Route: adminpayments.Route},
+		{Path: "/admin/payments/payment-providers", Route: adminpaymentproviders.Route},
+		{Path: "/admin/payments/:id", Route: adminpaymentid.Route},
+		{Path: "/admin/payments/:id/capture", Route: adminpaymentcapture.Route},
+		{Path: "/admin/payments/:id/refund", Route: adminpaymentrefund.Route},
 		{Path: "/admin/orders/:id/fulfillments", Route: adminorderfulfillments.Route},
 		{Path: "/admin/orders/:id/fulfillments/:fulfillment_id/cancel", Route: adminorderfulfillmentcancel.Route},
 		{Path: "/admin/orders/:id/fulfillments/:fulfillment_id/shipments", Route: adminordershipments.Route},

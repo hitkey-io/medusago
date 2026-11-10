@@ -424,3 +424,40 @@ func (s *InventoryModuleService) AdjustInventory(ctx context.Context, data []*da
 	}
 	return results, nil
 }
+
+func (s *InventoryModuleService) reservationIDsByLineItem(ctx context.Context, lineItemIDs []any, deleted bool) ([]any, error) {
+	f := dal.NewRecord()
+	f.Set("line_item_id", lineItemIDs)
+	if deleted {
+		ne := dal.NewRecord()
+		ne.Set("$ne", nil)
+		f.Set("deleted_at", ne)
+	}
+	rows, err := s.Internal("ReservationItem").List(ctx, f, utilsmodulessdk.FindConfig{Select: []string{"id"}, WithDeleted: deleted})
+	if err != nil {
+		return nil, err
+	}
+	var ids []any
+	for _, r := range rows {
+		ids = append(ids, get(r, "id"))
+	}
+	return ids, nil
+}
+
+// DeleteReservationItemsByLineItem mirrors deleteReservationItemsByLineItem.
+func (s *InventoryModuleService) DeleteReservationItemsByLineItem(ctx context.Context, lineItemIDs []any) error {
+	ids, err := s.reservationIDsByLineItem(ctx, lineItemIDs, false)
+	if err != nil || len(ids) == 0 {
+		return err
+	}
+	return s.SoftDeleteReservationItems(ctx, ids)
+}
+
+// RestoreReservationItemsByLineItem mirrors restoreReservationItemsByLineItem.
+func (s *InventoryModuleService) RestoreReservationItemsByLineItem(ctx context.Context, lineItemIDs []any) error {
+	ids, err := s.reservationIDsByLineItem(ctx, lineItemIDs, true)
+	if err != nil || len(ids) == 0 {
+		return err
+	}
+	return s.RestoreReservationItems(ctx, ids)
+}

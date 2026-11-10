@@ -154,3 +154,6 @@ var AdminOrderChangesParams = utils.CreateSelectParams().Merge(zod.Object(
 	zod.F("updated_at", utils.CreateOperatorMap(nil, nil).Optional()),
 	zod.F("deleted_at", utils.CreateOperatorMap(nil, nil).Optional()),
 ))
+
+// AdminCompleteOrder mirrors AdminCompleteOrder.
+var AdminCompleteOrder = utils.WithAdditionalData(zod.Object())

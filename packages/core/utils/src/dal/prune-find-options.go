@@ -58,10 +58,32 @@ func (r *Repository) pruneFindOptions(opts FindOptions) FindOptions {
 		kept := make([]string, 0, len(opts.Relations))
 		for _, p := range opts.Relations {
 			if r.isFieldPathResolvable(p) {
-				kept = append(kept, p)
+				// Like MikroORM's populate, a path ending with a scalar
+				// property ("captures.raw_amount") populates its relation.
+				if trimmed := r.trimScalarTail(p); trimmed != "" {
+					kept = append(kept, trimmed)
+				}
 			}
 		}
 		opts.Relations = kept
 	}
 	return opts
+}
+
+// trimScalarTail drops the trailing scalar segment of a relation path.
+func (r *Repository) trimScalarTail(path string) string {
+	segments := strings.Split(path, ".")
+	current := r.Entity
+	for i, seg := range segments {
+		prop, ok := current.MetaProperty(strings.Split(seg, ":")[0])
+		if !ok || prop.Kind == "scalar" || prop.Entity == "" {
+			return strings.Join(segments[:i], ".")
+		}
+		target, err := r.Schema.Entity(prop.Entity)
+		if err != nil {
+			return strings.Join(segments[:i+1], ".")
+		}
+		current = target
+	}
+	return path
 }
