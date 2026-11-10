@@ -11,8 +11,8 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/csv"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
-	utilsproduct "github.com/hitkey-io/medusago/packages/core/utils/src/product"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
+	utilsproduct "github.com/hitkey-io/medusago/packages/core/utils/src/product"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 	localfile "github.com/hitkey-io/medusago/packages/modules/providers/file-local/src/services"
 )
