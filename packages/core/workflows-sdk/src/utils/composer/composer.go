@@ -17,9 +17,15 @@
 //     workflow succeeds and cleared when it fails;
 //   - nested workflows (runAsStep) compensate as a unit.
 //
-// Synchronous executions upstream leave no workflow_execution row behind (the
-// row written at start is deleted on finish), so nothing is persisted here.
-// Async steps, retention and idempotent runs are not supported yet.
+// Every run keeps a journal of its steps in the TransactionFlow /
+// TransactionContext format (see journal.go). It is stored in
+// workflow_execution like InMemoryDistributedTransactionStorage does: for
+// workflows created with store / retentionTime and for runs with async
+// steps; finished runs without retentionTime are deleted. A step with
+// async + backgroundExecution detaches the run: run() returns while the
+// body continues in the background; an async step without background
+// execution waits for setStepSuccess / setStepFailure. Waiting runs live in
+// this process (like the in-memory engine's timers).
 package composer
 
 import (
@@ -87,6 +93,12 @@ type StepOptions struct {
 	MaxRetries                 int
 	ContinueOnPermanentFailure bool
 	NoCompensation             bool
+	// Async marks a step completed from outside (setStepSuccess) unless
+	// BackgroundExecution is set, in which case its handler runs in the
+	// background and the run returns to the caller.
+	Async               bool
+	BackgroundExecution bool
+	Store               bool
 }
 
 // Step is a step definition.
@@ -95,6 +107,8 @@ type Step[I, O any] struct {
 	Options    StepOptions
 	invoke     func(StepExecutionContext, I) (StepResponse[O], error)
 	compensate func(StepExecutionContext, any) error
+	// action is the flow action name when it differs from Name (hooks).
+	action string
 }
 
 // CreateStep mirrors createStep(name, invoke, compensate?).
@@ -118,6 +132,17 @@ type compensation struct {
 	run  func() error
 }
 
+// detacher lets the first background / async step return the run to its
+// caller.
+type detacher struct {
+	once sync.Once
+	ch   chan struct{}
+}
+
+func newDetacher() *detacher { return &detacher{ch: make(chan struct{})} }
+
+func (d *detacher) detach() { d.once.Do(func() { close(d.ch) }) }
+
 // Execution is one workflow run (a DistributedTransaction).
 type Execution struct {
 	ctx           context.Context
@@ -130,6 +155,11 @@ type Execution struct {
 	// errors mirrors transaction.getErrors(INVOKE).
 	errors []error
 	hooks  *hookRegistry
+	// shared by the root run and its runAsStep workflows
+	journal        *journal
+	detacher       *detacher
+	rootWorkflowID string
+	rootOptions    WorkflowOptions
 }
 
 // Context returns the run context.
@@ -201,8 +231,21 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 	var zero O
 	var res StepResponse[O]
 	var err error
+	action := s.Name
+	if s.action != "" {
+		action = s.action
+	}
+	noComp := s.compensate == nil || s.Options.NoCompensation
+	rec := e.journal.begin(action, s.Options, noComp)
+	background := s.Options.Async && s.Options.BackgroundExecution
+	if background {
+		// the run returns to its caller; the step runs in the background
+		e.persist(TransactionStateInvoking)
+		e.detacher.detach()
+	}
 	attempts := s.Options.MaxRetries + 1
 	for attempt := 1; attempt <= attempts; attempt++ {
+		e.journal.attempt(rec, attempt)
 		ctx := e.stepContext(s.Name, "invoke", attempt)
 		err = callSafely(func() error {
 			var ierr error
@@ -222,7 +265,27 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 			break
 		}
 	}
+	if err == nil && s.Options.Async && !background {
+		// waits for setStepSuccess / setStepFailure; the run returns to its
+		// caller meanwhile
+		ch := registerWaiter(waiterKey(e.rootWorkflowID, e.transactionID, action))
+		e.journal.wait(rec)
+		e.persist(TransactionStateInvoking)
+		e.detacher.detach()
+		r := <-ch
+		if r.err != nil {
+			err = r.err
+		} else {
+			out, cerr := convertOutput[O](r.output)
+			if cerr != nil {
+				err = cerr
+			} else {
+				res = StepResponse[O]{Output: out}
+			}
+		}
+	}
 	if err != nil {
+		e.journal.fail(rec, err)
 		e.mu.Lock()
 		e.errors = append(e.errors, err)
 		e.mu.Unlock()
@@ -234,20 +297,25 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 			comp := s.compensate
 			name := s.Name
 			e.pushCompensation(compensation{name: name, run: func() error {
-				return callSafely(func() error { return comp(e.stepContext(name, "compensate", 1), nil) })
+				cerr := callSafely(func() error { return comp(e.stepContext(name, "compensate", 1), nil) })
+				e.journal.compensated(rec, cerr)
+				return cerr
 			}})
 		}
 		return zero, &stepFailed{err: err}
 	}
+	var compInput any = res.Output
+	if res.hasCompensate {
+		compInput = res.CompensateInput
+	}
+	e.journal.succeed(rec, res.Output, any(res.Output) != nil, compInput, res.hasCompensate)
 	if s.compensate != nil && !s.Options.NoCompensation {
-		var compInput any = res.Output
-		if res.hasCompensate {
-			compInput = res.CompensateInput
-		}
 		comp := s.compensate
 		name := s.Name
 		e.pushCompensation(compensation{name: name, run: func() error {
-			return callSafely(func() error { return comp(e.stepContext(name, "compensate", 1), compInput) })
+			cerr := callSafely(func() error { return comp(e.stepContext(name, "compensate", 1), compInput) })
+			e.journal.compensated(rec, cerr)
+			return cerr
 		}})
 	}
 	return res.Output, nil
@@ -255,14 +323,23 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 
 // Workflow is a workflow definition.
 type Workflow[I, O any] struct {
-	ID    string
-	body  func(*Execution, I) (O, error)
-	hooks *hookRegistry
+	ID      string
+	Options WorkflowOptions
+	body    func(*Execution, I) (O, error)
+	hooks   *hookRegistry
 }
 
 // CreateWorkflow mirrors createWorkflow(id, composer).
 func CreateWorkflow[I, O any](id string, body func(*Execution, I) (O, error)) *Workflow[I, O] {
+	registerWorkflow(id)
 	return &Workflow[I, O]{ID: id, body: body, hooks: newHookRegistry()}
+}
+
+// CreateWorkflowWithOptions mirrors createWorkflow({ name, store,
+// retentionTime, idempotent }, composer).
+func CreateWorkflowWithOptions[I, O any](id string, opts WorkflowOptions, body func(*Execution, I) (O, error)) *Workflow[I, O] {
+	registerWorkflow(id)
+	return &Workflow[I, O]{ID: id, Options: opts, body: body, hooks: newHookRegistry()}
 }
 
 // RunOptions mirrors the options of workflow(container).run().
@@ -276,6 +353,13 @@ type RunOptions struct {
 // Run mirrors workflow(container).run({ input }): the result, or the first
 // invoke error (throwOnError true).
 func (w *Workflow[I, O]) Run(ctx context.Context, c Container, input I, opts ...RunOptions) (O, error) {
+	out, _, err := w.RunWithInfo(ctx, c, input, opts...)
+	return out, err
+}
+
+// RunWithInfo is Run that also describes the transaction (the
+// { transaction } of workflow.run()).
+func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, opts ...RunOptions) (O, RunInfo, error) {
 	var o RunOptions
 	if len(opts) > 0 {
 		o = opts[0]
@@ -286,22 +370,73 @@ func (w *Workflow[I, O]) Run(ctx context.Context, c Container, input I, opts ...
 	if o.EventGroupID == "" {
 		o.EventGroupID = ulid.Make().String()
 	}
-	e := &Execution{ctx: ctx, container: c, workflowID: w.ID, transactionID: o.TransactionID, eventGroupID: o.EventGroupID, hooks: w.hooks}
-	out, err := w.execute(e, input)
-	bus, _ := c.Resolve(utilsmodulessdk.EVENT_BUS).(EventBus)
-	if err != nil {
-		if bus != nil {
-			_ = bus.ClearGroupedEvents(ctx, e.eventGroupID, nil)
-		}
-		var zero O
-		return zero, err
+	// runs are not tied to the caller (a request may end before a
+	// background step does)
+	runCtx := context.WithoutCancel(ctx)
+	e := &Execution{ctx: runCtx, container: c, workflowID: w.ID, transactionID: o.TransactionID, eventGroupID: o.EventGroupID, hooks: w.hooks,
+		journal: newJournal(input), detacher: newDetacher(), rootWorkflowID: w.ID, rootOptions: w.Options}
+	stored := w.Options.Store || w.Options.RetentionTime > 0
+	if stored {
+		e.persist(TransactionStateNotStarted)
 	}
-	if bus != nil {
-		if rerr := bus.ReleaseGroupedEvents(ctx, e.eventGroupID); rerr != nil {
+	type result struct {
+		out O
+		err error
+	}
+	done := make(chan result, 1)
+	go func() {
+		out, err := w.execute(e, input)
+		done <- result{out, err}
+	}()
+	select {
+	case r := <-done:
+		state := w.finish(e, r.err, stored)
+		info := RunInfo{TransactionID: e.transactionID, RunID: e.journal.runID, State: state}
+		if r.err != nil {
+			var zero O
+			return zero, info, r.err
+		}
+		return r.out, info, nil
+	case <-e.detacher.ch:
+		go func() {
+			r := <-done
+			w.finish(e, r.err, true)
+		}()
+		var zero O
+		return zero, RunInfo{TransactionID: e.transactionID, RunID: e.journal.runID, State: TransactionStateInvoking, Detached: true}, nil
+	}
+}
+
+// finish releases or clears the grouped events and stores or deletes the
+// checkpoint of a finished run; it returns the final state.
+func (w *Workflow[I, O]) finish(e *Execution, err error, stored bool) string {
+	bus, _ := e.container.Resolve(utilsmodulessdk.EVENT_BUS).(EventBus)
+	state := TransactionStateDone
+	if err != nil {
+		state = TransactionStateReverted
+		if bus != nil {
+			_ = bus.ClearGroupedEvents(e.ctx, e.eventGroupID, nil)
+		}
+	} else if bus != nil {
+		if rerr := bus.ReleaseGroupedEvents(e.ctx, e.eventGroupID); rerr != nil {
 			slog.Error(fmt.Sprintf("Failed to release grouped events for eventGroupId: %s: %v", e.eventGroupID, rerr))
 		}
 	}
-	return out, nil
+	if err != nil {
+		e.journal.revertAll()
+		if e.journal.hasFailed {
+			state = TransactionStateFailed
+		}
+	}
+	e.journal.setState(state)
+	if stored || e.journal.hasAsync {
+		if w.Options.RetentionTime > 0 {
+			e.persist(state)
+		} else {
+			e.removeExecution()
+		}
+	}
+	return state
 }
 
 // execute runs the body; on failure it compensates and returns the first
@@ -332,7 +467,8 @@ func (w *Workflow[I, O]) execute(e *Execution, input I) (O, error) {
 // within the parent execution (same container, event group) and is
 // compensated as a unit when the parent fails.
 func (w *Workflow[I, O]) RunAsStep(parent *Execution, input I) (O, error) {
-	e := &Execution{ctx: parent.ctx, container: parent.container, workflowID: w.ID, transactionID: parent.transactionID, eventGroupID: parent.eventGroupID, hooks: w.hooks}
+	e := &Execution{ctx: parent.ctx, container: parent.container, workflowID: w.ID, transactionID: parent.transactionID, eventGroupID: parent.eventGroupID, hooks: w.hooks,
+		journal: parent.journal, detacher: parent.detacher, rootWorkflowID: parent.rootWorkflowID, rootOptions: parent.rootOptions}
 	out, err := w.execute(e, input)
 	if err != nil {
 		parent.mu.Lock()

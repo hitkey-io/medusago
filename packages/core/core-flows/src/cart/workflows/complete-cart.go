@@ -22,7 +22,7 @@ func boolPtr(b bool) *bool { return &b }
 // CompleteCartWorkflow mirrors completeCartWorkflow. The locking module is
 // not ported (acquire/release lock steps are no-ops) and the workflow
 // execution is not stored.
-var CompleteCartWorkflow = composer.CreateWorkflow(CompleteCartWorkflowID,
+var CompleteCartWorkflow = composer.CreateWorkflowWithOptions(CompleteCartWorkflowID, composer.WorkflowOptions{Store: true, RetentionTime: 60 * 60 * 24 * 3},
 	func(e *composer.Execution, cartID string) (*dal.Record, error) {
 		var orderCart, cartData commonsteps.QueryGraphResult
 		err := composer.Parallelize(
