@@ -131,6 +131,9 @@ import (
 	returnreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons"
 	returnreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons/id_"
 	adminreturns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns"
+	admindraftorders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders"
+	admindraftorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_"
+	admindraftorderconvert "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/convert-to-order"
 	adminorderedits "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits"
 	adminordereditid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_"
 	adminordereditconfirm "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/confirm"
@@ -360,6 +363,9 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/claims", Route: adminclaims.Route},
 		{Path: "/admin/exchanges", Route: adminexchanges.Route},
 		{Path: "/admin/order-edits", Route: adminorderedits.Route},
+		{Path: "/admin/draft-orders", Route: admindraftorders.Route},
+		{Path: "/admin/draft-orders/:id", Route: admindraftorderid.Route},
+		{Path: "/admin/draft-orders/:id/convert-to-order", Route: admindraftorderconvert.Route},
 		{Path: "/admin/order-edits/:id", Route: adminordereditid.Route},
 		{Path: "/admin/order-edits/:id/items", Route: adminordereditems.Route},
 		{Path: "/admin/order-edits/:id/items/item/:item_id", Route: adminordereditemqty.Route},

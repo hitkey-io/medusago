@@ -93,3 +93,11 @@ func SafeHttpURL() *zod.Schema {
 		return u.Scheme == "http" || u.Scheme == "https"
 	}, "URL must use http: or https: scheme")
 }
+
+// BigNumberInput mirrors BigNumberInput.
+func BigNumberInput() *zod.Schema {
+	return zod.Union(zod.Number(), zod.String(), zod.Object(
+		zod.F("value", zod.String()),
+		zod.F("precision", zod.Number()),
+	))
+}

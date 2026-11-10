@@ -807,7 +807,9 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 			if err != nil {
 				return err
 			}
-			if v == nil && p.Kind == "1:1" && !fkHydrated(p) {
+			// the JOINED strategy assigns null to an unmatched to-one
+			// relation (mapJoinedProps)
+			if v == nil && p.Kind == "1:1" && !fkHydrated(p) && !tree.joined {
 				// joined 1:1 without a match and without its foreign key
 				// selected: MikroORM never assigns the property (m:1
 				// relations always fetch their foreign key)

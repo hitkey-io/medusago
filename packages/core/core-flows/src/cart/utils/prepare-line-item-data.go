@@ -64,7 +64,10 @@ func PrepareLineItemData(data PrepareLineItemDataInput) (*dal.Record, error) {
 	li.Set("variant_barcode", pick("variant_barcode", Get(variant, "barcode")))
 	li.Set("variant_title", pick("variant_title", Get(variant, "title")))
 	li.Set("variant_option_values", Get(item, "variant_option_values"))
-	li.Set("is_discountable", pick("is_discountable", Get(product, "discountable")))
+	// undefined upstream (dropped by the JSON step boundary) -> the column default applies
+	if d := pick("is_discountable", Get(product, "discountable")); d != nil {
+		li.Set("is_discountable", d)
+	}
 	li.Set("is_giftcard", Coalesce(Get(product, "is_giftcard"), false))
 	li.Set("requires_shipping", requiresShipping)
 	li.Set("unit_price", data.UnitPrice)

@@ -68,3 +68,87 @@ func (s *OrderModuleService) DeleteOrderExchangeItems(ctx context.Context, ids [
 	_, err := s.Internal("OrderExchangeItem").Delete(ctx, ids)
 	return err
 }
+
+// UpdateOrdersReturning mirrors updateOrders(data[]) and returns the updated
+// orders.
+func (s *OrderModuleService) UpdateOrdersReturning(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	res, err := s.Internal("Order").Update(ctx, toAny(data))
+	if err != nil {
+		return nil, err
+	}
+	if r, ok := res.(*dal.Record); ok {
+		return []*dal.Record{r}, nil
+	}
+	out, _ := res.([]*dal.Record)
+	return out, nil
+}
+
+// DeleteOrders mirrors deleteOrders: addresses, order changes, line items and
+// shipping methods of the orders are hard deleted with them.
+func (s *OrderModuleService) DeleteOrders(ctx context.Context, ids []any) error {
+	return s.InTransaction(ctx, func(m *utilsmodulessdk.MedusaService) error {
+		f := dal.NewRecord()
+		f.Set("id", ids)
+		orders, err := m.Internal("Order").List(ctx, f, utilsmodulessdk.FindConfig{Select: []string{"id", "shipping_address_id", "billing_address_id"}})
+		if err != nil {
+			return err
+		}
+		var addressIDs []any
+		for _, o := range orders {
+			for _, k := range []string{"shipping_address_id", "billing_address_id"} {
+				if v := get(o, k); v != nil && v != "" {
+					addressIDs = append(addressIDs, v)
+				}
+			}
+		}
+		byOrder := dal.NewRecord()
+		byOrder.Set("order_id", ids)
+		changes, err := m.Internal("OrderChange").List(ctx, byOrder, utilsmodulessdk.FindConfig{Select: []string{"id"}})
+		if err != nil {
+			return err
+		}
+		items, err := m.Internal("OrderItem").List(ctx, byOrder, utilsmodulessdk.FindConfig{Select: []string{"id", "item_id"}})
+		if err != nil {
+			return err
+		}
+		shipping, err := m.Internal("OrderShipping").List(ctx, byOrder, utilsmodulessdk.FindConfig{Select: []string{"shipping_method_id"}})
+		if err != nil {
+			return err
+		}
+		if len(addressIDs) > 0 {
+			if _, err := m.Internal("OrderAddress").Delete(ctx, addressIDs); err != nil {
+				return err
+			}
+		}
+		if len(changes) > 0 {
+			var changeIDs []any
+			for _, c := range changes {
+				changeIDs = append(changeIDs, get(c, "id"))
+			}
+			if _, err := m.Internal("OrderChange").Delete(ctx, changeIDs); err != nil {
+				return err
+			}
+		}
+		if _, err := m.Internal("Order").Delete(ctx, ids); err != nil {
+			return err
+		}
+		var lineItemIDs, methodIDs []any
+		for _, it := range items {
+			lineItemIDs = append(lineItemIDs, get(it, "item_id"))
+		}
+		for _, sm := range shipping {
+			methodIDs = append(methodIDs, get(sm, "shipping_method_id"))
+		}
+		if len(lineItemIDs) > 0 {
+			if _, err := m.Internal("OrderLineItem").Delete(ctx, lineItemIDs); err != nil {
+				return err
+			}
+		}
+		if len(methodIDs) > 0 {
+			if _, err := m.Internal("OrderShippingMethod").Delete(ctx, methodIDs); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}

@@ -618,7 +618,7 @@ func (r *Repository) UpdateWith(ctx context.Context, opts FindOptions, dataFor f
 		if data == nil {
 			continue
 		}
-		if err := r.applyUpdate(ctx, inst, data); err != nil {
+		if err := r.applyUpdate(ctx, inst, data, idm); err != nil {
 			return nil, err
 		}
 	}
@@ -627,8 +627,10 @@ func (r *Repository) UpdateWith(ctx context.Context, opts FindOptions, dataFor f
 
 // applyUpdate assigns data to a loaded entity: scalar columns, then the
 // one-to-many collections given in data.
-func (r *Repository) applyUpdate(ctx context.Context, inst *instance, data *Record) error {
-	data, err := r.createNestedToOne(ctx, inst.entity, data, identityMap{})
+// Nested objects created on the way join the identity map, so the updated
+// entity serializes them fully (MikroORM assigns the new entity instance).
+func (r *Repository) applyUpdate(ctx context.Context, inst *instance, data *Record, idm identityMap) error {
+	data, err := r.createNestedToOne(ctx, inst.entity, data, idm)
 	if err != nil {
 		return err
 	}
@@ -716,7 +718,7 @@ func (r *Repository) Upsert(ctx context.Context, data []*Record) ([]*Record, err
 	for _, d := range data {
 		v, _ := d.Get(pk)
 		if inst, ok := existing[fmt.Sprint(v)]; ok && v != nil {
-			if err := r.applyUpdate(ctx, inst, d); err != nil {
+			if err := r.applyUpdate(ctx, inst, d, idm); err != nil {
 				return nil, err
 			}
 			updated = append(updated, inst)
