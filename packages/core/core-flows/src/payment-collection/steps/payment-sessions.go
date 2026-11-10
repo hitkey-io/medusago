@@ -9,8 +9,8 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
-	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 )
 

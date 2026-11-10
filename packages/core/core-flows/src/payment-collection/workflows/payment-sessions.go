@@ -1,8 +1,8 @@
 package workflows
 
 import (
-	"github.com/hitkey-io/medusago/packages/core/core-flows/src/payment-collection/steps"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
+	"github.com/hitkey-io/medusago/packages/core/core-flows/src/payment-collection/steps"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"

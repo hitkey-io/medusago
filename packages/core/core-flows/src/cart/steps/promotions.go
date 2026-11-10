@@ -6,8 +6,8 @@ import (
 	. "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/utils"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
-	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 	promotionservices "github.com/hitkey-io/medusago/packages/modules/promotion/src/services"
 )

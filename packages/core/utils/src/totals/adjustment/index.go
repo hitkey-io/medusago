@@ -5,7 +5,7 @@ import "github.com/hitkey-io/medusago/packages/core/utils/src/totals"
 
 // Result is the return value of calculateAdjustmentTotal.
 type Result struct {
-	AdjustmentsTotal, AdjustmentsSubtotal, AdjustmentsTaxTotal                *totals.BN
+	AdjustmentsTotal, AdjustmentsSubtotal, AdjustmentsTaxTotal              *totals.BN
 	AdjustmentPerItem, AdjustmentSubtotalPerItem, AdjustmentTaxTotalPerItem *totals.BN
 }
 
