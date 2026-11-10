@@ -89,7 +89,7 @@ var requestItemReturnValidationStep = composer.CreateStep("request-item-return-v
 		if err := throwIfIsCancelled(in.OrderReturn, "Return"); err != nil {
 			return fail(err)
 		}
-		if err := throwIfOrderChangeIsNotActive(in.OrderChange); err != nil {
+		if err := ThrowIfOrderChangeIsNotActive(in.OrderChange); err != nil {
 			return fail(err)
 		}
 		if err := throwIfItemsDoesNotExistsInOrder(in.Order, in.Items); err != nil {
@@ -144,7 +144,7 @@ var RequestItemReturnWorkflow = composer.CreateWorkflow("request-item-return",
 			a.Set("details", d)
 			actions = append(actions, a)
 		}
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
 			return nil, err
 		}
 		args := dal.NewRecord()
@@ -172,7 +172,7 @@ func changeValidationStep(name string) *composer.Step[changeValidationInput, any
 			if err := throwIfIsCancelled(in.OrderReturn, "Return"); err != nil {
 				return composer.StepResponse[any]{}, err
 			}
-			if err := throwIfOrderChangeIsNotActive(in.OrderChange); err != nil {
+			if err := ThrowIfOrderChangeIsNotActive(in.OrderChange); err != nil {
 				return composer.StepResponse[any]{}, err
 			}
 			return composer.NewStepResponse[any](nil), nil
@@ -228,7 +228,7 @@ var CreateReturnShippingMethodWorkflow = composer.CreateWorkflow("create-return-
 			return nil, err
 		}
 		customPrice := g(in, "custom_amount")
-		method := prepareShippingMethod("return_id", option, orderChange, orderReturn, in, customPrice)
+		method := PrepareShippingMethod("return_id", option, orderChange, orderReturn, in, customPrice)
 		created, err := ordersteps.CreateOrderShippingMethodsStep.Run(e, []*dal.Record{method})
 		if err != nil {
 			return nil, err
@@ -253,7 +253,7 @@ var CreateReturnShippingMethodWorkflow = composer.CreateWorkflow("create-return-
 		a.Set("order_id", g(order, "id"))
 		a.Set("return_id", g(orderReturn, "id"))
 		setIfPresent(a, in, "claim_id", "exchange_id")
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, []*dal.Record{a}); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, []*dal.Record{a}); err != nil {
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, orderIDString(order))
@@ -470,7 +470,7 @@ var receiveItemReturnRequestValidationStep = composer.CreateStep("receive-item-r
 		if err := throwIfIsCancelled(in.OrderReturn, "Return"); err != nil {
 			return fail(err)
 		}
-		if err := throwIfOrderChangeIsNotActive(in.OrderChange); err != nil {
+		if err := ThrowIfOrderChangeIsNotActive(in.OrderChange); err != nil {
 			return fail(err)
 		}
 		if err := throwIfItemsDoesNotExistsInReturn(in.OrderReturn, in.Items); err != nil {
@@ -514,7 +514,7 @@ var ReceiveItemReturnRequestWorkflow = composer.CreateWorkflow("receive-item-ret
 			a.Set("details", d)
 			actions = append(actions, a)
 		}
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, orderIDString(order))

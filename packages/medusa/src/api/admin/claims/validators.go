@@ -67,3 +67,21 @@ var AdminPostClaimItemsReqSchema = zod.Object(
 		zod.F("metadata", metadata().Nullish()),
 	))),
 )
+
+// AdminPostCancelClaimReqSchema mirrors AdminPostCancelClaimReqSchema.
+var AdminPostCancelClaimReqSchema = zod.Object(zod.F("no_notification", zod.Boolean().Optional()))
+
+// AdminPostClaimsShippingActionReqSchema mirrors AdminPostClaimsShippingActionReqSchema.
+var AdminPostClaimsShippingActionReqSchema = zod.Object(
+	zod.F("custom_amount", zod.Number().Nullish().Optional()),
+	zod.F("internal_note", zod.String().Nullish().Optional()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish().Optional()),
+)
+
+// AdminPostClaimsRequestItemsActionReqSchema mirrors AdminPostClaimsRequestItemsActionReqSchema.
+var AdminPostClaimsRequestItemsActionReqSchema = zod.Object(
+	zod.F("quantity", zod.Number().Optional()),
+	zod.F("internal_note", zod.String().Nullish().Optional()),
+	zod.F("reason_id", zod.String().Nullish()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish().Optional()),
+)

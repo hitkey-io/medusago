@@ -104,3 +104,36 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 
 // Route is route.ts.
 var Route = medusahttp.Route{GET: GET, POST: POST}
+
+// RespondDraftPreview writes { draft_order_preview }.
+func RespondDraftPreview(res *medusahttp.MedusaResponse, preview *dal.Record) error {
+	out := dal.NewRecord()
+	out.Set("draft_order_preview", preview)
+	return res.JSON(out)
+}
+
+// BodyRecords returns the records of a validated body array field.
+func BodyRecords(body *dal.Record, key string) []*dal.Record {
+	v, _ := body.Get(key)
+	list, _ := v.([]any)
+	out := make([]*dal.Record, 0, len(list))
+	for _, x := range list {
+		if r, ok := x.(*dal.Record); ok {
+			out = append(out, r)
+		}
+	}
+	return out
+}
+
+// BodyStrings returns the strings of a validated body array field.
+func BodyStrings(body *dal.Record, key string) []string {
+	v, _ := body.Get(key)
+	list, _ := v.([]any)
+	out := make([]string, 0, len(list))
+	for _, x := range list {
+		if s, ok := x.(string); ok {
+			out = append(out, s)
+		}
+	}
+	return out
+}

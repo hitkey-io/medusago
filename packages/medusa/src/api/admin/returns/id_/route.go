@@ -2,11 +2,14 @@
 package id_
 
 import (
+	"github.com/hitkey-io/medusago/packages/core/core-flows/src/order/workflows"
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
+	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns"
 )
 
 // GET mirrors GET /admin/returns/:id.
@@ -32,5 +35,16 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	return res.JSON(out)
 }
 
+// POST mirrors POST /admin/returns/:id.
+func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+	in := orders.BodyCopy(req)
+	in.Set("return_id", req.Params["id"])
+	preview, err := workflows.UpdateReturnWorkflow.Run(req.Ctx(), req.Scope, in)
+	if err != nil {
+		return err
+	}
+	return returns.RespondPreview(req, res, preview)
+}
+
 // Route is route.ts.
-var Route = medusahttp.Route{GET: GET}
+var Route = medusahttp.Route{GET: GET, POST: POST}

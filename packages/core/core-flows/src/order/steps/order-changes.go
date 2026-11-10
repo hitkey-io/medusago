@@ -85,3 +85,16 @@ var ConfirmOrderChangesStep = composer.CreateStep("confirm-order-changes",
 		}
 		return nil
 	})
+
+// DeclineOrderChangeStep mirrors declineOrderChangeStep (the
+// updateOrderChanges compensation is not ported yet).
+var DeclineOrderChangeStep = composer.CreateStep("decline-order-change",
+	func(ctx composer.StepExecutionContext, data *dal.Record) (composer.StepResponse[any], error) {
+		svc, _ := ctx.Container.Resolve(utilsmodulessdk.ORDER).(interface {
+			DeclineOrderChange(ctx context.Context, data []any) error
+		})
+		if err := svc.DeclineOrderChange(ctx.Context, []any{data}); err != nil {
+			return composer.StepResponse[any]{}, err
+		}
+		return composer.NewStepResponse[any](nil), nil
+	}, nil)

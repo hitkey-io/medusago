@@ -11,11 +11,17 @@ import (
 	campaignpromotions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/campaigns/id_/promotions"
 	adminclaims "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims"
 	adminclaimid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_"
+	adminclaimcancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/cancel"
 	adminclaimitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/claim-items"
+	adminclaimitemaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/claim-items/action_id_"
 	adminclaiminbounditems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/inbound/items"
+	adminclaiminbounditemaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/inbound/items/action_id_"
 	adminclaiminboundshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/inbound/shipping-method"
+	adminclaiminboundshippingaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/inbound/shipping-method/action_id_"
 	adminclaimoutbounditems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/outbound/items"
+	adminclaimoutbounditemaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/outbound/items/action_id_"
 	adminclaimoutboundshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/outbound/shipping-method"
+	adminclaimoutboundshippingaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/outbound/shipping-method/action_id_"
 	adminclaimrequest "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/claims/id_/request"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections"
 	collectionid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/collections/id_"
@@ -33,12 +39,27 @@ import (
 	admindraftorders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders"
 	admindraftorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_"
 	admindraftorderconvert "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/convert-to-order"
+	admindraftorderedit "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/edit"
+	admindraftordereditconfirm "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/edit/confirm"
+	admindraftordereditems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/edit/items"
+	admindraftordereditemaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/edit/items/action_id_"
+	admindraftordereditemitem "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/edit/items/item/item_id_"
+	admindraftordereditpromotions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/edit/promotions"
+	admindraftordereditrequest "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/edit/request"
+	admindraftordereditshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/edit/shipping-methods"
+	admindraftordereditshippingaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/edit/shipping-methods/action_id_"
+	admindraftordereditshippingmethod "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders/id_/edit/shipping-methods/method/method_id_"
 	adminexchanges "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges"
 	adminexchangeid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges/id_"
+	adminexchangecancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges/id_/cancel"
 	adminexchangeinbounditems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges/id_/inbound/items"
+	adminexchangeinbounditemaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges/id_/inbound/items/action_id_"
 	adminexchangeinboundshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges/id_/inbound/shipping-method"
+	adminexchangeinboundshippingaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges/id_/inbound/shipping-method/action_id_"
 	adminexchangeoutbounditems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges/id_/outbound/items"
+	adminexchangeoutbounditemaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges/id_/outbound/items/action_id_"
 	adminexchangeoutboundshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges/id_/outbound/shipping-method"
+	adminexchangeoutboundshippingaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges/id_/outbound/shipping-method/action_id_"
 	adminexchangerequest "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/exchanges/id_/request"
 	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/feature-flags"
 	fulfillmentproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/fulfillment-providers"
@@ -65,9 +86,11 @@ import (
 	adminordereditid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_"
 	adminordereditconfirm "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/confirm"
 	adminordereditems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/items"
+	adminorderedititemaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/items/action_id_"
 	adminordereditemqty "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/items/item/item_id_"
 	adminordereditrequest "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/request"
 	adminordereditshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/shipping-method"
+	adminordereditshippingaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/shipping-method/action_id_"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
 	adminorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_"
 	adminorderarchive "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/archive"
@@ -83,6 +106,9 @@ import (
 	adminorderauthorize "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/payment-sessions/authorize"
 	adminorderpreview "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/preview"
 	adminordershippingoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/shipping-options"
+	adminordertransfer "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/transfer"
+	adminordertransfercancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/transfer/cancel"
+	adminordertransferguest "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/transfer/guest"
 	adminpcs "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payment-collections"
 	adminpcid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payment-collections/id_"
 	adminpcpaid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payment-collections/id_/mark-as-paid"
@@ -142,12 +168,18 @@ import (
 	returnreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons/id_"
 	adminreturns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns"
 	adminreturnid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_"
+	adminreturncancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/cancel"
+	adminreturndismissitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/dismiss-items"
+	adminreturndismissaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/dismiss-items/action_id_"
 	adminreturnreceive "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/receive"
 	adminreturnreceiveitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/receive-items"
+	adminreturnreceiveaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/receive-items/action_id_"
 	adminreturnreceiveconfirm "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/receive/confirm"
 	adminreturnrequest "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/request"
 	adminreturnrequestitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/request-items"
+	adminreturnrequestaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/request-items/action_id_"
 	adminreturnshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/shipping-method"
+	adminreturnshippingaction "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/shipping-method/action_id_"
 	saleschannels "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels"
 	saleschannelid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_"
 	saleschannelproducts "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/sales-channels/id_/products"
@@ -205,6 +237,10 @@ import (
 	storecustomeraddress "github.com/hitkey-io/medusago/packages/medusa/src/api/store/customers/me/addresses/address_id_"
 	storeorders "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders"
 	storeorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_"
+	storeordertransferaccept "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_/transfer/accept"
+	storeordertransfercancel "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_/transfer/cancel"
+	storeordertransferdecline "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_/transfer/decline"
+	storeordertransferrequest "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_/transfer/request"
 	storepaymentcollections "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-collections"
 	storepaymentsessions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-collections/id_/payment-sessions"
 	storepaymentproviders "github.com/hitkey-io/medusago/packages/medusa/src/api/store/payment-providers"
@@ -366,10 +402,22 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/draft-orders", Route: admindraftorders.Route},
 		{Path: "/admin/draft-orders/:id", Route: admindraftorderid.Route},
 		{Path: "/admin/draft-orders/:id/convert-to-order", Route: admindraftorderconvert.Route},
+		{Path: "/admin/draft-orders/:id/edit", Route: admindraftorderedit.Route},
+		{Path: "/admin/draft-orders/:id/edit/confirm", Route: admindraftordereditconfirm.Route},
+		{Path: "/admin/draft-orders/:id/edit/request", Route: admindraftordereditrequest.Route},
+		{Path: "/admin/draft-orders/:id/edit/promotions", Route: admindraftordereditpromotions.Route},
+		{Path: "/admin/draft-orders/:id/edit/shipping-methods", Route: admindraftordereditshipping.Route},
+		{Path: "/admin/draft-orders/:id/edit/shipping-methods/:action_id", Route: admindraftordereditshippingaction.Route},
+		{Path: "/admin/draft-orders/:id/edit/shipping-methods/method/:method_id", Route: admindraftordereditshippingmethod.Route},
+		{Path: "/admin/draft-orders/:id/edit/items", Route: admindraftordereditems.Route},
+		{Path: "/admin/draft-orders/:id/edit/items/:action_id", Route: admindraftordereditemaction.Route},
+		{Path: "/admin/draft-orders/:id/edit/items/item/:item_id", Route: admindraftordereditemitem.Route},
 		{Path: "/admin/order-edits/:id", Route: adminordereditid.Route},
 		{Path: "/admin/order-edits/:id/items", Route: adminordereditems.Route},
 		{Path: "/admin/order-edits/:id/items/item/:item_id", Route: adminordereditemqty.Route},
 		{Path: "/admin/order-edits/:id/shipping-method", Route: adminordereditshipping.Route},
+		{Path: "/admin/order-edits/:id/shipping-method/:action_id", Route: adminordereditshippingaction.Route},
+		{Path: "/admin/order-edits/:id/items/:action_id", Route: adminorderedititemaction.Route},
 		{Path: "/admin/order-edits/:id/request", Route: adminordereditrequest.Route},
 		{Path: "/admin/order-edits/:id/confirm", Route: adminordereditconfirm.Route},
 		{Path: "/admin/exchanges/:id", Route: adminexchangeid.Route},
@@ -385,6 +433,17 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/claims/:id/outbound/items", Route: adminclaimoutbounditems.Route},
 		{Path: "/admin/claims/:id/outbound/shipping-method", Route: adminclaimoutboundshipping.Route},
 		{Path: "/admin/claims/:id/request", Route: adminclaimrequest.Route},
+		{Path: "/admin/claims/:id/cancel", Route: adminclaimcancel.Route},
+		{Path: "/admin/claims/:id/claim-items/:action_id", Route: adminclaimitemaction.Route},
+		{Path: "/admin/claims/:id/inbound/items/:action_id", Route: adminclaiminbounditemaction.Route},
+		{Path: "/admin/claims/:id/inbound/shipping-method/:action_id", Route: adminclaiminboundshippingaction.Route},
+		{Path: "/admin/claims/:id/outbound/items/:action_id", Route: adminclaimoutbounditemaction.Route},
+		{Path: "/admin/claims/:id/outbound/shipping-method/:action_id", Route: adminclaimoutboundshippingaction.Route},
+		{Path: "/admin/exchanges/:id/cancel", Route: adminexchangecancel.Route},
+		{Path: "/admin/exchanges/:id/inbound/items/:action_id", Route: adminexchangeinbounditemaction.Route},
+		{Path: "/admin/exchanges/:id/inbound/shipping-method/:action_id", Route: adminexchangeinboundshippingaction.Route},
+		{Path: "/admin/exchanges/:id/outbound/items/:action_id", Route: adminexchangeoutbounditemaction.Route},
+		{Path: "/admin/exchanges/:id/outbound/shipping-method/:action_id", Route: adminexchangeoutboundshippingaction.Route},
 		{Path: "/admin/returns/:id", Route: adminreturnid.Route},
 		{Path: "/admin/returns/:id/request-items", Route: adminreturnrequestitems.Route},
 		{Path: "/admin/returns/:id/shipping-method", Route: adminreturnshipping.Route},
@@ -392,6 +451,12 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/returns/:id/receive", Route: adminreturnreceive.Route},
 		{Path: "/admin/returns/:id/receive/confirm", Route: adminreturnreceiveconfirm.Route},
 		{Path: "/admin/returns/:id/receive-items", Route: adminreturnreceiveitems.Route},
+		{Path: "/admin/returns/:id/cancel", Route: adminreturncancel.Route},
+		{Path: "/admin/returns/:id/dismiss-items", Route: adminreturndismissitems.Route},
+		{Path: "/admin/returns/:id/dismiss-items/:action_id", Route: adminreturndismissaction.Route},
+		{Path: "/admin/returns/:id/receive-items/:action_id", Route: adminreturnreceiveaction.Route},
+		{Path: "/admin/returns/:id/request-items/:action_id", Route: adminreturnrequestaction.Route},
+		{Path: "/admin/returns/:id/shipping-method/:action_id", Route: adminreturnshippingaction.Route},
 		{Path: "/admin/regions", Route: regions.Route},
 		{Path: "/admin/regions/:id", Route: regionid.Route},
 		{Path: "/admin/sales-channels", Route: saleschannels.Route},
@@ -412,6 +477,13 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/store/carts/:id/complete", Route: storecartcomplete.Route},
 		{Path: "/store/orders", Route: storeorders.Route},
 		{Path: "/store/orders/:id", Route: storeorderid.Route},
+		{Path: "/admin/orders/:id/transfer", Route: adminordertransfer.Route},
+		{Path: "/admin/orders/:id/transfer/guest", Route: adminordertransferguest.Route},
+		{Path: "/admin/orders/:id/transfer/cancel", Route: adminordertransfercancel.Route},
+		{Path: "/store/orders/:id/transfer/request", Route: storeordertransferrequest.Route},
+		{Path: "/store/orders/:id/transfer/accept", Route: storeordertransferaccept.Route},
+		{Path: "/store/orders/:id/transfer/cancel", Route: storeordertransfercancel.Route},
+		{Path: "/store/orders/:id/transfer/decline", Route: storeordertransferdecline.Route},
 		{Path: "/store/customers", Route: storecustomers.Route},
 		{Path: "/store/customers/me", Route: storecustomerme.Route},
 		{Path: "/store/customers/me/addresses", Route: storecustomeraddresses.Route},

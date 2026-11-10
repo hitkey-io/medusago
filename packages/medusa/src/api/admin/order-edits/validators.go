@@ -46,3 +46,18 @@ var AdminPostOrderEditsUpdateItemQuantityReqSchema = zod.Object(
 	zod.F("internal_note", zod.String().Nullish().Optional()),
 	zod.F("metadata", metadata().Nullish()),
 )
+
+// AdminPostOrderEditsShippingActionReqSchema mirrors AdminPostOrderEditsShippingActionReqSchema.
+var AdminPostOrderEditsShippingActionReqSchema = zod.Object(
+	zod.F("custom_amount", zod.Number().Nullish().Optional()),
+	zod.F("internal_note", zod.String().Nullish().Optional()),
+	zod.F("metadata", metadata().Nullish().Optional()),
+)
+
+// AdminPostOrderEditsItemsActionReqSchema mirrors AdminPostOrderEditsItemsActionReqSchema.
+var AdminPostOrderEditsItemsActionReqSchema = zod.Object(
+	zod.F("quantity", zod.Number().Optional()),
+	zod.F("unit_price", zod.Number().Nullish()),
+	zod.F("compare_at_unit_price", zod.Number().Nullish()),
+	zod.F("internal_note", zod.String().Nullish().Optional()),
+)

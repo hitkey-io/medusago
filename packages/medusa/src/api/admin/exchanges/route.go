@@ -143,3 +143,21 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 
 // Route is route.ts.
 var Route = medusahttp.Route{GET: GET, POST: POST}
+
+// RespondReturnDetails writes { order_preview, return } with the return
+// (defaultAdminDetailsReturnFields) of returnID; a nil id leaves return out
+// (refetchEntity found nothing upstream).
+func RespondReturnDetails(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, preview *dal.Record, returnID any) error {
+	out := dal.NewRecord()
+	out.Set("order_preview", preview)
+	if returnID != nil {
+		ret, err := QueryReturnDetails(req, returnID)
+		if err != nil {
+			return err
+		}
+		if ret != nil {
+			out.Set("return", ret)
+		}
+	}
+	return res.JSON(out)
+}

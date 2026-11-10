@@ -4,6 +4,7 @@ package receive
 import (
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/order/workflows"
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns"
 )
@@ -19,5 +20,17 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	return returns.RespondOrderReturn(req, res, change)
 }
 
-// Route is route.ts (DELETE needs cancelReturnReceiveWorkflow, not ported yet).
-var Route = medusahttp.Route{POST: POST}
+// DELETE mirrors DELETE /admin/returns/:id/receive.
+func DELETE(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+	if _, err := workflows.CancelReturnReceiveWorkflow.Run(req.Ctx(), req.Scope, any(req.Params["id"])); err != nil {
+		return err
+	}
+	out := dal.NewRecord()
+	out.Set("id", req.Params["id"])
+	out.Set("object", "return")
+	out.Set("deleted", true)
+	return res.Status(200).JSON(out)
+}
+
+// Route is route.ts.
+var Route = medusahttp.Route{POST: POST, DELETE: DELETE}

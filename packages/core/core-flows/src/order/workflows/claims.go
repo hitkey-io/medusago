@@ -173,7 +173,7 @@ func claimChangeValidationStep(name string) *composer.Step[changeValidationInput
 			if err := throwIfIsCancelled(in.OrderReturn, "Claim"); err != nil {
 				return composer.StepResponse[any]{}, err
 			}
-			if err := throwIfOrderChangeIsNotActive(in.OrderChange); err != nil {
+			if err := ThrowIfOrderChangeIsNotActive(in.OrderChange); err != nil {
 				return composer.StepResponse[any]{}, err
 			}
 			return composer.NewStepResponse[any](nil), nil
@@ -278,7 +278,7 @@ var OrderClaimItemWorkflow = composer.CreateWorkflow("claim-item",
 			a.Set("details", d)
 			actions = append(actions, a)
 		}
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
 			return nil, err
 		}
 		if err := computeAdjustments(e, order, orderChange); err != nil {
@@ -341,7 +341,7 @@ var orderClaimRequestItemReturnValidationStep = composer.CreateStep("order-claim
 		if err := throwIfIsCancelled(in.OrderReturn, "Return"); err != nil {
 			return fail(err)
 		}
-		if err := throwIfOrderChangeIsNotActive(in.OrderChange); err != nil {
+		if err := ThrowIfOrderChangeIsNotActive(in.OrderChange); err != nil {
 			return fail(err)
 		}
 		if err := throwIfItemsDoesNotExistsInOrder(in.Order, in.Items); err != nil {
@@ -455,7 +455,7 @@ var OrderClaimRequestItemReturnWorkflow = composer.CreateWorkflow("claim-request
 			a.Set("details", d)
 			actions = append(actions, a)
 		}
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
 			return nil, err
 		}
 		if err := computeAdjustments(e, order, orderChange); err != nil {
@@ -521,7 +521,7 @@ var OrderClaimAddNewItemWorkflow = composer.CreateWorkflow("claim-add-new-item",
 			a.Set("details", d)
 			actions = append(actions, a)
 		}
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
 			return nil, err
 		}
 		if err := computeAdjustments(e, order, orderChange); err != nil {
@@ -653,7 +653,7 @@ var CreateClaimShippingMethodWorkflow = composer.CreateWorkflow("create-claim-sh
 			return nil, err
 		}
 		customPrice := g(in, "custom_amount")
-		method := prepareShippingMethod("claim_id", option, orderChange, claim, in, customPrice)
+		method := PrepareShippingMethod("claim_id", option, orderChange, claim, in, customPrice)
 		created, err := ordersteps.CreateOrderShippingMethodsStep.Run(e, []*dal.Record{method})
 		if err != nil {
 			return nil, err
@@ -678,7 +678,7 @@ var CreateClaimShippingMethodWorkflow = composer.CreateWorkflow("create-claim-sh
 		a.Set("order_id", g(order, "id"))
 		setIfPresent(a, in, "return_id")
 		a.Set("claim_id", g(claim, "id"))
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, []*dal.Record{a}); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, []*dal.Record{a}); err != nil {
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(g(order, "id")))

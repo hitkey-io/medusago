@@ -85,6 +85,8 @@ var (
 var (
 	apiTokenRe      = regexp.MustCompile(`^(pk|sk)_[0-9a-f]{64}$`)
 	redactedTokenRe = regexp.MustCompile(`^(pk|sk)_[0-9a-f]{3}\*\*\*[0-9a-f]{3}$`)
+	// crypto.randomUUID() (order transfer tokens)
+	uuidRe = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`)
 )
 
 // isGenerated reports whether a string is an id or a timestamp produced
@@ -95,6 +97,9 @@ func isGenerated(s string) (bool, string) {
 	}
 	if apiTokenRe.MatchString(s) {
 		return !strings.Contains(seedText, "'"+s+"'"), "token"
+	}
+	if uuidRe.MatchString(s) {
+		return !strings.Contains(seedText, "'"+s+"'"), "uuid"
 	}
 	if redactedTokenRe.MatchString(s) {
 		return !strings.Contains(seedText, "'"+s+"'"), "redacted"

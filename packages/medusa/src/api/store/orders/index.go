@@ -34,7 +34,36 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 		httputils.ValidateAndTransformQuery(StoreGetOrdersParams, ListConfig),
 	)},
 	{Methods: []string{"GET"}, Matcher: "/store/orders/:id", Middlewares: mw(httputils.ValidateAndTransformQuery(StoreGetOrderParams, RetrieveConfig))},
+	{Methods: []string{"POST"}, Matcher: "/store/orders/:id/transfer/request", Middlewares: mw(
+		middlewares.Authenticate([]string{"customer"}, []string{"session", "bearer"}, medusahttp.AuthenticateOptions{}),
+		httputils.ValidateAndTransformBody(httputils.Schema(StoreRequestOrderTransfer)),
+		httputils.ValidateAndTransformQuery(StoreGetOrderParams, RetrieveConfig),
+	)},
+	{Methods: []string{"POST"}, Matcher: "/store/orders/:id/transfer/cancel", Middlewares: mw(
+		middlewares.Authenticate([]string{"customer"}, []string{"session", "bearer"}, medusahttp.AuthenticateOptions{}),
+		httputils.ValidateAndTransformQuery(StoreGetOrderParams, RetrieveConfig),
+	)},
+	{Methods: []string{"POST"}, Matcher: "/store/orders/:id/transfer/accept", Middlewares: mw(
+		httputils.ValidateAndTransformBody(httputils.Schema(StoreAcceptOrderTransfer)),
+		httputils.ValidateAndTransformQuery(StoreGetOrderParams, RetrieveConfig),
+	)},
+	{Methods: []string{"POST"}, Matcher: "/store/orders/:id/transfer/decline", Middlewares: mw(
+		httputils.ValidateAndTransformBody(httputils.Schema(StoreDeclineOrderTransferRequest)),
+		httputils.ValidateAndTransformQuery(StoreGetOrderParams, RetrieveConfig),
+	)},
 }
+
+// StoreAcceptOrderTransfer mirrors StoreAcceptOrderTransfer.
+var StoreAcceptOrderTransfer = zod.Object(zod.F("token", zod.String().Min(1)))
+
+// StoreRequestOrderTransfer mirrors StoreRequestOrderTransfer.
+var StoreRequestOrderTransfer = zod.Object(
+	zod.F("description", zod.String().Optional()),
+	zod.F("update_order_email", zod.Boolean().Optional()),
+)
+
+// StoreDeclineOrderTransferRequest mirrors StoreDeclineOrderTransferRequest.
+var StoreDeclineOrderTransferRequest = zod.Object(zod.F("token", zod.String().Min(1)))
 
 // GET mirrors GET /store/orders.
 func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {

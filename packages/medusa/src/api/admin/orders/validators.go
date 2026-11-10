@@ -180,3 +180,18 @@ var AdminAuthorizeOrderPaymentSession = zod.Object(zod.F("payment_session_id", z
 
 // AdminGetOrderShippingOptionList mirrors AdminGetOrderShippingOptionList.
 var AdminGetOrderShippingOptionList = zod.Object()
+
+// AdminTransferOrder mirrors AdminTransferOrder.
+var AdminTransferOrder = zod.Object(
+	zod.F("customer_id", zod.String()),
+	zod.F("description", zod.String().Optional()),
+	zod.F("internal_note", zod.String().Optional()),
+	zod.F("update_order_email", zod.Boolean().Optional()),
+)
+
+// AdminTransferOrderToGuest mirrors AdminTransferOrderToGuest.
+var AdminTransferOrderToGuest = zod.Object(
+	zod.F("email", zod.String().Email()),
+	zod.F("description", zod.String().Optional()),
+	zod.F("internal_note", zod.String().Optional()),
+)

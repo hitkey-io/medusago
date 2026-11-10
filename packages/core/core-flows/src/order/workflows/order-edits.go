@@ -77,7 +77,7 @@ func editValidationStep(name string) *composer.Step[changeValidationInput, any] 
 			if err := throwIfIsCancelled(in.Order, "Order"); err != nil {
 				return composer.StepResponse[any]{}, err
 			}
-			if err := throwIfOrderChangeIsNotActive(in.OrderChange); err != nil {
+			if err := ThrowIfOrderChangeIsNotActive(in.OrderChange); err != nil {
 				return composer.StepResponse[any]{}, err
 			}
 			return composer.NewStepResponse[any](nil), nil
@@ -168,7 +168,7 @@ var OrderEditAddNewItemWorkflow = composer.CreateWorkflow("order-edit-add-new-it
 			a.Set("details", d)
 			actions = append(actions, a)
 		}
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
 			return nil, err
 		}
 		if err := computeAdjustments(e, order, orderChange); err != nil {
@@ -217,7 +217,7 @@ var OrderEditUpdateItemQuantityWorkflow = composer.CreateWorkflow("order-edit-up
 			a.Set("details", d)
 			actions = append(actions, a)
 		}
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
 			return nil, err
 		}
 		if err := computeAdjustments(e, order, orderChange); err != nil {
@@ -271,7 +271,7 @@ var CreateOrderEditShippingMethodWorkflow = composer.CreateWorkflow("create-orde
 		related := dal.NewRecord()
 		related.Set("order_id", g(order, "id"))
 		customPrice := g(in, "custom_amount")
-		method := prepareShippingMethod("", option, orderChange, related, in, customPrice)
+		method := PrepareShippingMethod("", option, orderChange, related, in, customPrice)
 		created, err := ordersteps.CreateOrderShippingMethodsStep.Run(e, []*dal.Record{method})
 		if err != nil {
 			return nil, err
@@ -294,7 +294,7 @@ var CreateOrderEditShippingMethodWorkflow = composer.CreateWorkflow("create-orde
 		a.Set("reference_id", g(created[0], "id"))
 		a.Set("amount", price)
 		a.Set("order_id", g(order, "id"))
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, []*dal.Record{a}); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, []*dal.Record{a}); err != nil {
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(g(order, "id")))

@@ -84,3 +84,30 @@ var AdminPostReturnsRequestItemsReqSchema = zod.Object(
 var AdminPostReturnsConfirmRequestReqSchema = zod.Object(
 	zod.F("no_notification", zod.Boolean().Optional()),
 )
+
+// AdminPostReturnsReturnReqSchema mirrors AdminPostReturnsReturnReqSchema.
+var AdminPostReturnsReturnReqSchema = zod.Object(
+	zod.F("location_id", zod.String().Optional()),
+	zod.F("no_notification", zod.Boolean().Optional()),
+	zod.F("metadata", metadata().Nullish()),
+)
+
+// AdminPostCancelReturnReqSchema mirrors AdminPostCancelReturnReqSchema.
+var AdminPostCancelReturnReqSchema = zod.Object(
+	zod.F("no_notification", zod.Boolean().Optional()),
+)
+
+// AdminPostReturnsShippingActionReqSchema mirrors AdminPostReturnsShippingActionReqSchema.
+var AdminPostReturnsShippingActionReqSchema = zod.Object(
+	zod.F("custom_amount", zod.Number().Nullish().Optional()),
+	zod.F("internal_note", zod.String().Nullish().Optional()),
+	zod.F("metadata", metadata().Nullish().Optional()),
+)
+
+// AdminPostReturnsRequestItemsActionReqSchema mirrors AdminPostReturnsRequestItemsActionReqSchema.
+var AdminPostReturnsRequestItemsActionReqSchema = zod.Object(
+	zod.F("quantity", zod.Number().Optional()),
+	zod.F("internal_note", zod.String().Nullish().Optional()),
+	zod.F("reason_id", zod.String().Nullish().Optional()),
+	zod.F("metadata", metadata().Nullish().Optional()),
+)

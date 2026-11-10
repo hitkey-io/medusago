@@ -137,3 +137,9 @@ var ListOrderChangeActionsByTypeStep = composer.CreateStep("list-order-change-ac
 
 // DeleteOrderChangeActionsStep mirrors deleteOrderChangeActionsStep.
 var DeleteOrderChangeActionsStep = softDeleteStep("delete-order-change-actions", "OrderChangeAction")
+
+// UpdateOrderChangeActionsStep mirrors updateOrderChangeActionsStep.
+var UpdateOrderChangeActionsStep = updateEntitiesStep("update-order-change-actions", "OrderChangeAction", "OrderChangeActions")
+
+// UpdateOrderShippingMethodsStep mirrors updateOrderShippingMethodsStep.
+var UpdateOrderShippingMethodsStep = updateEntitiesStep("update-order-shopping-methods", "OrderShippingMethod", "OrderShippingMethods")

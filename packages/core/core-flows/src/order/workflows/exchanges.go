@@ -23,7 +23,7 @@ func exchangeChangeValidationStep(name string) *composer.Step[changeValidationIn
 			if err := throwIfIsCancelled(in.OrderReturn, "Exchange"); err != nil {
 				return composer.StepResponse[any]{}, err
 			}
-			if err := throwIfOrderChangeIsNotActive(in.OrderChange); err != nil {
+			if err := ThrowIfOrderChangeIsNotActive(in.OrderChange); err != nil {
 				return composer.StepResponse[any]{}, err
 			}
 			return composer.NewStepResponse[any](nil), nil
@@ -158,7 +158,7 @@ var exchangeRequestItemReturnValidationStep = composer.CreateStep("exchange-requ
 		if err := throwIfIsCancelled(in.OrderReturn, "Return"); err != nil {
 			return fail(err)
 		}
-		if err := throwIfOrderChangeIsNotActive(in.OrderChange); err != nil {
+		if err := ThrowIfOrderChangeIsNotActive(in.OrderChange); err != nil {
 			return fail(err)
 		}
 		if err := throwIfItemsDoesNotExistsInOrder(in.Order, in.Items); err != nil {
@@ -279,7 +279,7 @@ var OrderExchangeRequestItemReturnWorkflow = composer.CreateWorkflow("exchange-r
 			a.Set("details", d)
 			actions = append(actions, a)
 		}
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
 			return nil, err
 		}
 		if err := computeAdjustments(e, order, orderChange); err != nil {
@@ -345,7 +345,7 @@ var OrderExchangeAddNewItemWorkflow = composer.CreateWorkflow("exchange-add-new-
 			a.Set("details", d)
 			actions = append(actions, a)
 		}
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
 			return nil, err
 		}
 		if err := computeAdjustments(e, order, orderChange); err != nil {
@@ -407,7 +407,7 @@ var CreateExchangeShippingMethodWorkflow = composer.CreateWorkflow("create-excha
 			return nil, err
 		}
 		customPrice := g(in, "custom_amount")
-		method := prepareShippingMethod("exchange_id", option, orderChange, exchange, in, customPrice)
+		method := PrepareShippingMethod("exchange_id", option, orderChange, exchange, in, customPrice)
 		created, err := ordersteps.CreateOrderShippingMethodsStep.Run(e, []*dal.Record{method})
 		if err != nil {
 			return nil, err
@@ -432,7 +432,7 @@ var CreateExchangeShippingMethodWorkflow = composer.CreateWorkflow("create-excha
 		a.Set("order_id", g(order, "id"))
 		setIfPresent(a, in, "return_id")
 		a.Set("exchange_id", g(exchange, "id"))
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, []*dal.Record{a}); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, []*dal.Record{a}); err != nil {
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(g(order, "id")))

@@ -1,0 +1,570 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "pk",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/api-keys",
+  "body": {
+   "title": "Store",
+   "type": "publishable"
+  }
+ },
+ {
+  "name": "channels",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/sales-channels?order=name&fields=id,name"
+ },
+ {
+  "name": "link",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/api-keys/{{pk.api_key.id}}/sales-channels?fields=id",
+  "body": {
+   "add": [
+    "{{channels.sales_channels.0.id}}"
+   ]
+  }
+ },
+ {
+  "name": "locations",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/stock-locations?fields=id"
+ },
+ {
+  "name": "profiles",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/shipping-profiles?fields=id"
+ },
+ {
+  "name": "fs",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/stock-locations/{{locations.stock_locations.0.id}}/fulfillment-sets?fields=id,fulfillment_sets.id",
+  "body": {
+   "name": "EU",
+   "type": "shipping"
+  }
+ },
+ {
+  "name": "zone",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/fulfillment-sets/{{fs.stock_location.fulfillment_sets.0.id}}/service-zones?fields=id,service_zones.id",
+  "body": {
+   "name": "Germany",
+   "geo_zones": [
+    {
+     "type": "country",
+     "country_code": "de"
+    }
+   ]
+  }
+ },
+ {
+  "name": "link_provider",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/stock-locations/{{locations.stock_locations.0.id}}/fulfillment-providers?fields=id",
+  "body": {
+   "add": [
+    "manual_manual"
+   ]
+  }
+ },
+ {
+  "name": "regions",
+  "method": "GET",
+  "path": "/store/regions?order=name&fields=id,name",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "so_std",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/shipping-options?fields=id",
+  "body": {
+   "name": "Standard",
+   "service_zone_id": "{{zone.fulfillment_set.service_zones.0.id}}",
+   "shipping_profile_id": "{{profiles.shipping_profiles.0.id}}",
+   "price_type": "flat",
+   "provider_id": "manual_manual",
+   "type": {
+    "label": "Standard",
+    "code": "standard",
+    "description": "3-5 days"
+   },
+   "prices": [
+    {
+     "currency_code": "eur",
+     "amount": 5
+    },
+    {
+     "region_id": "{{regions.regions.0.id}}",
+     "amount": 4.5
+    }
+   ],
+   "rules": [
+    {
+     "attribute": "enabled_in_store",
+     "operator": "eq",
+     "value": "true"
+    },
+    {
+     "attribute": "is_return",
+     "operator": "eq",
+     "value": "false"
+    }
+   ]
+  }
+ },
+ {
+  "name": "so_return",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/shipping-options?fields=id",
+  "body": {
+   "name": "Return",
+   "service_zone_id": "{{zone.fulfillment_set.service_zones.0.id}}",
+   "shipping_profile_id": "{{profiles.shipping_profiles.0.id}}",
+   "price_type": "flat",
+   "provider_id": "manual_manual",
+   "type": {
+    "label": "Return",
+    "code": "return"
+   },
+   "prices": [
+    {
+     "currency_code": "eur",
+     "amount": 7
+    }
+   ],
+   "rules": [
+    {
+     "attribute": "is_return",
+     "operator": "eq",
+     "value": "true"
+    }
+   ]
+  }
+ },
+ {
+  "name": "products",
+  "method": "GET",
+  "path": "/store/products?fields=id,title,variants.id&order=title",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "tax_region",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/tax-regions?country_code=de&fields=id"
+ },
+ {
+  "name": "rate_default",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/tax-rates?fields=id",
+  "body": {
+   "tax_region_id": "{{tax_region.tax_regions.0.id}}",
+   "name": "DE VAT",
+   "code": "DE19",
+   "rate": 19,
+   "is_default": true
+  }
+ },
+ {
+  "name": "register",
+  "method": "POST",
+  "path": "/auth/customer/emailpass/register",
+  "body": {
+   "email": "buyer@example.test",
+   "password": "secret"
+  }
+ },
+ {
+  "name": "customer",
+  "method": "POST",
+  "path": "/store/customers?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "email": "buyer@example.test",
+   "first_name": "Test",
+   "last_name": "Buyer"
+  },
+  "bearer": "register"
+ },
+ {
+  "name": "customer_login",
+  "method": "POST",
+  "path": "/auth/customer/emailpass",
+  "body": {
+   "email": "buyer@example.test",
+   "password": "secret"
+  }
+ },
+ {
+  "name": "cart",
+  "method": "POST",
+  "path": "/store/carts?fields=id,items.id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "region_id": "{{regions.regions.0.id}}",
+   "shipping_address": {
+    "first_name": "Test",
+    "last_name": "Buyer",
+    "address_1": "Example Street 1",
+    "country_code": "de",
+    "city": "Berlin",
+    "postal_code": "10115"
+   },
+   "billing_address": {
+    "country_code": "de",
+    "city": "Berlin"
+   },
+   "items": [
+    {
+     "variant_id": "{{products.products.1.variants.0.id}}",
+     "quantity": 2
+    }
+   ],
+   "metadata": {
+    "source": "scenario"
+   }
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "add_shipping",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/shipping-methods?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "option_id": "{{so_std.shipping_option.id}}"
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "pc",
+  "method": "POST",
+  "path": "/store/payment-collections?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "cart_id": "{{cart.cart.id}}"
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "session",
+  "method": "POST",
+  "path": "/store/payment-collections/{{pc.payment_collection.id}}/payment-sessions?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "provider_id": "pp_system_default"
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "complete",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/complete?fields=id,items.id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {},
+  "bearer": "customer_login"
+ },
+ {
+  "name": "fulfill",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/fulfillments?fields=id",
+  "body": {
+   "items": [
+    {
+     "id": "{{complete.order.items.0.id}}",
+     "quantity": 2
+    }
+   ]
+  }
+ },
+ {
+  "name": "reason",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/return-reasons?fields=id,value",
+  "body": {
+   "value": "damaged",
+   "label": "Damaged"
+  }
+ },
+ {
+  "name": "begin",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims",
+  "body": {
+   "type": "replace",
+   "order_id": "{{complete.order.id}}"
+  }
+ },
+ {
+  "name": "claim_items",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/claim-items",
+  "body": {
+   "items": [
+    {
+     "id": "{{complete.order.items.0.id}}",
+     "quantity": 1,
+     "reason": "production_failure"
+    }
+   ]
+  }
+ },
+ {
+  "name": "claim_item_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/claim-items/{{claim_items.order_preview.items.0.actions.0.id}}",
+  "body": {
+   "quantity": 2,
+   "internal_note": "two"
+  }
+ },
+ {
+  "name": "claim_item_missing",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/claim-items/ordchact_missing",
+  "body": {
+   "quantity": 1
+  }
+ },
+ {
+  "name": "inbound_items",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/inbound/items",
+  "body": {
+   "location_id": "{{locations.stock_locations.0.id}}",
+   "items": [
+    {
+     "id": "{{complete.order.items.0.id}}",
+     "quantity": 1,
+     "reason_id": "{{reason.return_reason.id}}"
+    }
+   ]
+  }
+ },
+ {
+  "name": "inbound_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/inbound/items/{{inbound_items.order_preview.items.0.actions.1.id}}",
+  "body": {
+   "quantity": 1,
+   "internal_note": "in"
+  }
+ },
+ {
+  "name": "inbound_shipping",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/inbound/shipping-method",
+  "body": {
+   "shipping_option_id": "{{so_return.shipping_option.id}}",
+   "custom_amount": 2
+  }
+ },
+ {
+  "name": "inbound_ship_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/inbound/shipping-method/{{inbound_shipping.order_preview.shipping_methods.1.actions.0.id}}",
+  "body": {
+   "custom_amount": 3
+  }
+ },
+ {
+  "name": "outbound_items",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/outbound/items",
+  "body": {
+   "items": [
+    {
+     "variant_id": "{{products.products.0.variants.0.id}}",
+     "quantity": 1
+    }
+   ]
+  }
+ },
+ {
+  "name": "outbound_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/outbound/items/{{outbound_items.order_preview.items.1.actions.0.id}}",
+  "body": {
+   "quantity": 2
+  }
+ },
+ {
+  "name": "outbound_update_missing",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/outbound/items/ordchact_missing",
+  "body": {
+   "quantity": 2
+  }
+ },
+ {
+  "name": "outbound_shipping",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/outbound/shipping-method",
+  "body": {
+   "shipping_option_id": "{{so_std.shipping_option.id}}",
+   "custom_amount": 1
+  }
+ },
+ {
+  "name": "outbound_ship_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/outbound/shipping-method/{{outbound_shipping.order_preview.shipping_methods.2.actions.0.id}}",
+  "body": {
+   "custom_amount": null
+  }
+ },
+ {
+  "name": "outbound_ship_wrong",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/outbound/shipping-method/{{outbound_items.order_preview.items.1.actions.0.id}}",
+  "body": {
+   "custom_amount": 1
+  }
+ },
+ {
+  "name": "changes_mid",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/changes?fields=id,status,actions.action,actions.amount,actions.details,actions.internal_note"
+ },
+ {
+  "name": "outbound_item_remove",
+  "method": "DELETE",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/outbound/items/{{outbound_items.order_preview.items.1.actions.0.id}}"
+ },
+ {
+  "name": "inbound_ship_remove",
+  "method": "DELETE",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/inbound/shipping-method/{{inbound_shipping.order_preview.shipping_methods.1.actions.0.id}}"
+ },
+ {
+  "name": "inbound_item_remove",
+  "method": "DELETE",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/inbound/items/{{inbound_items.order_preview.items.0.actions.1.id}}"
+ },
+ {
+  "name": "claim_item_remove",
+  "method": "DELETE",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/claim-items/{{claim_items.order_preview.items.0.actions.0.id}}"
+ },
+ {
+  "name": "cancel_active",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/cancel",
+  "body": {}
+ },
+ {
+  "name": "outbound_items2",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/outbound/items",
+  "body": {
+   "items": [
+    {
+     "variant_id": "{{products.products.0.variants.0.id}}",
+     "quantity": 1
+    }
+   ]
+  }
+ },
+ {
+  "name": "confirm",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/request"
+ },
+ {
+  "name": "cancel",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/cancel",
+  "body": {}
+ },
+ {
+  "name": "cancel_again",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}/cancel",
+  "body": {}
+ },
+ {
+  "name": "get",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/claims/{{begin.claim.id}}"
+ },
+ {
+  "name": "order_after",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}?fields=id,version,status,items.quantity,items.detail.quantity"
+ },
+ {
+  "name": "reservations",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/reservations?fields=quantity,line_item_id"
+ },
+ {
+  "name": "changes",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/changes?fields=id,change_type,status,version,claim_id,exchange_id,return_id,actions.action,actions.amount,actions.details"
+ }
+]

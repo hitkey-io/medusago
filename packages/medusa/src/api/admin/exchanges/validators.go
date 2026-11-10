@@ -58,3 +58,27 @@ var AdminPostExchangesReturnRequestItemsReqSchema = zod.Object(
 
 // AdminGetExchangeParams mirrors AdminGetExchangeParams.
 var AdminGetExchangeParams = utils.CreateSelectParams()
+
+// AdminPostCancelExchangeReqSchema mirrors AdminPostCancelExchangeReqSchema.
+var AdminPostCancelExchangeReqSchema = zod.Object(zod.F("no_notification", zod.Boolean().Optional()))
+
+// AdminPostExchangesRequestItemsReturnActionReqSchema mirrors AdminPostExchangesRequestItemsReturnActionReqSchema.
+var AdminPostExchangesRequestItemsReturnActionReqSchema = zod.Object(
+	zod.F("quantity", zod.Number().Optional()),
+	zod.F("internal_note", zod.String().Nullish().Optional()),
+	zod.F("reason_id", zod.String().Nullish().Optional()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish().Optional()),
+)
+
+// AdminPostExchangesShippingActionReqSchema mirrors AdminPostExchangesShippingActionReqSchema.
+var AdminPostExchangesShippingActionReqSchema = zod.Object(
+	zod.F("custom_amount", zod.Number().Nullish().Optional()),
+	zod.F("internal_note", zod.String().Nullish().Optional()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish().Optional()),
+)
+
+// AdminPostExchangesItemsActionReqSchema mirrors AdminPostExchangesItemsActionReqSchema.
+var AdminPostExchangesItemsActionReqSchema = zod.Object(
+	zod.F("quantity", zod.Number().Optional()),
+	zod.F("internal_note", zod.String().Nullish().Optional()),
+)

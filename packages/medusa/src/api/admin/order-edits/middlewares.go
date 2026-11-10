@@ -10,7 +10,9 @@ import (
 var AdminOrderEditRoutesMiddlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"POST"}, Matcher: "/admin/order-edits", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminPostOrderEditsReqSchema))}},
 	{Methods: []string{"POST"}, Matcher: "/admin/order-edits/:id/items", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminPostOrderEditsAddItemsReqSchema))}},
+	{Methods: []string{"POST"}, Matcher: "/admin/order-edits/:id/items/:action_id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminPostOrderEditsItemsActionReqSchema))}},
 	{Methods: []string{"POST"}, Matcher: "/admin/order-edits/:id/items/item/:item_id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminPostOrderEditsUpdateItemQuantityReqSchema))}},
 	{Methods: []string{"POST"}, Matcher: "/admin/order-edits/:id/shipping-method", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminPostOrderEditsShippingReqSchema))}},
+	{Methods: []string{"POST"}, Matcher: "/admin/order-edits/:id/shipping-method/:action_id", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminPostOrderEditsShippingActionReqSchema))}},
 	{Methods: []string{"POST"}, Matcher: "/admin/order-edits/:id/request", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminPostOrderEditsRequestReqSchema))}},
 }

@@ -1,0 +1,30 @@
+// Package actionid mirrors api/admin/draft-orders/[id]/edit/items/[action_id].
+package actionid
+
+import (
+	dw "github.com/hitkey-io/medusago/packages/core/core-flows/src/draft-order/workflows"
+	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	draftorders "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/draft-orders"
+	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
+)
+
+// POST mirrors POST /admin/draft-orders/:id/edit/items/:action_id.
+func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+	preview, err := dw.UpdateDraftOrderActionItemWorkflow.Run(req.Ctx(), req.Scope, dw.DraftOrderActionInput{OrderID: req.Params["id"], ActionID: req.Params["action_id"], Data: orders.BodyCopy(req)})
+	if err != nil {
+		return err
+	}
+	return draftorders.RespondDraftPreview(res, preview)
+}
+
+// DELETE mirrors DELETE /admin/draft-orders/:id/edit/items/:action_id.
+func DELETE(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+	preview, err := dw.RemoveDraftOrderActionItemWorkflow.Run(req.Ctx(), req.Scope, dw.DraftOrderActionInput{OrderID: req.Params["id"], ActionID: req.Params["action_id"]})
+	if err != nil {
+		return err
+	}
+	return draftorders.RespondDraftPreview(res, preview)
+}
+
+// Route is route.ts.
+var Route = medusahttp.Route{POST: POST, DELETE: DELETE}

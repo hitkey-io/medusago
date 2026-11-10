@@ -57,7 +57,7 @@ func throwIfIsCancelled(obj *dal.Record, typ string) error {
 	return nil
 }
 
-func throwIfOrderChangeIsNotActive(orderChange *dal.Record) error {
+func ThrowIfOrderChangeIsNotActive(orderChange *dal.Record) error {
 	if orderChange == nil || orderChange.Len() == 0 {
 		return invalidData("An active Order Change is required to proceed")
 	}
@@ -256,8 +256,8 @@ var RefreshReturnShippingWorkflow = composer.CreateWorkflow("refresh-return-ship
 		return MaybeRefreshShippingMethodsWorkflow.RunAsStep(e, args)
 	})
 
-// prepareShippingMethod mirrors prepareShippingMethod(relatedEntityField).
-func prepareShippingMethod(relatedEntityField string, option, orderChange, relatedEntity, input *dal.Record, customPrice any) *dal.Record {
+// prepareShippingMethod mirrors PrepareShippingMethod(relatedEntityField).
+func PrepareShippingMethod(relatedEntityField string, option, orderChange, relatedEntity, input *dal.Record, customPrice any) *dal.Record {
 	cp := rec(g(option, "calculated_price"))
 	obj := dal.NewRecord()
 	obj.Set("shipping_option_id", g(option, "id"))

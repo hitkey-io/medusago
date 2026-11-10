@@ -48,7 +48,7 @@ var validateOrderCreditLinesStep = composer.CreateStep("validate-order-credit-li
 		return composer.NewStepResponse[any](nil), nil
 	}, nil)
 
-var createOrderChangeActionsWorkflow = composer.CreateWorkflow("create-order-change-actions",
+var CreateOrderChangeActionsWorkflow = composer.CreateWorkflow("create-order-change-actions",
 	func(e *composer.Execution, in []*dal.Record) ([]*dal.Record, error) {
 		return ordersteps.AddOrderActionsStep.Run(e, in)
 	})
@@ -97,7 +97,7 @@ var CreateOrderCreditLinesWorkflow = composer.CreateWorkflow("create-order-credi
 			a.Set("amount", g(cl, "amount"))
 			actions = append(actions, a)
 		}
-		if _, err := createOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
+		if _, err := CreateOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
 			return nil, err
 		}
 		cf := dal.NewRecord()
