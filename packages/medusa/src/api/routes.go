@@ -131,6 +131,13 @@ import (
 	returnreasons "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons"
 	returnreasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/return-reasons/id_"
 	adminreturns "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns"
+	adminorderedits "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits"
+	adminordereditid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_"
+	adminordereditconfirm "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/confirm"
+	adminordereditems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/items"
+	adminordereditemqty "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/items/item/item_id_"
+	adminordereditrequest "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/request"
+	adminordereditshipping "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/order-edits/id_/shipping-method"
 	adminreturnid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_"
 	adminreturnreceive "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/receive"
 	adminreturnreceiveitems "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/returns/id_/receive-items"
@@ -352,6 +359,13 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/returns", Route: adminreturns.Route},
 		{Path: "/admin/claims", Route: adminclaims.Route},
 		{Path: "/admin/exchanges", Route: adminexchanges.Route},
+		{Path: "/admin/order-edits", Route: adminorderedits.Route},
+		{Path: "/admin/order-edits/:id", Route: adminordereditid.Route},
+		{Path: "/admin/order-edits/:id/items", Route: adminordereditems.Route},
+		{Path: "/admin/order-edits/:id/items/item/:item_id", Route: adminordereditemqty.Route},
+		{Path: "/admin/order-edits/:id/shipping-method", Route: adminordereditshipping.Route},
+		{Path: "/admin/order-edits/:id/request", Route: adminordereditrequest.Route},
+		{Path: "/admin/order-edits/:id/confirm", Route: adminordereditconfirm.Route},
 		{Path: "/admin/exchanges/:id", Route: adminexchangeid.Route},
 		{Path: "/admin/exchanges/:id/inbound/items", Route: adminexchangeinbounditems.Route},
 		{Path: "/admin/exchanges/:id/inbound/shipping-method", Route: adminexchangeinboundshipping.Route},
