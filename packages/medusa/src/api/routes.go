@@ -148,9 +148,16 @@ import (
 	storeorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders/id_"
 	adminorderid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_"
 	adminordercancel "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/cancel"
+	adminordercreditlines "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/credit-lines"
+	adminordershippingoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/shipping-options"
+	adminorderauthorize "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/payment-sessions/authorize"
 	adminordercomplete "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/complete"
 	adminorderarchive "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders/id_/archive"
 	adminpayments "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments"
+	adminpcs "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payment-collections"
+	adminpcid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payment-collections/id_"
+	adminpcpaid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payment-collections/id_/mark-as-paid"
+	adminpcsessions "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payment-collections/id_/payment-sessions"
 	adminpaymentid "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments/id_"
 	adminpaymentcapture "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments/id_/capture"
 	adminpaymentrefund "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments/id_/refund"
@@ -298,9 +305,16 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/orders", Route: orders.Route},
 		{Path: "/admin/orders/:id", Route: adminorderid.Route},
 		{Path: "/admin/orders/:id/cancel", Route: adminordercancel.Route},
+		{Path: "/admin/orders/:id/credit-lines", Route: adminordercreditlines.Route},
+		{Path: "/admin/orders/:id/shipping-options", Route: adminordershippingoptions.Route},
+		{Path: "/admin/orders/:id/payment-sessions/authorize", Route: adminorderauthorize.Route},
 		{Path: "/admin/orders/:id/complete", Route: adminordercomplete.Route},
 		{Path: "/admin/orders/:id/archive", Route: adminorderarchive.Route},
 		{Path: "/admin/payments", Route: adminpayments.Route},
+		{Path: "/admin/payment-collections", Route: adminpcs.Route},
+		{Path: "/admin/payment-collections/:id", Route: adminpcid.Route},
+		{Path: "/admin/payment-collections/:id/mark-as-paid", Route: adminpcpaid.Route},
+		{Path: "/admin/payment-collections/:id/payment-sessions", Route: adminpcsessions.Route},
 		{Path: "/admin/payments/payment-providers", Route: adminpaymentproviders.Route},
 		{Path: "/admin/payments/:id", Route: adminpaymentid.Route},
 		{Path: "/admin/payments/:id/capture", Route: adminpaymentcapture.Route},

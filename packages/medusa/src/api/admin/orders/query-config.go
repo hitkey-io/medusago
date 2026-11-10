@@ -26,3 +26,6 @@ var RetrieveOrderChangesTransformQueryConfig = httputils.QueryConfig{Defaults: D
 
 // ListOrderItemsQueryConfig mirrors listOrderItemsQueryConfig.
 var ListOrderItemsQueryConfig = httputils.QueryConfig{Defaults: DefaultAdminOrderItemsFields, DefaultLimit: 100, IsList: true}
+
+// ListShippingOptionsQueryConfig mirrors listShippingOptionsQueryConfig.
+var ListShippingOptionsQueryConfig = httputils.QueryConfig{DefaultLimit: 100, IsList: true}

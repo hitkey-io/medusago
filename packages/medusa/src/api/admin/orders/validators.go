@@ -157,3 +157,26 @@ var AdminOrderChangesParams = utils.CreateSelectParams().Merge(zod.Object(
 
 // AdminCompleteOrder mirrors AdminCompleteOrder.
 var AdminCompleteOrder = utils.WithAdditionalData(zod.Object())
+
+// AdminUpdateOrder mirrors AdminUpdateOrder.
+var AdminUpdateOrder = zod.Object(
+	zod.F("email", zod.String().Optional()),
+	zod.F("shipping_address", commonvalidators.AddressPayload().Optional()),
+	zod.F("billing_address", commonvalidators.AddressPayload().Optional()),
+	zod.F("locale", zod.String().Nullish()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+)
+
+// AdminCreateOrderCreditLines mirrors AdminCreateOrderCreditLines.
+var AdminCreateOrderCreditLines = zod.Object(
+	zod.F("amount", zod.Number()),
+	zod.F("reference", zod.String()),
+	zod.F("reference_id", zod.String()),
+	zod.F("metadata", zod.Record(zod.String(), zod.Unknown()).Nullish()),
+)
+
+// AdminAuthorizeOrderPaymentSession mirrors AdminAuthorizeOrderPaymentSession.
+var AdminAuthorizeOrderPaymentSession = zod.Object(zod.F("payment_session_id", zod.String()))
+
+// AdminGetOrderShippingOptionList mirrors AdminGetOrderShippingOptionList.
+var AdminGetOrderShippingOptionList = zod.Object()

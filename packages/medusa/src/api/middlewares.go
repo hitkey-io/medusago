@@ -60,6 +60,7 @@ import (
 	storeshippingoptionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/shipping-options"
 	storeordersmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/orders"
 	adminpaymentsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payments"
+	adminpcsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/admin/payment-collections"
 )
 
 // Middlewares mirrors the default export of middlewares.ts.
@@ -85,6 +86,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, storepaymentcollectionsmw.Middlewares...)
 	out = append(out, storeordersmw.Middlewares...)
 	out = append(out, adminpaymentsmw.Middlewares...)
+	out = append(out, adminpcsmw.Middlewares...)
 	out = append(out, storeshippingoptionsmw.Middlewares...)
 	out = append(out, storeproductsmw.Middlewares...)
 	out = append(out, storevariantsmw.Middlewares...)
