@@ -11,12 +11,12 @@ import (
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	fulfillmentworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/fulfillment/workflows"
 	ordersteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/order/steps"
-	promotionservices "github.com/hitkey-io/medusago/packages/modules/promotion/src/services"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
+	promotionservices "github.com/hitkey-io/medusago/packages/modules/promotion/src/services"
 )
 
 // FieldsToComputeAdjustmentsForPreview mirrors fieldsToComputeAdjustmentsForPreview.

@@ -698,8 +698,9 @@ func goServer(t *testing.T, scenario string) string {
 	dbURL := setupDatabase(t, "medusa_http_go_"+strings.ReplaceAll(scenario, "-", "_"))
 	// Same CORS settings as record.sh passes to upstream.
 	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{
-		DatabaseURL: dbURL,
-		HTTP:        config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
+		DatabaseURL:    dbURL,
+		HTTP:           config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
+		SessionOptions: scenarioSessionOptions(),
 	}, Modules: scenarioModules()})
 	app, err := loaders.Initialize(context.Background(), cfg)
 	if err != nil {
@@ -711,6 +712,33 @@ func goServer(t *testing.T, scenario string) string {
 		app.Shutdown()
 	})
 	return srv.URL
+}
+
+// scenarioSessionOptions mirrors the sessionOptions of the reference app
+// (medusa-config.js of REF_APP): the DynamoDB session store when
+// MEDUSA_SESSION_DYNAMODB_ENDPOINT is set (a local DynamoDB).
+func scenarioSessionOptions() *config.SessionOptions {
+	endpoint := os.Getenv("MEDUSA_SESSION_DYNAMODB_ENDPOINT")
+	if endpoint == "" {
+		return nil
+	}
+	table := os.Getenv("MEDUSA_SESSION_DYNAMODB_TABLE")
+	if table == "" {
+		table = "sessions"
+	}
+	prefix := os.Getenv("MEDUSA_SESSION_DYNAMODB_PREFIX")
+	if prefix == "" {
+		prefix = "sess:"
+	}
+	return &config.SessionOptions{DynamodbOptions: map[string]any{
+		"table":  table,
+		"prefix": prefix,
+		"clientOptions": map[string]any{
+			"endpoint":    endpoint,
+			"region":      "us-east-1",
+			"credentials": map[string]any{"accessKeyId": "local", "secretAccessKey": "local"},
+		},
+	}}
 }
 
 // TestMatchUpstream runs every scenario against the Go application (each on

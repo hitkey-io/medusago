@@ -37,6 +37,12 @@ type SessionOptions struct {
 	Secret            string `json:"secret" yaml:"secret"`
 	// Ttl is the session cookie maxAge in milliseconds.
 	Ttl *int64 `json:"ttl" yaml:"ttl"`
+	// DynamodbOptions selects the DynamoDB session store (connect-dynamodb
+	// options: table, prefix, hashKey, readCapacityUnits, writeCapacityUnits,
+	// specialKeys, skipThrowMissingSpecialKeys, reapInterval, initialized,
+	// and clientOptions for the DynamoDB client: region, endpoint,
+	// credentials).
+	DynamodbOptions map[string]any `json:"dynamodbOptions,omitempty" yaml:"dynamodbOptions,omitempty"`
 }
 
 // CookieOptions mirrors projectConfig.cookieOptions (express-session cookie
