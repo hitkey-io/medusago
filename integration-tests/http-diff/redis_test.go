@@ -32,7 +32,8 @@ import (
 //                               is skipped without it)
 //   HTTP_DIFF_CACHING=true      the caching module with the caching-redis
 //                               provider on MEDUSA_TEST_REDIS_URL (with
-//                               MEDUSA_FF_CACHING=true)
+//                               MEDUSA_FF_CACHING=true); "memory": with its
+//                               built in memory provider
 //   HTTP_DIFF_SUBSCRIBERS=true  a product.created subscriber recording each
 //                               call (numbered per process) as a product
 //                               tag; with
@@ -49,6 +50,12 @@ func redisScenario() bool {
 func redisScenarioModules() []config.ModuleConfig {
 	url := os.Getenv("MEDUSA_TEST_REDIS_URL")
 	var out []config.ModuleConfig
+	if os.Getenv("HTTP_DIFF_CACHING") == "memory" {
+		// the caching module with its built in memory provider
+		out = append(out, config.ModuleConfig{Key: "caching", Resolve: "@medusajs/medusa/caching", Options: map[string]any{
+			"in_memory": map[string]any{"enable": true},
+		}})
+	}
 	if os.Getenv("HTTP_DIFF_CACHING") == "true" {
 		// the caching module with the Redis provider
 		out = append(out, config.ModuleConfig{Key: "caching", Resolve: "@medusajs/medusa/caching", Providers: []config.ModuleProviderConfig{
