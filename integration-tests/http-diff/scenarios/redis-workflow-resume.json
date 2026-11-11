@@ -1,0 +1,160 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "run_success",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/workflows-executions/http-diff-wait/run",
+    "body": {
+      "transaction_id": "tx-wait-success",
+      "input": {
+        "value": "resume"
+      }
+    }
+  },
+  {
+    "name": "success_waiting",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/workflows-executions?transaction_id=tx-wait-success&fields=workflow_id,transaction_id,state"
+  },
+  {
+    "name": "success",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/http-diff-wait/tx-wait-success",
+    "body": {
+      "action": "success",
+      "response": {
+        "approved": true
+      }
+    },
+    "restart": true
+  },
+  {
+    "name": "success_done",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/workflows-executions?transaction_id=tx-wait-success&fields=workflow_id,transaction_id,state,context",
+    "until": "workflow_executions.0.state=done"
+  },
+  {
+    "name": "success_tags",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/product-tags?q=resume&order=value&fields=value,metadata"
+  },
+  {
+    "name": "success_again",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/http-diff-wait/tx-wait-success",
+    "body": {
+      "action": "success",
+      "response": {
+        "approved": true
+      }
+    }
+  },
+  {
+    "name": "run_failure",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/workflows-executions/http-diff-wait/run",
+    "body": {
+      "transaction_id": "tx-wait-failure",
+      "input": {
+        "value": "refused"
+      }
+    }
+  },
+  {
+    "name": "failure",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/http-diff-wait/tx-wait-failure",
+    "body": {
+      "action": "failure",
+      "response": "refused by the test"
+    },
+    "restart": true
+  },
+  {
+    "name": "failure_reverted",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/workflows-executions?transaction_id=tx-wait-failure&fields=workflow_id,transaction_id,state",
+    "until": "workflow_executions.0.state=reverted"
+  },
+  {
+    "name": "failure_tags",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/product-tags?q=refused&order=value&fields=value,metadata"
+  },
+  {
+    "name": "failure_again",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/http-diff-wait/tx-wait-failure",
+    "body": {
+      "action": "success",
+      "response": null
+    }
+  },
+  {
+    "name": "run_timeout",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/workflows-executions/http-diff-wait-timeout/run",
+    "body": {
+      "transaction_id": "tx-wait-timeout",
+      "input": {
+        "value": "late"
+      }
+    }
+  },
+  {
+    "name": "timeout_reverted",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/workflows-executions?transaction_id=tx-wait-timeout&fields=workflow_id,transaction_id,state",
+    "until": "workflow_executions.0.state=reverted",
+    "restart": true
+  },
+  {
+    "name": "timeout_tags",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/product-tags?q=late&order=value&fields=value,metadata"
+  },
+  {
+    "name": "timeout_late",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/http-diff-wait/tx-wait-timeout",
+    "body": {
+      "action": "success",
+      "response": null,
+      "workflow_id": "http-diff-wait-timeout"
+    }
+  },
+  {
+    "name": "unknown",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/http-diff-wait/tx-wait-unknown",
+    "body": {
+      "action": "success",
+      "response": null
+    }
+  }
+]

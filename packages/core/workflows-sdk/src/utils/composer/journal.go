@@ -67,6 +67,10 @@ type stepRecord struct {
 	timeout int
 	// delivered: the step receives the response of a resumption
 	delivered bool
+	// raw is the response registered by setStepSuccess for an async step
+	// (stored as is in the context, without the step response envelope)
+	raw    any
+	hasRaw bool
 }
 
 // journal records a run the way the TransactionOrchestrator checkpoints it:
@@ -203,7 +207,16 @@ func (j *journal) succeed(r *stepRecord, output any, hasOutput bool, compInput a
 	j.rev++
 	r.invokeState, r.invokeStatus = stepStateDone, stepStatusOK
 	r.lastAttempt = nowMillis()
-	j.invoke[r.action] = stepResponseEnvelope(output, hasOutput, compInput, hasComp)
+	switch {
+	case r.hasRaw:
+		j.invoke[r.action] = r.raw
+	default:
+		if !hasComp && hasOutput {
+			// new StepResponse(output): compensateInput defaults to the output
+			compInput, hasComp = output, true
+		}
+		j.invoke[r.action] = stepResponseEnvelope(output, hasOutput, compInput, hasComp)
+	}
 	j.emit("onStepSuccess", r, func(ev *WorkflowEvent) { ev.Response, ev.HasResponse = output, hasOutput })
 }
 

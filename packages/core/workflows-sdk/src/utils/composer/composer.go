@@ -344,6 +344,9 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 			r = <-ch
 		}
 		res, err = applyStepResult[O](r)
+		if r.Err == nil {
+			rec.raw, rec.hasRaw = r.Output, true
+		}
 	}
 	return s.settle(e, rec, res, err)
 }

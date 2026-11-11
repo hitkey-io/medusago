@@ -1,0 +1,311 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzOTczMTEsImV4cCI6MTc5NDQ4MzcxMX0.ofALl0sDduqW7HE1o62Shwist51oLv2gNyBOoxeE3Q0"
+    }
+  },
+  "run_success": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "tx-wait-success",
+        "workflowId": "http-diff-wait",
+        "hasFinished": false,
+        "hasFailed": false
+      }
+    }
+  },
+  "success_waiting": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_executions": [
+        {
+          "workflow_id": "http-diff-wait",
+          "transaction_id": "tx-wait-success",
+          "state": "invoking",
+          "id": "wf_exec_01M756M4BWTMX75226VT5EYTFD"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "success": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "ok": true
+    }
+  },
+  "success_done": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_executions": [
+        {
+          "workflow_id": "http-diff-wait",
+          "transaction_id": "tx-wait-success",
+          "state": "done",
+          "context": {
+            "data": {
+              "invoke": {
+                "http-diff-wait-step": {
+                  "approved": true
+                },
+                "http-diff-wait-after": {
+                  "__type": "Symbol(WorkflowWorkflowData)",
+                  "output": {
+                    "__type": "Symbol(WorkflowStepResponse)",
+                    "output": {
+                      "id": "ptag_01M756M7FSPX51C5725MKMRXAJ",
+                      "value": "resume-before-after"
+                    },
+                    "compensateInput": {
+                      "id": "ptag_01M756M7FSPX51C5725MKMRXAJ",
+                      "value": "resume-before-after"
+                    }
+                  }
+                },
+                "http-diff-wait-before": {
+                  "__type": "Symbol(WorkflowWorkflowData)",
+                  "output": {
+                    "__type": "Symbol(WorkflowStepResponse)",
+                    "output": {
+                      "id": "ptag_01M756M4CS81S6FG9XMC090HXW",
+                      "value": "resume-before"
+                    },
+                    "compensateInput": "ptag_01M756M4CS81S6FG9XMC090HXW"
+                  }
+                }
+              },
+              "payload": {
+                "value": "resume"
+              },
+              "compensate": {}
+            },
+            "errors": []
+          },
+          "id": "wf_exec_01M756M4BWTMX75226VT5EYTFD"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "success_tags": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_tags": [
+        {
+          "value": "resume-before",
+          "metadata": null,
+          "id": "ptag_01M756M4CS81S6FG9XMC090HXW"
+        },
+        {
+          "value": "resume-before-after",
+          "metadata": {
+            "response": {
+              "approved": true
+            }
+          },
+          "id": "ptag_01M756M7FSPX51C5725MKMRXAJ"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "success_again": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Transaction tx-wait-success could not be found."
+    }
+  },
+  "run_failure": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "tx-wait-failure",
+        "workflowId": "http-diff-wait",
+        "hasFinished": false,
+        "hasFailed": false
+      }
+    }
+  },
+  "failure": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "ok": true
+    }
+  },
+  "failure_reverted": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_executions": [
+        {
+          "workflow_id": "http-diff-wait",
+          "transaction_id": "tx-wait-failure",
+          "state": "reverted",
+          "id": "wf_exec_01M756M7GNAZ34N0VXJNBTMKNW"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "failure_tags": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_tags": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "failure_again": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Transaction tx-wait-failure could not be found."
+    }
+  },
+  "run_timeout": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "tx-wait-timeout",
+        "workflowId": "http-diff-wait-timeout",
+        "hasFinished": false,
+        "hasFailed": false
+      }
+    }
+  },
+  "timeout_reverted": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_executions": [
+        {
+          "workflow_id": "http-diff-wait-timeout",
+          "transaction_id": "tx-wait-timeout",
+          "state": "reverted",
+          "id": "wf_exec_01M756M9M5127G1N15GKH17D5P"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "timeout_tags": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_tags": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "timeout_late": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Transaction tx-wait-timeout could not be found."
+    }
+  },
+  "unknown": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Transaction tx-wait-unknown could not be found."
+    }
+  }
+}

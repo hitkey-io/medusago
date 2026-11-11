@@ -72,17 +72,34 @@ for scenario in "${scenarios[@]}"; do
     (cd "$APP" && export "${scenario_env[@]}" && NODE_ENV=development LOG_LEVEL=error DATABASE_URL="$PG_URL_BASE/$DB" \
       "$MEDUSA" db:migrate:search >/dev/null)
   fi
-  (cd "$APP" && { [ ${#scenario_env[@]} -eq 0 ] || export "${scenario_env[@]}"; } && NODE_ENV=development LOG_LEVEL=error AUTH_MFA_ENCRYPTION_KEY="$MFA_KEY" MEDUSA_HTTP_DIFF_DIR="$HERE" DATABASE_URL="$PG_URL_BASE/$DB" \
-    ADMIN_CORS=http://localhost:5173 AUTH_CORS=http://localhost:5173 STORE_CORS=http://localhost:8000 \
-    exec "$MEDUSA" start -p "$PORT" >"$HERE/.record-server-$PORT.log" 2>&1) &
-  pid=$!
-  trap 'kill $pid 2>/dev/null || true' EXIT
-  for _ in $(seq 1 120); do
-    curl -sf "http://localhost:$PORT/health" >/dev/null && break
-    sleep 1
-  done
-  (cd "$ROOT" && MEDUSA_HTTP_RECORD_URL="http://localhost:$PORT" MEDUSA_HTTP_SCENARIO="$scenario" \
+  # The server command is kept in a script: steps with "restart" run it
+  # (MEDUSA_HTTP_RESTART_CMD) to kill the server and start it again on the
+  # same database and Redis.
+  pidfile="$HERE/.record-server-$PORT.pid"
+  restart_script="$HERE/.record-restart-$PORT.sh"
+  {
+    echo '#!/usr/bin/env bash'
+    echo 'set -euo pipefail'
+    printf 'if [ -f %q ]; then kill -9 "$(cat %q)" 2>/dev/null || true; fi\n' "$pidfile" "$pidfile"
+    printf 'for _ in $(seq 1 50); do curl -sf %q >/dev/null || break; sleep 0.2; done\n' "http://localhost:$PORT/health"
+    printf '(cd %q && ' "$APP"
+    for line in "${scenario_env[@]:-}"; do
+      if [ -n "$line" ]; then printf 'export %q && ' "$line"; fi
+    done
+    printf 'NODE_ENV=development LOG_LEVEL=error AUTH_MFA_ENCRYPTION_KEY=%q MEDUSA_HTTP_DIFF_DIR=%q DATABASE_URL=%q ' "$MFA_KEY" "$HERE" "$PG_URL_BASE/$DB"
+    printf 'ADMIN_CORS=http://localhost:5173 AUTH_CORS=http://localhost:5173 STORE_CORS=http://localhost:8000 '
+    printf 'exec %q start -p %q >>%q 2>&1) &\n' "$MEDUSA" "$PORT" "$HERE/.record-server-$PORT.log"
+    printf 'echo $! > %q\n' "$pidfile"
+    printf 'for _ in $(seq 1 120); do curl -sf %q >/dev/null && exit 0; sleep 1; done\n' "http://localhost:$PORT/health"
+    echo 'exit 1'
+  } >"$restart_script"
+  rm -f "$pidfile" "$HERE/.record-server-$PORT.log"
+  bash "$restart_script"
+  trap 'kill $(cat "$pidfile") 2>/dev/null || true' EXIT
+  (cd "$ROOT" && MEDUSA_HTTP_RECORD_URL="http://localhost:$PORT" MEDUSA_HTTP_SCENARIO="$scenario" MEDUSA_HTTP_RESTART_CMD="bash $restart_script" \
     go test ./integration-tests/http-diff/ -run TestRecord -count=1 >/dev/null)
-  kill $pid; wait $pid 2>/dev/null || true
+  kill "$(cat "$pidfile")" 2>/dev/null || true
+  for _ in $(seq 1 50); do curl -sf "http://localhost:$PORT/health" >/dev/null || break; sleep 0.2; done
+  rm -f "$pidfile" "$restart_script"
   trap - EXIT
 done

@@ -189,13 +189,20 @@ func parseCheckpoint(cp *Checkpoint) *resumeState {
 			}
 			// context.invoke[action] = { __type, output: { __type, output,
 			// compensateInput } }
-			if env := asRec(rs.invoke[st.action]); env != nil {
-				resp := asRec(recGet(env, "output"))
-				if resp != nil && recGet(resp, "__type") == symbolStepResponse {
-					st.output, st.hasOutput = resp.Get("output")
-					st.compInput, st.hasComp = resp.Get("compensateInput")
+			// (the response of setStepSuccess for an async step is stored
+			// as is)
+			if raw, ok := rs.invoke[st.action]; ok {
+				env := asRec(raw)
+				if env != nil && recGet(env, "__type") == symbolWorkflowData {
+					resp := asRec(recGet(env, "output"))
+					if resp != nil && recGet(resp, "__type") == symbolStepResponse {
+						st.output, st.hasOutput = resp.Get("output")
+						st.compInput, st.hasComp = resp.Get("compensateInput")
+					} else {
+						st.output, st.hasOutput = env.Get("output")
+					}
 				} else {
-					st.output, st.hasOutput = env.Get("output")
+					st.output, st.hasOutput = raw, true
 				}
 			}
 			rs.steps = append(rs.steps, st)
@@ -338,6 +345,15 @@ func decodeStored[O any](v any) (O, error) {
 	return alt, nil
 }
 
+func sameJSON(a, b any) bool {
+	ja, err := json.Marshal(a)
+	if err != nil {
+		return false
+	}
+	jb, err := json.Marshal(b)
+	return err == nil && string(ja) == string(jb)
+}
+
 // replayStep handles a step of a resumed run: handled is false when the
 // step runs normally.
 func (s *Step[I, O]) replayStep(e *Execution, action string, noComp bool) (O, bool, error) {
@@ -359,8 +375,10 @@ func (s *Step[I, O]) replayStep(e *Execution, action string, noComp bool) (O, bo
 				return out, true, ferr
 			}
 		}
+		// the compensation input defaults to the output: then it gets the
+		// output restored with its type
 		var compInput any = out
-		if st.hasComp {
+		if st.hasComp && !sameJSON(st.compInput, st.output) {
 			compInput = st.compInput
 		}
 		s.pushStepCompensation(e, r, compInput)
@@ -389,6 +407,9 @@ func (s *Step[I, O]) replayStep(e *Execution, action string, noComp bool) (O, bo
 			}
 		}
 		res, err := applyStepResult[O](*resp)
+		if resp.Err == nil {
+			r.raw, r.hasRaw = resp.Output, true
+		}
 		out, ferr := s.settle(e, r, res, err)
 		return out, true, ferr
 	case (st.invokeState == stepStateFailed || st.invokeState == stepStateTimeout) && s.Options.ContinueOnPermanentFailure:

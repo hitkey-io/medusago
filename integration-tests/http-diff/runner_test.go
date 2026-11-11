@@ -22,6 +22,7 @@ import (
 	"net/textproto"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -89,6 +90,30 @@ type Step struct {
 	// External requests an absolute URL (a fake service, an uploaded file)
 	// as is instead of a path of the server.
 	External string `json:"external,omitempty"`
+	// Restart restarts the server before the step (same database and
+	// Redis): the Go application is shut down and started again; when
+	// recording, MEDUSA_HTTP_RESTART_CMD (set by record.sh) kills the
+	// upstream server and starts it again.
+	Restart bool `json:"restart,omitempty"`
+}
+
+// restartServer restarts the server of the running scenario (set by
+// goServer); recordings run MEDUSA_HTTP_RESTART_CMD.
+var restartServer func(t *testing.T)
+
+func restart(t *testing.T) {
+	t.Helper()
+	if restartServer != nil {
+		restartServer(t)
+		return
+	}
+	cmd := os.Getenv("MEDUSA_HTTP_RESTART_CMD")
+	if cmd == "" {
+		t.Fatal("the scenario restarts the server: MEDUSA_HTTP_RESTART_CMD is not set")
+	}
+	if out, err := exec.Command("sh", "-c", cmd).CombinedOutput(); err != nil {
+		t.Fatalf("restart: %v\n%s", err, out)
+	}
 }
 
 var otpSecretRe = regexp.MustCompile(`secret=[A-Z2-7]+`)
@@ -428,6 +453,9 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 	}
 
 	for i := 0; i < len(steps); {
+		if steps[i].Restart {
+			restart(t)
+		}
 		// consecutive steps of one parallel group are sent concurrently
 		j := i + 1
 		if steps[i].Parallel != "" {
@@ -913,14 +941,35 @@ func goServer(t *testing.T, scenario string) string {
 		HTTP:           config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
 		SessionOptions: scenarioSessionOptions(),
 	}, Modules: scenarioModules()})
-	app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, Routes: routes, OnLoad: append(scenarioHooks(t), registerEventsCapture)})
-	if err != nil {
-		t.Fatal(err)
+	start := func() *loaders.MedusaApp {
+		app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, Routes: append(routes, scenarioRoutes()...), OnLoad: append(scenarioHooks(t), registerEventsCapture)})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return app
 	}
-	srv := httptest.NewServer(app.Handler)
-	t.Cleanup(func() {
-		srv.Close()
+	var mu sync.Mutex
+	app := start()
+	current := func() *loaders.MedusaApp {
+		mu.Lock()
+		defer mu.Unlock()
+		return app
+	}
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		current().Handler.ServeHTTP(w, r)
+	}))
+	// a restart: the instance goes away, a new one serves the same URL on
+	// the same database and Redis
+	restartServer = func(t *testing.T) {
+		mu.Lock()
+		defer mu.Unlock()
 		app.Shutdown()
+		app = start()
+	}
+	t.Cleanup(func() {
+		restartServer = nil
+		srv.Close()
+		current().Shutdown()
 	})
 	return srv.URL
 }
