@@ -212,6 +212,9 @@ func DefineConfig(input InputConfig) ConfigModule {
 
 	modules := defaultModules(input.FeatureFlags)
 	for _, um := range input.Modules {
+		if um.Key == "" {
+			um.Key = ModuleKeyFromResolve(um.Resolve)
+		}
 		replaced := false
 		for i := range modules {
 			if modules[i].Key == um.Key {
