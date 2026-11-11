@@ -217,8 +217,8 @@ var RefreshConfirmedDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow(
 		return nil, nil
 	})
 
-// UpdateDraftOrderWorkflow mirrors updateDraftOrderWorkflow (locks and
-// translations are not ported).
+// UpdateDraftOrderWorkflow mirrors updateDraftOrderWorkflow (locks are not
+// ported).
 var UpdateDraftOrderWorkflow = composer.CreateWorkflow("update-draft-order",
 	func(e *composer.Execution, in *dal.Record) (*dal.Record, error) {
 		id := g(in, "id")
@@ -300,7 +300,9 @@ var UpdateDraftOrderWorkflow = composer.CreateWorkflow("update-draft-order",
 			}
 		}
 		if truthy(g(in, "locale")) && g(in, "locale") != g(order, "locale") {
-			return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "Updating the locale of a draft order is not supported yet")
+			if err := orderworkflows.RetranslateOrder(e, fmt.Sprint(id), fmt.Sprint(g(in, "locale")), recs(g(order, "shipping_methods")), true); err != nil {
+				return nil, err
+			}
 		}
 		ev := dal.NewRecord()
 		ev.Set("id", id)
