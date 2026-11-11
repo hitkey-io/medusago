@@ -20,7 +20,7 @@ import (
 )
 
 // Interop with the upstream RedisEventBusService on the same Redis: needs
-// MEDUSA_TEST_REDIS_URL (the database is flushed) and the built reference
+// MEDUSA_TEST_REDIS_URL (its event bus keys are deleted) and the built reference
 // checkout (MEDUSA_REFERENCE_DIR, default reference/medusa).
 
 func setup(t *testing.T) (string, string) {
@@ -39,9 +39,7 @@ func setup(t *testing.T) (string, string) {
 	opt, _ := redis.ParseURL(url)
 	c := redis.NewClient(opt)
 	defer c.Close()
-	if err := c.FlushDB(context.Background()).Err(); err != nil {
-		t.Fatal(err)
-	}
+	deleteKeys(t, c, "RedisEventBusService:*", "staging:*")
 	return url, ref
 }
 
@@ -196,4 +194,18 @@ func boolString(b bool) string {
 		return "true"
 	}
 	return "false"
+}
+
+func deleteKeys(t *testing.T, c *redis.Client, patterns ...string) {
+	t.Helper()
+	ctx := context.Background()
+	for _, p := range patterns {
+		keys, err := c.Keys(ctx, p).Result()
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(keys) > 0 {
+			c.Del(ctx, keys...)
+		}
+	}
 }

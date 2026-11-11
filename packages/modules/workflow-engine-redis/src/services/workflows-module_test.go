@@ -19,7 +19,7 @@ import (
 )
 
 // Two instances (containers) of the Redis engine on the same Redis
-// (MEDUSA_TEST_REDIS_URL, flushed): an async step waiting in one instance
+// (MEDUSA_TEST_REDIS_URL): an async step waiting in one instance
 // is completed through the other; the notifications of the run reach the
 // subscribers of the other instance; the running checkpoint is kept under
 // dtrx:<workflowId>:<transactionId> and removed when the run finishes.
@@ -67,8 +67,10 @@ func TestStepCompletedFromAnotherInstance(t *testing.T) {
 	rc := redis.NewClient(opt)
 	defer rc.Close()
 	ctx := context.Background()
-	if err := rc.FlushDB(ctx).Err(); err != nil {
-		t.Fatal(err)
+	for _, p := range []string{"dtrx:*", "bull:medusa-workflows*", "bull:workflows-cleaner*"} {
+		if keys := rc.Keys(ctx, p).Val(); len(keys) > 0 {
+			rc.Del(ctx, keys...)
+		}
 	}
 	_, ca := newEngine(t, url)
 	_, cb := newEngine(t, url)
