@@ -271,6 +271,25 @@ func (i *identityProviderService) Update(ctx context.Context, entityID string, d
 	return identity, nil
 }
 
+// SetState mirrors setState: the state is kept in the cache (20 minutes by
+// default).
+func (i *identityProviderService) SetState(ctx context.Context, key string, value *dal.Record, ttlSeconds int) error {
+	if ttlSeconds == 0 {
+		ttlSeconds = 1200
+	}
+	cacheSet(key, value, ttlSeconds)
+	return nil
+}
+
+// GetState mirrors getState: a state is single use (consumed on read).
+func (i *identityProviderService) GetState(ctx context.Context, key string) (*dal.Record, error) {
+	v := cacheGet(key)
+	if v != nil {
+		cacheInvalidate(key)
+	}
+	return v, nil
+}
+
 func toRecords(v any) []*dal.Record {
 	switch t := v.(type) {
 	case []*dal.Record:

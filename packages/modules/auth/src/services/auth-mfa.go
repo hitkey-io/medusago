@@ -72,6 +72,12 @@ func cacheGet(key string) *dal.Record {
 	return cloneRecord(e.value)
 }
 
+func cacheInvalidate(key string) {
+	challengeCache.mu.Lock()
+	delete(challengeCache.entries, key)
+	challengeCache.mu.Unlock()
+}
+
 func cloneRecord(r *dal.Record) *dal.Record {
 	out := dal.NewRecord()
 	for _, k := range r.Keys() {

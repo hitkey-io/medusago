@@ -50,6 +50,10 @@ type AuthIdentityProviderService interface {
 	Retrieve(ctx context.Context, entityID string) (*dal.Record, error)
 	Create(ctx context.Context, data CreateAuthIdentityInput) (*dal.Record, error)
 	Update(ctx context.Context, entityID string, data *dal.Record) (*dal.Record, error)
+	// SetState stores an OAuth state (ttlSeconds 0: 20 minutes).
+	SetState(ctx context.Context, key string, value *dal.Record, ttlSeconds int) error
+	// GetState returns and consumes a stored state (nil: none).
+	GetState(ctx context.Context, key string) (*dal.Record, error)
 }
 
 // AuthProvider mirrors IAuthProvider (AbstractAuthModuleProvider).

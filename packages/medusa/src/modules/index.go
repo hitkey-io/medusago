@@ -11,6 +11,8 @@ var Registry = map[string]*modulessdk.ModuleExports{
 	"@medusajs/medusa/file-s3":                  &FileS3,
 	"@medusajs/medusa/file":                     &File,
 	"@medusajs/medusa/auth-emailpass":           &AuthEmailpass,
+	"@medusajs/medusa/auth-github":              &AuthGithub,
+	"@medusajs/medusa/auth-google":              &AuthGoogle,
 	"@medusajs/medusa/event-bus-local":          &EventBusLocal,
 	"@medusajs/medusa/fulfillment-manual":       &FulfillmentManual,
 	"@medusajs/medusa/api-key":                  &ApiKey,

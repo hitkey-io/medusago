@@ -1,0 +1,1057 @@
+{
+  "clear": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "requests": []
+    }
+  },
+  "providers": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "providers": [
+        {
+          "id": "google",
+          "identifier": "google",
+          "display_name": "Google Authentication",
+          "flow": "redirect"
+        },
+        {
+          "id": "github",
+          "identifier": "github",
+          "display_name": "Github Authentication",
+          "flow": "redirect"
+        },
+        {
+          "id": "emailpass",
+          "identifier": "emailpass",
+          "display_name": "Email/Password Authentication",
+          "flow": "credentials"
+        }
+      ]
+    }
+  },
+  "gh_auth": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://github.com/login/oauth/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgithub%2Fcallback&client_id=gh-client&response_type=code&state=154c99beb6c4565b58b98bf790ce30b757d3e9a9f5b3700b8b3454ecf7d4ff21"
+    }
+  },
+  "gh_auth_post": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://github.com/login/oauth/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fcustom%3Fnext%3D%2Faccount%26x%3Da+b%7Ec&client_id=gh-client&response_type=code&state=6e2d26a4e09bb6f69aadd386edb23f84579858c2e8ffe1a20d3102d384c6fb2f"
+    }
+  },
+  "gh_auth_post_null": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://github.com/login/oauth/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgithub%2Fcallback&client_id=gh-client&response_type=code&state=3f46108421bc027bc769af3cb6aea4503329cd1b18cec8173f093cb1217d0741"
+    }
+  },
+  "gh_auth_error": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "The user denied access, read more at: https://example.test/oauth-error"
+    }
+  },
+  "gh_auth_error_partial": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "undefined, read more at: undefined"
+    }
+  },
+  "gh_user_actor": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "The actor type user is not allowed to use the auth provider github"
+    }
+  },
+  "gh_register": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Github does not support registration. Use method `authenticate` instead."
+    }
+  },
+  "gh_cb_no_code": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "No code provided"
+    }
+  },
+  "gh_cb_error": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Denied, read more at: undefined"
+    }
+  },
+  "gh_cb_bad_state": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "No state provided, or session expired"
+    }
+  },
+  "gh_cb_no_state": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "No state provided, or session expired"
+    }
+  },
+  "gh_cb_bad_code": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Could not exchange token, 401, Unauthorized"
+    }
+  },
+  "gh_cb_replay": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "No state provided, or session expired"
+    }
+  },
+  "gh_cb_ok": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6IiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzRNWUhXSzM4VFI2NzNNTkpWREhSWlIiLCJhdXRoX3Byb3ZpZGVyIjoiZ2l0aHViIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7fSwidXNlcl9tZXRhZGF0YSI6eyJwcm9maWxlX3VybCI6Imh0dHBzOi8vYXBpLmdpdGh1Yi5jb20vdXNlcnMvb2N0byIsImF2YXRhciI6Imh0dHBzOi8vZXhhbXBsZS50ZXN0L29jdG8ucG5nIiwiZW1haWwiOiJvY3RvQGV4YW1wbGUudGVzdCIsIm5hbWUiOiJPY3RvIENhdCIsImNvbXBhbnkiOm51bGwsInR3b19mYWN0b3JfYXV0aGVudGljYXRpb24iOnRydWV9LCJpYXQiOjE3OTQzNzg3NzgsImV4cCI6MTc5NDQ2NTE3OH0.ojShfjKLgNpotlzr-m7PBAgECjIeblgsTP3tN8aU78s"
+    }
+  },
+  "gh_requests": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/github/login/oauth/access_token",
+          "query": "client_id=gh-client&client_secret=gh-secret&code=bad&redirect_uri=http://localhost:8000/auth/github/callback",
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/github/login/oauth/access_token",
+          "query": "client_id=gh-client&client_secret=gh-secret&code=good&redirect_uri=http://localhost:8000/custom?next=/account&x=a%20b~c",
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/github-api/user",
+          "query": "",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "Bearer gho_good"
+          }
+        }
+      ]
+    }
+  },
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzg3NzgsImV4cCI6MTc5NDQ2NTE3OH0.6VIHeJ6ATiyaccF18lZY0tg5egfGp6L3FDY5q5EycJ4"
+    }
+  },
+  "pk": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M74MYHZAB1F0Y0AV7T8XSZKB",
+        "token": "pk_4ad61a795917f7ee3506f09b76d4060a3d2040376c77aa26d8c1da2e97378608",
+        "redacted": "pk_4ad***608",
+        "title": "Store",
+        "type": "publishable",
+        "last_used_at": null,
+        "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "revoked_by": null,
+        "revoked_at": null,
+        "created_at": "2026-11-11T06:32:58.603Z",
+        "updated_at": "2026-11-11T06:32:58.603Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "customer": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customer": {
+        "id": "cus_01M74MYJ089APETS3ZSS6HPDSN",
+        "email": "octo@example.test",
+        "company_name": null,
+        "first_name": "Octo",
+        "last_name": null,
+        "phone": null,
+        "metadata": null,
+        "has_account": true,
+        "deleted_at": null,
+        "created_at": "2026-11-11T06:32:58.632Z",
+        "updated_at": "2026-11-11T06:32:58.632Z",
+        "addresses": []
+      }
+    }
+  },
+  "gh_auth2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://github.com/login/oauth/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgithub%2Fcallback&client_id=gh-client&response_type=code&state=b1c453669b699099527a8f9a82e400ec36ddf400b56097017c5673fcc5506c6b"
+    }
+  },
+  "gh_cb_again": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6ImN1c18wMU03NE1ZSjA4OUFQRVRTM1pTUzZIUERTTiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzRNWUhXSzM4VFI2NzNNTkpWREhSWlIiLCJhdXRoX3Byb3ZpZGVyIjoiZ2l0aHViIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7ImN1c3RvbWVyX2lkIjoiY3VzXzAxTTc0TVlKMDg5QVBFVFMzWlNTNkhQRFNOIn0sInVzZXJfbWV0YWRhdGEiOnsibmFtZSI6Ik9jdG8gQ2F0IiwiZW1haWwiOiJvY3RvQGV4YW1wbGUudGVzdCIsImF2YXRhciI6Imh0dHBzOi8vZXhhbXBsZS50ZXN0L29jdG8ucG5nIiwiY29tcGFueSI6bnVsbCwicHJvZmlsZV91cmwiOiJodHRwczovL2FwaS5naXRodWIuY29tL3VzZXJzL29jdG8iLCJ0d29fZmFjdG9yX2F1dGhlbnRpY2F0aW9uIjp0cnVlfSwiaWF0IjoxNzk0Mzc4Nzc4LCJleHAiOjE3OTQ0NjUxNzh9.9HU2Uynu648-QDbfo6WBKAKXR4uiqMQtuU2VHdk7otw"
+    }
+  },
+  "me": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customer": {
+        "email": "octo@example.test",
+        "first_name": "Octo",
+        "id": "cus_01M74MYJ089APETS3ZSS6HPDSN"
+      }
+    }
+  },
+  "gh_auth3": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://github.com/login/oauth/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgithub%2Fcallback&client_id=gh-client&response_type=code&state=f781aebde8757270b73acba7ed9292136ba9160ff64239ba63675ddaa9c2adbe"
+    }
+  },
+  "gh_cb_noexpiry": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Invalid time value"
+    }
+  },
+  "gh_auth4": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://github.com/login/oauth/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgithub%2Fcallback&client_id=gh-client&response_type=code&state=ecf1fe1ce3f0362cad5f553d2fb58b5ae2769ac3450f841346e2d37f9b7d913f"
+    }
+  },
+  "gh_cb_notoken": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Invalid time value"
+    }
+  },
+  "gh_auth5": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://github.com/login/oauth/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgithub%2Fcallback&client_id=gh-client&response_type=code&state=a10dc7f87165b0f8ed62182ffc04f0d25fc39f4d08120b7711ff54ea143e1bdd"
+    }
+  },
+  "gh_cb_notjson": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Unexpected token 'a', \"access_tok\"... is not valid JSON"
+    }
+  },
+  "gh_auth6": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://github.com/login/oauth/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgithub%2Fcallback&client_id=gh-client&response_type=code&state=9b24fedaf66b23d0e8dc0161d3bc38bfc93728151317411eb566fd017198047d"
+    }
+  },
+  "gh_cb_baduser": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Cannot read properties of undefined (reading 'toString')"
+    }
+  },
+  "gh_auth7": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://github.com/login/oauth/authorize?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgithub%2Fcallback&client_id=gh-client&response_type=code&state=34b8bf55b9dfbf81909de3a3594aeaf47eed486a43c60f962a0344a2a1f0e801"
+    }
+  },
+  "gh_cb_other": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6IiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzRNWUoyWVBQUjRQVlo1UjVNNTlSVFAiLCJhdXRoX3Byb3ZpZGVyIjoiZ2l0aHViIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7fSwidXNlcl9tZXRhZGF0YSI6eyJwcm9maWxlX3VybCI6Imh0dHBzOi8vYXBpLmdpdGh1Yi5jb20vdXNlcnMvb3RoZXIiLCJhdmF0YXIiOiJodHRwczovL2V4YW1wbGUudGVzdC9vdGhlci5wbmciLCJlbWFpbCI6bnVsbCwibmFtZSI6bnVsbCwiY29tcGFueSI6IkV4YW1wbGUiLCJ0d29fZmFjdG9yX2F1dGhlbnRpY2F0aW9uIjpmYWxzZX0sImlhdCI6MTc5NDM3ODc3OCwiZXhwIjoxNzk0NDY1MTc4fQ.o5lZzbXeceP6aAXmUm7ZYcoBgSjHVA30gkufyAN-NZw"
+    }
+  },
+  "gh_requests2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/github/login/oauth/access_token",
+          "query": "client_id=gh-client&client_secret=gh-secret&code=good&redirect_uri=http://localhost:8000/auth/github/callback",
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/github-api/user",
+          "query": "",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "Bearer gho_good"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/github/login/oauth/access_token",
+          "query": "client_id=gh-client&client_secret=gh-secret&code=noexpiry&redirect_uri=http://localhost:8000/auth/github/callback",
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/github/login/oauth/access_token",
+          "query": "client_id=gh-client&client_secret=gh-secret&code=notoken&redirect_uri=http://localhost:8000/auth/github/callback",
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/github/login/oauth/access_token",
+          "query": "client_id=gh-client&client_secret=gh-secret&code=notjson&redirect_uri=http://localhost:8000/auth/github/callback",
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/github/login/oauth/access_token",
+          "query": "client_id=gh-client&client_secret=gh-secret&code=baduser&redirect_uri=http://localhost:8000/auth/github/callback",
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/github-api/user",
+          "query": "",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "Bearer gho_baduser"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/github/login/oauth/access_token",
+          "query": "client_id=gh-client&client_secret=gh-secret&code=other&redirect_uri=http://localhost:8000/auth/github/callback",
+          "headers": {
+            "accept": "application/json"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/github-api/user",
+          "query": "",
+          "headers": {
+            "accept": "application/json",
+            "authorization": "Bearer gho_other"
+          }
+        }
+      ]
+    }
+  },
+  "go_auth": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=76d992945839e559d0cb52c20ce6844331da30c5b2cab29a65be5db346ba703c"
+    }
+  },
+  "go_auth_post": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fgoogle-done&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=cab98d8cb2063224f4a62f44ca226a391c75ad0cd61d1ffbc4fa280613ffdda0"
+    }
+  },
+  "go_auth_error": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "undefined, read more at: undefined"
+    }
+  },
+  "go_register": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Google does not support registration. Use method `authenticate` instead."
+    }
+  },
+  "go_cb_no_code": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "No code provided"
+    }
+  },
+  "go_cb_bad_state": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "No state provided, or session expired"
+    }
+  },
+  "go_cb_ok": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6IiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzRNWUo0MDhKQUJSRk5LRkYwQkdCRzYiLCJhdXRoX3Byb3ZpZGVyIjoiZ29vZ2xlIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7fSwidXNlcl9tZXRhZGF0YSI6eyJuYW1lIjoiR28gUGhlciIsImVtYWlsIjoiZ29waGVyQGV4YW1wbGUudGVzdCIsInBpY3R1cmUiOiJodHRwczovL2V4YW1wbGUudGVzdC9nb3BoZXIucG5nIiwiZ2l2ZW5fbmFtZSI6IkdvIiwiZmFtaWx5X25hbWUiOiJQaGVyIn0sImlhdCI6MTc5NDM3ODc3OCwiZXhwIjoxNzk0NDY1MTc4fQ.MJG6UPhqwynUURsaPR1ITUwBksGK-cpe1P7FIGZ4oqg"
+    }
+  },
+  "go_requests": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=good&redirect_uri=http://localhost:8000/google-done&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/googleapis/oauth2/v3/certs",
+          "query": "",
+          "headers": {}
+        }
+      ]
+    }
+  },
+  "go_a1": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=f29dd264109ef51948f7eae2d2d2d5a703afaa3edb660d820d29d40a62d47572"
+    }
+  },
+  "go_cb_again": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6IiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzRNWUo0MDhKQUJSRk5LRkYwQkdCRzYiLCJhdXRoX3Byb3ZpZGVyIjoiZ29vZ2xlIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7fSwidXNlcl9tZXRhZGF0YSI6eyJuYW1lIjoiR28gUGhlciIsImVtYWlsIjoiZ29waGVyQGV4YW1wbGUudGVzdCIsInBpY3R1cmUiOiJodHRwczovL2V4YW1wbGUudGVzdC9nb3BoZXIucG5nIiwiZ2l2ZW5fbmFtZSI6IkdvIiwiZmFtaWx5X25hbWUiOiJQaGVyIn0sImlhdCI6MTc5NDM3ODc3OCwiZXhwIjoxNzk0NDY1MTc4fQ.MJG6UPhqwynUURsaPR1ITUwBksGK-cpe1P7FIGZ4oqg"
+    }
+  },
+  "go_a2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=6399f6c35c40fda8e18c51801fe9ffb0f18325cce72ccc2a0388a9ec3d1bc1ea"
+    }
+  },
+  "go_cb_bad": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Could not exchange token, 400, Bad Request"
+    }
+  },
+  "go_a3": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=23a8c3032c708f5f400f7872e3347bb2c936e72103f33a14af6fdbeaa2be2fa9"
+    }
+  },
+  "go_cb_unverified": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Email not verified, cannot proceed with authentication"
+    }
+  },
+  "go_a4": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=60d3a57a1c79c8d0b718142eff0a2a64abd78bf5b1ffbc82dcbfefd1e8fa389a"
+    }
+  },
+  "go_cb_wrongaud": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Could not verify Google id_token: jwt audience invalid. expected: google-client.apps.example.test"
+    }
+  },
+  "go_a5": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=d040c84a98166245308bf4e014ceb1740acdb3c1536c2b4e05af3cc80c91cd33"
+    }
+  },
+  "go_cb_expired": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Could not verify Google id_token: jwt expired"
+    }
+  },
+  "go_a6": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=dacb1324f4dbf44e6376da5b2da9f1e71830466d248e61eb2af2574172b2163c"
+    }
+  },
+  "go_cb_nokid": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Could not verify Google id_token: error in secret or public key callback: ID token is missing 'kid' header"
+    }
+  },
+  "go_a7": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=ef94c7ecaa3155e3239ac93841049702f2c5103179f6fc9ade53be73616fd26a"
+    }
+  },
+  "go_cb_unknownkid": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Could not verify Google id_token: error in secret or public key callback: Unable to find a signing key that matches 'unknown-key'"
+    }
+  },
+  "go_a8": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=c4542b3a7dcd018b55e204dd54005c6a1c8aeb8b5317b0f51115aa06ec8a188b"
+    }
+  },
+  "go_cb_badiss": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Could not verify Google id_token: jwt issuer invalid. expected: https://accounts.google.com,accounts.google.com"
+    }
+  },
+  "go_a9": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=0415b4e8c5e3fbe6320fa7bd83117e0fdbd4c44b7cf40ef94b9cf0c020153d26"
+    }
+  },
+  "go_cb_nosub": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "id_token is missing 'sub' claim"
+    }
+  },
+  "go_a10": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=442d955e210e019f719498f212309a8ef59d44be3f0c1267ab2a691ca5aab2eb"
+    }
+  },
+  "go_cb_badsig": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Could not verify Google id_token: invalid signature"
+    }
+  },
+  "go_a11": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=0649e4a8f6329e0c5d03da979af0c14645cfbc954873886ede46e4dc4cdff328"
+    }
+  },
+  "go_cb_hs256": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Could not verify Google id_token: invalid algorithm"
+    }
+  },
+  "go_a12": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=bc3a667af8b89356aa6743fc59c957ffabc9d8e6e95d2ee41b4bd3a1f05cf025"
+    }
+  },
+  "go_cb_noidtoken": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Authentication failed"
+    }
+  },
+  "go_a13": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "location": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fauth%2Fgoogle%2Fcallback&client_id=google-client.apps.example.test&response_type=code&scope=email+profile+openid&state=ccbf7051aa92ea0802399173b98a0734d3ac525abc8193fe9997ae706480f5a2"
+    }
+  },
+  "go_cb_other": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6IiIsImFjdG9yX3R5cGUiOiJjdXN0b21lciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzRNWUo2NUVHMFpHODJKOUNFNFI2QkgiLCJhdXRoX3Byb3ZpZGVyIjoiZ29vZ2xlIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7fSwidXNlcl9tZXRhZGF0YSI6eyJuYW1lIjoiR28gUGhlciIsImVtYWlsIjoib3RoZXJAZXhhbXBsZS50ZXN0IiwicGljdHVyZSI6Imh0dHBzOi8vZXhhbXBsZS50ZXN0L2dvcGhlci5wbmciLCJnaXZlbl9uYW1lIjoiR28iLCJmYW1pbHlfbmFtZSI6IlBoZXIifSwiaWF0IjoxNzk0Mzc4Nzc4LCJleHAiOjE3OTQ0NjUxNzh9.uOiMZrumsSXiDlVS6wX03jy4l_nEHqGs7w0RTbxgUk4"
+    }
+  },
+  "go_requests2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=good&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=bad&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=unverified&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=wrongaud&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=expired&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=nokid&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=unknownkid&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/googleapis/oauth2/v3/certs",
+          "query": "",
+          "headers": {}
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=badiss&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=nosub&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=badsig&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=hs256&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=noidtoken&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/google-oauth/token",
+          "query": "client_id=google-client.apps.example.test&client_secret=google-secret&code=other&redirect_uri=http://localhost:8000/auth/google/callback&grant_type=authorization_code",
+          "headers": {
+            "accept": "*/*"
+          }
+        }
+      ]
+    }
+  }
+}
