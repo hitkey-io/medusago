@@ -228,8 +228,10 @@ var finishedStates = map[string]bool{
 // if absent for the first checkpoint of a transaction with a given id) and
 // removed when it finishes; the workflow_execution row is upserted.
 func (s *RedisDistributedTransactionStorage) SaveExecution(ctx context.Context, row composer.ExecutionRow) error {
-	if err := upsertExecution(ctx, s.opts.DB, row); err != nil {
-		return err
+	if s.opts.DB != nil {
+		if err := upsertExecution(ctx, s.opts.DB, row); err != nil {
+			return err
+		}
 	}
 	return s.saveCheckpoint(ctx, row)
 }
@@ -273,8 +275,10 @@ func (s *RedisDistributedTransactionStorage) saveCheckpoint(ctx context.Context,
 // DeleteExecution mirrors deleteFromDb + the checkpoint removal of a
 // finished transaction.
 func (s *RedisDistributedTransactionStorage) DeleteExecution(ctx context.Context, workflowID, transactionID, runID string) error {
-	if _, err := s.opts.DB.Exec(ctx, `delete from "workflow_execution" where "run_id" = $1`, runID); err != nil {
-		return dal.MapDBError(err)
+	if s.opts.DB != nil {
+		if _, err := s.opts.DB.Exec(ctx, `delete from "workflow_execution" where "run_id" = $1`, runID); err != nil {
+			return dal.MapDBError(err)
+		}
 	}
 	return s.opts.Client.Unlink(ctx, s.opts.Client.KeyPrefix+KeyName(workflowID, transactionID)).Err()
 }
