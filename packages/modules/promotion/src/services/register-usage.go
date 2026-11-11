@@ -295,6 +295,9 @@ func (s *PromotionModuleService) registerCampaignBudgetUsageByAttribute(ctx cont
 
 // RevertUsage mirrors revertUsage.
 func (s *PromotionModuleService) RevertUsage(ctx context.Context, actions []*dal.Record, registrationContext *dal.Record) error {
+	// @EmitEvents runs inside the transaction upstream (before the flush):
+	// the entity mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	computedActions := UsageActions(actions)
 	return s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
 		t := s.with(tx)

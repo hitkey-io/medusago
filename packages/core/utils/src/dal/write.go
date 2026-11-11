@@ -926,6 +926,12 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 				}
 			}
 			for _, relation := range group.entity.Cascades.Delete {
+				// performCascadingSoftDeletion skips the inverse side of a
+				// one-to-one: the populated relation is a Reference wrapper
+				// (no deleted_at), so the child is left as it is
+				if p, ok := group.entity.MetaProperty(relation); ok && p.Kind == "1:1" && !p.Owner {
+					continue
+				}
 				children, err := r.loadRelation(ctx, group.insts, relation, idm, true, nil)
 				if err != nil {
 					return nil, err

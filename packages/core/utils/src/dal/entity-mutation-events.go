@@ -148,6 +148,13 @@ type txStarter interface {
 // schema's sink (unless the context disables events).
 func Transaction(ctx context.Context, db Querier, schema *Schema, fn func(tx Querier) error) error {
 	if t, ok := db.(*EventTx); ok {
+		if EventsDisabled(ctx) {
+			// a nested call without events (no message aggregator in its
+			// context): its mutations are recorded apart and dropped
+			return pgx.BeginFunc(ctx, t.Tx, func(tx pgx.Tx) error {
+				return fn(&EventTx{Tx: tx, rec: &Recorder{}, nested: true})
+			})
+		}
 		return pgx.BeginFunc(ctx, t, func(tx pgx.Tx) error { return fn(tx) })
 	}
 	starter, ok := db.(txStarter)

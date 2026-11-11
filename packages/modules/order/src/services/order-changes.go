@@ -226,6 +226,9 @@ func (s *OrderModuleService) setChangeStatus(ctx context.Context, data []any, in
 
 // CancelOrderChange mirrors cancelOrderChange (ids or { id, ... } data).
 func (s *OrderModuleService) CancelOrderChange(ctx context.Context, data []any) error {
+	// @EmitEvents runs inside the transaction upstream (before the flush):
+	// the entity mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	return s.InTransaction(ctx, func(m *utilsmodulessdk.MedusaService) error {
 		_, err := s.tx(m).setChangeStatus(ctx, data, false, "canceled_at", "canceled")
 		return err
@@ -617,21 +620,33 @@ func itemActions(data *dal.Record, action string, extra func(a *dal.Record)) []a
 
 // RegisterFulfillment mirrors registerFulfillment.
 func (s *OrderModuleService) RegisterFulfillment(ctx context.Context, data *dal.Record) error {
+	// @EmitEvents runs inside the transaction upstream (before the flush):
+	// the entity mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	return s.registerChange(ctx, data, itemActions(data, utils.FulfillItem, nil))
 }
 
 // RegisterShipment mirrors registerShipment.
 func (s *OrderModuleService) RegisterShipment(ctx context.Context, data *dal.Record) error {
+	// @EmitEvents runs inside the transaction upstream (before the flush):
+	// the entity mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	return s.registerChange(ctx, data, itemActions(data, utils.ShipItem, nil))
 }
 
 // RegisterDelivery mirrors registerDelivery.
 func (s *OrderModuleService) RegisterDelivery(ctx context.Context, data *dal.Record) error {
+	// @EmitEvents runs inside the transaction upstream (before the flush):
+	// the entity mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	return s.registerChange(ctx, data, itemActions(data, utils.DeliverItem, nil))
 }
 
 // CancelFulfillment mirrors cancelFulfillment.
 func (s *OrderModuleService) CancelFulfillment(ctx context.Context, data *dal.Record) error {
+	// @EmitEvents runs inside the transaction upstream (before the flush):
+	// the entity mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	return s.registerChange(ctx, data, itemActions(data, utils.CancelItemFulfillment, func(a *dal.Record) {
 		setDefined(a, "claim_id", data, "claim_id")
 		setDefined(a, "exchange_id", data, "exchange_id")

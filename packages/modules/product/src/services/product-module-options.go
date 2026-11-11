@@ -72,6 +72,9 @@ func (s *ProductModuleService) UpdateProductOptions(ctx context.Context, idOrSel
 
 // UpsertProductOptions mirrors upsertProductOptions.
 func (s *ProductModuleService) UpsertProductOptions(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	// @EmitEvents runs inside the transaction upstream (before the flush):
+	// the entity mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	var out []*dal.Record
 	err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
 		t := &ProductModuleService{MedusaService: tx, db: tx.DB()}

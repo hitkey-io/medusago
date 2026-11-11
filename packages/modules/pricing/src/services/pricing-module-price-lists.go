@@ -209,7 +209,9 @@ func (s *PricingModuleService) UpdatePriceLists(ctx context.Context, data []*dal
 			}
 			entries[i] = entry
 		}
-		out, err = tx.Internal("PriceList").UpsertWithReplace(ctx, entries, []string{"price_list_rules"})
+		// upstream calls upsertWithReplace without the shared context: the
+		// mutations reach no message aggregator
+		out, err = tx.Internal("PriceList").UpsertWithReplace(dal.WithoutEvents(ctx), entries, []string{"price_list_rules"})
 		return err
 	})
 	return out, err

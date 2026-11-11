@@ -346,6 +346,9 @@ func (s *ProductModuleService) UpdateProductVariants(ctx context.Context, idOrSe
 
 // UpsertProductVariants mirrors upsertProductVariants.
 func (s *ProductModuleService) UpsertProductVariants(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	// @EmitEvents runs inside the transaction upstream (before the flush):
+	// the entity mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	var forCreate, forUpdate []*dal.Record
 	for _, v := range data {
 		if id, _ := v.Get("id"); id != nil && id != "" {
