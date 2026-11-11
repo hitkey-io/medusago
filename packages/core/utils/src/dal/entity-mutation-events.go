@@ -63,6 +63,21 @@ type Recorder struct {
 	mu      sync.Mutex
 	pending []mutation
 	ready   []ReadyEvent
+	// persisted is the order entity classes were persisted in the unit of
+	// work when a service inserts them in another order (see PersistOrder).
+	persisted []string
+}
+
+// PersistOrder records the order in which upstream persists entity classes
+// in the current unit of work (em.create order) when the Go service inserts
+// them in another order: the commit order of the flushed events follows the
+// persist order, not the insert order.
+func PersistOrder(db Querier, classNames ...string) {
+	if rec := recorderOf(db); rec != nil {
+		rec.mu.Lock()
+		rec.persisted = append(rec.persisted, classNames...)
+		rec.mu.Unlock()
+	}
 }
 
 // EventSink receives the events of a committed transaction.
@@ -305,7 +320,7 @@ func (r *Recorder) flushLocked() {
 	if len(r.pending) == 0 {
 		return
 	}
-	order := commitOrder(r.pending)
+	order := commitOrder(r.pending, r.persisted)
 	emit := func(change int, reverse bool) {
 		for i := range order {
 			c := order[i]
@@ -323,6 +338,7 @@ func (r *Recorder) flushLocked() {
 	emit(changeUpdate, false)
 	emit(changeDelete, true)
 	r.pending = nil
+	r.persisted = nil
 }
 
 func mutationEvent(m mutation) ReadyEvent {
@@ -367,7 +383,7 @@ func BuildModuleResourceEventName(prefix, objectName, action string) string {
 // sets (in change set order) sorted by CommitOrderCalculator, the reverse
 // post order of a depth first search where a class referenced by a to-one
 // owner (or an owning m:n without pivot entity) comes before the owner.
-func commitOrder(pending []mutation) []string {
+func commitOrder(pending []mutation, persisted []string) []string {
 	type edge struct {
 		to     string
 		weight int
@@ -385,8 +401,17 @@ func commitOrder(pending []mutation) []string {
 			continue
 		}
 		nodes[c] = &node{}
-		names = append(names, c)
 		entities[c] = m.entity
+	}
+	for _, c := range persisted {
+		if _, ok := nodes[c]; ok && !slicesContains(names, c) {
+			names = append(names, c)
+		}
+	}
+	for _, m := range pending {
+		if c := m.entity.Meta.ClassName; !slicesContains(names, c) {
+			names = append(names, c)
+		}
 	}
 	for _, name := range names {
 		for _, p := range entities[name].Meta.Properties {
@@ -516,4 +541,13 @@ func (r *Repository) dispatchPerformedActions(pa *performedActions) {
 			}
 		}
 	}
+}
+
+func slicesContains(list []string, s string) bool {
+	for _, x := range list {
+		if x == s {
+			return true
+		}
+	}
+	return false
 }

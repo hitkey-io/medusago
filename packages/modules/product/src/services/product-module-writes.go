@@ -449,7 +449,9 @@ func (s *ProductModuleService) createProducts(ctx context.Context, data []*dal.R
 		toCreate = append(toCreate, c)
 	}
 
-	// options created with the products (inserted before them upstream)
+	// options created with the products (inserted before them upstream,
+	// persisted after them)
+	dal.PersistOrder(s.db, "Product", "ProductOption")
 	optionIDsByProduct := map[string][]string{}
 	var allOptions []*dal.Record
 	createdOptionByInput := map[*dal.Record]*dal.Record{}
