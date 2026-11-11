@@ -1,0 +1,518 @@
+{
+  "options": {
+    "api_key": "SG.test-key",
+    "from": "store@example.test"
+  },
+  "cases": [
+    {
+      "name": "template",
+      "input": {
+        "to": "customer@example.test",
+        "channel": "email",
+        "template": "d-123",
+        "data": {
+          "order": {
+            "id": "order_1",
+            "total": 10.5
+          },
+          "list": [
+            1,
+            "a"
+          ]
+        }
+      },
+      "result": {},
+      "requests": [
+        {
+          "method": "POST",
+          "url": "/v3/mail/send",
+          "headers": {
+            "authorization": "Bearer SG.test-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "body": {
+            "from": {
+              "email": "store@example.test"
+            },
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "customer@example.test"
+                  }
+                ],
+                "dynamic_template_data": {
+                  "order": {
+                    "id": "order_1",
+                    "total": 10.5
+                  },
+                  "list": [
+                    1,
+                    "a"
+                  ]
+                }
+              }
+            ],
+            "template_id": "d-123"
+          }
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "input": {
+        "to": "customer@example.test",
+        "channel": "email",
+        "template": "ignored",
+        "content": {
+          "subject": "Hello",
+          "html": "<p>Hi</p>",
+          "text": "Hi"
+        },
+        "data": {
+          "a": 1
+        }
+      },
+      "result": {},
+      "requests": [
+        {
+          "method": "POST",
+          "url": "/v3/mail/send",
+          "headers": {
+            "authorization": "Bearer SG.test-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "body": {
+            "from": {
+              "email": "store@example.test"
+            },
+            "subject": "Hello",
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "customer@example.test"
+                  }
+                ]
+              }
+            ],
+            "content": [
+              {
+                "value": "<p>Hi</p>",
+                "type": "text/html"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "from_override",
+      "input": {
+        "to": "customer@example.test",
+        "from": "  other@example.test  ",
+        "channel": "email",
+        "template": "d-1"
+      },
+      "result": {},
+      "requests": [
+        {
+          "method": "POST",
+          "url": "/v3/mail/send",
+          "headers": {
+            "authorization": "Bearer SG.test-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "body": {
+            "from": {
+              "email": "other@example.test"
+            },
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "customer@example.test"
+                  }
+                ]
+              }
+            ],
+            "template_id": "d-1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "from_blank",
+      "input": {
+        "to": "customer@example.test",
+        "from": "   ",
+        "channel": "email",
+        "template": "d-1"
+      },
+      "result": {},
+      "requests": [
+        {
+          "method": "POST",
+          "url": "/v3/mail/send",
+          "headers": {
+            "authorization": "Bearer SG.test-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "body": {
+            "from": {
+              "email": "store@example.test"
+            },
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "customer@example.test"
+                  }
+                ]
+              }
+            ],
+            "template_id": "d-1"
+          }
+        }
+      ]
+    },
+    {
+      "name": "attachments",
+      "input": {
+        "to": "customer@example.test",
+        "channel": "email",
+        "template": "d-2",
+        "attachments": [
+          {
+            "content": "aGVsbG8=",
+            "filename": "a.txt",
+            "content_type": "text/plain"
+          },
+          {
+            "content": "Ymll",
+            "filename": "b.png",
+            "content_type": "image/png",
+            "disposition": "inline",
+            "id": "logo"
+          }
+        ]
+      },
+      "result": {},
+      "requests": [
+        {
+          "method": "POST",
+          "url": "/v3/mail/send",
+          "headers": {
+            "authorization": "Bearer SG.test-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "body": {
+            "from": {
+              "email": "store@example.test"
+            },
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "customer@example.test"
+                  }
+                ]
+              }
+            ],
+            "attachments": [
+              {
+                "content": "aGVsbG8=",
+                "filename": "a.txt",
+                "content_type": "text/plain",
+                "disposition": "attachment"
+              },
+              {
+                "content": "Ymll",
+                "filename": "b.png",
+                "content_type": "image/png",
+                "disposition": "inline",
+                "id": "logo"
+              }
+            ],
+            "template_id": "d-2"
+          }
+        }
+      ]
+    },
+    {
+      "name": "personalizations",
+      "input": {
+        "to": "ignored@example.test",
+        "channel": "email",
+        "template": "d-3",
+        "data": {
+          "x": 1
+        },
+        "provider_data": {
+          "personalizations": [
+            {
+              "to": [
+                {
+                  "email": "p1@example.test"
+                }
+              ],
+              "dynamic_template_data": {
+                "y": 2
+              }
+            }
+          ]
+        }
+      },
+      "result": {},
+      "requests": [
+        {
+          "method": "POST",
+          "url": "/v3/mail/send",
+          "headers": {
+            "authorization": "Bearer SG.test-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "body": {
+            "from": {
+              "email": "store@example.test"
+            },
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "p1@example.test"
+                  }
+                ],
+                "dynamic_template_data": {
+                  "x": 1,
+                  "y": 2
+                }
+              }
+            ],
+            "template_id": "d-3"
+          }
+        }
+      ]
+    },
+    {
+      "name": "personalizations_empty",
+      "input": {
+        "to": "customer@example.test",
+        "channel": "email",
+        "template": "d-3",
+        "provider_data": {
+          "personalizations": []
+        }
+      },
+      "result": {},
+      "requests": [
+        {
+          "method": "POST",
+          "url": "/v3/mail/send",
+          "headers": {
+            "authorization": "Bearer SG.test-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "body": {
+            "from": {
+              "email": "store@example.test"
+            },
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "customer@example.test"
+                  }
+                ]
+              }
+            ],
+            "template_id": "d-3"
+          }
+        }
+      ]
+    },
+    {
+      "name": "empty_content",
+      "input": {
+        "to": "customer@example.test",
+        "channel": "email",
+        "template": "d-4",
+        "content": null
+      },
+      "result": {},
+      "requests": [
+        {
+          "method": "POST",
+          "url": "/v3/mail/send",
+          "headers": {
+            "authorization": "Bearer SG.test-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "body": {
+            "from": {
+              "email": "store@example.test"
+            },
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "customer@example.test"
+                  }
+                ]
+              }
+            ],
+            "template_id": "d-4"
+          }
+        }
+      ]
+    },
+    {
+      "name": "no_data",
+      "input": {
+        "to": "customer@example.test",
+        "channel": "email",
+        "template": "d-5"
+      },
+      "result": {},
+      "requests": [
+        {
+          "method": "POST",
+          "url": "/v3/mail/send",
+          "headers": {
+            "authorization": "Bearer SG.test-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "body": {
+            "from": {
+              "email": "store@example.test"
+            },
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "customer@example.test"
+                  }
+                ]
+              }
+            ],
+            "template_id": "d-5"
+          }
+        }
+      ]
+    },
+    {
+      "name": "error",
+      "input": {
+        "to": "customer@example.test",
+        "channel": "email",
+        "template": "t",
+        "content": {
+          "subject": "fail",
+          "html": "<p/>"
+        }
+      },
+      "error": {
+        "type": "unexpected_state",
+        "message": "Failed to send email: 400 - The from address does not match a verified Sender Identity."
+      },
+      "requests": [
+        {
+          "method": "POST",
+          "url": "/v3/mail/send",
+          "headers": {
+            "authorization": "Bearer SG.test-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "body": {
+            "from": {
+              "email": "store@example.test"
+            },
+            "subject": "fail",
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "customer@example.test"
+                  }
+                ]
+              }
+            ],
+            "content": [
+              {
+                "value": "<p/>",
+                "type": "text/html"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "error_empty",
+      "input": {
+        "to": "customer@example.test",
+        "channel": "email",
+        "template": "t",
+        "content": {
+          "subject": "fail-empty",
+          "html": "<p/>"
+        }
+      },
+      "error": {
+        "type": "unexpected_state",
+        "message": "Failed to send email: 500 - unknown error"
+      },
+      "requests": [
+        {
+          "method": "POST",
+          "url": "/v3/mail/send",
+          "headers": {
+            "authorization": "Bearer SG.test-key",
+            "content-type": "application/json",
+            "accept": "application/json"
+          },
+          "body": {
+            "from": {
+              "email": "store@example.test"
+            },
+            "subject": "fail-empty",
+            "personalizations": [
+              {
+                "to": [
+                  {
+                    "email": "customer@example.test"
+                  }
+                ]
+              }
+            ],
+            "content": [
+              {
+                "value": "<p/>",
+                "type": "text/html"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "undefined",
+      "input": null,
+      "error": {
+        "type": "invalid_data",
+        "message": "No notification information provided"
+      },
+      "requests": []
+    }
+  ]
+}
