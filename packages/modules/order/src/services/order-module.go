@@ -259,10 +259,17 @@ func (s *OrderModuleService) listOrders(ctx context.Context, filters *dal.Record
 func (s *OrderModuleService) ListBySuffix(ctx context.Context, suffix string, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, error) {
 	if suffix == "Orders" {
 		rows, _, err := s.listOrders(ctx, filters, config, false)
+		if err == nil {
+			// listOrders_ calls the generated listOrders (@EmitEvents)
+			dal.EmitPoint(ctx, s.DB())
+		}
 		return rows, err
 	}
 	if cls, ok := relatedSuffixes[suffix]; ok {
 		rows, _, err := s.listRelated(ctx, cls, filters, config, false)
+		if err == nil {
+			dal.EmitPoint(ctx, s.DB())
+		}
 		return rows, err
 	}
 	return s.MedusaService.ListBySuffix(ctx, suffix, filters, config)
@@ -393,6 +400,12 @@ func (s *OrderModuleService) createOrders(ctx context.Context, data []*dal.Recor
 	for i, d := range data {
 		inputs[i] = copyRecord(d)
 	}
+	// the unit of work computes the change sets in this class order
+	// (addresses, then the order cascading to its line items through the
+	// order items, its summary and shipping methods, then the collections)
+	dal.PersistOrder(s.DB(), "OrderAddress", "Order", "OrderLineItem", "OrderItem", "OrderSummary",
+		"OrderShippingMethod", "OrderShipping", "OrderShippingMethodTaxLine", "OrderLineItemTaxLine",
+		"OrderLineItemAdjustment", "OrderShippingMethodAdjustment", "OrderCreditLine", "OrderTransaction")
 	if err := s.createOrderAddresses(ctx, inputs); err != nil {
 		return nil, err
 	}

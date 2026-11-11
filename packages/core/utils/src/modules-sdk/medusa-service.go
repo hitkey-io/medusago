@@ -85,7 +85,12 @@ func (s *MedusaService) ListBySuffix(ctx context.Context, suffix string, filters
 	if !ok {
 		return nil, fmt.Errorf("method list%s does not exist", suffix)
 	}
-	return svc.List(ctx, filters, config)
+	out, err := svc.List(ctx, filters, config)
+	if err == nil {
+		// a generated @EmitEvents method
+		dal.EmitPoint(ctx, s.DB())
+	}
+	return out, err
 }
 
 // ListAndCountBySuffix calls listAndCount<suffix>.
@@ -94,7 +99,11 @@ func (s *MedusaService) ListAndCountBySuffix(ctx context.Context, suffix string,
 	if !ok {
 		return nil, 0, fmt.Errorf("method listAndCount%s does not exist", suffix)
 	}
-	return svc.ListAndCount(ctx, filters, config)
+	out, count, err := svc.ListAndCount(ctx, filters, config)
+	if err == nil {
+		dal.EmitPoint(ctx, s.DB())
+	}
+	return out, count, err
 }
 
 // mapCascade mirrors mapObjectTo over the soft deleted / restored entities.
@@ -123,7 +132,18 @@ var methodPrefixes = []string{"listAndCount", "list", "retrieve", "create", "upd
 
 // Call invokes a generated method by name with JSON-like arguments
 // (decoded with dal.DecodeOrderedJSON).
+//
+// The generated methods are @EmitEvents methods: called from inside a
+// transaction, the call ends with an @EmitEvents boundary (dal.EmitPoint).
 func (s *MedusaService) Call(ctx context.Context, method string, args []any) (any, error) {
+	out, err := s.call(ctx, method, args)
+	if err == nil {
+		dal.EmitPoint(ctx, s.DB())
+	}
+	return out, err
+}
+
+func (s *MedusaService) call(ctx context.Context, method string, args []any) (any, error) {
 	arg := func(i int) any {
 		if i < len(args) {
 			return args[i]

@@ -228,19 +228,17 @@ func (s *ProductModuleService) updateOptions(ctx context.Context, data []*dal.Re
 				normalized = append(normalized, vo)
 			}
 		}
-		scalar := clone(o)
-		scalar.Delete("ranks")
-		scalar.Delete("values")
-		res, err := s.Internal("ProductOption").Update(ctx, []any{scalar})
-		if err != nil {
-			return nil, err
-		}
+		in := clone(o)
+		in.Delete("ranks")
+		in.Delete("values")
 		if replace {
-			if err := s.replaceOptionValues(ctx, strOf(o, "id"), normalized, dbVals); err != nil {
-				return nil, err
-			}
+			in.Set("values", normalized)
 		}
-		updated = append(updated, records(res)...)
+		updated = append(updated, in)
+	}
+	// productOptionService_.upsertWithReplace(normalizedInput, { relations: ["values"] })
+	if _, err := s.Internal("ProductOption").UpsertWithReplace(ctx, updated, []string{"values"}); err != nil {
+		return nil, err
 	}
 	f2 := dal.NewRecord()
 	f2.Set("id", ids)

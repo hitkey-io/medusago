@@ -66,6 +66,41 @@ type Recorder struct {
 	// persisted is the order entity classes were persisted in the unit of
 	// work when a service inserts them in another order (see PersistOrder).
 	persisted []string
+	// sink receives what an @EmitEvents boundary inside the transaction
+	// emits (see EmitPoint).
+	sink EventSink
+	// touched lists the classes with a loaded entity modified in memory
+	// (see Touch).
+	touched map[string]bool
+}
+
+// Touched reports whether Touch marked the class and no query on it has
+// flushed since.
+func Touched(db Querier, className string) bool {
+	rec := recorderOf(db)
+	if rec == nil {
+		return false
+	}
+	rec.mu.Lock()
+	defer rec.mu.Unlock()
+	return rec.touched[className]
+}
+
+// Touch marks an entity class of the transaction db belongs to as touched:
+// upstream modified a loaded entity of the class in memory (e.g. a new
+// child added to one of its collections), so the next query on the class
+// auto flushes the unit of work (UnitOfWork.shouldAutoFlush).
+func Touch(db Querier, classNames ...string) {
+	if rec := recorderOf(db); rec != nil {
+		rec.mu.Lock()
+		if rec.touched == nil {
+			rec.touched = map[string]bool{}
+		}
+		for _, c := range classNames {
+			rec.touched[c] = true
+		}
+		rec.mu.Unlock()
+	}
 }
 
 // PersistOrder records the order in which upstream persists entity classes
@@ -213,20 +248,66 @@ func Transaction(ctx context.Context, db Querier, schema *Schema, fn func(tx Que
 		return fn(db)
 	}
 	rec := &Recorder{}
+	if schema != nil {
+		rec.sink = schema.Sink
+	}
+	mode := EventsModeOf(ctx)
 	err := pgx.BeginFunc(ctx, starter, func(tx pgx.Tx) error {
-		return fn(&EventTx{Tx: tx, rec: rec})
+		etx := &EventTx{Tx: tx, rec: rec}
+		if err := fn(etx); err != nil {
+			return err
+		}
+		if mode == DeferEventsMode {
+			// @EmitEvents inside @InjectTransactionManager: the method
+			// emits what earlier (auto) flushes saved before the
+			// transaction commits
+			EmitPoint(ctx, etx)
+		}
+		return nil
 	})
 	if err != nil {
 		return err
 	}
 	events := rec.Flush()
-	if schema == nil || schema.Sink == nil || EventsDisabled(ctx) {
+	if schema == nil || schema.Sink == nil || EventsDisabled(ctx) || mode == DeferEventsMode {
+		// the commit flush of a deferred call saves into an aggregator
+		// that was already emitted: those events are lost
 		return nil
 	}
 	// an @EmitEvents call ends: it also emits what earlier calls left in
 	// a shared aggregator
 	schema.Sink.EmitModuleEvents(ctx, events)
 	return nil
+}
+
+// EmitPoint mirrors an @EmitEvents boundary reached while the transaction
+// db belongs to is still open (a nested @EmitEvents method or a generated
+// MedusaService method called from inside a transaction): what the flushes
+// so far saved into the aggregator is emitted now; the pending mutations
+// stay pending.
+func EmitPoint(ctx context.Context, db Querier) {
+	rec := recorderOf(db)
+	if rec == nil || EventsDisabled(ctx) {
+		return
+	}
+	rec.mu.Lock()
+	events := rec.ready
+	rec.ready = nil
+	sink := rec.sink
+	rec.mu.Unlock()
+	if sink == nil || len(events) == 0 {
+		return
+	}
+	sink.EmitModuleEvents(WithEmit(ctx), events)
+}
+
+// FlushAndEmit mirrors a generated MedusaService method (@EmitEvents) whose
+// query auto flushes the unit of work, called inside a transaction: the
+// pending mutations are flushed, then everything aggregated so far is
+// emitted.
+func FlushAndEmit(ctx context.Context, db Querier) {
+	FlushEvents(db)
+	EmitPoint(ctx, db)
 }
 
 // RecordEvent saves an explicitly built event (moduleEventBuilderFactory)
@@ -305,6 +386,11 @@ func (r *Repository) autoFlush(e *dml.Entity) {
 	}
 	rec.mu.Lock()
 	defer rec.mu.Unlock()
+	if rec.touched[e.Meta.ClassName] {
+		delete(rec.touched, e.Meta.ClassName)
+		rec.flushLocked()
+		return
+	}
 	for _, m := range rec.pending {
 		if m.entity.Meta.ClassName == e.Meta.ClassName {
 			rec.flushLocked()
