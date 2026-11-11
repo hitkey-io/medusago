@@ -56,7 +56,7 @@ func LoadedModules(cfg config.ConfigModule) []modulessdk.LoadedModule {
 			continue
 		}
 		lm := modulessdk.LoadedModule{Key: mc.Key}
-		if exp, ok := modules.Registry[mc.Resolve]; ok {
+		if exp, ok := modules.Lookup(mc); ok {
 			lm.JoinerConfig = exp.JoinerConfig
 		}
 		out = append(out, lm)
@@ -82,9 +82,9 @@ func NewQueryAndLink(db dal.Querier, cfg config.ConfigModule, registered map[str
 		return nil, nil, nil, err
 	}
 	modulessdk.SetAllJoinerConfigs(qc.JoinerConfigs)
-	resolveOf := map[string]string{}
+	configOf := map[string]config.ModuleConfig{}
 	for _, mc := range cfg.Modules {
-		resolveOf[mc.Key] = mc.Resolve
+		configOf[mc.Key] = mc
 	}
 
 	linkServices := map[string]*services.LinkModuleService{}
@@ -114,7 +114,7 @@ func NewQueryAndLink(db dal.Querier, cfg config.ConfigModule, registered map[str
 			moduleServices[c.ServiceName] = s
 			continue
 		}
-		exp, ok := modules.Registry[resolveOf[c.ServiceName]]
+		exp, ok := modules.Lookup(configOf[c.ServiceName])
 		if !ok || len(exp.Models) == 0 {
 			continue
 		}

@@ -35,7 +35,7 @@ func (c Context) service(key string) *utilsmodulessdk.MedusaService {
 		if m.Key != key {
 			continue
 		}
-		if exp, ok := modules.Registry[m.Resolve]; ok {
+		if exp, ok := modules.Lookup(m); ok {
 			return utilsmodulessdk.NewMedusaService(c.DB, exp.Models, exp.JoinerConfig)
 		}
 	}

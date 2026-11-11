@@ -4,6 +4,7 @@ package config
 import (
 	"os"
 
+	typesmodulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	ff "github.com/hitkey-io/medusago/packages/core/utils/src/feature-flags"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 )
@@ -80,6 +81,12 @@ type ModuleConfig struct {
 	Resolve   string                 `json:"resolve" yaml:"resolve"`
 	Disable   bool                   `json:"disable,omitempty" yaml:"disable,omitempty"`
 	Providers []ModuleProviderConfig `json:"providers,omitempty" yaml:"providers,omitempty"`
+	// Options are the module options.
+	Options map[string]any `json:"options,omitempty" yaml:"options,omitempty"`
+	// Module is the definition of a module of the project (what `resolve`
+	// points to upstream, e.g. "./src/modules/brand"). Without a Key, the
+	// module key is its joiner config service name.
+	Module *typesmodulessdk.ModuleExports `json:"-" yaml:"-"`
 }
 
 // InputConfig is what a project passes to DefineConfig.
@@ -212,6 +219,9 @@ func DefineConfig(input InputConfig) ConfigModule {
 
 	modules := defaultModules(input.FeatureFlags)
 	for _, um := range input.Modules {
+		if um.Key == "" && um.Module != nil && um.Module.JoinerConfig != nil {
+			um.Key = um.Module.JoinerConfig.ServiceName
+		}
 		replaced := false
 		for i := range modules {
 			if modules[i].Key == um.Key {
