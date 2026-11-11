@@ -12,6 +12,7 @@ import (
 	customersteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/customer/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -22,8 +23,8 @@ func invalid(format string, args ...any) error {
 	return common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, fmt.Sprintf(format, args...))
 }
 
-func graph(ctx composer.StepExecutionContext, entity string, fields []string, filters *dal.Record) ([]any, error) {
-	r, err := commonsteps.QueryOf(ctx.Container).Graph(ctx.Context, query.GraphInput{Entity: entity, Fields: fields, Filters: filters}, joiner.Options{})
+func graph(ctx composer.StepExecutionContext, entity string, fields []string, filters *dal.Record, cache *caching.CacheOptions) ([]any, error) {
+	r, err := commonsteps.QueryOf(ctx.Container).Graph(ctx.Context, query.GraphInput{Entity: entity, Fields: fields, Filters: filters}, joiner.Options{Cache: cache})
 	if err != nil {
 		return nil, err
 	}
@@ -85,13 +86,13 @@ var FindOneOrAnyRegionStep = composer.CreateStep("find-one-or-any-region",
 	func(ctx composer.StepExecutionContext, regionID string) (composer.StepResponse[*dal.Record], error) {
 		fields := []string{"*", "countries.*"}
 		if regionID != "" {
-			rows, err := graph(ctx, "region", fields, idFilter(regionID))
+			rows, err := graph(ctx, "region", fields, idFilter(regionID), caching.Enabled())
 			if err != nil {
 				return composer.NewStepResponse[*dal.Record](nil), nil
 			}
 			return composer.NewStepResponse(firstRecord(rows)), nil
 		}
-		stores, err := graph(ctx, "store", []string{"*"}, nil)
+		stores, err := graph(ctx, "store", []string{"*"}, nil, caching.Enabled())
 		if err != nil {
 			return composer.StepResponse[*dal.Record]{}, err
 		}
@@ -99,7 +100,7 @@ var FindOneOrAnyRegionStep = composer.CreateStep("find-one-or-any-region",
 		if store == nil {
 			return composer.StepResponse[*dal.Record]{}, common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, "Store not found")
 		}
-		rows, err := graph(ctx, "region", fields, idFilter(Get(store, "default_region_id")))
+		rows, err := graph(ctx, "region", fields, idFilter(Get(store, "default_region_id")), caching.Enabled())
 		if err != nil {
 			return composer.StepResponse[*dal.Record]{}, err
 		}

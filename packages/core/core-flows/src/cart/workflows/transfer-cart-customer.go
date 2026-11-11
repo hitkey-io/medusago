@@ -5,6 +5,7 @@ import (
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 )
@@ -45,7 +46,7 @@ var TransferCartCustomerWorkflow = composer.CreateWorkflow("transfer-cart-custom
 		isList := false
 		cres, err := commonsteps.UseQueryGraphStep.Config("get-customer", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
 			GraphInput: query.GraphInput{Entity: "customer", Fields: []string{"id", "email"}, Filters: cf},
-			Options:    joiner.Options{ThrowIfKeyNotFound: true},
+			Options:    joiner.Options{ThrowIfKeyNotFound: true, Cache: caching.Enabled()},
 			IsList:     &isList,
 		})
 		if err != nil {

@@ -9,6 +9,7 @@ import (
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -211,7 +212,7 @@ var UpdateCartWorkflow = composer.CreateWorkflow("update-cart",
 			p.Set("take", float64(1))
 			res, err := commonsteps.UseQueryGraphStep.Config("get-region", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
 				GraphInput: query.GraphInput{Entity: "region", Fields: []string{"id", "countries.*", "currency_code", "name"}, Filters: f, Pagination: p},
-				Options:    joiner.Options{ThrowIfKeyNotFound: true}, IsList: &isList,
+				Options:    joiner.Options{ThrowIfKeyNotFound: true, Cache: caching.Enabled()}, IsList: &isList,
 			})
 			if err != nil {
 				return nil, err

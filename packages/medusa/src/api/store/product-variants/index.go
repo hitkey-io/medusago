@@ -8,6 +8,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/store/products"
 	storeutils "github.com/hitkey-io/medusago/packages/medusa/src/api/store/utils"
@@ -138,15 +139,21 @@ func WrapVariantsWithTaxPrices(req *medusahttp.MedusaRequest, variants []any) er
 
 // Graph runs the variant query.graph of the routes.
 func Graph(req *medusahttp.MedusaRequest, filters *dal.Record, pagination *dal.Record) (*query.GraphResult, bool, error) {
+	return graph(req, filters, pagination, nil)
+}
+
+// graph is Graph with the cache option of the query (the list route caches
+// its query, the retrieve route does not).
+func graph(req *medusahttp.MedusaRequest, filters *dal.Record, pagination *dal.Record, cache *caching.CacheOptions) (*query.GraphResult, bool, error) {
 	fields, withInventory := productmw.PrepareInventoryQuantityFields(req.QueryConfig.Fields, "")
 	req.QueryConfig.Fields = fields
-	r, err := httputils.QueryOf(req.Scope).Graph(req.Ctx(), query.GraphInput{Entity: "variant", Fields: req.QueryConfig.Fields, Filters: filters, Pagination: pagination, Context: PricingContext(req)}, joiner.Options{Locale: req.Locale})
+	r, err := httputils.QueryOf(req.Scope).Graph(req.Ctx(), query.GraphInput{Entity: "variant", Fields: req.QueryConfig.Fields, Filters: filters, Pagination: pagination, Context: PricingContext(req)}, joiner.Options{Cache: cache, Locale: req.Locale})
 	return r, withInventory, err
 }
 
 // GET mirrors GET.
 func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
-	r, withInventory, err := Graph(req, req.FilterableFields, req.QueryConfig.Pagination)
+	r, withInventory, err := graph(req, req.FilterableFields, req.QueryConfig.Pagination, caching.Enabled())
 	if err != nil {
 		return err
 	}

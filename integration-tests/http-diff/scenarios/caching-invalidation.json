@@ -1,0 +1,217 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "pk",
+    "method": "POST",
+    "path": "/admin/api-keys",
+    "bearer": "login",
+    "body": {
+      "title": "Cached store",
+      "type": "publishable"
+    }
+  },
+  {
+    "name": "channels",
+    "method": "GET",
+    "path": "/admin/sales-channels?order=name&fields=id,name",
+    "bearer": "login"
+  },
+  {
+    "name": "link",
+    "method": "POST",
+    "path": "/admin/api-keys/{{pk.api_key.id}}/sales-channels?fields=id",
+    "bearer": "login",
+    "body": {
+      "add": [
+        "{{channels.sales_channels.0.id}}"
+      ]
+    }
+  },
+  {
+    "name": "regions",
+    "method": "GET",
+    "path": "/store/regions?order=name&fields=id,name,currency_code",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "products",
+    "method": "GET",
+    "path": "/admin/products?status[]=published&order=title&limit=1&fields=id,title,variants.id",
+    "bearer": "login"
+  },
+  {
+    "name": "store_list_1",
+    "method": "GET",
+    "path": "/store/products?order=title&limit=3&fields=id,title,variants.id,variants.calculated_price.calculated_amount&region_id={{regions.regions.0.id}}",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "store_list_2",
+    "method": "GET",
+    "path": "/store/products?order=title&limit=3&fields=id,title,variants.id,variants.calculated_price.calculated_amount&region_id={{regions.regions.0.id}}",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "rename",
+    "method": "POST",
+    "path": "/admin/products/{{products.products.0.id}}?fields=id,title",
+    "bearer": "login",
+    "body": {
+      "title": "AAA cached rename"
+    }
+  },
+  {
+    "name": "store_list_3",
+    "method": "GET",
+    "path": "/store/products?order=title&limit=3&fields=id,title,variants.id,variants.calculated_price.calculated_amount&region_id={{regions.regions.0.id}}",
+    "delay_ms": 500,
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "price",
+    "method": "POST",
+    "path": "/admin/products/{{products.products.0.id}}/variants/{{products.products.0.variants.0.id}}?fields=id",
+    "bearer": "login",
+    "body": {
+      "prices": [
+        {
+          "currency_code": "{{regions.regions.0.currency_code}}",
+          "amount": 77
+        }
+      ]
+    }
+  },
+  {
+    "name": "store_list_4",
+    "method": "GET",
+    "path": "/store/products?order=title&limit=3&fields=id,title,variants.id,variants.calculated_price.calculated_amount&region_id={{regions.regions.0.id}}",
+    "delay_ms": 500,
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "store_variants_1",
+    "method": "GET",
+    "path": "/store/product-variants?order=title&limit=2&fields=id,title,product_id&region_id={{regions.regions.0.id}}",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "variant_rename",
+    "method": "POST",
+    "path": "/admin/products/{{products.products.0.id}}/variants/{{products.products.0.variants.0.id}}?fields=id,title",
+    "bearer": "login",
+    "body": {
+      "title": "AAA cached variant"
+    }
+  },
+  {
+    "name": "store_variants_2",
+    "method": "GET",
+    "path": "/store/product-variants?order=title&limit=2&fields=id,title,product_id&region_id={{regions.regions.0.id}}",
+    "delay_ms": 500,
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "cart_1",
+    "method": "POST",
+    "path": "/store/carts?fields=id,region.id,region.name,currency_code",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "region_id": "{{regions.regions.0.id}}"
+    }
+  },
+  {
+    "name": "region_rename",
+    "method": "POST",
+    "path": "/admin/regions/{{regions.regions.0.id}}?fields=id,name",
+    "bearer": "login",
+    "body": {
+      "name": "Cached region renamed"
+    }
+  },
+  {
+    "name": "cart_2",
+    "method": "POST",
+    "path": "/store/carts?fields=id,region.id,region.name,currency_code",
+    "delay_ms": 500,
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "region_id": "{{regions.regions.0.id}}"
+    }
+  },
+  {
+    "name": "item",
+    "method": "POST",
+    "path": "/store/carts/{{cart_2.cart.id}}/line-items?fields=id,items.title,items.variant_title,items.unit_price",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "variant_id": "{{products.products.0.variants.0.id}}",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "variant_rename_2",
+    "method": "POST",
+    "path": "/admin/products/{{products.products.0.id}}/variants/{{products.products.0.variants.0.id}}?fields=id,title",
+    "bearer": "login",
+    "body": {
+      "title": "AAA cached variant 2"
+    }
+  },
+  {
+    "name": "item_2",
+    "method": "POST",
+    "path": "/store/carts/{{cart_2.cart.id}}/line-items?fields=id,items.title,items.variant_title,items.unit_price",
+    "delay_ms": 500,
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "variant_id": "{{products.products.0.variants.0.id}}",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "revoke",
+    "method": "POST",
+    "path": "/admin/api-keys/{{pk.api_key.id}}/revoke?fields=id",
+    "bearer": "login",
+    "body": {}
+  },
+  {
+    "name": "after_revoke",
+    "method": "GET",
+    "path": "/store/products?limit=1&fields=id",
+    "delay_ms": 500,
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  }
+]

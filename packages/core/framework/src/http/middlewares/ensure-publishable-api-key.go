@@ -6,6 +6,7 @@ import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
@@ -25,7 +26,11 @@ func EnsurePublishableApiKey(req *medusahttp.MedusaRequest, res *medusahttp.Medu
 	f := dal.NewRecord()
 	f.Set("token", key)
 	f.Set("type", "publishable")
-	r, err := q.Graph(req.Ctx(), query.GraphInput{Entity: "api_key", Fields: []string{"id", "token", "revoked_at", "sales_channels_link.sales_channel_id"}, Filters: f}, joiner.Options{})
+	r, err := q.Graph(req.Ctx(), query.GraphInput{Entity: "api_key", Fields: []string{"id", "token", "revoked_at", "sales_channels_link.sales_channel_id"}, Filters: f}, joiner.Options{
+		// The api key itself is computed from the response. The linked sales
+		// channels are not.
+		Cache: caching.WithTags(true, "LinkPublishableApiKeySalesChannel:list:*"),
+	})
 	if err != nil {
 		next(err)
 		return nil

@@ -25,6 +25,8 @@ type RefetchEntitiesInput struct {
 	Fields      []string
 	Pagination  *dal.Record
 	WithDeleted bool
+	// Options mirrors the options given to query.graph.
+	Options joiner.Options
 }
 
 // RefetchEntities mirrors refetchEntities (the context filter is not
@@ -49,7 +51,7 @@ func RefetchEntities(ctx context.Context, scope medusahttp.MedusaContainer, in R
 	if fields == nil {
 		fields = []string{}
 	}
-	res, err := QueryOf(scope).Graph(ctx, query.GraphInput{Entity: in.Entity, Fields: fields, Filters: filters, Pagination: in.Pagination, WithDeleted: in.WithDeleted}, joiner.Options{})
+	res, err := QueryOf(scope).Graph(ctx, query.GraphInput{Entity: in.Entity, Fields: fields, Filters: filters, Pagination: in.Pagination, WithDeleted: in.WithDeleted}, in.Options)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +63,13 @@ func RefetchEntities(ctx context.Context, scope medusahttp.MedusaContainer, in R
 
 // RefetchEntity mirrors refetchEntity: the first row or nil.
 func RefetchEntity(ctx context.Context, scope medusahttp.MedusaContainer, entity string, idOrFilter any, fields []string) (any, error) {
-	res, err := RefetchEntities(ctx, scope, RefetchEntitiesInput{Entity: entity, IDOrFilter: idOrFilter, Fields: fields})
+	return RefetchEntityWithOptions(ctx, scope, entity, idOrFilter, fields, joiner.Options{})
+}
+
+// RefetchEntityWithOptions is RefetchEntity with the query.graph options
+// (refetchEntity's options).
+func RefetchEntityWithOptions(ctx context.Context, scope medusahttp.MedusaContainer, entity string, idOrFilter any, fields []string, opts joiner.Options) (any, error) {
+	res, err := RefetchEntities(ctx, scope, RefetchEntitiesInput{Entity: entity, IDOrFilter: idOrFilter, Fields: fields, Options: opts})
 	if err != nil {
 		return nil, err
 	}
@@ -143,8 +151,14 @@ func RemoteQueryListRoute(entryPoint, key string) medusahttp.RouteHandler {
 // as refetchEntities({ entity, idOrFilter: filterableFields, fields,
 // pagination }) or query.graph with the same arguments.
 func RefetchListRoute(entity, key string) medusahttp.RouteHandler {
+	return RefetchListRouteWithOptions(entity, key, joiner.Options{})
+}
+
+// RefetchListRouteWithOptions is RefetchListRoute with the query.graph
+// options.
+func RefetchListRouteWithOptions(entity, key string, opts joiner.Options) medusahttp.RouteHandler {
 	return func(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
-		r, err := RefetchEntities(req.Ctx(), req.Scope, RefetchEntitiesInput{Entity: entity, IDOrFilter: req.FilterableFields, Fields: req.QueryConfig.Fields, Pagination: req.QueryConfig.Pagination})
+		r, err := RefetchEntities(req.Ctx(), req.Scope, RefetchEntitiesInput{Entity: entity, IDOrFilter: req.FilterableFields, Fields: req.QueryConfig.Fields, Pagination: req.QueryConfig.Pagination, Options: opts})
 		if err != nil {
 			return err
 		}

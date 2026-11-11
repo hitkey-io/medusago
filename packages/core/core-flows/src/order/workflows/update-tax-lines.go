@@ -4,6 +4,7 @@ import (
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	ordersteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/order/steps"
 	taxsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/tax/steps"
+	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -46,8 +47,15 @@ type UpdateOrderTaxLinesInput struct {
 }
 
 func queryList(e *composer.Execution, name, entity string, filters *dal.Record, fields []string) ([]*dal.Record, error) {
+	return queryListWithOptions(e, name, entity, filters, fields, joiner.Options{})
+}
+
+// queryListWithOptions is queryList with the query options (useQueryGraphStep
+// options).
+func queryListWithOptions(e *composer.Execution, name, entity string, filters *dal.Record, fields []string, opts joiner.Options) ([]*dal.Record, error) {
 	res, err := commonsteps.UseQueryGraphStep.Config(name, composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
 		GraphInput: query.GraphInput{Entity: entity, Fields: fields, Filters: filters},
+		Options:    opts,
 	})
 	if err != nil {
 		return nil, err

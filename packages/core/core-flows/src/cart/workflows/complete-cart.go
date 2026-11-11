@@ -10,6 +10,7 @@ import (
 	promotionsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/promotion/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -112,7 +113,7 @@ func completeCartCreateOrder(e *composer.Execution, cart *dal.Record, paymentSes
 	of.Set("id", optionIDs)
 	shippingOptions, err := commonsteps.UseQueryGraphStep.Config("shipping-options-query", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
 		GraphInput: query.GraphInput{Entity: "shipping_option", Fields: []string{"id", "shipping_profile_id"}, Filters: of},
-		Options:    joiner.Options{},
+		Options:    joiner.Options{Cache: caching.Enabled()},
 	})
 	if err != nil {
 		return nil, err

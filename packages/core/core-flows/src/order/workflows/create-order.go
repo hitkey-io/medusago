@@ -7,7 +7,10 @@ import (
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	draftordersteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/draft-order/steps"
 	ordersteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/order/steps"
+	orderutils "github.com/hitkey-io/medusago/packages/core/core-flows/src/order/utils"
+	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 )
@@ -173,7 +176,7 @@ var CreateOrderWorkflow = composer.CreateWorkflow("create-orders",
 			withoutCalculation = []any{}
 		}
 		wf.Set("id", withoutCalculation)
-		without, err := queryList(e, "query-variants-without-calculated-price", "variants", wf, variantFields)
+		without, err := queryListWithOptions(e, "query-variants-without-calculated-price", "variants", wf, variantFields, joiner.Options{Cache: caching.WithTags(true, orderutils.ProductVariantsCacheTags...)})
 		if err != nil {
 			return nil, err
 		}

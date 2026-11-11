@@ -53,7 +53,7 @@ func withMeta(m *dal.Record, key string) *dal.Record {
 
 // Interceptor mirrors InterceptorSubscriber: it receives every message
 // before it is published.
-type Interceptor func(m composer.Message, isGrouped bool, eventGroupID string)
+type Interceptor = eventbus.Interceptor
 
 // AddInterceptor mirrors addInterceptor.
 func (s *LocalEventBusService) AddInterceptor(fn Interceptor) *Interceptor {

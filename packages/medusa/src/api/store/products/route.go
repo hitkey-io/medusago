@@ -5,6 +5,7 @@ import (
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	productmw "github.com/hitkey-io/medusago/packages/medusa/src/api/utils/middlewares/products"
 	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/feature-flags"
@@ -66,7 +67,7 @@ func getProducts(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, 
 			Filters:    filters,
 			Pagination: req.QueryConfig.Pagination,
 			Context:    PricingQueryContext(req),
-		}, nil, joiner.Options{Locale: req.Locale})
+		}, nil, joiner.Options{Cache: caching.Enabled(), Locale: req.Locale})
 	} else {
 		r, err = httputils.QueryOf(req.Scope).Graph(req.Ctx(), query.GraphInput{
 			Entity:     "product",
@@ -74,7 +75,7 @@ func getProducts(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, 
 			Filters:    req.FilterableFields,
 			Pagination: req.QueryConfig.Pagination,
 			Context:    PricingQueryContext(req),
-		}, joiner.Options{Locale: req.Locale})
+		}, joiner.Options{Cache: caching.Enabled(), Locale: req.Locale})
 	}
 	if err != nil {
 		return err

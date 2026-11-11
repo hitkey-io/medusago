@@ -45,7 +45,7 @@ func (c *testContainer) Resolve(key string) any {
 var invocations = map[string]*atomic.Int32{"before": {}, "after": {}, "compensate": {}}
 
 type beforeOut struct {
-	Value string     `json:"value"`
+	Value string      `json:"value"`
 	Rec   *dal.Record `json:"rec"`
 }
 

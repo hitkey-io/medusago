@@ -2,10 +2,12 @@ package products
 
 import (
 	"fmt"
+	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"strings"
 
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
@@ -155,7 +157,7 @@ func NormalizeDataForContext(paths ...string) medusahttp.MiddlewareFunction {
 			}
 		}
 		if !filterIsPresent(regionID) {
-			stores, err := httputils.RefetchEntities(req.Ctx(), req.Scope, httputils.RefetchEntitiesInput{Entity: "store", Fields: []string{"id", "default_region_id"}})
+			stores, err := httputils.RefetchEntities(req.Ctx(), req.Scope, httputils.RefetchEntitiesInput{Entity: "store", Fields: []string{"id", "default_region_id"}, Options: joiner.Options{Cache: caching.Enabled()}})
 			if err != nil {
 				return err
 			}
@@ -199,7 +201,7 @@ func SetPricingContext(paths ...string) medusahttp.MiddlewareFunction {
 			return nil
 		}
 		regionID := get(filterable(req), "region_id")
-		region, err := httputils.RefetchEntity(req.Ctx(), req.Scope, "region", regionID, []string{"id", "currency_code"})
+		region, err := httputils.RefetchEntityWithOptions(req.Ctx(), req.Scope, "region", regionID, []string{"id", "currency_code"}, joiner.Options{Cache: caching.Enabled()})
 		if err != nil {
 			return err
 		}

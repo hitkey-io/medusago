@@ -1,12 +1,14 @@
 package workflows
 
 import (
+	commonutils "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/utils"
 	"strings"
 
 	. "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/utils"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
@@ -69,6 +71,7 @@ var ListShippingOptionsForCartWorkflow = composer.CreateWorkflow("list-shipping-
 		scf.Set("id", Get(cart, "sales_channel_id"))
 		scRes, err := commonsteps.UseQueryGraphStep.Config("sales_channels-fulfillment-query", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
 			GraphInput: query.GraphInput{Entity: "sales_channels", Fields: []string{"stock_locations.fulfillment_sets.id", "stock_locations.id", "stock_locations.name", "stock_locations.address.*"}, Filters: scf},
+			Options:    joiner.Options{Cache: caching.WithTags(true, commonutils.SalesChannelStockLocationCacheTags...)},
 		})
 		if err != nil {
 			return nil, err
