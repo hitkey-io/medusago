@@ -101,6 +101,10 @@ type Step struct {
 // goServer); recordings run MEDUSA_HTTP_RESTART_CMD.
 var restartServer func(t *testing.T)
 
+// restartKeepsInstance: a restart starts another instance serving the
+// following steps while the previous one keeps running.
+var restartKeepsInstance bool
+
 func restart(t *testing.T) {
 	t.Helper()
 	if restartServer != nil {
@@ -960,16 +964,25 @@ func goServer(t *testing.T, scenario string) string {
 	}))
 	// a restart: the instance goes away, a new one serves the same URL on
 	// the same database and Redis
+	var previous []*loaders.MedusaApp
 	restartServer = func(t *testing.T) {
 		mu.Lock()
 		defer mu.Unlock()
-		app.Shutdown()
+		if restartKeepsInstance {
+			// another instance takes over; the first one keeps running
+			previous = append(previous, app)
+		} else {
+			app.Shutdown()
+		}
 		app = start()
 	}
 	t.Cleanup(func() {
 		restartServer = nil
 		srv.Close()
 		current().Shutdown()
+		for _, a := range previous {
+			a.Shutdown()
+		}
 	})
 	return srv.URL
 }
@@ -1008,30 +1021,52 @@ func scenarioSessionOptions() *config.SessionOptions {
 func TestMatchUpstream(t *testing.T) {
 	for _, file := range scenarioFiles() {
 		name := strings.TrimSuffix(filepath.Base(file), ".json")
-		t.Run(name, func(t *testing.T) {
-			steps := loadScenario(t, file)
-			raw, err := os.ReadFile(filepath.Join("golden", filepath.Base(file)))
-			if err != nil {
-				t.Fatal(err)
-			}
-			gv, err := dal.DecodeOrderedJSON(raw)
-			if err != nil {
-				t.Fatal(err)
-			}
-			golden := gv.(*dal.Record)
-			seedSQL(t)
-			startFakes(t, scenarioEnv(t, name))
-			base := goServer(t, name)
-			results := runScenario(t, base, steps)
-			wantP, gotP := newPlaceholders(), newPlaceholders()
-			for _, s := range steps {
-				want, _ := golden.Get(s.Name)
-				w := pretty(wantP.normalize(sortByField(sortUnordered(dropIgnored(want, s.Ignore), s.Unordered), s.SortBy)))
-				g := pretty(gotP.normalize(sortByField(sortUnordered(dropIgnored(asRecord(results[s.Name]), s.Ignore), s.Unordered), s.SortBy)))
-				if w != g {
-					t.Errorf("%s: mismatch\n--- want\n%s\n--- got\n%s", s.Name, w, g)
-				}
-			}
-		})
+		t.Run(name, func(t *testing.T) { matchScenario(t, file) })
+	}
+}
+
+// TestRedisResumeOnAnotherInstance runs the Redis resumption scenarios with
+// two live instances: the steps after a restart go to a second instance on
+// the same database and Redis while the first one keeps running (its
+// waiting transactions are resumed by the second one, the step timeout job
+// by either).
+func TestRedisResumeOnAnotherInstance(t *testing.T) {
+	if os.Getenv("MEDUSA_HTTP_TARGET_URL") != "" {
+		t.Skip("needs the Go application")
+	}
+	restartKeepsInstance = true
+	defer func() { restartKeepsInstance = false }()
+	for _, name := range []string{"redis-workflow-resume", "redis-import-resume"} {
+		t.Run(name, func(t *testing.T) { matchScenario(t, filepath.Join("scenarios", name+".json")) })
+	}
+}
+
+// matchScenario runs one scenario against the Go application and compares
+// it with its golden responses.
+func matchScenario(t *testing.T, file string) {
+	t.Helper()
+	name := strings.TrimSuffix(filepath.Base(file), ".json")
+	steps := loadScenario(t, file)
+	raw, err := os.ReadFile(filepath.Join("golden", filepath.Base(file)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	gv, err := dal.DecodeOrderedJSON(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	golden := gv.(*dal.Record)
+	seedSQL(t)
+	startFakes(t, scenarioEnv(t, name))
+	base := goServer(t, name)
+	results := runScenario(t, base, steps)
+	wantP, gotP := newPlaceholders(), newPlaceholders()
+	for _, s := range steps {
+		want, _ := golden.Get(s.Name)
+		w := pretty(wantP.normalize(sortByField(sortUnordered(dropIgnored(want, s.Ignore), s.Unordered), s.SortBy)))
+		g := pretty(gotP.normalize(sortByField(sortUnordered(dropIgnored(asRecord(results[s.Name]), s.Ignore), s.Unordered), s.SortBy)))
+		if w != g {
+			t.Errorf("%s: mismatch\n--- want\n%s\n--- got\n%s", s.Name, w, g)
+		}
 	}
 }

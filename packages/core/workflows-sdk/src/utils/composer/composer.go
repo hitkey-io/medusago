@@ -24,8 +24,10 @@
 // steps; finished runs without retentionTime are deleted. A step with
 // async + backgroundExecution detaches the run: run() returns while the
 // body continues in the background; an async step without background
-// execution waits for setStepSuccess / setStepFailure. Waiting runs live in
-// this process (like the in-memory engine's timers).
+// execution waits for setStepSuccess / setStepFailure. With the in-memory
+// engine waiting runs live in this process (like its timers); a durable
+// engine (Redis) stops the run at the waiting step and resumes it from its
+// checkpoint on any instance (see resume.go).
 package composer
 
 import (
