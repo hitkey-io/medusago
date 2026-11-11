@@ -4,26 +4,27 @@ package services
 import (
 	"context"
 	"fmt"
+	"io"
 
+	filetypes "github.com/hitkey-io/medusago/packages/core/types/src/file"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
-	localfile "github.com/hitkey-io/medusago/packages/modules/providers/file-local/src/services"
 )
 
 // FileModuleService mirrors FileModuleService over the (single) file
 // provider.
 type FileModuleService struct {
-	provider *localfile.LocalFileService
+	provider filetypes.IFileProvider
 }
 
 // NewFileModuleService builds the service.
-func NewFileModuleService(provider *localfile.LocalFileService) *FileModuleService {
+func NewFileModuleService(provider filetypes.IFileProvider) *FileModuleService {
 	return &FileModuleService{provider: provider}
 }
 
 // Provider returns the file provider.
-func (s *FileModuleService) Provider() *localfile.LocalFileService { return s.provider }
+func (s *FileModuleService) Provider() filetypes.IFileProvider { return s.provider }
 
 func fileRecord(id, url any) *dal.Record {
 	r := dal.NewRecord()
@@ -33,10 +34,10 @@ func fileRecord(id, url any) *dal.Record {
 }
 
 // CreateFiles mirrors createFiles.
-func (s *FileModuleService) CreateFiles(ctx context.Context, files []*localfile.UploadFile) ([]*dal.Record, error) {
+func (s *FileModuleService) CreateFiles(ctx context.Context, files []*filetypes.ProviderUploadFileDTO) ([]*dal.Record, error) {
 	out := make([]*dal.Record, len(files))
 	for i, f := range files {
-		res, err := s.provider.Upload(f)
+		res, err := s.provider.Upload(ctx, f)
 		if err != nil {
 			return nil, err
 		}
@@ -47,24 +48,28 @@ func (s *FileModuleService) CreateFiles(ctx context.Context, files []*localfile.
 
 // DeleteFiles mirrors deleteFiles.
 func (s *FileModuleService) DeleteFiles(ctx context.Context, ids []string) error {
-	return s.provider.Delete(ids)
+	return s.provider.Delete(ctx, ids)
 }
 
 // RetrieveFile mirrors retrieveFile.
 func (s *FileModuleService) RetrieveFile(ctx context.Context, id string) (*dal.Record, error) {
-	u, err := s.provider.GetPresignedDownloadURL(id)
+	u, err := s.provider.GetPresignedDownloadURL(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 	return fileRecord(id, u), nil
 }
 
-// GetUploadFileURL mirrors getUploadFileUrls for one file.
-func (s *FileModuleService) GetUploadFileURL(ctx context.Context, filename string) (localfile.FileResult, error) {
-	return s.provider.GetPresignedUploadURL(filename)
+// GetUploadFileURL mirrors getUploadFileUrls for one file (FileProviderService
+// getPresignedUploadUrl).
+func (s *FileModuleService) GetUploadFileURL(ctx context.Context, data filetypes.ProviderGetPresignedUploadUrlDTO) (filetypes.ProviderFileResultDTO, error) {
+	if data.Filename == "" {
+		return filetypes.ProviderFileResultDTO{}, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "File name is required to get a presigned upload URL")
+	}
+	return s.provider.GetPresignedUploadURL(ctx, data)
 }
 
-func (s *FileModuleService) listFiles(filters *dal.Record) ([]*dal.Record, error) {
+func (s *FileModuleService) listFiles(ctx context.Context, filters *dal.Record) ([]*dal.Record, error) {
 	var id any
 	if filters != nil {
 		id, _ = filters.Get("id")
@@ -79,7 +84,7 @@ func (s *FileModuleService) listFiles(filters *dal.Record) ([]*dal.Record, error
 	out := make([]*dal.Record, 0, len(ids))
 	for _, x := range ids {
 		key := fmt.Sprint(x)
-		u, err := s.provider.GetPresignedDownloadURL(key)
+		u, err := s.provider.GetPresignedDownloadURL(ctx, key)
 		if err != nil {
 			return nil, err
 		}
@@ -90,12 +95,12 @@ func (s *FileModuleService) listFiles(filters *dal.Record) ([]*dal.Record, error
 
 // ListBySuffix mirrors listFiles (the only list method).
 func (s *FileModuleService) ListBySuffix(ctx context.Context, suffix string, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, error) {
-	return s.listFiles(filters)
+	return s.listFiles(ctx, filters)
 }
 
 // ListAndCountBySuffix mirrors listAndCountFiles.
 func (s *FileModuleService) ListAndCountBySuffix(ctx context.Context, suffix string, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, int, error) {
-	rows, err := s.listFiles(filters)
+	rows, err := s.listFiles(ctx, filters)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -103,11 +108,16 @@ func (s *FileModuleService) ListAndCountBySuffix(ctx context.Context, suffix str
 }
 
 // GetUploadStream mirrors getUploadStream.
-func (s *FileModuleService) GetUploadStream(ctx context.Context, filename, access string) (*localfile.UploadStream, error) {
-	return s.provider.GetUploadStream(filename, access)
+func (s *FileModuleService) GetUploadStream(ctx context.Context, data filetypes.ProviderUploadStreamDTO) (*filetypes.ProviderUploadStream, error) {
+	return s.provider.GetUploadStream(ctx, data)
+}
+
+// GetDownloadStream mirrors getDownloadStream.
+func (s *FileModuleService) GetDownloadStream(ctx context.Context, id string) (io.ReadCloser, error) {
+	return s.provider.GetDownloadStream(ctx, id)
 }
 
 // GetAsBuffer mirrors getAsBuffer.
 func (s *FileModuleService) GetAsBuffer(ctx context.Context, id string) ([]byte, error) {
-	return s.provider.GetAsBuffer(id)
+	return s.provider.GetAsBuffer(ctx, id)
 }

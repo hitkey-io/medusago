@@ -1,0 +1,4511 @@
+{
+  "fixed_date": "2026-01-02T03:04:05.000Z",
+  "configs": {
+    "path_style": {
+      "file_url": "http://localhost:9000/bucket-a",
+      "access_key_id": "AKIDEXAMPLE",
+      "secret_access_key": "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
+      "region": "us-east-1",
+      "bucket": "bucket-a",
+      "endpoint": "http://localhost:9000",
+      "additional_client_config": {
+        "forcePathStyle": true
+      },
+      "prefix": "media/"
+    },
+    "virtual_host": {
+      "file_url": "https://cdn.example.test",
+      "access_key_id": "AKIDEXAMPLE",
+      "secret_access_key": "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
+      "region": "eu-west-1",
+      "bucket": "bucket-b",
+      "download_file_duration": 120
+    },
+    "us_east_1": {
+      "file_url": "https://cdn.example.test",
+      "access_key_id": "AKIDEXAMPLE",
+      "secret_access_key": "secret",
+      "session_token": "SESSIONTOKEN",
+      "region": "us-east-1",
+      "bucket": "bucket.with.dots"
+    },
+    "acl_fixed": {
+      "file_url": "https://cdn.example.test",
+      "access_key_id": "AKIDEXAMPLE",
+      "secret_access_key": "secret",
+      "region": "ap-southeast-2",
+      "bucket": "bucket-c",
+      "acl": "bucket-owner-full-control",
+      "cache_control": "no-cache"
+    },
+    "acl_disabled": {
+      "file_url": "https://cdn.example.test",
+      "access_key_id": "AKIDEXAMPLE",
+      "secret_access_key": "secret",
+      "region": "ap-southeast-2",
+      "bucket": "bucket-c",
+      "acl": false,
+      "prefix": "p/"
+    }
+  },
+  "presigned": [
+    {
+      "config": "path_style",
+      "method": "download",
+      "fileKey": "media/a b/c+d.txt",
+      "url": "http://localhost:9000/bucket-a/media/a%20b/c%2Bd.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=344caae3cf33eeb339b9ae9034e806038567dae36b8ecd327395406ba667fafa&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+    },
+    {
+      "config": "path_style",
+      "method": "download",
+      "fileKey": "plain.png",
+      "url": "http://localhost:9000/bucket-a/plain.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=c260c40dd4cc7ddead2ad208968ec978d711a995add22cd88a827bd4d7544e34&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": null,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=4bbc5caaa00bacda16b082edb86dafded3521fc45872bb570f05326d1c1a683d&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/y.png"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=38aa9a404a6ef324041687ce27761e5a4dbb209373a3f17449e235571df3923e&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/y.png"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": "private",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=dd72a041e61a0fcda1f483cc01e08d431f5d8cd8b45501e6719a12abd43b0f63&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/y.png"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": null,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=4f79aec5a7b4f41ef3bfe065d0f2eb4815eceee0dec75ea3e22c6a7aa46d1bd8&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/etc/passwd"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=8786a38d0343925f6e5476419629c1a6b076218db8c0aeb4c16ed6b94d6a4e89&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/etc/passwd"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": "private",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=83fa96a72e52b22b192925db45cf26655a0acb28302f476c13dd4b9406e091b9&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/etc/passwd"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": null,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=238296386bae2d7f2158494debaf813ca13e707f8d01b2d573db09f88c267d6a&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=140e9d8aa42c95cdc140dc9477c662ee85e41342d7812a7de687a0cd3bdf924d&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": "private",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=4d184488b1cac54f868fc6bcc21f245831990cb2010dc5ef6effabf4b989ac04&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": null,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=e4a527cded5cd68cf0475ccb70461e1398be92c07a06c9b0d4d0902017b7b685&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=c4daa0d04b3ec877533acc7386968dcdc2a3cb8a6494702191e87a38727cb8dd&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": "private",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=3da87e9391826b26844460aa3b476933653aadc9dbad1de2e128b9543cd36b95&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": null,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=7394bd05990a273bd74b2d02d88045270a1640b2b74a020f9c332481d6d53465&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/win/path/f.TXT"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=fc46934289476e9c82f0e216c21a0cea105dfd976788f67607a4ad47f889a8c8&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/win/path/f.TXT"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": "private",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=6eb72bd77417c85253a5c13d3983eee443245988975a6bc3b457f0039845d743&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/win/path/f.TXT"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": null,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=10b673d69986ef770ded4110a997c94e620dc49e891c6b433b97d57083d918d5&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/.hidden"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=537dd0fe3c2713ad3b504ad7f89de5bd783661829d4e95933c55b24d4c44b4be&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/.hidden"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": "private",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=af1ed6a1c7f353228889ea79ff6b2c18be8eb7374d008eeac6ad0903359eb500&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/.hidden"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": null,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=1e2cb5fe0666dfbb62640f4005511f8b146f81496a79559f117e4022cabd454a&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/trailing/"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a682ef6534e93c84a01c5381604bbe501901a6e77c879b982f662958b4590de2&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/trailing/"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": "private",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=56db3a161e904507a52ac662a99c3fec421e3c78cb025c01ca39a8cc14a47667&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/trailing/"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "dot.",
+      "access": null,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=6b31dd57226ed7eb1618eba5ab6f8fe838f87938d36a1e5469bb027838c52653&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/dot."
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "dot.",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=448f0653f8a90d04209bae9a54b7f967671eae12a3753b5f0b1a888e286728b4&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/dot."
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "dot.",
+      "access": "private",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a5743d7bb76ef5a86d70c5e689c2ad4521e3a07dee69d9f8e7e7e217456ca3b3&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/dot."
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": null,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=f8fe141938548bcf2e5b211b12140c0784b65228741d80753113218dfc5f7411&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=cbabda9579e75723e104e9121ef225e5ed8b00945ae9cdda8abbe24a25f2f845&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": "private",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a8d92a26ca5aa7061042761755f2f2cb094d96c60c5612b2ca460eef9b6facfd&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": null,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=1b3c9ffb83775cf31857d12c0d14f80601ec3509c2bd0c679e478f5d5591a73c&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/a/b/"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=c0c7ff6faae0fdfe856c51d72c0290ade95c6c98ca13e85685b42e3530bc30fc&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/a/b/"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": "private",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=99ebf30c96cf37a867392d2bd3071380348214976ed4ee66d024fd30517891d6&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/a/b/"
+      }
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "short.png",
+      "access": null,
+      "expiresIn": 30,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/short.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=30&X-Amz-Signature=8ec521abfef95387490e398331483ff1c4d30528736173f3c25339a1cd8634b6&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "media/short.png"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "download",
+      "fileKey": "media/a b/c+d.txt",
+      "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/media/a%20b/c%2Bd.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=120&X-Amz-Signature=05ef9d965af674ca712d63da8dc58751c6ddf245d4b9fd9195950914c6f8ea49&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+    },
+    {
+      "config": "virtual_host",
+      "method": "download",
+      "fileKey": "plain.png",
+      "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/plain.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=120&X-Amz-Signature=c30829964aded2c9ac1198f02a1362e96e21ffbb152fbdde010319402f246165&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": null,
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=93a9a810b4f683f1074b134bde007e13b7f30535ef1c5a1805d4b397ce0046ea&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "y.png"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=b520fe20c59fbb8516835c30e381d8266aa152f223215ee6e35014b73033dc27&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "y.png"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=ebe9ea444241ed69e5a4a5c6116420fad0a518ee3adb0f39a38a283e05582986&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "y.png"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": null,
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=828f9d87aecbec80848b1400015335396645485ac0869bacc85f37c9ae7f398c&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "etc/passwd"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=38c07d0640e68176ae34f13edb3eebe4aaa08b92de1444772a11e2343306b850&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "etc/passwd"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=ca7cf92919a1c8e90effb3fd557fb35e97ebc3c42147e9c5a8bdba20bdd199bc&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "etc/passwd"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": null,
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=81b79af98da9babe63608b7710c4fe547bb61e509fb5428eba68130e47845b03&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=422e738242a17f9a8ffec41f48e78f96a09d5c07686d4726200b2fdf8fb33df5&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=d37ea13ef7c559694ef8a0017673bc9f1c8a2e3e272004e91061deb6ff7c6e62&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": null,
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=77eee4d51720142f44fdc0c0b6ac0260d7198e7074258bd29c60764a41533835&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=ec8bb649d24337dcd9bc0a9ee7d3f4f37e827baef079c86ff94172e2579f8c3d&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=896b968c63fdce2275add071a40ddd9aca49009397c6ff769d259127d09f8133&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": null,
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=60ecc38d3edfce91061cacf49b0231495c7574ca6d0c3611169a566c6954fbec&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "win/path/f.TXT"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=ee4f4646ad9be3f738ac4c2ee977b53451fa914761f23d46ada925fb07ee74a6&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "win/path/f.TXT"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=7b32c2b01e3ceb30e07bf14029f50080ded4be755a652d2ad845f982dd3b61ec&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "win/path/f.TXT"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": null,
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=342b33d9b542f91b58b364b084c5c3efa556abdec0a4e6c621b25d7ad2b9bd2f&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": ".hidden"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=e5e19bd2de00f285a0be90998728c40c71240290c425c80ab5a2d61a83896cc6&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": ".hidden"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=cd0252b3057e72a96189f0bd5ff1d905abff7d9e59557e5db24fd957d046641b&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": ".hidden"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": null,
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=795cb769c65339b578e602478402771fb5587e66da7937cc4cac2dfe918be6dc&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "trailing/"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=f29487944d2034f7ed586fcaae09e2435277b56d6998de454b02fd6f095d8f3e&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "trailing/"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=9cb6605a86e19870611183c18581b6ef50a215b4769e390dd1fdca26d9ef9494&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "trailing/"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "dot.",
+      "access": null,
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=e3b9c083f0deb26b9d23f12fdc1165a4a9220117ee6444341a401ed762ff9c70&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "dot."
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "dot.",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=3e48a4363a55f97716c7359be17ba86cdee5d7c022928d777655cc5e4fab51e4&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "dot."
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "dot.",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=68d74f56f96be33371f9f77869ec4582e1ba68e9bbbbf8c62d2c8e56ab70271c&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "dot."
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": null,
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=2230ba253b888b2b25abb3e6e074c9ee823b680d653caee33bcd71c7264921fc&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=cffc1a6b076a1401a055ff1d01b7e0b0413a56fe8e9e35956febb743d7fee09e&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=cd07e63aa1850c3cd395237592bbd1de66f052198b3c46e6dbad1bb020a7371d&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": null,
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=dcbcff49005150c0585f7e55cf71a78279375f5a9ba3423dab07be0c35cc42a8&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a/b/"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=4a475fe832782cff8c8ead5fb8b389f51932b60673e04de76cd60249ad63ef94&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a/b/"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=c316e9ba78118237de2aba0b2a6244c73763f29e93f9ef85cd1f4dede63b7f18&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a/b/"
+      }
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "short.png",
+      "access": null,
+      "expiresIn": 30,
+      "result": {
+        "url": "https://bucket-b.s3.eu-west-1.amazonaws.com/short.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=30&X-Amz-Signature=f5150da2dc6085b2b6ae298e7f1ae96e8c60f4168a8f13c43c3ad6cb0287725f&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "short.png"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "download",
+      "fileKey": "media/a b/c+d.txt",
+      "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/media/a%20b/c%2Bd.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=ecc2c7e2733d24a7ec3034be0842aca254db3397f2d3acd74e55e5d5b3840f61&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+    },
+    {
+      "config": "us_east_1",
+      "method": "download",
+      "fileKey": "plain.png",
+      "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/plain.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=c2936d03c2fae831de39cb2e13fb673e929c64b2d259700c0eb6890dcb95d590&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": null,
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=932015a0da32d72a8886195f140933ba5f340c1b63bc22bd03be91117822da06&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "y.png"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": "public",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=7bf34af9ae38b96044b56bbad25596fb37ca8069d0671ca740587edfda4f1eec&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "y.png"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": "private",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=e8329b4cfdd3ef6901bee71ea13777f24b00c6446ee119f679bd838a05c2ffab&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "y.png"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": null,
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=bfd07ff9c1aa13e62ea9506f8e9d6bf79e3fbd5c2b3a41734e75c1e63e27b35b&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "etc/passwd"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": "public",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=06f9b222b813494418e65587b28ae1df80ae28938129f6ce55512991d31ebb3e&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "etc/passwd"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": "private",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=73498ae0ea7f0b1f334488ce5d47c66c00af60a6c401de0cdcbf3f403814e50d&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "etc/passwd"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": null,
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=22705388c6d1567186f199850a3d252e9d55168445169bbaddb9f664a5eb0dca&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": "public",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=60b8c949d986f59b0a1d9ab9203983e25c3d6badffe80a1c07661ccbf663cd16&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": "private",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=39a3b38560ce012e1aa1393c780933608691901dbf9299b6c339b76028fb031d&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": null,
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=80128874b66c49c3dcaf9437a29377db07daa1a79f9ac6890f51ed983016c202&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": "public",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=92fe62eae5be33b2f38c0acc6fbad27535f9869f9b28dd41927582ca3c3710c1&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": "private",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=0bf837cb0043befdc608bf5645d650bc33cb23005129e0bbb94008218bacab93&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": null,
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=2133fecb44e06768b1d032c89d008c15ce200bf56bb663915dac0505b3d12634&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "win/path/f.TXT"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": "public",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=02855990783d0e57823677c36691daea1f5304233ee4b4ff49d392737e75a1c8&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "win/path/f.TXT"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": "private",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=afbb020d57ae75143eddd2dd2a8ec5b5826479d5dbd10e9bf139644f345dbaaa&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "win/path/f.TXT"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": null,
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=62fb2ef697d8ef2b538b8e23bc8c638c45c692cc62f6d076eabfd1763c70356d&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": ".hidden"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": "public",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=12c62da915debc687645ff921c68d42fc2fcab5c79f1be54cfa81f064c80deac&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": ".hidden"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": "private",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=734a1b5c18bad55026325c8bd4c0947ad9c4148867916c64384484608352e315&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": ".hidden"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": null,
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=46a2374bca8ee374df6978ca0d48b73fd8f0c923d144a0823e17bba552b64daf&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "trailing/"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": "public",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=1a2ca95860f692803732e74d154d490a184620a81e8e2e18b339ec96a2468769&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "trailing/"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": "private",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=b14452903ce3da1e51cb2ca4b919aba456bb5e87a15a7149bee7ab318f3817a8&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "trailing/"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "dot.",
+      "access": null,
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=a5ffebf148ff55be9093724f4bc958738ce47aacaaf83977e0a58f79e9f684c7&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "dot."
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "dot.",
+      "access": "public",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=70d6de08a42eed9dccf22572aeec3aa590a6686ca7435a94ee99ce82b4e42ba4&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "dot."
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "dot.",
+      "access": "private",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=910494861ba2d7ee4f1be95f7e9a8685fa7cfb6355a3530d4ab742f22b16cc84&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "dot."
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": null,
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=ed4018a7188cdc4c08b977da2baeb600acfa4f0b5c4e963590e8c052b12b96dd&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": "public",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=00a94309ffbc0bb6a5b748af5bdddf939ec70a9b1ed726cff1296a731a07c805&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": "private",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=4a62026005d1398c08b26b20714e8c8c30b823c1ec9710d33c351bca4bdcf2b1&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": null,
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=f284e39735c133dd8bc3aae1217234a42cddcf8897a9c9205239091b2a33d6bd&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a/b/"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": "public",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=b28501ce21c2f9a244499bc92cd6861a4714836fdaa1f6596f13a5e00d6fb2c5&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a/b/"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": "private",
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=b632fb6a5484a05ca6ed1345c767ecb286a3a8014f5520d964845014f0984d91&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a/b/"
+      }
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "short.png",
+      "access": null,
+      "expiresIn": 30,
+      "result": {
+        "url": "https://s3.us-east-1.amazonaws.com/bucket.with.dots/short.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=30&X-Amz-Security-Token=SESSIONTOKEN&X-Amz-Signature=dec66aa0e44864a7719bc80d39a527d0d3337dc9ebb69f3a357ce14a976adecc&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "short.png"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "download",
+      "fileKey": "media/a b/c+d.txt",
+      "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/media/a%20b/c%2Bd.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=2d3c92556150f013c63c4d3b4b909ef8fe6735b2727ca5ce27283da3bf249b95&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+    },
+    {
+      "config": "acl_fixed",
+      "method": "download",
+      "fileKey": "plain.png",
+      "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/plain.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a0ec81e25e5ca0f21995d6b45f2eda433e4201800ad77cc4ef785134c067953c&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=e0e94f5ab5d54e128a9e80acdedc1c819c34639462d5e80f2a17bb170ef77455&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "y.png"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a1f3ff3479e49eb685c228392a82d95e8b51ceee7a8cf52a998e4136ad4a42f9&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "y.png"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a1f3ff3479e49eb685c228392a82d95e8b51ceee7a8cf52a998e4136ad4a42f9&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "y.png"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=b30f9b84134360d9d6204dbc2feccdeb546f473584e8f96af7e3ba26af8299be&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "etc/passwd"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=7b91d0a3649c958b61eb1aab956a986be0a423b70e1eb807a259d0cdffa1d550&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "etc/passwd"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=7b91d0a3649c958b61eb1aab956a986be0a423b70e1eb807a259d0cdffa1d550&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "etc/passwd"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=f7162e19844610219caadf0fe2917fb3a41a90361446afdcf16e88bc9cbbc9d2&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=8ef576ecbaccbef517f48859f202e6930781e8f79da6ada283968a433c861fa8&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=8ef576ecbaccbef517f48859f202e6930781e8f79da6ada283968a433c861fa8&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=897d7c648315b1034ad81eac51038464c8a6275d5d788ef42f8525ceac497a97&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=59c2f65937c30c249da2ac8003cd5fed69d281fe16fdcfc6d2c2d07e2065e518&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=59c2f65937c30c249da2ac8003cd5fed69d281fe16fdcfc6d2c2d07e2065e518&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=8bcf6a5aecc6b511149fa38124d0c86ea52b41e48e2f08bcd9aa0f9d98e723be&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "win/path/f.TXT"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=cbd8fd0a5e9a15dadb70a9ee17f533d9e30062e45e972226c24263430fc5ab09&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "win/path/f.TXT"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=cbd8fd0a5e9a15dadb70a9ee17f533d9e30062e45e972226c24263430fc5ab09&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "win/path/f.TXT"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=717a08dc4e53e29bc95916cfe1f3d9d5fb99f2f5232986bae590258d29b16413&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": ".hidden"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=548b71e725c63fbdb8f785918a2d37048ae3698e98dd16d09309ed581fbf1f8f&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": ".hidden"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=548b71e725c63fbdb8f785918a2d37048ae3698e98dd16d09309ed581fbf1f8f&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": ".hidden"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=f084afc49f06c17f1092d00dfe5fad37ae32639e88d8cd413eec349234850dcf&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "trailing/"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=bd5eb2d84980effd28c0487e9857efce861cb8282351ccdff79ab06c65936a5a&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "trailing/"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=bd5eb2d84980effd28c0487e9857efce861cb8282351ccdff79ab06c65936a5a&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "trailing/"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "dot.",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=f6389fb30b18d942fb17e66203a9299588e6f615e6c24087a032f1e62401f421&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "dot."
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "dot.",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=5e6ec056010e0c5e608dbaf562fa93805b01f87ff3e15cdab90ffc739efe79e9&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "dot."
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "dot.",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=5e6ec056010e0c5e608dbaf562fa93805b01f87ff3e15cdab90ffc739efe79e9&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "dot."
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=1509a16f4984c419b3a205013ae9a5139758794436edac771459b59967724f6e&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=09c3f5424ef6cec0949cff3e4ea0370f3629fd9e790b1b15f1be316370559985&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=09c3f5424ef6cec0949cff3e4ea0370f3629fd9e790b1b15f1be316370559985&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=39289417e1889c3941d48c9f7843af4e1e2635adac12dee21f3ba2b144777e00&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a/b/"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a72efbdfe7adcddcf712d2f59ee28769251df6536784d5820dbabd7f1b46bf32&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a/b/"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a72efbdfe7adcddcf712d2f59ee28769251df6536784d5820dbabd7f1b46bf32&X-Amz-SignedHeaders=host&x-amz-acl=bucket-owner-full-control&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "a/b/"
+      }
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "short.png",
+      "access": null,
+      "expiresIn": 30,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/short.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=30&X-Amz-Signature=6b38d9e1313cd1fe8d46948ceb3d75ee695d7772dcb18e739b46848557ae9d99&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "short.png"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "download",
+      "fileKey": "media/a b/c+d.txt",
+      "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/media/a%20b/c%2Bd.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=2d3c92556150f013c63c4d3b4b909ef8fe6735b2727ca5ce27283da3bf249b95&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+    },
+    {
+      "config": "acl_disabled",
+      "method": "download",
+      "fileKey": "plain.png",
+      "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/plain.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a0ec81e25e5ca0f21995d6b45f2eda433e4201800ad77cc4ef785134c067953c&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=158b4a6bc6a7546402922facf43b6699399a0512b90518a9e9b19b6a81e1c444&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/y.png"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=158b4a6bc6a7546402922facf43b6699399a0512b90518a9e9b19b6a81e1c444&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/y.png"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "x/../y.png",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/y.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=158b4a6bc6a7546402922facf43b6699399a0512b90518a9e9b19b6a81e1c444&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/y.png"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=114a3ada79e94a00402760debcb9c5f0bfa2612490ffdc80ef42ee651126cafa&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/etc/passwd"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=114a3ada79e94a00402760debcb9c5f0bfa2612490ffdc80ef42ee651126cafa&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/etc/passwd"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "../../etc/passwd",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/etc/passwd?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=114a3ada79e94a00402760debcb9c5f0bfa2612490ffdc80ef42ee651126cafa&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/etc/passwd"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=4efa74f581a0b87737035d1c5c8b5e5a899e70f512c9136a29dadef4a8b11604&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=4efa74f581a0b87737035d1c5c8b5e5a899e70f512c9136a29dadef4a8b11604&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "a b/c+d (1).txt",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/a%20b/c%2Bd%20%281%29.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=4efa74f581a0b87737035d1c5c8b5e5a899e70f512c9136a29dadef4a8b11604&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/a b/c+d (1).txt"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=4e7162670a235758986e796047caa74ee4a63fcccb07e71158bc0fcb2d647edd&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=4e7162670a235758986e796047caa74ee4a63fcccb07e71158bc0fcb2d647edd&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "/abs//dir/./f.tar.gz",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/abs/dir/f.tar.gz?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=4e7162670a235758986e796047caa74ee4a63fcccb07e71158bc0fcb2d647edd&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/abs/dir/f.tar.gz"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a544556364318a3b1dc63be929181d150241eecbabd8faa477cb3380393b0e4e&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/win/path/f.TXT"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a544556364318a3b1dc63be929181d150241eecbabd8faa477cb3380393b0e4e&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/win/path/f.TXT"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "\\win\\path\\f.TXT",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/win/path/f.TXT?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=a544556364318a3b1dc63be929181d150241eecbabd8faa477cb3380393b0e4e&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/win/path/f.TXT"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=3281bdc82720376bb7e3bed219419f0569a80c81fdfed8bf9866b3475d1a9f7c&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/.hidden"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=3281bdc82720376bb7e3bed219419f0569a80c81fdfed8bf9866b3475d1a9f7c&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/.hidden"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": ".hidden",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/.hidden?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=3281bdc82720376bb7e3bed219419f0569a80c81fdfed8bf9866b3475d1a9f7c&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/.hidden"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=03d7e523a2ca09d44669f09e1942c325c5fc94d2cce8d8ed3880ab690f1df32d&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/trailing/"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=03d7e523a2ca09d44669f09e1942c325c5fc94d2cce8d8ed3880ab690f1df32d&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/trailing/"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "trailing/",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/trailing/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=03d7e523a2ca09d44669f09e1942c325c5fc94d2cce8d8ed3880ab690f1df32d&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/trailing/"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "dot.",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=bd1994d22b39f97b05719407765cc1722342f841fd390f736c743c02d0a01319&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/dot."
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "dot.",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=bd1994d22b39f97b05719407765cc1722342f841fd390f736c743c02d0a01319&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/dot."
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "dot.",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/dot.?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=bd1994d22b39f97b05719407765cc1722342f841fd390f736c743c02d0a01319&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/dot."
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=0e5a5e1a64b1e3f8e36a92f3e81d35b708078330b0f123186b3aade8a18801ed&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=0e5a5e1a64b1e3f8e36a92f3e81d35b708078330b0f123186b3aade8a18801ed&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "ünï cødé.pdf",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=0e5a5e1a64b1e3f8e36a92f3e81d35b708078330b0f123186b3aade8a18801ed&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/ünï cødé.pdf"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": null,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=e627f4db8f7ec78743b4b02d236e80b1d6d119303667735064b1b7459bc32268&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/a/b/"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": "public",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=e627f4db8f7ec78743b4b02d236e80b1d6d119303667735064b1b7459bc32268&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/a/b/"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "a/b/",
+      "access": "private",
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/a/b/?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=3600&X-Amz-Signature=e627f4db8f7ec78743b4b02d236e80b1d6d119303667735064b1b7459bc32268&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/a/b/"
+      }
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "short.png",
+      "access": null,
+      "expiresIn": 30,
+      "result": {
+        "url": "https://bucket-c.s3.ap-southeast-2.amazonaws.com/p/short.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIDEXAMPLE%2F20260102%2Fap-southeast-2%2Fs3%2Faws4_request&X-Amz-Date=20260102T030405Z&X-Amz-Expires=30&X-Amz-Signature=8537c24e40065ba7c82b74a0e404bd1ae4c81f63601ec457ed8a54fe3e6ef63d&X-Amz-SignedHeaders=host&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+        "key": "p/short.png"
+      }
+    }
+  ],
+  "uploads": [
+    {
+      "config": "path_style",
+      "filename": "x/../y.png",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+        "key": "media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8=",
+            "Key": "media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "x%2F..%2Fy.png"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "x/../y.png",
+      "content": "hello ünïcode",
+      "mimeType": "text/csv",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+        "key": "media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8gw7xuw69jb2Rl",
+            "Key": "media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+            "ContentType": "text/csv",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "x%2F..%2Fy.png"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "x/../y.png",
+      "content": "PNGÿ",
+      "mimeType": "image/png",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+        "key": "media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "iVBOR/8=",
+            "Key": "media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+            "ContentType": "image/png",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "x%2F..%2Fy.png"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "x/../y.png",
+      "content": "plain",
+      "mimeType": null,
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+        "key": "media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "cGxhaW4=",
+            "Key": "media/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "x%2F..%2Fy.png"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "../../etc/passwd",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8=",
+            "Key": "media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "..%2F..%2Fetc%2Fpasswd"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "../../etc/passwd",
+      "content": "hello ünïcode",
+      "mimeType": "text/csv",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8gw7xuw69jb2Rl",
+            "Key": "media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/csv",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "..%2F..%2Fetc%2Fpasswd"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "../../etc/passwd",
+      "content": "PNGÿ",
+      "mimeType": "image/png",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "iVBOR/8=",
+            "Key": "media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "image/png",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "..%2F..%2Fetc%2Fpasswd"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "../../etc/passwd",
+      "content": "plain",
+      "mimeType": null,
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "cGxhaW4=",
+            "Key": "media/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "..%2F..%2Fetc%2Fpasswd"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "a b/c+d (1).txt",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a%20b/c%2Bd%20(1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "media/a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8=",
+            "Key": "media/a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%20b%2Fc%2Bd%20(1).txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "a b/c+d (1).txt",
+      "content": "hello ünïcode",
+      "mimeType": "text/csv",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a%20b/c%2Bd%20(1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "media/a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8gw7xuw69jb2Rl",
+            "Key": "media/a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/csv",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%20b%2Fc%2Bd%20(1).txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "a b/c+d (1).txt",
+      "content": "PNGÿ",
+      "mimeType": "image/png",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a%20b/c%2Bd%20(1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "media/a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "iVBOR/8=",
+            "Key": "media/a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "image/png",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%20b%2Fc%2Bd%20(1).txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "a b/c+d (1).txt",
+      "content": "plain",
+      "mimeType": null,
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a%20b/c%2Bd%20(1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "media/a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "cGxhaW4=",
+            "Key": "media/a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%20b%2Fc%2Bd%20(1).txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "/abs//dir/./f.tar.gz",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+        "key": "media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8=",
+            "Key": "media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%2Fabs%2F%2Fdir%2F.%2Ff.tar.gz"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "/abs//dir/./f.tar.gz",
+      "content": "hello ünïcode",
+      "mimeType": "text/csv",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+        "key": "media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8gw7xuw69jb2Rl",
+            "Key": "media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+            "ContentType": "text/csv",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%2Fabs%2F%2Fdir%2F.%2Ff.tar.gz"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "/abs//dir/./f.tar.gz",
+      "content": "PNGÿ",
+      "mimeType": "image/png",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+        "key": "media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "iVBOR/8=",
+            "Key": "media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+            "ContentType": "image/png",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%2Fabs%2F%2Fdir%2F.%2Ff.tar.gz"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "/abs//dir/./f.tar.gz",
+      "content": "plain",
+      "mimeType": null,
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+        "key": "media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "cGxhaW4=",
+            "Key": "media/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%2Fabs%2F%2Fdir%2F.%2Ff.tar.gz"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "\\win\\path\\f.TXT",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+        "key": "media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8=",
+            "Key": "media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%5Cwin%5Cpath%5Cf.TXT"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "\\win\\path\\f.TXT",
+      "content": "hello ünïcode",
+      "mimeType": "text/csv",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+        "key": "media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8gw7xuw69jb2Rl",
+            "Key": "media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+            "ContentType": "text/csv",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%5Cwin%5Cpath%5Cf.TXT"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "\\win\\path\\f.TXT",
+      "content": "PNGÿ",
+      "mimeType": "image/png",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+        "key": "media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "iVBOR/8=",
+            "Key": "media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+            "ContentType": "image/png",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%5Cwin%5Cpath%5Cf.TXT"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "\\win\\path\\f.TXT",
+      "content": "plain",
+      "mimeType": null,
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+        "key": "media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "cGxhaW4=",
+            "Key": "media/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%5Cwin%5Cpath%5Cf.TXT"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": ".hidden",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8=",
+            "Key": "media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": ".hidden"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": ".hidden",
+      "content": "hello ünïcode",
+      "mimeType": "text/csv",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8gw7xuw69jb2Rl",
+            "Key": "media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/csv",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": ".hidden"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": ".hidden",
+      "content": "PNGÿ",
+      "mimeType": "image/png",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "iVBOR/8=",
+            "Key": "media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "image/png",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": ".hidden"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": ".hidden",
+      "content": "plain",
+      "mimeType": null,
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "cGxhaW4=",
+            "Key": "media/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": ".hidden"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "trailing/",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8=",
+            "Key": "media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "trailing%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "trailing/",
+      "content": "hello ünïcode",
+      "mimeType": "text/csv",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8gw7xuw69jb2Rl",
+            "Key": "media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/csv",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "trailing%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "trailing/",
+      "content": "PNGÿ",
+      "mimeType": "image/png",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "iVBOR/8=",
+            "Key": "media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "image/png",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "trailing%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "trailing/",
+      "content": "plain",
+      "mimeType": null,
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "cGxhaW4=",
+            "Key": "media/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "trailing%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "dot.",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+        "key": "media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ."
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8=",
+            "Key": "media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "dot."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "dot.",
+      "content": "hello ünïcode",
+      "mimeType": "text/csv",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+        "key": "media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ."
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8gw7xuw69jb2Rl",
+            "Key": "media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+            "ContentType": "text/csv",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "dot."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "dot.",
+      "content": "PNGÿ",
+      "mimeType": "image/png",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+        "key": "media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ."
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "iVBOR/8=",
+            "Key": "media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+            "ContentType": "image/png",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "dot."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "dot.",
+      "content": "plain",
+      "mimeType": null,
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+        "key": "media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ."
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "cGxhaW4=",
+            "Key": "media/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "dot."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "ünï cødé.pdf",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+        "key": "media/ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8=",
+            "Key": "media/ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "ünï cødé.pdf",
+      "content": "hello ünïcode",
+      "mimeType": "text/csv",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+        "key": "media/ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8gw7xuw69jb2Rl",
+            "Key": "media/ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+            "ContentType": "text/csv",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "ünï cødé.pdf",
+      "content": "PNGÿ",
+      "mimeType": "image/png",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+        "key": "media/ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "iVBOR/8=",
+            "Key": "media/ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+            "ContentType": "image/png",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "ünï cødé.pdf",
+      "content": "plain",
+      "mimeType": null,
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+        "key": "media/ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "cGxhaW4=",
+            "Key": "media/ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "a/b/",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8=",
+            "Key": "media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%2Fb%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "a/b/",
+      "content": "hello ünïcode",
+      "mimeType": "text/csv",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "aGVsbG8gw7xuw69jb2Rl",
+            "Key": "media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/csv",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%2Fb%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "a/b/",
+      "content": "PNGÿ",
+      "mimeType": "image/png",
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "iVBOR/8=",
+            "Key": "media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "image/png",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%2Fb%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "a/b/",
+      "content": "plain",
+      "mimeType": null,
+      "access": "public",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-a",
+            "Body": "cGxhaW4=",
+            "Key": "media/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%2Fb%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "f.txt",
+      "content": "x",
+      "mimeType": "text/plain",
+      "access": null,
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "media/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "private",
+            "Bucket": "bucket-a",
+            "Body": "eA==",
+            "Key": "media/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "f.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "path_style",
+      "filename": "f.txt",
+      "content": "x",
+      "mimeType": "text/plain",
+      "access": "private",
+      "result": {
+        "url": "http://localhost:9000/bucket-a/media/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "media/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "private",
+            "Bucket": "bucket-a",
+            "Body": "eA==",
+            "Key": "media/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "f.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": "x/../y.png",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+        "key": "y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-b",
+            "Body": "aGVsbG8=",
+            "Key": "y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "x%2F..%2Fy.png"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": "../../etc/passwd",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-b",
+            "Body": "aGVsbG8=",
+            "Key": "etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "..%2F..%2Fetc%2Fpasswd"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": "a b/c+d (1).txt",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/a%20b/c%2Bd%20(1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-b",
+            "Body": "aGVsbG8=",
+            "Key": "a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%20b%2Fc%2Bd%20(1).txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": "/abs//dir/./f.tar.gz",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+        "key": "abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-b",
+            "Body": "aGVsbG8=",
+            "Key": "abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%2Fabs%2F%2Fdir%2F.%2Ff.tar.gz"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": "\\win\\path\\f.TXT",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+        "key": "win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-b",
+            "Body": "aGVsbG8=",
+            "Key": "win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%5Cwin%5Cpath%5Cf.TXT"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": ".hidden",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": ".hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-b",
+            "Body": "aGVsbG8=",
+            "Key": ".hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": ".hidden"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": "trailing/",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-b",
+            "Body": "aGVsbG8=",
+            "Key": "trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "trailing%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": "dot.",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+        "key": "dot-01KDYZZZZZZZZZZZZZZZZZZZZZ."
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-b",
+            "Body": "aGVsbG8=",
+            "Key": "dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "dot."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": "ünï cødé.pdf",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+        "key": "ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-b",
+            "Body": "aGVsbG8=",
+            "Key": "ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": "a/b/",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket-b",
+            "Body": "aGVsbG8=",
+            "Key": "a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%2Fb%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": "f.txt",
+      "content": "x",
+      "mimeType": "text/plain",
+      "access": null,
+      "result": {
+        "url": "https://cdn.example.test/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "private",
+            "Bucket": "bucket-b",
+            "Body": "eA==",
+            "Key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "f.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "virtual_host",
+      "filename": "f.txt",
+      "content": "x",
+      "mimeType": "text/plain",
+      "access": "private",
+      "result": {
+        "url": "https://cdn.example.test/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "private",
+            "Bucket": "bucket-b",
+            "Body": "eA==",
+            "Key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "f.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": "x/../y.png",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+        "key": "y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket.with.dots",
+            "Body": "aGVsbG8=",
+            "Key": "y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "x%2F..%2Fy.png"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": "../../etc/passwd",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket.with.dots",
+            "Body": "aGVsbG8=",
+            "Key": "etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "..%2F..%2Fetc%2Fpasswd"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": "a b/c+d (1).txt",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/a%20b/c%2Bd%20(1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket.with.dots",
+            "Body": "aGVsbG8=",
+            "Key": "a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%20b%2Fc%2Bd%20(1).txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": "/abs//dir/./f.tar.gz",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+        "key": "abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket.with.dots",
+            "Body": "aGVsbG8=",
+            "Key": "abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%2Fabs%2F%2Fdir%2F.%2Ff.tar.gz"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": "\\win\\path\\f.TXT",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+        "key": "win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket.with.dots",
+            "Body": "aGVsbG8=",
+            "Key": "win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%5Cwin%5Cpath%5Cf.TXT"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": ".hidden",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": ".hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket.with.dots",
+            "Body": "aGVsbG8=",
+            "Key": ".hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": ".hidden"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": "trailing/",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket.with.dots",
+            "Body": "aGVsbG8=",
+            "Key": "trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "trailing%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": "dot.",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+        "key": "dot-01KDYZZZZZZZZZZZZZZZZZZZZZ."
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket.with.dots",
+            "Body": "aGVsbG8=",
+            "Key": "dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "dot."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": "ünï cødé.pdf",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+        "key": "ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket.with.dots",
+            "Body": "aGVsbG8=",
+            "Key": "ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": "a/b/",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "public-read",
+            "Bucket": "bucket.with.dots",
+            "Body": "aGVsbG8=",
+            "Key": "a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%2Fb%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": "f.txt",
+      "content": "x",
+      "mimeType": "text/plain",
+      "access": null,
+      "result": {
+        "url": "https://cdn.example.test/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "private",
+            "Bucket": "bucket.with.dots",
+            "Body": "eA==",
+            "Key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "f.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "us_east_1",
+      "filename": "f.txt",
+      "content": "x",
+      "mimeType": "text/plain",
+      "access": "private",
+      "result": {
+        "url": "https://cdn.example.test/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "private",
+            "Bucket": "bucket.with.dots",
+            "Body": "eA==",
+            "Key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "f.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": "x/../y.png",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+        "key": "y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": "x%2F..%2Fy.png"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": "../../etc/passwd",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": "..%2F..%2Fetc%2Fpasswd"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": "a b/c+d (1).txt",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/a%20b/c%2Bd%20(1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": "a%20b%2Fc%2Bd%20(1).txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": "/abs//dir/./f.tar.gz",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+        "key": "abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": "%2Fabs%2F%2Fdir%2F.%2Ff.tar.gz"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": "\\win\\path\\f.TXT",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+        "key": "win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": "%5Cwin%5Cpath%5Cf.TXT"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": ".hidden",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": ".hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": ".hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": ".hidden"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": "trailing/",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": "trailing%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": "dot.",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+        "key": "dot-01KDYZZZZZZZZZZZZZZZZZZZZZ."
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": "dot."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": "ünï cødé.pdf",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+        "key": "ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": "%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": "a/b/",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": "a%2Fb%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": "f.txt",
+      "content": "x",
+      "mimeType": "text/plain",
+      "access": null,
+      "result": {
+        "url": "https://cdn.example.test/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "eA==",
+            "Key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": "f.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_fixed",
+      "filename": "f.txt",
+      "content": "x",
+      "mimeType": "text/plain",
+      "access": "private",
+      "result": {
+        "url": "https://cdn.example.test/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "ACL": "bucket-owner-full-control",
+            "Bucket": "bucket-c",
+            "Body": "eA==",
+            "Key": "f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "no-cache",
+            "Metadata": {
+              "original-filename": "f.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": "x/../y.png",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/p/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+        "key": "p/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "p/y-01KDYZZZZZZZZZZZZZZZZZZZZZ.png",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "x%2F..%2Fy.png"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": "../../etc/passwd",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/p/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "p/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "p/etc/passwd-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "..%2F..%2Fetc%2Fpasswd"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": "a b/c+d (1).txt",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/p/a%20b/c%2Bd%20(1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "p/a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "p/a b/c+d (1)-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%20b%2Fc%2Bd%20(1).txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": "/abs//dir/./f.tar.gz",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/p/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+        "key": "p/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "p/abs/dir/f.tar-01KDYZZZZZZZZZZZZZZZZZZZZZ.gz",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%2Fabs%2F%2Fdir%2F.%2Ff.tar.gz"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": "\\win\\path\\f.TXT",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/p/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+        "key": "p/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "p/win/path/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.TXT",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%5Cwin%5Cpath%5Cf.TXT"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": ".hidden",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/p/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "p/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "p/.hidden-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": ".hidden"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": "trailing/",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/p/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "p/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "p/trailing-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "trailing%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": "dot.",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/p/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+        "key": "p/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ."
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "p/dot-01KDYZZZZZZZZZZZZZZZZZZZZZ.",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "dot."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": "ünï cødé.pdf",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/p/%C3%BCn%C3%AF%20c%C3%B8d%C3%A9-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+        "key": "p/ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "p/ünï cødé-01KDYZZZZZZZZZZZZZZZZZZZZZ.pdf",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "%C3%BCn%C3%AF%20c%C3%B8d%C3%A9.pdf"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": "a/b/",
+      "content": "aGVsbG8=",
+      "mimeType": "text/plain",
+      "access": "public",
+      "result": {
+        "url": "https://cdn.example.test/p/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+        "key": "p/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "aGVsbG8=",
+            "Key": "p/a/b-01KDYZZZZZZZZZZZZZZZZZZZZZ",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "a%2Fb%2F"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": "f.txt",
+      "content": "x",
+      "mimeType": "text/plain",
+      "access": null,
+      "result": {
+        "url": "https://cdn.example.test/p/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "p/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "eA==",
+            "Key": "p/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "f.txt"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "config": "acl_disabled",
+      "filename": "f.txt",
+      "content": "x",
+      "mimeType": "text/plain",
+      "access": "private",
+      "result": {
+        "url": "https://cdn.example.test/p/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+        "key": "p/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt"
+      },
+      "sent": [
+        {
+          "command": "PutObjectCommand",
+          "input": {
+            "Bucket": "bucket-c",
+            "Body": "eA==",
+            "Key": "p/f-01KDYZZZZZZZZZZZZZZZZZZZZZ.txt",
+            "ContentType": "text/plain",
+            "CacheControl": "public, max-age=31536000",
+            "Metadata": {
+              "original-filename": "f.txt"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "config": "path_style",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": null,
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "path_style",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": "public",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "path_style",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": "private",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "path_style",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": null,
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "path_style",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": "public",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "path_style",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": "private",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "..",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "..",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "..",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "..",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "./",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "./",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "./",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "filename": "./",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "virtual_host",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": null,
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "virtual_host",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": "public",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "virtual_host",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": "private",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "virtual_host",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": null,
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "virtual_host",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": "public",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "virtual_host",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": "private",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "..",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "virtual_host",
+      "method": "upload",
+      "filename": "./",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "us_east_1",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": null,
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "us_east_1",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": "public",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "us_east_1",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": "private",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "us_east_1",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": null,
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "us_east_1",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": "public",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "us_east_1",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": "private",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "..",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "us_east_1",
+      "method": "upload",
+      "filename": "./",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "acl_fixed",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": null,
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "acl_fixed",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": "public",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "acl_fixed",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": "private",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "acl_fixed",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": null,
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "acl_fixed",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": "public",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "acl_fixed",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": "private",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "..",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "acl_fixed",
+      "method": "upload",
+      "filename": "./",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "acl_disabled",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": null,
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "acl_disabled",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": "public",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "acl_disabled",
+      "method": "getPresignedUploadUrl",
+      "filename": "..",
+      "access": "private",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "acl_disabled",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": null,
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "acl_disabled",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": "public",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "acl_disabled",
+      "method": "getPresignedUploadUrl",
+      "filename": "./",
+      "access": "private",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "..",
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "acl_disabled",
+      "method": "upload",
+      "filename": "./",
+      "type": "invalid_data",
+      "message": "Invalid filename: ./"
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "args": [
+        null
+      ],
+      "type": "invalid_data",
+      "message": "No file provided"
+    },
+    {
+      "config": "path_style",
+      "method": "upload",
+      "args": [
+        {
+          "filename": ""
+        }
+      ],
+      "type": "invalid_data",
+      "message": "No filename provided"
+    },
+    {
+      "config": "path_style",
+      "method": "getPresignedUploadUrl",
+      "args": [
+        {
+          "filename": ""
+        }
+      ],
+      "type": "invalid_data",
+      "message": "No filename provided"
+    },
+    {
+      "config": "path_style",
+      "method": "getAsBuffer",
+      "args": [
+        {
+          "fileKey": ""
+        }
+      ],
+      "type": "invalid_data",
+      "message": "No fileKey provided"
+    },
+    {
+      "config": "path_style",
+      "method": "getDownloadStream",
+      "args": [
+        {}
+      ],
+      "type": "invalid_data",
+      "message": "No fileKey provided"
+    },
+    {
+      "config": "path_style",
+      "method": "getUploadStream",
+      "args": [
+        {
+          "filename": ""
+        }
+      ],
+      "type": "invalid_data",
+      "message": "No filename provided"
+    },
+    {
+      "config": "path_style",
+      "method": "getUploadStream",
+      "args": [
+        {
+          "filename": ".."
+        }
+      ],
+      "type": "invalid_data",
+      "message": "Invalid filename: .."
+    },
+    {
+      "config": "missing_keys",
+      "method": "constructor",
+      "type": "invalid_data",
+      "message": "Access key ID and secret access key are required when using access key authentication"
+    }
+  ]
+}

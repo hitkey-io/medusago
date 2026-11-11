@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	filetypes "github.com/hitkey-io/medusago/packages/core/types/src/file"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -25,7 +26,15 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	}
 	extension := media[slash+1:]
 	svc := req.Scope.Resolve(utilsmodulessdk.FILE).(*fileservices.FileModuleService)
-	result, err := svc.GetUploadFileURL(req.Ctx(), fmt.Sprintf("%s.%s", common.ULID(), extension))
+	access := "private"
+	if a, ok := body.Get("access"); ok && a != nil {
+		access = fmt.Sprint(a)
+	}
+	result, err := svc.GetUploadFileURL(req.Ctx(), filetypes.ProviderGetPresignedUploadUrlDTO{
+		Filename: fmt.Sprintf("%s.%s", common.ULID(), extension),
+		MimeType: mimeType,
+		Access:   access,
+	})
 	if err != nil {
 		return err
 	}

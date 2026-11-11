@@ -4,11 +4,11 @@ package steps
 import (
 	"fmt"
 
+	filetypes "github.com/hitkey-io/medusago/packages/core/types/src/file"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 	fileservices "github.com/hitkey-io/medusago/packages/modules/file/src/services"
-	localfile "github.com/hitkey-io/medusago/packages/modules/providers/file-local/src/services"
 )
 
 func fileService(c composer.Container) *fileservices.FileModuleService {
@@ -25,7 +25,7 @@ func keys(ids []any) []string {
 
 // UploadFilesStep mirrors uploadFilesStep.
 var UploadFilesStep = composer.CreateStep("upload-files",
-	func(ctx composer.StepExecutionContext, files []*localfile.UploadFile) (composer.StepResponse[[]*dal.Record], error) {
+	func(ctx composer.StepExecutionContext, files []*filetypes.ProviderUploadFileDTO) (composer.StepResponse[[]*dal.Record], error) {
 		created, err := fileService(ctx.Container).CreateFiles(ctx.Context, files)
 		if err != nil {
 			return composer.StepResponse[[]*dal.Record]{}, err

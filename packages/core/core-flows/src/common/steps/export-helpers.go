@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strconv"
 
+	filetypes "github.com/hitkey-io/medusago/packages/core/types/src/file"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/csv"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
-	localfile "github.com/hitkey-io/medusago/packages/modules/providers/file-local/src/services"
 )
 
 // Helpers shared by the export steps (orders, customers, inventory items,
@@ -17,7 +17,7 @@ import (
 
 // FileStreamService is the part of IFileModuleService the export steps use.
 type FileStreamService interface {
-	GetUploadStream(ctx context.Context, filename, access string) (*localfile.UploadStream, error)
+	GetUploadStream(ctx context.Context, data filetypes.ProviderUploadStreamDTO) (*filetypes.ProviderUploadStream, error)
 	DeleteFiles(ctx context.Context, ids []string) error
 }
 

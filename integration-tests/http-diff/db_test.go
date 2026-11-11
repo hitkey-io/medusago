@@ -127,8 +127,9 @@ func isGenerated(s string) (bool, string) {
 // medusa-config.js: the index engine needs the index module besides its
 // feature flag (MEDUSA_FF_INDEX_ENGINE=true).
 func scenarioModules() []config.ModuleConfig {
+	var out []config.ModuleConfig
 	if os.Getenv("MEDUSA_FF_INDEX_ENGINE") == "true" {
-		return []config.ModuleConfig{{Key: "index", Resolve: "@medusajs/medusa/index-module"}}
+		out = append(out, config.ModuleConfig{Key: "index", Resolve: "@medusajs/medusa/index-module"})
 	}
-	return nil
+	return append(out, envModules()...)
 }

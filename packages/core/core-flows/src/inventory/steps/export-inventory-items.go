@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	filetypes "github.com/hitkey-io/medusago/packages/core/types/src/file"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/csv"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
@@ -159,7 +161,7 @@ var ExportInventoryItemsStep = composer.CreateStep("export-inventory-items",
 			return localeCompare(fmt.Sprint(recGet(locations[i], "name")), fmt.Sprint(recGet(locations[j], "name"))) < 0
 		})
 		filename := fmt.Sprintf("%d-inventory-item-exports.csv", time.Now().UnixMilli())
-		stream, err := commonsteps.FileStreamServiceOf(ctx.Container).GetUploadStream(ctx.Context, filename, "")
+		stream, err := commonsteps.FileStreamServiceOf(ctx.Container).GetUploadStream(ctx.Context, filetypes.ProviderUploadStreamDTO{Filename: filename, MimeType: "text/csv"})
 		if err != nil {
 			return zero, err
 		}
@@ -175,8 +177,8 @@ var ExportInventoryItemsStep = composer.CreateStep("export-inventory-items",
 			fields = append(fields, "location_levels.*")
 		}
 		hasHeader := false
-		werr := func() error {
-			defer stream.File.Close()
+		werr := func() (err error) {
+			defer func() { err = errors.Join(err, stream.File.Close()) }()
 			for page := 0; ; page++ {
 				filters := dal.NewRecord()
 				if in.Filter != nil {

@@ -12,6 +12,12 @@
 # scenario's .env file may name another one with a TEMPLATE_DB line).
 # REF_APP, REC_DB and PORT allow parallel recordings (another checkout,
 # another database and port).
+#
+# Scenarios with fake third-party services (MEDUSA_TEST_FAKE_HOSTS,
+# MEDUSA_TEST_MODULES, see fakes_test.go) need a reference application
+# whose medusa-config.js requires "$MEDUSA_HTTP_DIFF_DIR/fake-hosts.js" when
+# MEDUSA_TEST_FAKE_HOSTS is set and adds the modules of MEDUSA_TEST_MODULES
+# (JSON) to its modules.
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -51,7 +57,7 @@ for scenario in "${scenarios[@]}"; do
   psql_db -c "drop database if exists $DB with (force)" -c "create database $DB template $template"
   psql_db -d "$DB" -c "DO \$\$ DECLARE t text; BEGIN FOR t IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename NOT IN ('mikro_orm_migrations', 'script_migrations', 'link_module_migrations') LOOP EXECUTE format('TRUNCATE %I CASCADE', t); END LOOP; END \$\$;"
   psql_db -d "$DB" < "$HERE/seed.sql" >/dev/null
-  (cd "$APP" && { [ ${#scenario_env[@]} -eq 0 ] || export "${scenario_env[@]}"; } && NODE_ENV=development LOG_LEVEL=error AUTH_MFA_ENCRYPTION_KEY="$MFA_KEY" DATABASE_URL="$PG_URL_BASE/$DB" \
+  (cd "$APP" && { [ ${#scenario_env[@]} -eq 0 ] || export "${scenario_env[@]}"; } && NODE_ENV=development LOG_LEVEL=error AUTH_MFA_ENCRYPTION_KEY="$MFA_KEY" MEDUSA_HTTP_DIFF_DIR="$HERE" DATABASE_URL="$PG_URL_BASE/$DB" \
     ADMIN_CORS=http://localhost:5173 AUTH_CORS=http://localhost:5173 STORE_CORS=http://localhost:8000 \
     exec "$MEDUSA" start -p "$PORT" >"$HERE/.record-server-$PORT.log" 2>&1) &
   pid=$!

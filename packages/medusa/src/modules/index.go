@@ -8,6 +8,7 @@ import modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules
 var Registry = map[string]*modulessdk.ModuleExports{
 	"@medusajs/medusa/notification-local":       &NotificationLocal,
 	"@medusajs/medusa/file-local":               &FileLocal,
+	"@medusajs/medusa/file-s3":                  &FileS3,
 	"@medusajs/medusa/file":                     &File,
 	"@medusajs/medusa/auth-emailpass":           &AuthEmailpass,
 	"@medusajs/medusa/event-bus-local":          &EventBusLocal,
