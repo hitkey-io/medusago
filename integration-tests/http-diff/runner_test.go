@@ -15,6 +15,7 @@ import (
 	mfautils "github.com/hitkey-io/medusago/packages/modules/auth/src/utils"
 	"io"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
@@ -694,6 +695,16 @@ func goServer(t *testing.T, scenario string) string {
 	}
 	if base := os.Getenv("MEDUSA_HTTP_TARGET_URL"); base != "" {
 		return base
+	}
+	if endpoint := os.Getenv("MEDUSA_SESSION_DYNAMODB_ENDPOINT"); endpoint != "" {
+		// the scenario needs a local DynamoDB (docker amazon/dynamodb-local)
+		if u, err := url.Parse(endpoint); err == nil {
+			if conn, err := net.DialTimeout("tcp", u.Host, 2*time.Second); err != nil {
+				t.Skipf("DynamoDB at %s is not reachable: %v", endpoint, err)
+			} else {
+				conn.Close()
+			}
+		}
 	}
 	dbURL := setupDatabase(t, "medusa_http_go_"+strings.ReplaceAll(scenario, "-", "_"))
 	// Same CORS settings as record.sh passes to upstream.
