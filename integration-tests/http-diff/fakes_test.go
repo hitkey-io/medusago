@@ -1,6 +1,8 @@
 package httpdiff
 
 import (
+	"crypto/tls"
+	"net/http"
 	"net/url"
 	"os"
 	"strings"
@@ -8,6 +10,7 @@ import (
 	"time"
 
 	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
+	adyenclient "github.com/hitkey-io/medusago/packages/modules/providers/payment-adyen/src/client"
 	stripecore "github.com/hitkey-io/medusago/packages/modules/providers/payment-stripe/src/core"
 )
 
@@ -29,6 +32,22 @@ func startFakes(t *testing.T, env map[string]string) {
 		stripecore.DefaultHost, stripecore.DefaultPort, stripecore.DefaultProtocol = pu.Hostname(), pu.Port(), pu.Scheme
 		t.Cleanup(func() {
 			stripecore.DefaultHost, stripecore.DefaultPort, stripecore.DefaultProtocol = host, port, protocol
+		})
+	}
+	if u := env["MEDUSA_TEST_ADYEN_URL"]; u != "" {
+		startFakeAdyen(t, u)
+		serviceURLs["adyen"] = strings.TrimSuffix(u, "/")
+		// the fake's certificate is self-signed (upstream runs with
+		// NODE_TLS_REJECT_UNAUTHORIZED=0)
+		insecure := &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+		prevClient, prevOverride := adyenclient.HTTPClient, adyenclient.EndpointOverride
+		adyenclient.HTTPClient = &http.Client{Transport: insecure}
+		adyenclient.EndpointOverride = u
+		prevDefault := http.DefaultTransport
+		http.DefaultTransport = insecure
+		t.Cleanup(func() {
+			adyenclient.HTTPClient, adyenclient.EndpointOverride = prevClient, prevOverride
+			http.DefaultTransport = prevDefault
 		})
 	}
 }
@@ -59,6 +78,15 @@ func paymentModule() (config.ModuleConfig, bool) {
 		}
 		providers = append(providers, config.ModuleProviderConfig{Resolve: "@medusajs/medusa/payment-stripe", ID: "stripe", Options: options})
 	}
+	if os.Getenv("MEDUSA_TEST_ADYEN_URL") != "" {
+		providers = append(providers, config.ModuleProviderConfig{Resolve: "@medusajs/medusa/payment-adyen", ID: "adyen", Options: map[string]any{
+			"apiKey":          "adyen_test_fake",
+			"merchantAccount": "MedusaTestAccount",
+			"hmacKey":         envOr("ADYEN_HMAC_KEY", "44782DEF547AAA06C910C43932B1EB0C71FC68D9D0C057550C48EC2ACF6BA056"),
+			"capture":         os.Getenv("ADYEN_CAPTURE") == "true",
+			"returnUrl":       "http://localhost:8000/checkout",
+		}})
+	}
 	if len(providers) == 0 {
 		return config.ModuleConfig{}, false
 	}
@@ -77,6 +105,8 @@ func signBody(scheme, body string) (string, map[string]string) {
 	switch scheme {
 	case "stripe":
 		return body, map[string]string{"stripe-signature": stripeSignature(body)}
+	case "adyen":
+		return adyenSign(body), nil
 	}
 	return body, nil
 }

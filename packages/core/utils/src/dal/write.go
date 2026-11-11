@@ -117,20 +117,20 @@ func isJSONColumn(e *dml.Entity, column string) bool {
 }
 
 // mergeObjectProperties mirrors MikroORM Utils.merge(target, source): plain
-// objects merge recursively (a missing key starts as {}, a non-object target
-// value is left as is), any other value replaces the target's.
+// objects merge recursively (a missing or non-object target value is
+// replaced by a copy of the source object), any other value replaces the
+// target's.
 func mergeObjectProperties(target, source *Record) *Record {
 	for _, k := range source.Keys() {
 		v, _ := source.Get(k)
 		if sub, ok := v.(*Record); ok {
-			cur, has := target.Get(k)
-			if !has {
-				cur = NewRecord()
-				target.Set(k, cur)
+			cur, _ := target.Get(k)
+			t, ok := cur.(*Record)
+			if !ok || t == nil {
+				target.Set(k, mergeObjectProperties(NewRecord(), sub))
+				continue
 			}
-			if t, ok := cur.(*Record); ok {
-				mergeObjectProperties(t, sub)
-			}
+			mergeObjectProperties(t, sub)
 			continue
 		}
 		target.Set(k, v)
