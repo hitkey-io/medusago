@@ -77,9 +77,34 @@ func (s *LocalEventBusService) Emit(ctx context.Context, messages []composer.Mes
 			s.mu.Unlock()
 			continue
 		}
+		// options.delay (ms) postpones the publication
+		if d := delayOf(m.Options); d > 0 {
+			m := m
+			s.wg.Add(1)
+			go func() {
+				defer s.wg.Done()
+				time.Sleep(d)
+				s.publish(m)
+			}()
+			continue
+		}
 		s.publish(m)
 	}
 	return nil
+}
+
+func delayOf(options *dal.Record) time.Duration {
+	if options == nil {
+		return 0
+	}
+	v, _ := options.Get("delay")
+	switch n := v.(type) {
+	case float64:
+		return time.Duration(n * float64(time.Millisecond))
+	case int:
+		return time.Duration(n) * time.Millisecond
+	}
+	return 0
 }
 
 func (s *LocalEventBusService) publish(m composer.Message) {

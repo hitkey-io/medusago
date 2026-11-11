@@ -94,13 +94,6 @@ var ValidateCartPaymentsStep = composer.CreateStep("validate-cart-payments",
 		return composer.NewStepResponse(toProcess), nil
 	}, nil)
 
-// CompensatePaymentIfNeededStep mirrors compensatePaymentIfNeededStep (the
-// refund of a captured payment is not ported yet: system provider payments
-// are never captured at completion).
-var CompensatePaymentIfNeededStep = composer.CreateStep("compensate-payment-if-needed",
-	func(ctx composer.StepExecutionContext, paymentSessionID any) (composer.StepResponse[any], error) {
-		return composer.NewStepResponse[any](paymentSessionID, paymentSessionID), nil
-	}, nil)
 
 // ValidateShippingStepInput mirrors ValidateShippingInput.
 type ValidateShippingStepInput struct {

@@ -3,6 +3,7 @@ package steps
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
@@ -14,6 +15,7 @@ import (
 type paymentService interface {
 	Internal(className string) *utilsmodulessdk.InternalService
 	AuthorizePaymentSession(ctx context.Context, id string, context_ *dal.Record) (*dal.Record, error)
+	CancelPayment(ctx context.Context, id any) (*dal.Record, error)
 }
 
 // AuthorizePaymentSessionStepInput mirrors AuthorizePaymentSessionStepInput.
@@ -58,11 +60,26 @@ var AuthorizePaymentSessionStep = composer.CreateStep("authorize-payment-session
 		rec, _ := p.(*dal.Record)
 		return composer.NewStepResponse(rec, any(rec)), nil
 	},
+	// If payment or any other part of complete cart fails post payment step,
+	// the payment is canceled.
 	func(ctx composer.StepExecutionContext, data any) error {
 		payment, _ := data.(*dal.Record)
 		if payment == nil {
 			return nil
 		}
-		slog.Error("cancelling a payment is not supported yet")
+		// A session requiring more is not reverted (the payment is loaded
+		// without its session, so this never applies).
+		if ps, _ := payment.Get("payment_session"); ps != nil {
+			if r, ok := ps.(*dal.Record); ok {
+				if st, _ := r.Get("status"); st == "requires_more" {
+					return nil
+				}
+			}
+		}
+		svc := ctx.Container.Resolve(utilsmodulessdk.PAYMENT).(paymentService)
+		id, _ := payment.Get("id")
+		if _, err := svc.CancelPayment(ctx.Context, id); err != nil {
+			slog.Error(fmt.Sprintf("Error was thrown trying to cancel payment - %v - %s", id, err.Error()))
+		}
 		return nil
 	})
