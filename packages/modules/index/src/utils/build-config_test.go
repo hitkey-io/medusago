@@ -10,7 +10,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hitkey-io/medusago/integration-tests/http-diff/testapp/brand"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
+	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
+	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/medusa/src/loaders"
 	"github.com/hitkey-io/medusago/packages/modules/index/src/utils"
 )
@@ -121,15 +124,59 @@ func normalizeProps(v any) {
 	}
 }
 
-// BuildSchemaObjectRepresentation over the joiner configs of the default
-// modules and links must give what upstream builds for the same schema
-// (testdata/index-schemas: the default schema and the .graphql files,
-// dumped from the reference application).
-func TestBuildSchemaObjectRepresentationMatchesUpstream(t *testing.T) {
-	qc, err := loaders.BuildQueryConfig(config.DefineConfig(config.InputConfig{}))
+// queryConfig returns the joiner configs of the default modules and links,
+// with the brand test module and its links (vectors "with-brand") and its
+// filterable link ("with-filterable-<schema>").
+func queryConfig(t *testing.T, name string) []*joiner.ModuleJoinerConfig {
+	t.Helper()
+	input := config.InputConfig{}
+	if strings.HasPrefix(name, "with-") {
+		utilsmodulessdk.ClearCustomLinks()
+		t.Cleanup(utilsmodulessdk.ClearCustomLinks)
+		if err := brand.DefineLinks(); err != nil {
+			t.Fatal(err)
+		}
+		if strings.HasPrefix(name, "with-filterable-") {
+			if err := brand.DefineIndexFilterableLink(); err != nil {
+				t.Fatal(err)
+			}
+		}
+		input.Modules = []config.ModuleConfig{{Resolve: "./src/modules/brand", Module: &brand.Module.ModuleExports}}
+	}
+	qc, err := loaders.BuildQueryConfig(config.DefineConfig(input))
 	if err != nil {
 		t.Fatal(err)
 	}
+	return qc.JoinerConfigs
+}
+
+// schemaOf returns the index schema of a vector: the default schema, or
+// <name>.graphql (with-brand: brand.graphql, with-filterable-<schema>).
+func schemaOf(t *testing.T, name string) string {
+	t.Helper()
+	switch {
+	case name == "with-brand":
+		name = "brand"
+	case strings.HasPrefix(name, "with-filterable-"):
+		name = strings.TrimPrefix(name, "with-filterable-")
+	}
+	if name == "default" {
+		return utils.DefaultSchema
+	}
+	data, err := os.ReadFile(filepath.Join("testdata", "index-schemas", name+".graphql"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(data)
+}
+
+// BuildSchemaObjectRepresentation over the joiner configs of the loaded
+// modules and links must give what upstream builds for the same schema
+// (testdata/index-schemas: the default schema and the .graphql files,
+// dumped from the reference application by
+// integration-tests/http-diff/testapp/dump-index-schema.js; the with-*
+// vectors with the brand test module of the http-diff harness).
+func TestBuildSchemaObjectRepresentationMatchesUpstream(t *testing.T) {
 	files, _ := filepath.Glob("testdata/index-schemas/*.json")
 	if len(files) == 0 {
 		t.Fatal("no vectors")
@@ -138,14 +185,8 @@ func TestBuildSchemaObjectRepresentationMatchesUpstream(t *testing.T) {
 	for _, file := range files {
 		name := strings.TrimSuffix(filepath.Base(file), ".json")
 		t.Run(name, func(t *testing.T) {
-			schema := utils.DefaultSchema
-			if name != "default" {
-				data, err := os.ReadFile(strings.TrimSuffix(file, ".json") + ".graphql")
-				if err != nil {
-					t.Fatal(err)
-				}
-				schema = string(data)
-			}
+			configs := queryConfig(t, name)
+			schema := schemaOf(t, name)
 			raw, err := os.ReadFile(file)
 			if err != nil {
 				t.Fatal(err)
@@ -154,7 +195,7 @@ func TestBuildSchemaObjectRepresentationMatchesUpstream(t *testing.T) {
 			if err := json.Unmarshal(raw, &want); err != nil {
 				t.Fatal(err)
 			}
-			got, err := utils.BuildSchemaObjectRepresentation(utils.BaseGraphqlSchema+schema, qc.JoinerConfigs, logger)
+			got, err := utils.BuildSchemaObjectRepresentation(utils.BaseGraphqlSchema+schema, configs, logger)
 			if wantErr, ok := want.(map[string]any)["error"].(string); ok {
 				if err == nil || err.Error() != wantErr {
 					t.Fatalf("error: want %q, got %v", wantErr, err)

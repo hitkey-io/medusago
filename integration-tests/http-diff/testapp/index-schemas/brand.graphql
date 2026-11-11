@@ -1,0 +1,39 @@
+  type Product @Listeners(values: ["product.product.created", "product.product.updated", "product.product.deleted", "product.product.restored"]) {
+    id: ID
+    title: String
+    handle: String
+    status: String
+
+    brand: Brand
+    variants: [ProductVariant]
+  }
+
+  type ProductVariant @Listeners(values: ["product.product-variant.created", "product.product-variant.updated", "product.product-variant.deleted", "product.product-variant.restored"]) {
+    id: ID
+    sku: String
+  }
+
+  type Brand @Listeners(values: ["brand.brand.created", "brand.brand.updated", "brand.brand.deleted", "brand.brand.restored"]) {
+    id: ID
+    name: String
+    handle: String
+    status: String
+    rank: Int
+    rating: Float
+    is_active: Boolean
+    launched_at: DateTime
+
+    logos: [BrandLogo]
+    sales_channels: [SalesChannel]
+  }
+
+  type BrandLogo @Listeners(values: ["brand.brand-logo.created", "brand.brand-logo.updated", "brand.brand-logo.deleted", "brand.brand-logo.restored"]) {
+    id: ID
+    url: String
+    position: Int
+  }
+
+  type SalesChannel @Listeners(values: ["sales_channel.sales-channel.created", "sales_channel.sales-channel.updated", "sales_channel.sales-channel.deleted", "sales_channel.sales-channel.restored"]) {
+    id: ID
+    name: String
+  }

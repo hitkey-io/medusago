@@ -49,3 +49,15 @@ func DefineLinks() error {
 	)
 	return err
 }
+
+// DefineIndexFilterableLink mirrors src/links/index-filterable.js: a link
+// with filterable fields (MEDUSA_TEST_INDEX_FILTERABLE).
+func DefineIndexFilterableLink() error {
+	brand := Module.Linkable
+	customer := utilsmodulessdk.LinkableOf(&modules.Customer)
+	_, err := utilsmodulessdk.DefineLink(
+		utilsmodulessdk.DefineLinkInput{Linkable: brand["brand"].ToJSON(), Filterable: []string{"name", "status", "rank", "launched_at"}},
+		utilsmodulessdk.DefineLinkInput{Linkable: customer["customerGroup"].ToJSON(), IsList: true, Filterable: []string{"name"}},
+	)
+	return err
+}
