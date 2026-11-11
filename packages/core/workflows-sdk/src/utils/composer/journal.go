@@ -29,6 +29,7 @@ const (
 	stepStateFailed       = "failed"
 	stepStateDormant      = "dormant"
 	stepStateReverted     = "reverted"
+	stepStateSkipped      = "skipped"
 	stepStatusIdle        = "idle"
 	stepStatusOK          = "ok"
 	stepStatusWaiting     = "waiting_response"
@@ -83,9 +84,11 @@ type journal struct {
 	errors    []any
 	hasAsync  bool
 	hasFailed bool
-	waiting   bool
-	state     string
-	version   int
+	// hasSkipped: a step returned StepResponse.skip()
+	hasSkipped bool
+	waiting    bool
+	state      string
+	version    int
 	// events receives the run's notifications (nil: not notified).
 	events func(WorkflowEvent)
 }
@@ -160,6 +163,19 @@ func (j *journal) succeed(r *stepRecord, output any, hasOutput bool, compInput a
 	r.lastAttempt = nowMillis()
 	j.invoke[r.action] = stepResponseEnvelope(output, hasOutput, compInput, hasComp)
 	j.emit("onStepSuccess", r, func(ev *WorkflowEvent) { ev.Response, ev.HasResponse = output, hasOutput })
+}
+
+// skip mirrors skipStep: the step is SKIPPED with status OK. flagFlow sets
+// hasSkippedSteps (steps of workflows run as a step belong to their own
+// flow upstream, they do not flag the root one).
+func (j *journal) skip(r *stepRecord, flagFlow bool) {
+	j.mu.Lock()
+	defer j.mu.Unlock()
+	r.invokeState, r.invokeStatus = stepStateSkipped, stepStatusOK
+	if flagFlow {
+		j.hasSkipped = true
+	}
+	r.lastAttempt = nowMillis()
 }
 
 func (j *journal) wait(r *stepRecord) {
@@ -315,7 +331,7 @@ func (j *journal) flow(workflowID, transactionID, eventGroupID string, opts Work
 		"_v": j.version, "runId": j.runID, "state": j.state, "steps": steps, "modelId": workflowID, "options": options,
 		"metadata":  map[string]any{"eventGroupId": eventGroupID, "preventReleaseEvents": false},
 		"startedAt": j.startedAt, "definition": definition, "timedOutAt": nil, "hasAsyncSteps": j.hasAsync,
-		"transactionId": transactionID, "hasFailedSteps": j.hasFailed, "hasSkippedSteps": false, "hasWaitingSteps": j.waiting,
+		"transactionId": transactionID, "hasFailedSteps": j.hasFailed, "hasSkippedSteps": j.hasSkipped, "hasWaitingSteps": j.waiting,
 		"hasRevertedSteps": hasReverted, "hasSkippedOnFailureSteps": false,
 	}
 }

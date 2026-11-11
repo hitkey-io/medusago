@@ -7,6 +7,7 @@ import (
 
 	. "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/utils"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
+	lockingsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/locking/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
@@ -143,16 +144,28 @@ type reservationService interface {
 	DeleteReservationItems(ctx context.Context, ids []any) error
 }
 
-// ReserveInventoryStep mirrors reserveInventoryStep (the locking module is
-// not ported: reservations are created without locks).
+// reservationsCompensation is the compensation input { reservations,
+// inventoryItemIds } of the reservation steps.
+func reservationsCompensation(reservationIDs []any, inventoryItemIDs []any) *dal.Record {
+	r := dal.NewRecord()
+	r.Set("reservations", reservationIDs)
+	r.Set("inventoryItemIds", inventoryItemIDs)
+	return r
+}
+
+// ReserveInventoryStep mirrors reserveInventoryStep: the reservations are
+// created (and deleted on compensation) while the inventory items are
+// locked.
 var ReserveInventoryStep = composer.CreateStep("reserve-inventory-step",
 	func(ctx composer.StepExecutionContext, items []ConfirmInventoryItem) (composer.StepResponse[[]*dal.Record], error) {
 		if len(items) == 0 {
-			return composer.NewStepResponse([]*dal.Record{}, any([]any{})), nil
+			return composer.NewStepResponse([]*dal.Record{}, any(reservationsCompensation([]any{}, []any{}))), nil
 		}
 		svc := ctx.Container.Resolve(utilsmodulessdk.INVENTORY).(reservationService)
+		inventoryItemIDs := make([]any, len(items))
 		data := make([]*dal.Record, len(items))
 		for i, it := range items {
+			inventoryItemIDs[i] = it.InventoryItemID
 			r := dal.NewRecord()
 			r.Set("line_item_id", it.ID)
 			r.Set("inventory_item_id", it.InventoryItemID)
@@ -165,16 +178,30 @@ var ReserveInventoryStep = composer.CreateStep("reserve-inventory-step",
 			r.Set("location_id", loc)
 			data[i] = r
 		}
-		created, err := svc.CreateReservationItems(ctx.Context, data)
+		var created []*dal.Record
+		err := lockingsteps.Execute(ctx.Context, ctx.Container, lockingsteps.UniqueKeys(inventoryItemIDs), func(lctx context.Context) error {
+			var err error
+			created, err = svc.CreateReservationItems(lctx, data)
+			return err
+		})
 		if err != nil {
 			return composer.StepResponse[[]*dal.Record]{}, err
 		}
-		return composer.NewStepResponse(created, any(commonsteps.RecordIDs(created))), nil
+		return composer.NewStepResponse(created, any(reservationsCompensation(commonsteps.RecordIDs(created), inventoryItemIDs))), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
-		ids, _ := data.([]any)
+		r, _ := data.(*dal.Record)
+		if r == nil {
+			return nil
+		}
+		raw, _ := r.Get("reservations")
+		ids, _ := raw.([]any)
 		if len(ids) == 0 {
 			return nil
 		}
-		return ctx.Container.Resolve(utilsmodulessdk.INVENTORY).(reservationService).DeleteReservationItems(ctx.Context, ids)
+		rawItems, _ := r.Get("inventoryItemIds")
+		itemIDs, _ := rawItems.([]any)
+		return lockingsteps.Execute(ctx.Context, ctx.Container, lockingsteps.UniqueKeys(itemIDs), func(lctx context.Context) error {
+			return ctx.Container.Resolve(utilsmodulessdk.INVENTORY).(reservationService).DeleteReservationItems(lctx, ids)
+		})
 	})

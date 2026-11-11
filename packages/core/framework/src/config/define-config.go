@@ -72,6 +72,8 @@ type ModuleProviderConfig struct {
 	Resolve string         `json:"resolve" yaml:"resolve"`
 	ID      string         `json:"id" yaml:"id"`
 	Options map[string]any `json:"options,omitempty" yaml:"options,omitempty"`
+	// IsDefault mirrors is_default (the default provider of the module).
+	IsDefault bool `json:"is_default,omitempty" yaml:"is_default,omitempty"`
 }
 
 // ModuleConfig is one entry of the resolved modules list.
@@ -80,6 +82,9 @@ type ModuleConfig struct {
 	Resolve   string                 `json:"resolve" yaml:"resolve"`
 	Disable   bool                   `json:"disable,omitempty" yaml:"disable,omitempty"`
 	Providers []ModuleProviderConfig `json:"providers,omitempty" yaml:"providers,omitempty"`
+	// Options are the module options besides its providers (e.g. ttl,
+	// redisUrl).
+	Options map[string]any `json:"options,omitempty" yaml:"options,omitempty"`
 }
 
 // InputConfig is what a project passes to DefineConfig.

@@ -34,8 +34,8 @@ type MedusaApp struct {
 	Handler   nethttp.Handler
 	// App is the router behind Handler (routes and middlewares can be
 	// added to it by Options.OnLoad hooks).
-	App *medusahttp.App
-	Pool      *pgxpool.Pool
+	App  *medusahttp.App
+	Pool *pgxpool.Pool
 	// shutdown mirrors the shutdown returned by the express loader.
 	shutdown []func()
 }
@@ -63,7 +63,7 @@ func LoadModules(ctx context.Context, c *container.MedusaContainer, pool *pgxpoo
 		}
 		var providers []modulessdk.ProviderInstance
 		for _, p := range mc.Providers {
-			pi := modulessdk.ProviderInstance{ID: p.ID, Options: p.Options}
+			pi := modulessdk.ProviderInstance{ID: p.ID, Options: p.Options, IsDefault: p.IsDefault}
 			if pexp, ok := modules.Registry[p.Resolve]; ok {
 				pi.Identifier = pexp.ProviderIdentifier
 				if pexp.NewProvider != nil {
@@ -79,7 +79,7 @@ func LoadModules(ctx context.Context, c *container.MedusaContainer, pool *pgxpoo
 		var svc any
 		switch {
 		case exp.Service != nil:
-			s, err := exp.Service(modulessdk.ServiceOptions{DB: pool, Providers: providers, Logger: logger, Container: c})
+			s, err := exp.Service(modulessdk.ServiceOptions{DB: pool, Providers: providers, Options: mc.Options, Logger: logger, Container: c})
 			if err != nil {
 				return fmt.Errorf("%s: %w", mc.Key, err)
 			}
