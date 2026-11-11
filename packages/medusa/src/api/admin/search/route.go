@@ -4,6 +4,9 @@ import (
 	"context"
 
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
+	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 )
@@ -21,9 +24,9 @@ func numberOr(v any, fallback float64) float64 {
 }
 
 // GET mirrors GET: per entity, the Search Module when that entity has an
-// index, otherwise query.graph with the free-text `q`. The default
-// application defines no search index, so every entity goes through the
-// graph fallback (RBAC filtering is Enterprise: every entity is readable).
+// index, otherwise query.graph with the free-text `q`. Results are grouped
+// and paginated per entity (RBAC filtering is Enterprise: every entity is
+// readable).
 func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	searchModule, _ := req.Scope.Resolve(utilsmodulessdk.SEARCH).(searchIndexLister)
 
@@ -87,15 +90,25 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 		return res.JSON(out)
 	}
 
-	// Indexed entities would go through query.search; no index definition
-	// is ported, so the requested names all take the graph fallback.
-	var graphEntities []string
+	var indexedEntities, graphEntities []string
 	for _, name := range requested {
-		if _, indexed := indexEntities[name]; !indexed {
+		if _, indexed := indexEntities[name]; indexed {
+			indexedEntities = append(indexedEntities, name)
+		} else {
 			graphEntities = append(graphEntities, name)
 		}
 	}
 	byEntity := map[string]any{}
+	if len(indexedEntities) > 0 {
+		groups, err := searchIndexedEntities(req.Ctx(), req.Scope, indexedEntities, q, skip, take)
+		if err != nil {
+			return err
+		}
+		for _, g := range groups {
+			name, _ := get(g, "entity").(string)
+			byEntity[name] = g
+		}
+	}
 	if len(graphEntities) > 0 {
 		groups, err := searchWithGraphFallback(req.Ctx(), req.Scope, fallbackSearchInput{q: q, entity: graphEntities, skip: skip, take: take})
 		if err != nil {
@@ -113,6 +126,52 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	out := dal.NewRecord()
 	out.Set("results", results)
 	return res.JSON(out)
+}
+
+// searchIndexedEntities mirrors searchIndexedEntities: one query.search
+// call for every indexed entity.
+func searchIndexedEntities(ctx context.Context, scope medusahttp.MedusaContainer, entities []string, q *string, skip, take float64) ([]*dal.Record, error) {
+	qr, _ := scope.Resolve(common.ContainerRegistrationKeys.QUERY).(*query.Query)
+	queries := make([]*dal.Record, len(entities))
+	for i, name := range entities {
+		sq := dal.NewRecord()
+		sq.Set("entity", name)
+		if q != nil && *q != "" {
+			filters := dal.NewRecord()
+			filters.Set("q", *q)
+			sq.Set("filters", filters)
+		}
+		pagination := dal.NewRecord()
+		pagination.Set("skip", skip)
+		pagination.Set("take", take)
+		sq.Set("pagination", pagination)
+		if q != nil && *q != "" {
+			options := dal.NewRecord()
+			options.Set("match_strategy", "last")
+			sq.Set("search_options", options)
+		}
+		queries[i] = sq
+	}
+	results, err := qr.Search(ctx, queries, joiner.Options{})
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*dal.Record, len(results))
+	for i, result := range results {
+		metadata, _ := get(result.SearchResult, "metadata").(*dal.Record)
+		group := dal.NewRecord()
+		group.Set("entity", entities[i])
+		group.Set("data", result.Data)
+		count := get(metadata, "count")
+		if count == nil {
+			count = float64(0)
+		}
+		group.Set("count", count)
+		group.Set("offset", get(metadata, "skip"))
+		group.Set("limit", get(metadata, "take"))
+		out[i] = group
+	}
+	return out, nil
 }
 
 func get(r *dal.Record, key string) any {

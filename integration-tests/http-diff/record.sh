@@ -51,6 +51,16 @@ for scenario in "${scenarios[@]}"; do
   psql_db -c "drop database if exists $DB with (force)" -c "create database $DB template $template"
   psql_db -d "$DB" -c "DO \$\$ DECLARE t text; BEGIN FOR t IN SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename NOT IN ('mikro_orm_migrations', 'script_migrations', 'link_module_migrations') LOOP EXECUTE format('TRUNCATE %I CASCADE', t); END LOOP; END \$\$;"
   psql_db -d "$DB" < "$HERE/seed.sql" >/dev/null
+  # SEED_MIGRATE_SEARCH=true: the search indexes are migrated again on the
+  # seeded data (the truncation above emptied their bookkeeping).
+  migrate_search=false
+  for line in "${scenario_env[@]:-}"; do
+    [ "$line" = "SEED_MIGRATE_SEARCH=true" ] && migrate_search=true
+  done
+  if [ "$migrate_search" = true ]; then
+    (cd "$APP" && export "${scenario_env[@]}" && NODE_ENV=development LOG_LEVEL=error DATABASE_URL="$PG_URL_BASE/$DB" \
+      "$MEDUSA" db:migrate:search >/dev/null)
+  fi
   (cd "$APP" && { [ ${#scenario_env[@]} -eq 0 ] || export "${scenario_env[@]}"; } && NODE_ENV=development LOG_LEVEL=error AUTH_MFA_ENCRYPTION_KEY="$MFA_KEY" DATABASE_URL="$PG_URL_BASE/$DB" \
     ADMIN_CORS=http://localhost:5173 AUTH_CORS=http://localhost:5173 STORE_CORS=http://localhost:8000 \
     exec "$MEDUSA" start -p "$PORT" >"$HERE/.record-server-$PORT.log" 2>&1) &

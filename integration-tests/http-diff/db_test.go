@@ -62,6 +62,13 @@ func setupDatabase(t *testing.T, name string) string {
 	if _, err := c.Exec(ctx, seedSQL(t), pgx.QueryExecModeSimpleProtocol); err != nil {
 		t.Fatal(fmt.Errorf("loading seed.sql: %w", err))
 	}
+	// SEED_MIGRATE_SEARCH=true: the search indexes are migrated again on
+	// the seeded data (record.sh runs `medusa db:migrate:search`).
+	if os.Getenv("SEED_MIGRATE_SEARCH") == "true" {
+		if err := db.MigrateSearch(ctx, cfg, db.MigrateSearchOptions{}); err != nil {
+			t.Fatal(err)
+		}
+	}
 	return dbURL
 }
 

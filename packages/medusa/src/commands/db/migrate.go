@@ -153,7 +153,10 @@ func Migrate(ctx context.Context, cfg config.ConfigModule, opts MigrateOptions) 
 	}
 
 	if !opts.SkipSearch && IsSearchModuleEnabled(cfg) {
-		MigrateSearch(cfg, logger)
+		terminalSeparator()
+		if err := MigrateSearch(ctx, cfg, MigrateSearchOptions{ExecuteAll: opts.ExecuteAllSearch, ExecuteSafe: opts.ExecuteSafeSearch}); err != nil {
+			return err
+		}
 	}
 
 	// Like upstream, loading the application runs the module loaders.
@@ -178,19 +181,6 @@ func IsSearchModuleEnabled(cfg config.ConfigModule) bool {
 		}
 	}
 	return false
-}
-
-// MigrateSearch mirrors `db:migrate:search` for applications without
-// declared search indexes (declaring indexes under search/ is not supported
-// by the Go port yet): there is nothing to create or alter.
-func MigrateSearch(cfg config.ConfigModule, logger *slog.Logger) {
-	if !IsSearchModuleEnabled(cfg) {
-		logger.Info("Search Module is not configured. Skipping search indexes")
-		return
-	}
-	terminalSeparator()
-	logger.Info("Migrating search indexes...")
-	logger.Info("Search indexes already up-to-date")
 }
 
 // RunMigrationScripts mirrors `db:migrate:scripts` (runMigrationScripts):

@@ -1,0 +1,1566 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzk4ODAsImV4cCI6MTc5NDQ2NjI4MH0.TYUQ_3dx5NHt1b0jomNLVrEJla5V2eoQm76Y4CfWMSA"
+    }
+  },
+  "seeded_collection": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "entity": "collection",
+          "data": [
+            {
+              "id": "pcol_01M70XZZYG2EDQEDPZXZAWBP3Q",
+              "title": "Summer",
+              "handle": "summer"
+            }
+          ],
+          "count": 1,
+          "offset": 0,
+          "limit": 20
+        }
+      ]
+    }
+  },
+  "seeded_product": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "entity": "product",
+          "data": [
+            {
+              "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+              "title": "Medusa T-Shirt",
+              "subtitle": null,
+              "handle": "t-shirt",
+              "status": "published",
+              "is_giftcard": false,
+              "discountable": true,
+              "created_at": "2026-11-09T19:54:05.158Z",
+              "sales_channel_ids": [
+                "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+                "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+              ],
+              "collection_title": "Summer",
+              "variant_count": 2,
+              "tags": [
+                {
+                  "value": "cotton"
+                },
+                {
+                  "value": "sale"
+                }
+              ],
+              "variants": [
+                {
+                  "sku": "SHIRT-S-BLACK",
+                  "title": "S / Black"
+                },
+                {
+                  "sku": "SHIRT-M-WHITE",
+                  "title": "M / White"
+                }
+              ]
+            },
+            {
+              "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+              "title": "Medusa Sweatpants",
+              "subtitle": null,
+              "handle": "sweatpants",
+              "status": "published",
+              "is_giftcard": false,
+              "discountable": true,
+              "created_at": "2026-11-09T19:54:05.158Z",
+              "sales_channel_ids": [
+                "sc_01M70XZZVJETKWXXT8RHV5DWRZ"
+              ],
+              "collection_title": "Summer",
+              "variant_count": 2,
+              "tags": [],
+              "variants": [
+                {
+                  "sku": "PANTS-L",
+                  "title": "L"
+                },
+                {
+                  "sku": "PANTS-M",
+                  "title": "M"
+                }
+              ]
+            }
+          ],
+          "count": 2,
+          "offset": 0,
+          "limit": 20
+        }
+      ]
+    }
+  },
+  "indexes": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "search_indexes": [
+        {
+          "name": "collection",
+          "entity": "product_collection",
+          "provider": "search-postgres",
+          "status": "ready",
+          "fields": [
+            {
+              "name": "id",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "title",
+              "type": "text",
+              "searchable": true,
+              "filterable": false,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "handle",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": true,
+              "facetable": false
+            }
+          ]
+        },
+        {
+          "name": "product",
+          "entity": "product",
+          "provider": "search-postgres",
+          "status": "ready",
+          "fields": [
+            {
+              "name": "id",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "title",
+              "type": "text",
+              "searchable": true,
+              "filterable": false,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "subtitle",
+              "type": "text",
+              "searchable": true,
+              "filterable": false,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "description",
+              "type": "text",
+              "searchable": true,
+              "filterable": false,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "handle",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": true,
+              "facetable": false
+            },
+            {
+              "name": "status",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": true
+            },
+            {
+              "name": "is_giftcard",
+              "type": "boolean",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": true
+            },
+            {
+              "name": "discountable",
+              "type": "boolean",
+              "searchable": false,
+              "filterable": true,
+              "sortable": true,
+              "facetable": false
+            },
+            {
+              "name": "created_at",
+              "type": "date",
+              "searchable": false,
+              "filterable": true,
+              "sortable": true,
+              "facetable": true
+            },
+            {
+              "name": "sales_channel_ids",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "collection_title",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": true
+            },
+            {
+              "name": "variant_count",
+              "type": "integer",
+              "searchable": false,
+              "filterable": true,
+              "sortable": true,
+              "facetable": true
+            },
+            {
+              "name": "tags.value",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": true
+            },
+            {
+              "name": "variants.sku",
+              "type": "keyword",
+              "searchable": true,
+              "filterable": true,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "variants.title",
+              "type": "text",
+              "searchable": true,
+              "filterable": false,
+              "sortable": false,
+              "facetable": false
+            }
+          ]
+        }
+      ],
+      "enabled": true
+    }
+  },
+  "admin_all_indexes": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "entity": "collection",
+          "data": [
+            {
+              "id": "pcol_01M70XZZYG2EDQEDPZXZAWBP3Q",
+              "title": "Summer",
+              "handle": "summer"
+            }
+          ],
+          "count": 1,
+          "offset": 0,
+          "limit": 20
+        },
+        {
+          "entity": "product",
+          "data": [
+            {
+              "id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
+              "title": "Draft Hoodie",
+              "subtitle": null,
+              "handle": "hoodie",
+              "status": "draft",
+              "is_giftcard": false,
+              "discountable": false,
+              "created_at": "2026-11-09T19:54:05.158Z",
+              "sales_channel_ids": [],
+              "collection_title": null,
+              "variant_count": 1,
+              "tags": [],
+              "variants": [
+                {
+                  "sku": null,
+                  "title": "Default"
+                }
+              ]
+            },
+            {
+              "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+              "title": "Medusa T-Shirt",
+              "subtitle": null,
+              "handle": "t-shirt",
+              "status": "published",
+              "is_giftcard": false,
+              "discountable": true,
+              "created_at": "2026-11-09T19:54:05.158Z",
+              "sales_channel_ids": [
+                "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+                "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+              ],
+              "collection_title": "Summer",
+              "variant_count": 2,
+              "tags": [
+                {
+                  "value": "cotton"
+                },
+                {
+                  "value": "sale"
+                }
+              ],
+              "variants": [
+                {
+                  "sku": "SHIRT-S-BLACK",
+                  "title": "S / Black"
+                },
+                {
+                  "sku": "SHIRT-M-WHITE",
+                  "title": "M / White"
+                }
+              ]
+            },
+            {
+              "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+              "title": "Medusa Sweatpants",
+              "subtitle": null,
+              "handle": "sweatpants",
+              "status": "published",
+              "is_giftcard": false,
+              "discountable": true,
+              "created_at": "2026-11-09T19:54:05.158Z",
+              "sales_channel_ids": [
+                "sc_01M70XZZVJETKWXXT8RHV5DWRZ"
+              ],
+              "collection_title": "Summer",
+              "variant_count": 2,
+              "tags": [],
+              "variants": [
+                {
+                  "sku": "PANTS-L",
+                  "title": "L"
+                },
+                {
+                  "sku": "PANTS-M",
+                  "title": "M"
+                }
+              ]
+            }
+          ],
+          "count": 3,
+          "offset": 0,
+          "limit": 20
+        }
+      ]
+    }
+  },
+  "admin_mixed": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "entity": "product",
+          "data": [
+            {
+              "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+              "title": "Medusa T-Shirt",
+              "subtitle": null,
+              "handle": "t-shirt",
+              "status": "published",
+              "is_giftcard": false,
+              "discountable": true,
+              "created_at": "2026-11-09T19:54:05.158Z",
+              "sales_channel_ids": [
+                "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+                "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+              ],
+              "collection_title": "Summer",
+              "variant_count": 2,
+              "tags": [
+                {
+                  "value": "cotton"
+                },
+                {
+                  "value": "sale"
+                }
+              ],
+              "variants": [
+                {
+                  "sku": "SHIRT-S-BLACK",
+                  "title": "S / Black"
+                },
+                {
+                  "sku": "SHIRT-M-WHITE",
+                  "title": "M / White"
+                }
+              ]
+            }
+          ],
+          "count": 1,
+          "offset": 0,
+          "limit": 20
+        },
+        {
+          "entity": "customer",
+          "data": [],
+          "count": 0,
+          "offset": 0,
+          "limit": 20
+        },
+        {
+          "entity": "collection",
+          "data": [],
+          "count": 0,
+          "offset": 0,
+          "limit": 20
+        }
+      ]
+    }
+  },
+  "admin_prefix": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "entity": "product",
+          "data": [
+            {
+              "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+              "title": "Medusa Sweatpants",
+              "subtitle": null,
+              "handle": "sweatpants",
+              "status": "published",
+              "is_giftcard": false,
+              "discountable": true,
+              "created_at": "2026-11-09T19:54:05.158Z",
+              "sales_channel_ids": [
+                "sc_01M70XZZVJETKWXXT8RHV5DWRZ"
+              ],
+              "collection_title": "Summer",
+              "variant_count": 2,
+              "tags": [],
+              "variants": [
+                {
+                  "sku": "PANTS-L",
+                  "title": "L"
+                },
+                {
+                  "sku": "PANTS-M",
+                  "title": "M"
+                }
+              ]
+            }
+          ],
+          "count": 1,
+          "offset": 0,
+          "limit": 1
+        }
+      ]
+    }
+  },
+  "admin_sku": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "entity": "product",
+          "data": [
+            {
+              "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+              "title": "Medusa Sweatpants",
+              "subtitle": null,
+              "handle": "sweatpants",
+              "status": "published",
+              "is_giftcard": false,
+              "discountable": true,
+              "created_at": "2026-11-09T19:54:05.158Z",
+              "sales_channel_ids": [
+                "sc_01M70XZZVJETKWXXT8RHV5DWRZ"
+              ],
+              "collection_title": "Summer",
+              "variant_count": 2,
+              "tags": [],
+              "variants": [
+                {
+                  "sku": "PANTS-L",
+                  "title": "L"
+                },
+                {
+                  "sku": "PANTS-M",
+                  "title": "M"
+                }
+              ]
+            }
+          ],
+          "count": 1,
+          "offset": 0,
+          "limit": 20
+        }
+      ]
+    }
+  },
+  "admin_page": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "entity": "product",
+          "data": [
+            {
+              "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+              "title": "Medusa T-Shirt",
+              "subtitle": null,
+              "handle": "t-shirt",
+              "status": "published",
+              "is_giftcard": false,
+              "discountable": true,
+              "created_at": "2026-11-09T19:54:05.158Z",
+              "sales_channel_ids": [
+                "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+                "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+              ],
+              "collection_title": "Summer",
+              "variant_count": 2,
+              "tags": [
+                {
+                  "value": "cotton"
+                },
+                {
+                  "value": "sale"
+                }
+              ],
+              "variants": [
+                {
+                  "sku": "SHIRT-S-BLACK",
+                  "title": "S / Black"
+                },
+                {
+                  "sku": "SHIRT-M-WHITE",
+                  "title": "M / White"
+                }
+              ]
+            },
+            {
+              "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+              "title": "Medusa Sweatpants",
+              "subtitle": null,
+              "handle": "sweatpants",
+              "status": "published",
+              "is_giftcard": false,
+              "discountable": true,
+              "created_at": "2026-11-09T19:54:05.158Z",
+              "sales_channel_ids": [
+                "sc_01M70XZZVJETKWXXT8RHV5DWRZ"
+              ],
+              "collection_title": "Summer",
+              "variant_count": 2,
+              "tags": [],
+              "variants": [
+                {
+                  "sku": "PANTS-L",
+                  "title": "L"
+                },
+                {
+                  "sku": "PANTS-M",
+                  "title": "M"
+                }
+              ]
+            }
+          ],
+          "count": 3,
+          "offset": 1,
+          "limit": 2
+        }
+      ]
+    }
+  },
+  "admin_unknown_entity": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "No search entity registered for \"nope\". Registered entities: order, product, product_variant, product_category, product_collection, customer, customer_group, inventory_item, promotion, campaign, price_list, user, region, tax_region, return_reason, sales_channel, product_type, product_tag, stock_location, shipping_profile, publishable_api_key, secret_api_key"
+    }
+  },
+  "pk": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M74P0684B29NJ0B5B3MM399E",
+        "token": "pk_11c9ed0cd935714771ba94c43552abf90d8814f54ca9dccc47465ed9eb7bcd5f",
+        "redacted": "pk_11c***d5f",
+        "title": "Search",
+        "type": "publishable",
+        "last_used_at": null,
+        "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "revoked_by": null,
+        "revoked_at": null,
+        "created_at": "2026-11-11T06:51:20.708Z",
+        "updated_at": "2026-11-11T06:51:20.708Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "pk_empty": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M74P068WASDKPY7KKZ1QNYRQ",
+        "token": "pk_97a08b1290442b40817077086b67792278d8ffe1481ec4ac12e49c8f34f7c60e",
+        "redacted": "pk_97a***60e",
+        "title": "No channels",
+        "type": "publishable",
+        "last_used_at": null,
+        "created_by": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "revoked_by": null,
+        "revoked_at": null,
+        "created_at": "2026-11-11T06:51:20.732Z",
+        "updated_at": "2026-11-11T06:51:20.732Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "channels": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "sales_channels": [
+        {
+          "id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+          "name": "Default Sales Channel"
+        },
+        {
+          "id": "sc_01M70XZZXA6H8R3VPGTTWJMHK3",
+          "name": "Webshop"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "link": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "api_key": {
+        "id": "apk_01M74P0684B29NJ0B5B3MM399E"
+      }
+    }
+  },
+  "store_default": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "hits": [
+            {
+              "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+              "document": {
+                "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+                "title": "Medusa T-Shirt",
+                "subtitle": null,
+                "handle": "t-shirt",
+                "status": "published",
+                "is_giftcard": false,
+                "discountable": true,
+                "created_at": "2026-11-09T19:54:05.158Z",
+                "sales_channel_ids": [
+                  "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+                  "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+                ],
+                "collection_title": "Summer",
+                "variant_count": 2,
+                "tags": [
+                  {
+                    "value": "cotton"
+                  },
+                  {
+                    "value": "sale"
+                  }
+                ],
+                "variants": [
+                  {
+                    "sku": "SHIRT-S-BLACK",
+                    "title": "S / Black"
+                  },
+                  {
+                    "sku": "SHIRT-M-WHITE",
+                    "title": "M / White"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+              "document": {
+                "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+                "title": "Medusa Sweatpants",
+                "subtitle": null,
+                "handle": "sweatpants",
+                "status": "published",
+                "is_giftcard": false,
+                "discountable": true,
+                "created_at": "2026-11-09T19:54:05.158Z",
+                "sales_channel_ids": [
+                  "sc_01M70XZZVJETKWXXT8RHV5DWRZ"
+                ],
+                "collection_title": "Summer",
+                "variant_count": 2,
+                "tags": [],
+                "variants": [
+                  {
+                    "sku": "PANTS-L",
+                    "title": "L"
+                  },
+                  {
+                    "sku": "PANTS-M",
+                    "title": "M"
+                  }
+                ]
+              }
+            }
+          ],
+          "metadata": {
+            "skip": 0,
+            "take": 20,
+            "count": 2,
+            "processing_time_ms": 5
+          }
+        }
+      ]
+    }
+  },
+  "store_query_facets": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "hits": [
+            {
+              "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+              "score": 1,
+              "document": {
+                "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+                "title": "Medusa T-Shirt",
+                "handle": "t-shirt",
+                "variants": [
+                  {
+                    "sku": "SHIRT-S-BLACK"
+                  },
+                  {
+                    "sku": "SHIRT-M-WHITE"
+                  }
+                ]
+              }
+            },
+            {
+              "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+              "score": 1,
+              "document": {
+                "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+                "title": "Medusa Sweatpants",
+                "handle": "sweatpants",
+                "variants": [
+                  {
+                    "sku": "PANTS-L"
+                  },
+                  {
+                    "sku": "PANTS-M"
+                  }
+                ]
+              }
+            }
+          ],
+          "facets": {
+            "status": {
+              "type": "value",
+              "values": [
+                {
+                  "value": "published",
+                  "count": 2
+                }
+              ]
+            },
+            "collection_title": {
+              "type": "value",
+              "values": [
+                {
+                  "value": "Summer",
+                  "count": 2
+                }
+              ]
+            },
+            "tags.value": {
+              "type": "value",
+              "values": [
+                {
+                  "value": "cotton",
+                  "count": 1
+                },
+                {
+                  "value": "sale",
+                  "count": 1
+                }
+              ]
+            },
+            "variant_count": {
+              "type": "stats",
+              "min": 2,
+              "max": 2,
+              "avg": 2,
+              "sum": 4,
+              "count": 2
+            },
+            "created_at": {
+              "type": "range",
+              "ranges": [
+                {
+                  "key": "0-*",
+                  "from": 0,
+                  "count": 2
+                }
+              ]
+            }
+          },
+          "metadata": {
+            "skip": 0,
+            "take": 5,
+            "count": 2,
+            "query": "medusa",
+            "processing_time_ms": 11
+          }
+        }
+      ]
+    }
+  },
+  "store_batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "hits": [
+            {
+              "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+              "document": {
+                "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+                "title": "Medusa T-Shirt",
+                "subtitle": null,
+                "handle": "t-shirt",
+                "status": "published",
+                "is_giftcard": false,
+                "discountable": true,
+                "created_at": "2026-11-09T19:54:05.158Z",
+                "sales_channel_ids": [
+                  "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+                  "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+                ],
+                "collection_title": "Summer",
+                "variant_count": 2,
+                "tags": [
+                  {
+                    "value": "cotton"
+                  },
+                  {
+                    "value": "sale"
+                  }
+                ],
+                "variants": [
+                  {
+                    "sku": "SHIRT-S-BLACK",
+                    "title": "S / Black"
+                  },
+                  {
+                    "sku": "SHIRT-M-WHITE",
+                    "title": "M / White"
+                  }
+                ]
+              }
+            }
+          ],
+          "metadata": {
+            "skip": 0,
+            "take": 20,
+            "count": null,
+            "query": "shrt",
+            "processing_time_ms": 2
+          }
+        },
+        {
+          "hits": [],
+          "facets": {
+            "status": {
+              "type": "value",
+              "values": [
+                {
+                  "value": "published",
+                  "count": 2
+                }
+              ]
+            },
+            "collection_title": {
+              "type": "value",
+              "values": [
+                {
+                  "value": "Summer",
+                  "count": 2
+                }
+              ]
+            }
+          },
+          "metadata": {
+            "skip": 0,
+            "take": 0,
+            "count": 2,
+            "processing_time_ms": 2
+          }
+        },
+        {
+          "hits": [
+            {
+              "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+              "document": {
+                "handle": "t-shirt"
+              }
+            }
+          ],
+          "metadata": {
+            "skip": 0,
+            "take": 20,
+            "count": 1,
+            "processing_time_ms": 5
+          }
+        }
+      ]
+    }
+  },
+  "store_no_channels": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Publishable key needs to have a sales channel configured"
+    }
+  },
+  "store_not_exposed": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "No search index named \"collection\""
+    }
+  },
+  "store_unknown_fields": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Search index \"product\" can't return the fields: description, secret"
+    }
+  },
+  "store_not_filterable": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Field \"title\" is not filterable on search index \"product\""
+    }
+  },
+  "store_unknown_filter": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Unknown field \"nope\" used in filters on search index \"product\""
+    }
+  },
+  "store_not_sortable": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Field \"status\" is not sortable on search index \"product\""
+    }
+  },
+  "store_bad_facet": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Field \"status\" does not support \"stats\" facets on search index \"product\""
+    }
+  },
+  "store_highlight": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "The postgres search provider does not support highlighting"
+    }
+  },
+  "store_cursor": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "The postgres search provider does not support cursor pagination"
+    }
+  },
+  "store_array_range": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Operator \">\" is not supported on array field \"sales_channel_ids\""
+    }
+  },
+  "store_invalid_body": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'queries' is required"
+    }
+  },
+  "store_take_too_large": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Value for field 'queries, 0, pagination, take' too big, expected at most: '100'"
+    }
+  },
+  "create_product": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product": {
+        "id": "prod_01M74P06RM7DC1BTKPX7G569KN",
+        "title": "Zebra Jacket"
+      }
+    }
+  },
+  "ingested": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "hits": [
+            {
+              "id": "prod_01M74P06RM7DC1BTKPX7G569KN",
+              "document": {
+                "id": "prod_01M74P06RM7DC1BTKPX7G569KN",
+                "title": "Zebra Jacket",
+                "subtitle": null,
+                "handle": "zebra-jacket",
+                "status": "published",
+                "is_giftcard": false,
+                "discountable": true,
+                "created_at": "2026-11-11T06:51:21.238Z",
+                "sales_channel_ids": [
+                  "sc_01M70XZZVJETKWXXT8RHV5DWRZ"
+                ],
+                "collection_title": null,
+                "variant_count": 1,
+                "tags": [],
+                "variants": [
+                  {
+                    "sku": "ZEBRA-1",
+                    "title": "One"
+                  }
+                ]
+              }
+            }
+          ],
+          "metadata": {
+            "skip": 0,
+            "take": 20,
+            "count": 1,
+            "query": "zebra",
+            "processing_time_ms": 0
+          }
+        }
+      ]
+    }
+  },
+  "reindex_unknown": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "No search index registered for \"nope\". Registered indexes: product, collection"
+    }
+  },
+  "reindex_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Invalid input; Expected: 'swap, in_place' for field 'strategy', but got: 'rebuild'"
+    }
+  },
+  "reindex": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "job_id": "auto-01M74P07JY3ZMTV302T2KDFFYA",
+      "indexes": [
+        "product"
+      ]
+    }
+  },
+  "reindex_scoped": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "job_id": "auto-01M74P07MYF8Q045Q7CMCMBNPJ",
+      "indexes": [
+        "collection"
+      ]
+    }
+  },
+  "after_reindex": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "results": [
+        {
+          "entity": "product",
+          "data": [
+            {
+              "id": "prod_01M74P06RM7DC1BTKPX7G569KN",
+              "title": "Zebra Jacket",
+              "subtitle": null,
+              "handle": "zebra-jacket",
+              "status": "published",
+              "is_giftcard": false,
+              "discountable": true,
+              "created_at": "2026-11-11T06:51:21.238Z",
+              "sales_channel_ids": [
+                "sc_01M70XZZVJETKWXXT8RHV5DWRZ"
+              ],
+              "collection_title": null,
+              "variant_count": 1,
+              "tags": [],
+              "variants": [
+                {
+                  "sku": "ZEBRA-1",
+                  "title": "One"
+                }
+              ]
+            }
+          ],
+          "count": 1,
+          "offset": 0,
+          "limit": 20
+        }
+      ]
+    }
+  },
+  "delete_unknown": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "No search index registered for \"nope\". Registered indexes: product, collection"
+    }
+  },
+  "delete_collection": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "collection",
+      "object": "search_index",
+      "deleted": true,
+      "deleted_versions": 1
+    }
+  },
+  "indexes_after_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "search_indexes": [
+        {
+          "name": "collection",
+          "entity": "product_collection",
+          "provider": "search-postgres",
+          "status": "pending",
+          "fields": [
+            {
+              "name": "id",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "title",
+              "type": "text",
+              "searchable": true,
+              "filterable": false,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "handle",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": true,
+              "facetable": false
+            }
+          ]
+        },
+        {
+          "name": "product",
+          "entity": "product",
+          "provider": "search-postgres",
+          "status": "ready",
+          "fields": [
+            {
+              "name": "id",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "title",
+              "type": "text",
+              "searchable": true,
+              "filterable": false,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "subtitle",
+              "type": "text",
+              "searchable": true,
+              "filterable": false,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "description",
+              "type": "text",
+              "searchable": true,
+              "filterable": false,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "handle",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": true,
+              "facetable": false
+            },
+            {
+              "name": "status",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": true
+            },
+            {
+              "name": "is_giftcard",
+              "type": "boolean",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": true
+            },
+            {
+              "name": "discountable",
+              "type": "boolean",
+              "searchable": false,
+              "filterable": true,
+              "sortable": true,
+              "facetable": false
+            },
+            {
+              "name": "created_at",
+              "type": "date",
+              "searchable": false,
+              "filterable": true,
+              "sortable": true,
+              "facetable": true
+            },
+            {
+              "name": "sales_channel_ids",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "collection_title",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": true
+            },
+            {
+              "name": "variant_count",
+              "type": "integer",
+              "searchable": false,
+              "filterable": true,
+              "sortable": true,
+              "facetable": true
+            },
+            {
+              "name": "tags.value",
+              "type": "keyword",
+              "searchable": false,
+              "filterable": true,
+              "sortable": false,
+              "facetable": true
+            },
+            {
+              "name": "variants.sku",
+              "type": "keyword",
+              "searchable": true,
+              "filterable": true,
+              "sortable": false,
+              "facetable": false
+            },
+            {
+              "name": "variants.title",
+              "type": "text",
+              "searchable": true,
+              "filterable": false,
+              "sortable": false,
+              "facetable": false
+            }
+          ]
+        }
+      ],
+      "enabled": true
+    }
+  },
+  "search_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Search index \"collection\" has no active version yet. It has to be migrated and seeded first."
+    }
+  },
+  "delete_again": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "collection",
+      "object": "search_index",
+      "deleted": true,
+      "deleted_versions": 0
+    }
+  }
+}
