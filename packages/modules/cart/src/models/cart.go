@@ -129,7 +129,8 @@ var Cart = dml.MustParseEntity(`{
         "nullable": true,
         "searchable": false,
         "options": {
-          "foreignKey": true
+          "foreignKey": true,
+          "mappedByUndefined": true
         }
       }
     },
@@ -141,7 +142,8 @@ var Cart = dml.MustParseEntity(`{
         "nullable": true,
         "searchable": false,
         "options": {
-          "foreignKey": true
+          "foreignKey": true,
+          "mappedByUndefined": true
         }
       }
     },

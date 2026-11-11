@@ -209,7 +209,8 @@ var Order = dml.MustParseEntity(`{
         "nullable": true,
         "searchable": true,
         "options": {
-          "foreignKey": true
+          "foreignKey": true,
+          "mappedByUndefined": true
         }
       }
     },
@@ -221,7 +222,8 @@ var Order = dml.MustParseEntity(`{
         "nullable": true,
         "searchable": true,
         "options": {
-          "foreignKey": true
+          "foreignKey": true,
+          "mappedByUndefined": true
         }
       }
     },

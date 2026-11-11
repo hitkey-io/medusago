@@ -173,7 +173,8 @@ var OrderItem = dml.MustParseEntity(`{
         "nullable": false,
         "searchable": false,
         "options": {
-          "foreignKey": true
+          "foreignKey": true,
+          "mappedByUndefined": true
         }
       }
     },

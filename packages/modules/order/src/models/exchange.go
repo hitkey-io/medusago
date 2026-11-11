@@ -117,7 +117,8 @@ var OrderExchange = dml.MustParseEntity(`{
         "nullable": false,
         "searchable": false,
         "options": {
-          "foreignKey": true
+          "foreignKey": true,
+          "mappedByUndefined": true
         }
       }
     },
@@ -129,7 +130,8 @@ var OrderExchange = dml.MustParseEntity(`{
         "nullable": true,
         "searchable": false,
         "options": {
-          "foreignKey": true
+          "foreignKey": true,
+          "mappedByUndefined": true
         }
       }
     },

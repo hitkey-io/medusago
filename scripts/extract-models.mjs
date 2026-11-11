@@ -71,7 +71,12 @@ function dmlDefinition(entity) {
           mappedBy: p.mappedBy,
           nullable: p.nullable,
           searchable: p.searchable,
-          options: { ...options, ...(pivotEntity ? { pivotEntity: entityName(pivotEntity) } : {}) },
+          options: {
+            ...options,
+            ...(pivotEntity ? { pivotEntity: entityName(pivotEntity) } : {}),
+            // "mappedBy" given as undefined: the relationship has no other side
+            ...("mappedBy" in options && options.mappedBy === undefined ? { mappedByUndefined: true } : {}),
+          },
         },
       })
     } else {
