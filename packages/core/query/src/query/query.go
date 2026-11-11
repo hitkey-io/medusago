@@ -7,6 +7,7 @@ import (
 
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	typesjoiner "github.com/hitkey-io/medusago/packages/core/types/src/joiner"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -23,6 +24,10 @@ type Query struct {
 	searchModule SearchService
 	// translations mirrors the translation feature flag (applyTranslations).
 	translations bool
+	// caching is the caching module (nil when it is not loaded) and
+	// cachingFlag the caching feature flag (@Cached).
+	caching     caching.Module
+	cachingFlag bool
 }
 
 // New builds Query over the joiner configs of the loaded modules (link
@@ -51,9 +56,11 @@ func (r *GraphResult) MarshalJSON() ([]byte, error) {
 	return out.MarshalJSON()
 }
 
-// Graph mirrors query.graph.
+// Graph mirrors query.graph (cached with the cache option, see cache.go).
 func (q *Query) Graph(ctx context.Context, in GraphInput, opts joiner.Options) (*GraphResult, error) {
-	return q.run(ctx, ToRemoteQuery(in, q.configs), opts)
+	return q.cached(ctx, in, nil, opts, func() (*GraphResult, error) {
+		return q.run(ctx, ToRemoteQuery(in, q.configs), opts)
+	})
 }
 
 // RemoteQuery mirrors the legacy remoteQuery(remoteQueryObjectFromString(...))
@@ -140,6 +147,12 @@ func (q *Query) SetIndexModule(index IndexService) { q.indexModule = index }
 // the entity ids, then query.graph loads the requested fields of those
 // ids, in the index order.
 func (q *Query) Index(ctx context.Context, in GraphInput, joinFilters *dal.Record, opts joiner.Options) (*GraphResult, error) {
+	return q.cached(ctx, in, joinFilters, opts, func() (*GraphResult, error) {
+		return q.index(ctx, in, joinFilters, opts)
+	})
+}
+
+func (q *Query) index(ctx context.Context, in GraphInput, joinFilters *dal.Record, opts joiner.Options) (*GraphResult, error) {
 	if q.indexModule == nil {
 		return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "Index module is not loaded.")
 	}

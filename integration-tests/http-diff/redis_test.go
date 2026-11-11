@@ -30,6 +30,10 @@ import (
 //                               MEDUSA_TEST_REDIS_URL (taken from the
 //                               environment of the test run; the scenario
 //                               is skipped without it)
+//   HTTP_DIFF_CACHING=true      the caching module with the caching-redis
+//                               provider on MEDUSA_TEST_REDIS_URL (with
+//                               MEDUSA_FF_CACHING=true); "memory": with its
+//                               built in memory provider
 //   HTTP_DIFF_SUBSCRIBERS=true  a product.created subscriber recording each
 //                               call (numbered per process) as a product
 //                               tag; with
@@ -39,21 +43,36 @@ import (
 //                               (interval 1000 ms, one execution) creating a
 //                               product tag
 
-func redisScenario() bool { return os.Getenv("HTTP_DIFF_REDIS") == "true" }
+func redisScenario() bool {
+	return os.Getenv("HTTP_DIFF_REDIS") == "true" || os.Getenv("HTTP_DIFF_CACHING") == "true"
+}
 
 func redisScenarioModules() []config.ModuleConfig {
-	if !redisScenario() {
-		return nil
-	}
 	url := os.Getenv("MEDUSA_TEST_REDIS_URL")
-	return []config.ModuleConfig{
+	var out []config.ModuleConfig
+	if os.Getenv("HTTP_DIFF_CACHING") == "memory" {
+		// the caching module with its built in memory provider
+		out = append(out, config.ModuleConfig{Key: "caching", Resolve: "@medusajs/medusa/caching", Options: map[string]any{
+			"in_memory": map[string]any{"enable": true},
+		}})
+	}
+	if os.Getenv("HTTP_DIFF_CACHING") == "true" {
+		// the caching module with the Redis provider
+		out = append(out, config.ModuleConfig{Key: "caching", Resolve: "@medusajs/medusa/caching", Providers: []config.ModuleProviderConfig{
+			{Resolve: "@medusajs/medusa/caching-redis", ID: "caching-redis", IsDefault: true, Options: map[string]any{"redisUrl": url}},
+		}})
+	}
+	if os.Getenv("HTTP_DIFF_REDIS") != "true" {
+		return out
+	}
+	return append(out, []config.ModuleConfig{
 		{Resolve: "@medusajs/medusa/event-bus-redis", Options: map[string]any{
 			"redisUrl": url, "jobOptions": map[string]any{"attempts": 2},
 		}},
 		{Resolve: "@medusajs/medusa/workflow-engine-redis", Options: map[string]any{
 			"redis": map[string]any{"redisUrl": url},
 		}},
-	}
+	}...)
 }
 
 // prepareRedis skips a Redis scenario without MEDUSA_TEST_REDIS_URL and

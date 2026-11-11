@@ -7,6 +7,7 @@ import (
 	"context"
 
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
@@ -253,4 +254,7 @@ type Options struct {
 	// Locale mirrors the locale option of query.graph: the result is
 	// translated (applyTranslations) when set.
 	Locale string
+	// Cache mirrors the cache option of query.graph / query.index (the
+	// caching module, feature flag "caching").
+	Cache *caching.CacheOptions
 }

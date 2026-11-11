@@ -1,0 +1,156 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzOTcyNjYsImV4cCI6MTc5NDQ4MzY2Nn0.GMFXr0_pukkZZ3zYyrYSz5Dg4GTUpovTQcD-adt38kA"
+    }
+  },
+  "up": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "1794397266973-resume.csv",
+          "url": "http://localhost:9000/static/1794397266973-resume.csv"
+        }
+      ]
+    }
+  },
+  "import": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "transaction_id": "auto-01M756JS0ZW2J3NSH9V7TXDMDM",
+      "summary": {
+        "toCreate": 1,
+        "toUpdate": 0
+      }
+    }
+  },
+  "execution_waiting": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_executions": [
+        {
+          "workflow_id": "import-products-as-chunks",
+          "transaction_id": "auto-01M756JS0ZW2J3NSH9V7TXDMDM",
+          "state": "invoking",
+          "id": "wf_exec_01M756JS14WAQK4EA6N58E86SA"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "confirm": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "notifications": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "notifications": [
+        {
+          "id": "noti_01M756JW7RHAFY1PSNKX5WND99",
+          "to": "",
+          "channel": "feed",
+          "template": "admin-ui",
+          "data": {
+            "title": "Product import",
+            "description": "Product import of file resume.csv completed successfully!"
+          },
+          "status": "success"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "mug": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M756JW53B5HZ3PTRKAX0AH8Y",
+          "title": "Resume Mug",
+          "status": "published",
+          "variants": [
+            {
+              "id": "variant_01M756JW6755H3H35ND4YPYQNN",
+              "title": "Standard",
+              "sku": "RESUME-MUG-1",
+              "barcode": null,
+              "ean": null,
+              "upc": null,
+              "allow_backorder": false,
+              "manage_inventory": true,
+              "hs_code": null,
+              "origin_country": null,
+              "mid_code": null,
+              "material": null,
+              "weight": null,
+              "length": null,
+              "height": null,
+              "width": null,
+              "metadata": null,
+              "variant_rank": 0,
+              "thumbnail": null,
+              "product_id": "prod_01M756JW53B5HZ3PTRKAX0AH8Y",
+              "created_at": "2026-11-11T11:41:10.215Z",
+              "updated_at": "2026-11-11T11:41:10.215Z",
+              "deleted_at": null,
+              "prices": [
+                {
+                  "id": "price_01M756JW6X9KBC749FZHZC7F5M",
+                  "amount": 9,
+                  "currency_code": "eur",
+                  "variant_id": "variant_01M756JW6755H3H35ND4YPYQNN",
+                  "rules": {}
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}

@@ -2,12 +2,14 @@
 package workflows
 
 import (
+	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/steps"
 	. "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/utils"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -167,7 +169,7 @@ var GetVariantsAndItemsWithPrices = composer.CreateWorkflow("get-variant-items-w
 			variantIDs = []any{}
 		}
 		f.Set("id", variantIDs)
-		res, err := commonsteps.UseQueryGraphStep.Config("fetch-variants", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{GraphInput: query.GraphInput{Entity: "variants", Fields: fields, Filters: f}})
+		res, err := commonsteps.UseQueryGraphStep.Config("fetch-variants", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{GraphInput: query.GraphInput{Entity: "variants", Fields: fields, Filters: f}, Options: joiner.Options{Cache: caching.WithTags(true, ProductVariantsCacheTags...)}})
 		if err != nil {
 			return VariantsAndItems{}, err
 		}

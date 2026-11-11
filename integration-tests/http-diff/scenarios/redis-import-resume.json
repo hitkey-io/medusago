@@ -1,0 +1,65 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "up",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/uploads",
+    "files": [
+      {
+        "field": "files",
+        "name": "resume.csv",
+        "type": "text/csv",
+        "content": "Product Handle,Product Title,Product Status,Variant Title,Variant Sku,Variant Price EUR,Variant Option 1 Name,Variant Option 1 Value\nresume-mug,Resume Mug,published,Standard,RESUME-MUG-1,9,Size,Standard\n"
+      }
+    ]
+  },
+  {
+    "name": "import",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports",
+    "body": {
+      "file_key": "{{up.files.0.id}}",
+      "originalname": "resume.csv",
+      "extension": "csv",
+      "size": 100,
+      "mime_type": "text/csv"
+    }
+  },
+  {
+    "name": "execution_waiting",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/workflows-executions?workflow_id=import-products-as-chunks&fields=workflow_id,transaction_id,state"
+  },
+  {
+    "name": "confirm",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports/{{import.transaction_id}}/confirm",
+    "body": {},
+    "restart": true
+  },
+  {
+    "name": "notifications",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,to,channel,template,data,status",
+    "until": "notifications.0"
+  },
+  {
+    "name": "mug",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products?handle=resume-mug&fields=id,title,status,*variants,variants.prices.amount,variants.prices.currency_code"
+  }
+]

@@ -65,9 +65,48 @@ type RedisEventBusService struct {
 	jobOptions   *bullmq.Obj
 	isWorkerMode bool
 
-	mu          sync.RWMutex
-	subscribers map[string][]subscriberDescriptor
-	wg          sync.WaitGroup
+	mu           sync.RWMutex
+	subscribers  map[string][]subscriberDescriptor
+	interceptors []*eventbus.Interceptor
+	wg           sync.WaitGroup
+}
+
+// AddInterceptor mirrors addInterceptor.
+func (s *RedisEventBusService) AddInterceptor(fn eventbus.Interceptor) *eventbus.Interceptor {
+	p := &fn
+	s.mu.Lock()
+	s.interceptors = append(s.interceptors, p)
+	s.mu.Unlock()
+	return p
+}
+
+// RemoveInterceptor mirrors removeInterceptor.
+func (s *RedisEventBusService) RemoveInterceptor(p *eventbus.Interceptor) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for i, x := range s.interceptors {
+		if x == p {
+			s.interceptors = append(s.interceptors[:i], s.interceptors[i+1:]...)
+			return
+		}
+	}
+}
+
+// callInterceptors mirrors callInterceptors (errors are logged).
+func (s *RedisEventBusService) callInterceptors(m eventbus.Message, isGrouped bool, eventGroupID string) {
+	s.mu.RLock()
+	interceptors := append([]*eventbus.Interceptor{}, s.interceptors...)
+	s.mu.RUnlock()
+	for _, p := range interceptors {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					s.logger.Error(fmt.Sprintf("Error in event bus interceptor: %v", r))
+				}
+			}()
+			(*p)(m, isGrouped, eventGroupID)
+		}()
+	}
 }
 
 // NewRedisEventBusService mirrors the loader and the constructor.
@@ -339,6 +378,23 @@ func (s *RedisEventBusService) ReleaseGroupedEvents(ctx context.Context, eventGr
 	events, err := s.getGroupedEvents(ctx, eventGroupID)
 	if err != nil {
 		return err
+	}
+	// interceptors are called before the grouped events are emitted
+	for _, e := range events {
+		var payload any
+		var metadata *dal.Record
+		if e.data != nil {
+			if raw, err := e.data.MarshalJSON(); err == nil {
+				if v, err := dal.DecodeOrderedJSON(raw); err == nil {
+					if r, ok := v.(*dal.Record); ok {
+						payload, _ = r.Get("data")
+						md, _ := r.Get("metadata")
+						metadata, _ = md.(*dal.Record)
+					}
+				}
+			}
+		}
+		s.callInterceptors(eventbus.Message{Name: e.name, Data: payload, Metadata: metadata}, true, eventGroupID)
 	}
 	var jobs []bullmq.BulkJob
 	for _, e := range events {

@@ -18,6 +18,7 @@ import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/http/middlewares"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 	ff "github.com/hitkey-io/medusago/packages/core/utils/src/feature-flags"
@@ -378,6 +379,10 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 	}
 	if search, ok := c.Resolve(utilsmodulessdk.SEARCH).(query.SearchService); ok {
 		q.SetSearchModule(search)
+	}
+	// @Cached resolves the caching module (feature flag "caching")
+	if cm, ok := c.Resolve(utilsmodulessdk.CACHING).(caching.Module); ok {
+		q.SetCaching(cm, flagRouter.IsFeatureEnabled(featureflags.Caching.Key))
 	}
 	// loaders/index.ts: createDefaultsWorkflow runs at every start, before
 	// the modules' onApplicationStart hooks.

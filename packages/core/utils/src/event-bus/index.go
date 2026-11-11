@@ -95,6 +95,16 @@ type Message struct {
 	Metadata *dal.Record
 }
 
+// Interceptor mirrors InterceptorSubscriber: it receives every message
+// before it is published (isGrouped / eventGroupId: the context).
+type Interceptor func(m Message, isGrouped bool, eventGroupID string)
+
+// Interceptable is implemented by an event bus accepting interceptors
+// (addInterceptor).
+type Interceptable interface {
+	AddInterceptor(fn Interceptor) *Interceptor
+}
+
 // Emitter is the emit part of IEventBusModuleService.
 type Emitter interface {
 	Emit(ctx context.Context, messages []Message) error

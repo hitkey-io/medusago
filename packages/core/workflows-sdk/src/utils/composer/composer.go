@@ -24,8 +24,10 @@
 // steps; finished runs without retentionTime are deleted. A step with
 // async + backgroundExecution detaches the run: run() returns while the
 // body continues in the background; an async step without background
-// execution waits for setStepSuccess / setStepFailure. Waiting runs live in
-// this process (like the in-memory engine's timers).
+// execution waits for setStepSuccess / setStepFailure. With the in-memory
+// engine waiting runs live in this process (like its timers); a durable
+// engine (Redis) stops the run at the waiting step and resumes it from its
+// checkpoint on any instance (see resume.go).
 package composer
 
 import (
@@ -185,6 +187,10 @@ type Execution struct {
 	rootOptions    WorkflowOptions
 	// subWorkflow: the workflow runs as a step of another one
 	subWorkflow bool
+	// replay is set when the run resumes a stored transaction
+	replay *replayState
+	// persistedRev is the journal revision of the last persist
+	persistedRev int
 }
 
 // Context returns the run context.
@@ -269,6 +275,11 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 		action = s.action
 	}
 	noComp := s.compensate == nil || s.Options.NoCompensation
+	if e.replay != nil {
+		if out, handled, rerr := s.replayStep(e, action, noComp); handled {
+			return out, rerr
+		}
+	}
 	rec := e.journal.begin(action, s.Options, noComp)
 	background := s.Options.Async && s.Options.BackgroundExecution
 	if background {
@@ -302,10 +313,23 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 	// setStepSuccess / setStepFailure; one that returned a response
 	// completes with it (upstream registers the returned response)
 	if err == nil && s.Options.Async && !background && isNilOutput(any(res.Output)) {
+		key := IdempotencyKey{Action: "invoke", TransactionID: e.transactionID, StepID: action, WorkflowID: e.rootWorkflowID}
+		if de := durableEngine(e.container); de != nil {
+			// the checkpoint holds the waiting step: the response resumes
+			// the transaction on any instance; this run stops here
+			e.journal.wait(rec)
+			e.persist(TransactionStateInvoking)
+			if s.Options.Timeout > 0 {
+				if terr := de.ScheduleStepTimeout(context.WithoutCancel(e.ctx), e.stepTimeoutJob(rec)); terr != nil {
+					slog.Error(fmt.Sprintf("failed to schedule the timeout of step %s: %v", rec.id, terr))
+				}
+			}
+			e.detacher.detach()
+			return zero, errSuspended
+		}
 		// waits for setStepSuccess / setStepFailure; the run returns to its
 		// caller meanwhile
 		coord := stepCoordinator(e.container)
-		key := IdempotencyKey{Action: "invoke", TransactionID: e.transactionID, StepID: action, WorkflowID: e.rootWorkflowID}
 		ch := coord.Wait(key)
 		e.journal.wait(rec)
 		e.persist(TransactionStateInvoking)
@@ -321,22 +345,36 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 		} else {
 			r = <-ch
 		}
-		if r.Err != nil {
-			err = r.Err
-		} else {
-			out, cerr := convertOutput[O](r.Output)
-			if cerr != nil {
-				err = cerr
-			} else {
-				res = StepResponse[O]{Output: out}
-			}
+		res, err = applyStepResult[O](r)
+		if r.Err == nil {
+			rec.raw, rec.hasRaw = r.Output, true
 		}
 	}
+	return s.settle(e, rec, res, err)
+}
+
+// applyStepResult converts the response delivered to a waiting step.
+func applyStepResult[O any](r StepResult) (StepResponse[O], error) {
+	if r.Err != nil {
+		return StepResponse[O]{}, r.Err
+	}
+	out, err := convertOutput[O](r.Output)
+	if err != nil {
+		return StepResponse[O]{}, err
+	}
+	return StepResponse[O]{Output: out}, nil
+}
+
+// settle records the outcome of an invoked step and registers its
+// compensation.
+func (s *Step[I, O]) settle(e *Execution, rec *stepRecord, res StepResponse[O], err error) (O, error) {
+	var zero O
 	if err != nil {
 		e.journal.fail(rec, err)
 		e.mu.Lock()
 		e.errors = append(e.errors, err)
 		e.mu.Unlock()
+		e.afterDelivered(rec)
 		if s.Options.ContinueOnPermanentFailure {
 			return zero, nil
 		}
@@ -354,6 +392,7 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 	}
 	if res.skip {
 		e.journal.skip(rec, !e.subWorkflow)
+		e.afterDelivered(rec)
 		return zero, nil
 	}
 	var compInput any = res.Output
@@ -361,16 +400,22 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 		compInput = res.CompensateInput
 	}
 	e.journal.succeed(rec, res.Output, any(res.Output) != nil, compInput, res.hasCompensate)
-	if s.compensate != nil && !s.Options.NoCompensation {
-		comp := s.compensate
-		name := s.Name
-		e.pushCompensation(compensation{name: name, run: func() error {
-			cerr := callSafely(func() error { return comp(e.stepContext(name, "compensate", 1), compInput) })
-			e.journal.compensated(rec, cerr)
-			return cerr
-		}})
-	}
+	e.afterDelivered(rec)
+	s.pushStepCompensation(e, rec, compInput)
 	return res.Output, nil
+}
+
+func (s *Step[I, O]) pushStepCompensation(e *Execution, rec *stepRecord, compInput any) {
+	if s.compensate == nil || s.Options.NoCompensation {
+		return
+	}
+	comp := s.compensate
+	name := s.Name
+	e.pushCompensation(compensation{name: name, run: func() error {
+		cerr := callSafely(func() error { return comp(e.stepContext(name, "compensate", 1), compInput) })
+		e.journal.compensated(rec, cerr)
+		return cerr
+	}})
 }
 
 // Workflow is a workflow definition.
@@ -438,20 +483,7 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 	e := &Execution{ctx: runCtx, container: c, workflowID: w.ID, transactionID: o.TransactionID, eventGroupID: o.EventGroupID, hooks: w.hooks,
 		journal: newJournal(input), detacher: newDetacher(), rootWorkflowID: w.ID, rootOptions: w.Options}
 	if o.Notify {
-		workflowID, transactionID := w.ID, o.TransactionID
-		publisher := eventPublisher(c)
-		e.journal.events = func(ev WorkflowEvent) {
-			ev.WorkflowID, ev.TransactionID = workflowID, transactionID
-			// called with the journal locked
-			ev.IsFlowAsync = e.journal.hasAsync
-			if ev.EventType == "onFinish" {
-				ev.State = e.journal.state
-			}
-			notifyEvent(ev)
-			if publisher != nil {
-				publisher.PublishWorkflowEvent(ev)
-			}
-		}
+		e.notifyEvents()
 		e.journal.emitRun("onBegin", nil)
 	}
 	stored := w.Options.Store || w.Options.RetentionTime > 0
@@ -469,6 +501,15 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 	}()
 	select {
 	case r := <-done:
+		if errors.Is(r.err, errSuspended) {
+			// the run waits for a response; the checkpoint resumes it
+			e.persistIfChanged(TransactionStateInvoking)
+			var zero O
+			if p, ok := e.partial.(O); ok {
+				zero = p
+			}
+			return zero, RunInfo{TransactionID: e.transactionID, RunID: e.journal.runID, State: TransactionStateInvoking, Detached: true}, nil
+		}
 		state := w.finish(e, r.err, stored)
 		e.emitFinish(r.out, r.err)
 		info := RunInfo{TransactionID: e.transactionID, RunID: e.journal.runID, State: state}
@@ -480,6 +521,12 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 	case <-e.detacher.ch:
 		go func() {
 			r := <-done
+			if errors.Is(r.err, errSuspended) {
+				// the steps run after the suspension (parallel branches)
+				// are part of the checkpoint
+				e.persistIfChanged(TransactionStateInvoking)
+				return
+			}
 			w.finish(e, r.err, true)
 			e.emitFinish(r.out, r.err)
 		}()
@@ -488,6 +535,25 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 			zero = p
 		}
 		return zero, RunInfo{TransactionID: e.transactionID, RunID: e.journal.runID, State: TransactionStateInvoking, Detached: true}, nil
+	}
+}
+
+// notifyEvents delivers the run's notifications to the workflow engine
+// subscribers (and to the other instances through the engine).
+func (e *Execution) notifyEvents() {
+	workflowID, transactionID := e.rootWorkflowID, e.transactionID
+	publisher := eventPublisher(e.container)
+	e.journal.events = func(ev WorkflowEvent) {
+		ev.WorkflowID, ev.TransactionID = workflowID, transactionID
+		// called with the journal locked
+		ev.IsFlowAsync = e.journal.hasAsync
+		if ev.EventType == "onFinish" {
+			ev.State = e.journal.state
+		}
+		notifyEvent(ev)
+		if publisher != nil {
+			publisher.PublishWorkflowEvent(ev)
+		}
 	}
 }
 
@@ -532,6 +598,10 @@ func (w *Workflow[I, O]) execute(e *Execution, input I) (O, error) {
 		out, berr = w.body(e, input)
 		return berr
 	})
+	if errors.Is(err, errSuspended) {
+		var zero O
+		return zero, errSuspended
+	}
 	if err != nil {
 		e.journal.emitRun("onCompensateBegin", nil)
 		e.compensate()
@@ -553,8 +623,13 @@ func (w *Workflow[I, O]) execute(e *Execution, input I) (O, error) {
 // compensated as a unit when the parent fails.
 func (w *Workflow[I, O]) RunAsStep(parent *Execution, input I) (O, error) {
 	e := &Execution{ctx: parent.ctx, container: parent.container, workflowID: w.ID, transactionID: parent.transactionID, eventGroupID: parent.eventGroupID, hooks: w.hooks,
-		journal: parent.journal, detacher: parent.detacher, rootWorkflowID: parent.rootWorkflowID, rootOptions: parent.rootOptions, subWorkflow: true}
+		journal: parent.journal, detacher: parent.detacher, rootWorkflowID: parent.rootWorkflowID, rootOptions: parent.rootOptions, subWorkflow: true,
+		replay: parent.replay}
 	out, err := w.execute(e, input)
+	if errors.Is(err, errSuspended) {
+		var zero O
+		return zero, err
+	}
 	if err != nil {
 		parent.mu.Lock()
 		parent.errors = append(parent.errors, err)

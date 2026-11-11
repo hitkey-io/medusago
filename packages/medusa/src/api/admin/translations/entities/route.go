@@ -9,6 +9,7 @@ import (
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/translations/statistics"
 )
@@ -21,7 +22,7 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 
 	settingsFilter := dal.NewRecord()
 	settingsFilter.Set("entity_type", typ)
-	settings, err := q.Graph(req.Ctx(), query.GraphInput{Entity: "translation_settings", Fields: []string{"*"}, Filters: settingsFilter}, joiner.Options{})
+	settings, err := q.Graph(req.Ctx(), query.GraphInput{Entity: "translation_settings", Fields: []string{"*"}, Filters: settingsFilter}, joiner.Options{Cache: caching.Enabled()})
 	if err != nil {
 		return err
 	}
@@ -43,7 +44,7 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	}
 	var data []any
 	metadata := dal.NewRecord()
-	entities, err := q.Graph(req.Ctx(), query.GraphInput{Entity: fmt.Sprint(typ), Fields: fields, Filters: filters, Pagination: req.QueryConfig.Pagination}, joiner.Options{})
+	entities, err := q.Graph(req.Ctx(), query.GraphInput{Entity: fmt.Sprint(typ), Fields: fields, Filters: filters, Pagination: req.QueryConfig.Pagination}, joiner.Options{Cache: caching.Enabled()})
 	if err != nil {
 		if !statistics.IsServiceNotFound(err) {
 			return err

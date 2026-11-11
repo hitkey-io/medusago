@@ -3,11 +3,13 @@ package products
 
 import (
 	"context"
+	"fmt"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"math"
 
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
 )
@@ -76,6 +78,23 @@ func GetVariantAvailability(ctx context.Context, q *query.Query, variantIDs []an
 	return getVariantAvailability(ctx, q, variantIDs, salesChannelID)
 }
 
+// variantCacheTags mirrors variant_ids.map((id) => `ProductVariant:${id}`).
+func variantCacheTags(variantIDs []any) []string {
+	tags := make([]string, 0, len(variantIDs)+2)
+	for _, id := range variantIDs {
+		s, ok := id.(string)
+		if !ok {
+			if id == nil {
+				s = "null"
+			} else {
+				s = fmt.Sprint(id)
+			}
+		}
+		tags = append(tags, "ProductVariant:"+s)
+	}
+	return tags
+}
+
 func getVariantAvailability(ctx context.Context, q *query.Query, variantIDs []any, salesChannelID string) (map[string]any, error) {
 	f := dal.NewRecord()
 	f.Set("variant_id", variantIDs)
@@ -83,7 +102,16 @@ func getVariantAvailability(ctx context.Context, q *query.Query, variantIDs []an
 		Entity:  "product_variant_inventory_items",
 		Fields:  []string{"variant_id", "required_quantity", "variant.manage_inventory", "variant.allow_backorder", "inventory.*", "inventory.location_levels.*"},
 		Filters: f,
-	}, joiner.Options{})
+	}, joiner.Options{
+		// The inventory items and levels are computed from the response. These are
+		// not: the link rows and the variants are selected without their ids, and
+		// available_quantity is stocked minus reserved, which reservations change
+		// without emitting inventory level events.
+		Cache: caching.WithTags(true, append(variantCacheTags(variantIDs),
+			"LinkProductVariantInventoryItem:list:*",
+			"ReservationItem:list:*",
+		)...),
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +119,9 @@ func getVariantAvailability(ctx context.Context, q *query.Query, variantIDs []an
 	if salesChannelID != "" {
 		lf := dal.NewRecord()
 		lf.Set("sales_channel_id", salesChannelID)
-		lr, err := q.Graph(ctx, query.GraphInput{Entity: "sales_channel_locations", Fields: []string{"stock_location_id"}, Filters: lf}, joiner.Options{})
+		lr, err := q.Graph(ctx, query.GraphInput{Entity: "sales_channel_locations", Fields: []string{"stock_location_id"}, Filters: lf}, joiner.Options{
+			Cache: &caching.CacheOptions{Tags: []string{"LinkSalesChannelStockLocation:list:*"}},
+		})
 		if err != nil {
 			return nil, err
 		}

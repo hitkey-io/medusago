@@ -6,6 +6,8 @@ import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
+	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/utils"
 	commonvalidators "github.com/hitkey-io/medusago/packages/medusa/src/api/utils/common-validators"
 )
@@ -37,4 +39,4 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 }
 
 // Route is route.ts: GET lists the locales through query.graph.
-var Route = medusahttp.Route{GET: httputils.RefetchListRoute("locale", "locales")}
+var Route = medusahttp.Route{GET: httputils.RefetchListRouteWithOptions("locale", "locales", joiner.Options{Cache: caching.Enabled()})}

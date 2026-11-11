@@ -20,8 +20,8 @@ import (
 
 // WorkflowsModuleService mirrors WorkflowsModuleService of the Redis engine:
 // the generated WorkflowExecution service, the Redis transaction storage
-// (checkpoints, scheduler, cleaner) and the orchestrator (cross-instance
-// notifications and async step responses).
+// (checkpoints, resumption, scheduler, cleaner) and the orchestrator
+// (cross-instance notifications).
 type WorkflowsModuleService struct {
 	*utilsmodulessdk.MedusaService
 	*WorkflowOrchestrator
@@ -32,7 +32,7 @@ type WorkflowsModuleService struct {
 
 var (
 	_ composer.ExecutionStore         = (*WorkflowsModuleService)(nil)
-	_ composer.StepCoordinator        = (*WorkflowsModuleService)(nil)
+	_ composer.DurableEngine          = (*WorkflowsModuleService)(nil)
 	_ composer.WorkflowScheduler      = (*WorkflowsModuleService)(nil)
 	_ composer.WorkflowEventPublisher = (*WorkflowsModuleService)(nil)
 )
@@ -91,6 +91,7 @@ func NewWorkflowsModuleService(opts modulessdk.ServiceOptions, joinerConfig *joi
 		DB: opts.DB, Client: connection, WorkerClient: workerConnection,
 		QueueName: queueName, JobQueueName: jobQueueName,
 		MainQueueOptions:     types.Merge(o.QueueOptions, o.MainQueueOptions),
+		MainWorkerOptions:    types.Merge(o.WorkerOptions, o.MainWorkerOptions),
 		JobQueueOptions:      types.Merge(o.QueueOptions, o.JobQueueOptions),
 		JobWorkerOptions:     types.Merge(o.WorkerOptions, o.JobWorkerOptions),
 		CleanerQueueOptions:  types.Merge(o.QueueOptions, o.CleanerQueueOptions),
@@ -148,6 +149,26 @@ func (s *WorkflowsModuleService) SaveExecution(ctx context.Context, row composer
 // DeleteExecution implements composer.ExecutionStore.
 func (s *WorkflowsModuleService) DeleteExecution(ctx context.Context, workflowID, transactionID, runID string) error {
 	return s.storage.DeleteExecution(ctx, workflowID, transactionID, runID)
+}
+
+// LoadCheckpoint implements composer.DurableEngine.
+func (s *WorkflowsModuleService) LoadCheckpoint(ctx context.Context, workflowID, transactionID string) (*composer.Checkpoint, error) {
+	return s.storage.LoadCheckpoint(ctx, workflowID, transactionID)
+}
+
+// LockTransaction implements composer.DurableEngine.
+func (s *WorkflowsModuleService) LockTransaction(ctx context.Context, workflowID, transactionID string) (func(), error) {
+	return s.storage.LockTransaction(ctx, workflowID, transactionID)
+}
+
+// ScheduleStepTimeout implements composer.DurableEngine.
+func (s *WorkflowsModuleService) ScheduleStepTimeout(ctx context.Context, job composer.StepTimeoutJob) error {
+	return s.storage.ScheduleStepTimeout(ctx, job)
+}
+
+// ClearStepTimeout implements composer.DurableEngine.
+func (s *WorkflowsModuleService) ClearStepTimeout(ctx context.Context, job composer.StepTimeoutJob) error {
+	return s.storage.ClearStepTimeout(ctx, job)
 }
 
 // Schedule implements composer.WorkflowScheduler.

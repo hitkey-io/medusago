@@ -8,6 +8,7 @@ import (
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
@@ -16,7 +17,7 @@ import (
 func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	filters := dal.NewRecord()
 	filters.Set("code", req.Params["code"])
-	r, err := httputils.QueryOf(req.Scope).Graph(req.Ctx(), query.GraphInput{Entity: "locale", Fields: req.QueryConfig.Fields, Filters: filters}, joiner.Options{})
+	r, err := httputils.QueryOf(req.Scope).Graph(req.Ctx(), query.GraphInput{Entity: "locale", Fields: req.QueryConfig.Fields, Filters: filters}, joiner.Options{Cache: caching.Enabled()})
 	if err != nil {
 		return err
 	}

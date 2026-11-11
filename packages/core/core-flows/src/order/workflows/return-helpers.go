@@ -11,6 +11,7 @@ import (
 	paymentsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/payment/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
@@ -269,7 +270,16 @@ var MaybeRefreshShippingMethodsWorkflow = composer.CreateWorkflow("maybe-refresh
 		}
 		of := dal.NewRecord()
 		of.Set("id", optionID)
-		options, err := queryList(e, "calculated-option", "shipping_option", of, shippingOptionCommonFields)
+		// The shipping option, its type, provider and the resolved location are all
+		// computed from the response. These are what computation cannot see: the
+		// service zone, fulfillment set and rules are selected without their ids,
+		// and the fulfillment set resolves its location through a link row.
+		options, err := queryListWithOptions(e, "calculated-option", "shipping_option", of, shippingOptionCommonFields, joiner.Options{Cache: caching.WithTags(true,
+			"ServiceZone:list:*",
+			"FulfillmentSet:list:*",
+			"ShippingOptionRule:list:*",
+			"LinkLocationFulfillmentSet:list:*",
+		)})
 		if err != nil {
 			return nil, err
 		}

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
@@ -167,7 +168,7 @@ func (q *Query) ApplyTranslations(ctx context.Context, locale string, objects []
 		filters.Set("locale_code", locale)
 		pagination := dal.NewRecord()
 		pagination.Set("take", float64(batchSize))
-		res, err := q.Graph(ctx, GraphInput{Entity: "translations", Fields: []string{"translations", "reference_id"}, Filters: filters, Pagination: pagination}, joiner.Options{})
+		res, err := q.Graph(ctx, GraphInput{Entity: "translations", Fields: []string{"translations", "reference_id"}, Filters: filters, Pagination: pagination}, joiner.Options{Cache: caching.Enabled()})
 		if err != nil {
 			return err
 		}

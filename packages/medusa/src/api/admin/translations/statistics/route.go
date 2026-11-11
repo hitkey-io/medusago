@@ -9,6 +9,7 @@ import (
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/modules/translation/src/services"
@@ -44,7 +45,7 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 		pagination.Set("take", float64(1))
 		pagination.Set("skip", float64(0))
 		count := 0
-		r, err := q.Graph(req.Ctx(), query.GraphInput{Entity: entityType, Fields: []string{"id"}, Pagination: pagination}, joiner.Options{ThrowIfKeyNotFound: false})
+		r, err := q.Graph(req.Ctx(), query.GraphInput{Entity: entityType, Fields: []string{"id"}, Pagination: pagination}, joiner.Options{ThrowIfKeyNotFound: false, Cache: caching.Enabled()})
 		if err != nil {
 			if !IsServiceNotFound(err) {
 				return err

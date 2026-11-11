@@ -5,6 +5,7 @@ import (
 
 	. "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/utils"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
@@ -77,7 +78,7 @@ var GetPromotionCodesToApply = composer.CreateStep("get-promotion-codes-to-apply
 				}
 				f := dal.NewRecord()
 				f.Set("code", ids)
-				rows, err := graph(ctx, "promotion", []string{"id", "code"}, f)
+				rows, err := graph(ctx, "promotion", []string{"id", "code"}, f, caching.Enabled())
 				if err != nil {
 					return composer.StepResponse[[]string]{}, err
 				}
@@ -149,7 +150,7 @@ var PrepareAdjustmentsFromPromotionActionsStep = composer.CreateStep("prepare-ad
 		}
 		f := dal.NewRecord()
 		f.Set("code", codes)
-		rows, err := graph(ctx, "promotion", []string{"id", "code"}, f)
+		rows, err := graph(ctx, "promotion", []string{"id", "code"}, f, caching.Enabled())
 		if err != nil {
 			return composer.StepResponse[PreparedAdjustments]{}, err
 		}
@@ -297,7 +298,7 @@ var UpdateCartPromotionsStep = composer.CreateStep("update-cart-promotions",
 			}
 			f := dal.NewRecord()
 			f.Set("code", codes)
-			rows, err := graph(ctx, "promotion", []string{"id", "code"}, f)
+			rows, err := graph(ctx, "promotion", []string{"id", "code"}, f, caching.Enabled())
 			if err != nil {
 				return composer.StepResponse[any]{}, err
 			}

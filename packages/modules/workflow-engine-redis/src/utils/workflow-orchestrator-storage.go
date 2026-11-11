@@ -42,6 +42,7 @@ type StorageOptions struct {
 	QueueName            string
 	JobQueueName         string
 	MainQueueOptions     map[string]any
+	MainWorkerOptions    map[string]any
 	JobQueueOptions      map[string]any
 	JobWorkerOptions     map[string]any
 	CleanerQueueOptions  map[string]any
@@ -57,15 +58,17 @@ type StorageOptions struct {
 // workflow_execution rows, the scheduled workflows as repeatable jobs of
 // the job queue and the expired executions cleaner.
 //
-// The main queue (retries, step and transaction timeouts) belongs to the
-// orchestrator's checkpoint resumption: Go runs retry and wait inline in the
-// process that runs the workflow, so it adds no jobs there and does not
-// consume it (a Go worker could not resume a Node.js transaction).
+// The main queue holds the jobs that resume a stored transaction (retry,
+// step_timeout, transaction_timeout); its worker resumes them in this
+// instance (workflow-orchestrator-storage-resume.go). Go runs retry steps
+// inline and continue after a finished async step in the process that
+// runs them, so they only add step timeout jobs.
 type RedisDistributedTransactionStorage struct {
 	opts          StorageOptions
 	queue         *bullmq.Queue
 	jobQueue      *bullmq.Queue
 	cleanerQueue  *bullmq.Queue
+	worker        *bullmq.Worker
 	jobWorker     *bullmq.Worker
 	cleanerWorker *bullmq.Worker
 	logger        *slog.Logger
@@ -96,6 +99,10 @@ func (s *RedisDistributedTransactionStorage) OnApplicationStart(ctx context.Cont
 	if !s.opts.IsWorkerMode {
 		return nil
 	}
+	mw := bullmq.WorkerOptionsFromMap(s.opts.MainWorkerOptions)
+	mw.Prefix = s.queue.Prefix()
+	mw.Logger = s.logger
+	s.worker = bullmq.NewWorker(s.opts.QueueName, s.opts.WorkerClient.Client, s.processMainJob, mw)
 	jw := bullmq.WorkerOptionsFromMap(s.opts.JobWorkerOptions)
 	jw.Prefix = s.jobQueue.Prefix()
 	jw.Logger = s.logger
@@ -106,6 +113,7 @@ func (s *RedisDistributedTransactionStorage) OnApplicationStart(ctx context.Cont
 	s.cleanerWorker = bullmq.NewWorker(CleanerQueueName, s.opts.WorkerClient.Client, func(ctx context.Context, _ *bullmq.Job) (any, error) {
 		return nil, s.ClearExpiredExecutions(ctx)
 	}, cw)
+	s.worker.Run(ctx)
 	s.jobWorker.Run(ctx)
 	s.cleanerWorker.Run(ctx)
 	_, err := s.cleanerQueue.Add(ctx, "cleaner", bullmq.NewObj(), bullmq.NewObj(
@@ -120,6 +128,9 @@ func (s *RedisDistributedTransactionStorage) OnApplicationStart(ctx context.Cont
 // OnApplicationShutdown mirrors onApplicationPrepareShutdown: the workers
 // finish their jobs.
 func (s *RedisDistributedTransactionStorage) OnApplicationShutdown() {
+	if s.worker != nil {
+		s.worker.Close()
+	}
 	if s.jobWorker != nil {
 		s.jobWorker.Close()
 	}

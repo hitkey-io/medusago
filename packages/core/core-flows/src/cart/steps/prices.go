@@ -7,6 +7,7 @@ import (
 
 	. "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/utils"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -54,7 +55,7 @@ var GetVariantPriceSetsStep = composer.CreateStep("get-variant-price-sets",
 		for i, d := range data {
 			ids[i] = d.VariantID
 		}
-		rows, err := graph(ctx, "variant", []string{"id", "price_set.id"}, idFilter(ids))
+		rows, err := graph(ctx, "variant", []string{"id", "price_set.id"}, idFilter(ids), &caching.CacheOptions{Tags: []string{"LinkProductVariantPriceSet:list:*"}})
 		if err != nil {
 			return composer.StepResponse[map[string]*dal.Record]{}, err
 		}
