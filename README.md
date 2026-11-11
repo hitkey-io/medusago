@@ -72,6 +72,45 @@ supported with their flags enabled. Known gaps are tracked in the
 [issues](https://github.com/hitkey-io/medusago/issues). Medusa Enterprise
 Edition features (RBAC, SSO) are not part of this project.
 
+## Performance
+
+Medusa 2.22.6 (production build, Node.js 24) and MedusaGo v0.1.0 on copies of
+the same PostgreSQL 17 database (304 products, 920 variants), without Redis,
+on an Apple M4 Pro VM (7 vCPU, 12 GB). Both servers return byte-identical
+responses.
+
+| Resources                 | Medusa, 1 process | Medusa, cluster ×6 | MedusaGo |
+| ------------------------- | ----------------: | -----------------: | -------: |
+| Startup                   |             1.6 s |              3.6 s |    0.1 s |
+| Memory, idle              |            426 MB |           2,740 MB |    82 MB |
+| Memory, peak under load   |          1,000 MB |           4,100 MB |   205 MB |
+
+Throughput, requests per second (32 concurrent clients; checkout: completed
+orders per second, 16 concurrent clients):
+
+| Endpoint                                     | Medusa, 1 process | Medusa, cluster ×6 | MedusaGo | MedusaGo vs cluster |
+| -------------------------------------------- | ----------------: | -----------------: | -------: | ------------------: |
+| `GET /store/regions`                         |               904 |              1,714 |    6,432 |                3.8× |
+| `GET /store/product-categories`              |               669 |              1,619 |    4,632 |                2.9× |
+| `GET /store/products`                        |                88 |                187 |      611 |                3.3× |
+| `GET /store/products` with calculated prices |                61 |                135 |      387 |                2.9× |
+| `GET /store/products/:id` with prices        |               185 |                387 |    1,310 |                3.4× |
+| `GET /admin/products`                        |                52 |                135 |      319 |                2.4× |
+| `GET /admin/orders`                          |                60 |                174 |      402 |                2.3× |
+| Checkout, cart to order (8 requests)         |               3.7 |               11.6 |     47.3 |                4.1× |
+
+Latency, median with a single client:
+
+| Endpoint                                     |  Medusa | MedusaGo |
+| -------------------------------------------- | ------: | -------: |
+| `GET /store/regions`                         |  1.5 ms |   0.7 ms |
+| `GET /store/products`                        | 15.6 ms |   6.5 ms |
+| `GET /store/products` with calculated prices | 26.5 ms |  10.1 ms |
+| `GET /store/products/:id` with prices        | 10.7 ms |   3.8 ms |
+| `GET /admin/products`                        | 27.0 ms |  11.6 ms |
+| `GET /admin/orders`                          | 22.3 ms |   9.9 ms |
+| Checkout, cart to order (8 requests)         |  385 ms |   114 ms |
+
 ## Layout
 
 The repository mirrors the Medusa monorepo. Differences come only from Go vs
