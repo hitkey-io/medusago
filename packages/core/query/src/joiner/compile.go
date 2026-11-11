@@ -153,13 +153,14 @@ func parseProperties(root *ExpandProperty, query *RemoteJoinerQuery, serviceConf
 					parentPath = joinPath(real[:len(real)-1]...)
 				}
 				exp := &ExpandProperty{
-					Property:       prop,
-					ServiceConfig:  currentServiceConfig,
-					Entity:         entity,
-					Fields:         fields,
-					IsAliasMapping: isAliasMapping,
-					Parent:         parentPath,
-					ParentConfig:   parsed.Get(parentPath).ServiceConfig,
+					Property:        prop,
+					ServiceConfig:   currentServiceConfig,
+					Entity:          entity,
+					Fields:          fields,
+					IsAliasMapping:  isAliasMapping,
+					aliasMappingSet: true,
+					Parent:          parentPath,
+					ParentConfig:    parsed.Get(parentPath).ServiceConfig,
 				}
 				if !isAliasMapping || slices.Contains(forwardArgumentsOnPath, fullPath) {
 					exp.Args = args
@@ -170,7 +171,10 @@ func parseProperties(root *ExpandProperty, query *RemoteJoinerQuery, serviceConf
 				if slices.Contains(forwardArgumentsOnPath, fullPath) && args != nil {
 					exp.Args = append(exp.Args, args...)
 				}
-				exp.IsAliasMapping = exp.IsAliasMapping || isAliasMapping
+				// exp.isAliasMapping ??= isAliasMapping
+				if !exp.aliasMappingSet {
+					exp.IsAliasMapping, exp.aliasMappingSet = isAliasMapping, true
+				}
 				exp.Fields = dedupeStrings(append(append([]string{}, exp.Fields...), fields...))
 			}
 			currentPath = append(currentPath, prop)
@@ -247,7 +251,7 @@ func rewriteFieldAlias(p rewriteParams, catalog *GraphCatalog) (*ServiceConfig, 
 		if midProp == joinPath(fullPath...) {
 			extra.Fields = p.expand.Fields
 			extra.Args = p.expand.Args
-			extra.IsAliasMapping = p.expand.IsAliasMapping || existing == nil
+			// isAliasMapping: !existingExpand overrides the spread expand
 		}
 		if slices.Contains(*p.forwardArgumentsOnPath, BasePath+"."+midProp) {
 			var forwarded []Arg

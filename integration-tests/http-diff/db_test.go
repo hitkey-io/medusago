@@ -11,6 +11,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
+	"github.com/hitkey-io/medusago/integration-tests/http-diff/testapp/brand"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
 	"github.com/hitkey-io/medusago/packages/medusa/src/commands/db"
 )
@@ -126,9 +127,14 @@ func isGenerated(s string) (bool, string) {
 // default configuration, like the reference application's
 // medusa-config.js: the index engine needs the index module besides its
 // feature flag (MEDUSA_FF_INDEX_ENGINE=true).
+// The brand test module (testapp) is added with MEDUSA_TEST_BRAND=true.
 func scenarioModules() []config.ModuleConfig {
+	var out []config.ModuleConfig
 	if os.Getenv("MEDUSA_FF_INDEX_ENGINE") == "true" {
-		return []config.ModuleConfig{{Key: "index", Resolve: "@medusajs/medusa/index-module"}}
+		out = append(out, config.ModuleConfig{Key: "index", Resolve: "@medusajs/medusa/index-module"})
 	}
-	return nil
+	if os.Getenv("MEDUSA_TEST_BRAND") == "true" {
+		out = append(out, config.ModuleConfig{Resolve: "./src/modules/brand", Module: &brand.Module.ModuleExports})
+	}
+	return out
 }

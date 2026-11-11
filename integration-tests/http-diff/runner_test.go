@@ -29,7 +29,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hitkey-io/medusago/integration-tests/http-diff/testapp/brand"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
+	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/medusa/src/loaders"
 )
@@ -690,13 +693,24 @@ func goServer(t *testing.T, scenario string) string {
 	if base := os.Getenv("MEDUSA_HTTP_TARGET_URL"); base != "" {
 		return base
 	}
+	// The links of the brand test module (testapp/src/links) are defined
+	// for the scenario only.
+	var routes []medusahttp.RouteFile
+	if os.Getenv("MEDUSA_TEST_BRAND") == "true" {
+		utilsmodulessdk.ClearCustomLinks()
+		t.Cleanup(utilsmodulessdk.ClearCustomLinks)
+		if err := brand.DefineLinks(); err != nil {
+			t.Fatal(err)
+		}
+		routes = brand.Routes
+	}
 	dbURL := setupDatabase(t, "medusa_http_go_"+strings.ReplaceAll(scenario, "-", "_"))
 	// Same CORS settings as record.sh passes to upstream.
 	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{
 		DatabaseURL: dbURL,
 		HTTP:        config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
 	}, Modules: scenarioModules()})
-	app, err := loaders.Initialize(context.Background(), cfg)
+	app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Routes: routes})
 	if err != nil {
 		t.Fatal(err)
 	}

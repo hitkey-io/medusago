@@ -5,6 +5,11 @@ const BrandProfile = require("./models/brand-profile").default
 const BrandStat = require("./models/brand-stat").default
 
 class BrandModuleService extends MedusaService({ Brand, BrandLogo, BrandProfile, BrandStat }) {
+  constructor(container) {
+    super(...arguments)
+    this.brandStatService_ = container.brandStatService
+  }
+
   // composite primary key upsert through the internal service
   async upsertBrandStats(data) {
     const stats = await this.brandStatService_.upsert(data)

@@ -549,6 +549,40 @@ func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, i
 		}
 		inst.relations[mp.Name] = children
 	}
+	// nested inverse one-to-one objects (hasOne with mappedBy): created with
+	// the owning side's foreign key set (cascade persist)
+	for _, mp := range e.Meta.Properties {
+		if mp.Kind != "1:1" || mp.Owner || mp.MappedBy == "" {
+			continue
+		}
+		obj, ok := input.Get(mp.Name)
+		item, isObj := obj.(*Record)
+		if !ok || !isObj || item == nil {
+			continue
+		}
+		if id, has := item.Get("id"); has && id != nil && id != "" {
+			continue
+		}
+		target, err := r.Schema.Entity(mp.Entity)
+		if err != nil {
+			return nil, err
+		}
+		owning, ok := target.MetaProperty(mp.MappedBy)
+		if !ok || len(owning.FieldNames) == 0 {
+			continue
+		}
+		childInput := NewRecord()
+		for _, k := range item.Keys() {
+			v, _ := item.Get(k)
+			childInput.Set(k, v)
+		}
+		childInput.Set(owning.FieldNames[0], data[fieldColumn(e, e.Meta.PrimaryKey[0])])
+		child, err := r.create(ctx, target, childInput, idm)
+		if err != nil {
+			return nil, err
+		}
+		inst.relations[mp.Name] = child
+	}
 	return inst, nil
 }
 
@@ -631,7 +665,8 @@ func (r *Repository) attachChild(ctx context.Context, parent *instance, join *Jo
 func (r *Repository) serializeCreated(inst *instance, idm identityMap) (*Record, error) {
 	tree := &fieldTree{all: true, fields: map[string]bool{}, children: map[string]*fieldTree{}}
 	for name, v := range inst.relations {
-		if _, ok := v.([]*instance); ok {
+		switch v.(type) {
+		case []*instance, *instance:
 			tree.children[name] = allFields
 		}
 	}
@@ -755,35 +790,62 @@ func (r *Repository) applyScalarUpdate(ctx context.Context, inst *instance, data
 // returned first.
 func (r *Repository) Upsert(ctx context.Context, data []*Record) ([]*Record, error) {
 	pks := r.Entity.Meta.PrimaryKey
-	if len(pks) != 1 {
-		return nil, fmt.Errorf("upsert of %s: composite primary keys are not supported yet", r.Entity.Meta.ClassName)
+	// buildUniqueCompositeKeyValue
+	keyOf := func(get func(string) any) string {
+		parts := make([]string, len(pks))
+		for i, pk := range pks {
+			parts[i] = pk + ":" + fmt.Sprint(get(pk))
+		}
+		return strings.Join(parts, ",")
 	}
-	pk := pks[0]
-	var values []any
-	for _, d := range data {
-		if v, ok := d.Get(pk); ok && v != nil && v != "" {
-			values = append(values, v)
+	var criteria []*Record
+	if len(pks) == 1 {
+		var values []any
+		for _, d := range data {
+			if v, ok := d.Get(pks[0]); ok && v != nil && v != "" {
+				values = append(values, v)
+			}
+		}
+		if len(values) > 0 {
+			where := NewRecord()
+			where.Set(pks[0], values)
+			criteria = append(criteria, where)
+		}
+	} else {
+		// one { $and: [{ pk1 }, { pk2 }] } criteria per row
+		for _, d := range data {
+			and := make([]any, len(pks))
+			for i, pk := range pks {
+				v, _ := d.Get(pk)
+				c := NewRecord()
+				c.Set(pk, v)
+				and[i] = c
+			}
+			where := NewRecord()
+			where.Set("$and", and)
+			criteria = append(criteria, where)
 		}
 	}
 	existing := map[string]*instance{}
 	idm := identityMap{}
-	if len(values) > 0 {
-		where := NewRecord()
-		where.Set(pk, values)
+	for _, where := range criteria {
 		roots, found, err := r.find(ctx, FindOptions{Where: where})
 		if err != nil {
 			return nil, err
 		}
-		idm = found
+		for k, v := range found {
+			idm[k] = v
+		}
 		for _, inst := range roots {
-			existing[fmt.Sprint(inst.data[fieldColumn(r.Entity, pk)])] = inst
+			existing[keyOf(func(pk string) any { return inst.data[fieldColumn(r.Entity, pk)] })] = inst
 		}
 	}
 
 	var created, updated []*instance
 	for _, d := range data {
-		v, _ := d.Get(pk)
-		if inst, ok := existing[fmt.Sprint(v)]; ok && v != nil {
+		v, _ := d.Get(pks[0])
+		key := keyOf(func(pk string) any { x, _ := d.Get(pk); return x })
+		if inst, ok := existing[key]; ok && v != nil {
 			if err := r.applyUpdate(ctx, inst, d, idm, false); err != nil {
 				return nil, err
 			}
@@ -912,6 +974,9 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 				touched[group.entity] = append(touched[group.entity], inst)
 			}
 			for _, relation := range group.entity.Cascades.Delete {
+				if !softRemoveCascades(r.Schema, group.entity, relation) {
+					continue
+				}
 				children, err := r.loadRelation(ctx, group.insts, relation, idm, true, nil)
 				if err != nil {
 					return nil, err
@@ -1130,4 +1195,24 @@ func setChildFK(target *dml.Entity, input *Record, column string, value any) {
 		}
 	}
 	input.Set(column, value)
+}
+
+// softRemoveCascades reports whether a relation of cascades.delete gets the
+// "soft-remove" cascade (define-relationship.ts): a hasOne whose other side
+// is a belongsTo only gets the delete rule, not the cascade.
+func softRemoveCascades(schema *Schema, e *dml.Entity, relation string) bool {
+	p, ok := e.Property(relation)
+	if !ok || p.Relation == nil || p.Relation.Type != "hasOne" {
+		return true
+	}
+	mp, ok := e.MetaProperty(relation)
+	if !ok || mp.MappedBy == "" {
+		return true
+	}
+	target, err := schema.Entity(mp.Entity)
+	if err != nil {
+		return true
+	}
+	other, ok := target.Property(mp.MappedBy)
+	return !(ok && other.Relation != nil && other.Relation.Type == "belongsTo")
 }
