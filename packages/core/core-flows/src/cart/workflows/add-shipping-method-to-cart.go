@@ -55,6 +55,35 @@ var AddShippingMethodToCartWorkflow = composer.CreateWorkflow("add-shipping-meth
 		if _, err := steps.ValidateCartShippingOptionsPriceStep.Run(e, options); err != nil {
 			return nil, err
 		}
+		var validateInput []*dal.Record
+		for _, o := range in.Options {
+			so := findOption(options, Get(o, "id"))
+			optionData := Rec(so, "data")
+			if optionData == nil {
+				optionData = dal.NewRecord()
+			}
+			methodData := Rec(o, "data")
+			if methodData == nil {
+				methodData = dal.NewRecord()
+			}
+			c := Copy(cart)
+			from := Rec(so, "stock_location")
+			if from == nil {
+				from = dal.NewRecord()
+			}
+			c.Set("from_location", from)
+			v := dal.NewRecord()
+			v.Set("id", Get(o, "id"))
+			v.Set("provider_id", Get(so, "provider_id"))
+			v.Set("option_data", optionData)
+			v.Set("method_data", methodData)
+			v.Set("context", c)
+			validateInput = append(validateInput, v)
+		}
+		validated, err := steps.ValidateAndReturnShippingMethodsDataStep.Run(e, validateInput)
+		if err != nil {
+			return nil, err
+		}
 		var methods []*dal.Record
 		for _, o := range in.Options {
 			so := findOption(options, Get(o, "id"))
@@ -62,7 +91,13 @@ var AddShippingMethodToCartWorkflow = composer.CreateWorkflow("add-shipping-meth
 			if cp == nil {
 				return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "Shipping option with ID "+Str(so, "id")+" do not have a price")
 			}
-			data := Rec(o, "data")
+			var data any
+			for _, v := range validated {
+				if d, ok := v.Get(Str(o, "id")); ok && Truthy(d) {
+					data = d
+					break
+				}
+			}
 			if data == nil {
 				data = dal.NewRecord()
 			}

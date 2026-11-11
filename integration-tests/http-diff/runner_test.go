@@ -62,7 +62,8 @@ type Step struct {
 	// Files sends a multipart/form-data body with these files.
 	Files []StepFile `json:"files,omitempty"`
 	// Until repeats the request (for up to 30s) until this dotted body path
-	// resolves to a value: it waits for background workflows.
+	// resolves to a value ("path=value": to that value): it waits for
+	// background workflows.
 	Until string `json:"until,omitempty"`
 	// Totp names a body path ("step.path") holding a TOTP secret: the
 	// current code replaces "__TOTP__" in the body.
@@ -72,6 +73,12 @@ type Step struct {
 	Parallel string `json:"parallel,omitempty"`
 	// DelayMs waits before sending the step (staggers a parallel group).
 	DelayMs int `json:"delay_ms,omitempty"`
+	// Service sends the request to a fake third-party service of the
+	// scenario (e.g. "stripe") instead of the server.
+	Service string `json:"service,omitempty"`
+	// Sign signs the body like the named provider's webhooks ("stripe":
+	// a stripe-signature header).
+	Sign string `json:"sign,omitempty"`
 }
 
 var otpSecretRe = regexp.MustCompile(`secret=[A-Z2-7]+`)
@@ -325,7 +332,23 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 			if len(step.Files) > 0 {
 				body, contentType = multipartBody(step.Files)
 			}
-			req, err := http.NewRequest(step.Method, baseURL+step.Path, body)
+			base := baseURL
+			if step.Service != "" {
+				base = serviceURLs[step.Service]
+			}
+			headers := map[string]string{}
+			for k, v := range step.Headers {
+				headers[k] = v
+			}
+			if step.Sign != "" && len(step.Body) > 0 {
+				raw, _ := io.ReadAll(body)
+				signed, signHeaders := signBody(step.Sign, string(raw))
+				body = strings.NewReader(signed)
+				for k, v := range signHeaders {
+					headers[k] = v
+				}
+			}
+			req, err := http.NewRequest(step.Method, base+step.Path, body)
 			if err != nil {
 				return Response{}, err
 			}
@@ -335,7 +358,7 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 			if step.Origin != "" {
 				req.Header.Set("Origin", step.Origin)
 			}
-			for k, v := range step.Headers {
+			for k, v := range headers {
 				req.Header.Set(k, resolveRefs(v, bodies, true))
 			}
 			if step.Bearer != "" {
@@ -378,7 +401,7 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 					rec.Body = string(raw)
 				}
 			}
-			if step.Until != "" && lookupPath(rec.Body, step.Until) == nil && time.Now().Before(deadline) {
+			if step.Until != "" && !untilReached(rec.Body, step.Until) && time.Now().Before(deadline) {
 				time.Sleep(200 * time.Millisecond)
 				continue
 			}
@@ -416,6 +439,16 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 		i = j
 	}
 	return out
+}
+
+// untilReached reports whether the body satisfies an "until" condition.
+func untilReached(body any, cond string) bool {
+	path, want, hasValue := strings.Cut(cond, "=")
+	v := lookupPath(body, path)
+	if !hasValue {
+		return v != nil
+	}
+	return v != nil && fmt.Sprint(v) == want
 }
 
 var refRe = regexp.MustCompile(`\{\{([A-Za-z0-9_]+)\.([^}]+)\}\}`)
@@ -475,6 +508,11 @@ func TestRecord(t *testing.T) {
 	}
 	for _, file := range scenarioFiles() {
 		steps := loadScenario(t, file)
+		env := scenarioEnv(t, strings.TrimSuffix(filepath.Base(file), ".json"))
+		for k, v := range env {
+			t.Setenv(k, v)
+		}
+		startFakes(t, env)
 		results := runScenario(t, base, steps)
 		ordered := dal.NewRecord()
 		for _, s := range steps {
@@ -796,6 +834,7 @@ func TestMatchUpstream(t *testing.T) {
 			}
 			golden := gv.(*dal.Record)
 			seedSQL(t)
+			startFakes(t, scenarioEnv(t, name))
 			base := goServer(t, name)
 			results := runScenario(t, base, steps)
 			wantP, gotP := newPlaceholders(), newPlaceholders()

@@ -207,13 +207,23 @@ var ValidateShippingOptionPricesStep = composer.CreateStep("validate-shipping-op
 				calculated = append(calculated, o)
 			}
 		}
-		if len(calculated) > 0 {
-			// the manual provider cannot calculate prices
-			names := make([]string, len(calculated))
-			for i, o := range calculated {
-				names[i] = fmt.Sprint(get(o, "name"))
+		validator, ok := ctx.Container.Resolve(utilsmodulessdk.FULFILLMENT).(interface {
+			ValidateShippingOptionsForPriceCalculation(ctx context.Context, options []*dal.Record) ([]bool, error)
+		})
+		if ok {
+			validation, err := validator.ValidateShippingOptionsForPriceCalculation(ctx.Context, calculated)
+			if err != nil {
+				return composer.StepResponse[any]{}, err
 			}
-			return composer.StepResponse[any]{}, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, fmt.Sprintf("Cannot calcuate pricing for: [%s] shipping option(s).", strings.Join(names, ", ")))
+			var names []string
+			for i, o := range calculated {
+				if !validation[i] {
+					names = append(names, fmt.Sprint(get(o, "name")))
+				}
+			}
+			if len(names) > 0 {
+				return composer.StepResponse[any]{}, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, fmt.Sprintf("Cannot calcuate pricing for: [%s] shipping option(s).", strings.Join(names, ", ")))
+			}
 		}
 		var regionIDs []any
 		seen := map[string]bool{}

@@ -502,8 +502,7 @@ type FetchShippingOptionForDraftOrderInput struct {
 }
 
 // FetchShippingOptionForDraftOrderWorkflow mirrors
-// fetchShippingOptionForDraftOrderWorkflow (calculated prices are not
-// supported yet).
+// fetchShippingOptionForDraftOrderWorkflow.
 var FetchShippingOptionForDraftOrderWorkflow = composer.CreateWorkflow("fetch-shipping-option-for-draft-order",
 	func(e *composer.Execution, in FetchShippingOptionForDraftOrderInput) (*dal.Record, error) {
 		f := dal.NewRecord()
@@ -512,13 +511,20 @@ var FetchShippingOptionForDraftOrderWorkflow = composer.CreateWorkflow("fetch-sh
 		if err != nil {
 			return nil, err
 		}
-		if g(initial, "price_type") == "calculated" {
-			return nil, notAllowedCalculated()
-		}
 		hookIn := dal.NewRecord()
 		hookIn.Set("input", in)
 		if err := composer.CreateHook(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
 			return nil, err
+		}
+		if g(initial, "price_type") == "calculated" {
+			out, err := fetchCalculatedDraftOrderOption(e, in)
+			if err != nil {
+				return nil, err
+			}
+			if err := composer.CreateHook(e, "setPricingContext", in); err != nil {
+				return nil, err
+			}
+			return out, nil
 		}
 		if err := composer.CreateHook(e, "setPricingContext", in); err != nil {
 			return nil, err

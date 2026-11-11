@@ -1,0 +1,467 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "pk",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys",
+    "body": {
+      "title": "Store",
+      "type": "publishable"
+    }
+  },
+  {
+    "name": "channels",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/sales-channels?order=name&fields=id,name"
+  },
+  {
+    "name": "link",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys/{{pk.api_key.id}}/sales-channels?fields=id",
+    "body": {
+      "add": [
+        "{{channels.sales_channels.0.id}}"
+      ]
+    }
+  },
+  {
+    "name": "locations",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/stock-locations?fields=id"
+  },
+  {
+    "name": "profiles",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/shipping-profiles?fields=id"
+  },
+  {
+    "name": "fs",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/stock-locations/{{locations.stock_locations.0.id}}/fulfillment-sets?fields=id,fulfillment_sets.id",
+    "body": {
+      "name": "EU",
+      "type": "shipping"
+    }
+  },
+  {
+    "name": "zone",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/fulfillment-sets/{{fs.stock_location.fulfillment_sets.0.id}}/service-zones?fields=id,service_zones.id",
+    "body": {
+      "name": "Germany",
+      "geo_zones": [
+        {
+          "type": "country",
+          "country_code": "de"
+        }
+      ]
+    }
+  },
+  {
+    "name": "link_provider",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/stock-locations/{{locations.stock_locations.0.id}}/fulfillment-providers?fields=id",
+    "body": {
+      "add": [
+        "manual_manual"
+      ]
+    }
+  },
+  {
+    "name": "regions",
+    "method": "GET",
+    "path": "/store/regions?order=name&fields=id,name",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "so_std",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/shipping-options?fields=id",
+    "body": {
+      "name": "Standard",
+      "service_zone_id": "{{zone.fulfillment_set.service_zones.0.id}}",
+      "shipping_profile_id": "{{profiles.shipping_profiles.0.id}}",
+      "price_type": "flat",
+      "provider_id": "manual_manual",
+      "type": {
+        "label": "Standard",
+        "code": "standard",
+        "description": "3-5 days"
+      },
+      "prices": [
+        {
+          "currency_code": "eur",
+          "amount": 5
+        }
+      ],
+      "rules": [
+        {
+          "attribute": "enabled_in_store",
+          "operator": "eq",
+          "value": "true"
+        },
+        {
+          "attribute": "is_return",
+          "operator": "eq",
+          "value": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "providers",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/payments/payment-providers?order=id&limit=20"
+  },
+  {
+    "name": "region_providers",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/regions/{{regions.regions.0.id}}?fields=id,payment_providers.id",
+    "body": {
+      "payment_providers": [
+        "pp_system_default",
+        "pp_stripe_stripe"
+      ]
+    }
+  },
+  {
+    "name": "products",
+    "method": "GET",
+    "path": "/store/products?fields=id,title,variants.id&order=title",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "cart1",
+    "method": "POST",
+    "path": "/store/carts?fields=id,total",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "region_id": "{{regions.regions.0.id}}",
+      "email": "buyer1@example.test",
+      "shipping_address": {
+        "first_name": "Test",
+        "last_name": "Buyer",
+        "address_1": "Example Street 1",
+        "country_code": "de",
+        "city": "Berlin",
+        "postal_code": "10115"
+      },
+      "billing_address": {
+        "country_code": "de",
+        "city": "Berlin"
+      },
+      "items": [
+        {
+          "variant_id": "{{products.products.1.variants.0.id}}",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "name": "ship1",
+    "method": "POST",
+    "path": "/store/carts/{{cart1.cart.id}}/shipping-methods?fields=id,total",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "option_id": "{{so_std.shipping_option.id}}"
+    }
+  },
+  {
+    "name": "pc1",
+    "method": "POST",
+    "path": "/store/payment-collections?fields=id,amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "cart_id": "{{cart1.cart.id}}"
+    }
+  },
+  {
+    "name": "session1",
+    "method": "POST",
+    "path": "/store/payment-collections/{{pc1.payment_collection.id}}/payment-sessions?fields=id,amount,status,payment_sessions.id,payment_sessions.provider_id,payment_sessions.status,payment_sessions.amount,payment_sessions.data",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "provider_id": "pp_stripe_stripe"
+    }
+  },
+  {
+    "name": "evt_bad",
+    "method": "POST",
+    "path": "/__simulate/{{session1.payment_collection.payment_sessions.0.data.id}}/payment_intent.created",
+    "service": "stripe"
+  },
+  {
+    "name": "hook_unsigned",
+    "method": "POST",
+    "path": "/hooks/payment/stripe_stripe",
+    "body": "{{evt_bad.event}}"
+  },
+  {
+    "name": "hook_bad_signature",
+    "method": "POST",
+    "path": "/hooks/payment/stripe_stripe",
+    "body": "{{evt_bad.event}}",
+    "headers": {
+      "stripe-signature": "t=1,v1=0000"
+    }
+  },
+  {
+    "name": "hook_created",
+    "method": "POST",
+    "path": "/hooks/payment/stripe_stripe",
+    "body": "{{evt_bad.event}}",
+    "sign": "stripe"
+  },
+  {
+    "name": "evt1",
+    "method": "POST",
+    "path": "/__simulate/{{session1.payment_collection.payment_sessions.0.data.id}}/payment_intent.amount_capturable_updated",
+    "service": "stripe"
+  },
+  {
+    "name": "hook1",
+    "method": "POST",
+    "path": "/hooks/payment/stripe_stripe",
+    "body": "{{evt1.event}}",
+    "sign": "stripe"
+  },
+  {
+    "name": "cart1_done",
+    "method": "GET",
+    "path": "/store/carts/{{cart1.cart.id}}?fields=id,completed_at,payment_collection.status",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "until": "cart.payment_collection.status=authorized"
+  },
+  {
+    "name": "orders1",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/orders?fields=id,email,payment_status,total&order=created_at"
+  },
+  {
+    "name": "cart2",
+    "method": "POST",
+    "path": "/store/carts?fields=id,total",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "region_id": "{{regions.regions.0.id}}",
+      "email": "buyer2@example.test",
+      "shipping_address": {
+        "first_name": "Test",
+        "last_name": "Buyer",
+        "address_1": "Example Street 1",
+        "country_code": "de",
+        "city": "Berlin",
+        "postal_code": "10115"
+      },
+      "billing_address": {
+        "country_code": "de",
+        "city": "Berlin"
+      },
+      "items": [
+        {
+          "variant_id": "{{products.products.1.variants.0.id}}",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "name": "ship2",
+    "method": "POST",
+    "path": "/store/carts/{{cart2.cart.id}}/shipping-methods?fields=id,total",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "option_id": "{{so_std.shipping_option.id}}"
+    }
+  },
+  {
+    "name": "pc2",
+    "method": "POST",
+    "path": "/store/payment-collections?fields=id,amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "cart_id": "{{cart2.cart.id}}"
+    }
+  },
+  {
+    "name": "session2",
+    "method": "POST",
+    "path": "/store/payment-collections/{{pc2.payment_collection.id}}/payment-sessions?fields=id,amount,status,payment_sessions.id,payment_sessions.provider_id,payment_sessions.status,payment_sessions.amount,payment_sessions.data",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "provider_id": "pp_stripe_stripe"
+    }
+  },
+  {
+    "name": "evt2",
+    "method": "POST",
+    "path": "/__simulate/{{session2.payment_collection.payment_sessions.0.data.id}}/payment_intent.succeeded",
+    "service": "stripe"
+  },
+  {
+    "name": "hook2",
+    "method": "POST",
+    "path": "/hooks/payment/stripe_stripe",
+    "body": "{{evt2.event}}",
+    "sign": "stripe"
+  },
+  {
+    "name": "cart2_done",
+    "method": "GET",
+    "path": "/store/carts/{{cart2.cart.id}}?fields=id,completed_at,payment_collection.status",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "until": "cart.completed_at"
+  },
+  {
+    "name": "orders2",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/orders?fields=id,email,payment_status,total,transactions.amount&order=created_at",
+    "until": "orders.1.transactions.0.amount"
+  },
+  {
+    "name": "cart3",
+    "method": "POST",
+    "path": "/store/carts?fields=id,total",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "region_id": "{{regions.regions.0.id}}",
+      "email": "buyer3@example.test",
+      "shipping_address": {
+        "first_name": "Test",
+        "last_name": "Buyer",
+        "address_1": "Example Street 1",
+        "country_code": "de",
+        "city": "Berlin",
+        "postal_code": "10115"
+      },
+      "billing_address": {
+        "country_code": "de",
+        "city": "Berlin"
+      },
+      "items": [
+        {
+          "variant_id": "{{products.products.1.variants.0.id}}",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "name": "pc3",
+    "method": "POST",
+    "path": "/store/payment-collections?fields=id,amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "cart_id": "{{cart3.cart.id}}"
+    }
+  },
+  {
+    "name": "session3",
+    "method": "POST",
+    "path": "/store/payment-collections/{{pc3.payment_collection.id}}/payment-sessions?fields=id,amount,status,payment_sessions.id,payment_sessions.provider_id,payment_sessions.status,payment_sessions.amount,payment_sessions.data",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "provider_id": "pp_stripe_stripe"
+    }
+  },
+  {
+    "name": "evt3",
+    "method": "POST",
+    "path": "/__simulate/{{session3.payment_collection.payment_sessions.0.data.id}}/payment_intent.succeeded",
+    "service": "stripe"
+  },
+  {
+    "name": "hook3",
+    "method": "POST",
+    "path": "/hooks/payment/stripe_stripe",
+    "body": "{{evt3.event}}",
+    "sign": "stripe"
+  },
+  {
+    "name": "refunded3",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/payments?payment_session_id={{session3.payment_collection.payment_sessions.0.id}}&fields=id,captured_at,refunds.amount,refunds.note",
+    "until": "payments.0.refunds.0.note"
+  },
+  {
+    "name": "cart3_after",
+    "method": "GET",
+    "path": "/store/carts/{{cart3.cart.id}}?fields=id,completed_at,payment_collection.payment_sessions.status,payment_collection.payment_sessions.amount,payment_collection.status",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "until": "cart.payment_collection.payment_sessions.0.status=pending"
+  },
+  {
+    "name": "evt_failed",
+    "method": "POST",
+    "path": "/__simulate/{{session1.payment_collection.payment_sessions.0.data.id}}/payment_intent.payment_failed",
+    "service": "stripe"
+  },
+  {
+    "name": "hook_failed",
+    "method": "POST",
+    "path": "/hooks/payment/stripe_stripe",
+    "body": "{{evt_failed.event}}",
+    "sign": "stripe"
+  },
+  {
+    "name": "requests",
+    "method": "GET",
+    "path": "/__requests",
+    "service": "stripe"
+  }
+]

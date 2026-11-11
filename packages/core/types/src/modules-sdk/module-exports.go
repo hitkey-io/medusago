@@ -29,6 +29,11 @@ type ModuleExports struct {
 	Service func(opts ServiceOptions) (any, error)
 	// NewProvider builds a module provider instance from its options.
 	NewProvider func(opts ProviderOptions) (any, error)
+	// ProviderServices are the services of a module provider package that
+	// ships several (ModuleProvider(..., { services: [...] })): each is
+	// registered with its own identifier. When empty, ProviderIdentifier
+	// and NewProvider describe the single service.
+	ProviderServices []ProviderService
 	// LoadersOnStart runs the Loaders when the application starts too.
 	// Upstream runs the loaders of every module whenever it is loaded; in Go
 	// only the modules setting this do so far (db:migrate runs all).
@@ -58,6 +63,23 @@ type ProviderOptions struct {
 	Options   map[string]any
 	Logger    *slog.Logger
 	Container Resolver
+}
+
+// ProviderService is one service of a module provider package.
+type ProviderService struct {
+	Identifier string
+	// ValidateOptions mirrors the static validateOptions run when the
+	// provider is registered.
+	ValidateOptions func(options map[string]any) error
+	NewProvider     func(opts ProviderOptions) (any, error)
+}
+
+// Services returns the provider services of a module provider package.
+func (e *ModuleExports) Services() []ProviderService {
+	if len(e.ProviderServices) > 0 {
+		return e.ProviderServices
+	}
+	return []ProviderService{{Identifier: e.ProviderIdentifier, NewProvider: e.NewProvider}}
 }
 
 // ProviderInstance is a module provider registered from the configuration.

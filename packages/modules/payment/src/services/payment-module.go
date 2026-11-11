@@ -3,7 +3,6 @@ package services
 
 import (
 	"context"
-	"crypto/rand"
 	"fmt"
 	"strings"
 
@@ -11,6 +10,7 @@ import (
 
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
+	paymenttypes "github.com/hitkey-io/medusago/packages/core/types/src/payment"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -21,11 +21,24 @@ import (
 // PaymentModuleService mirrors PaymentModuleService.
 type PaymentModuleService struct {
 	*utilsmodulessdk.MedusaService
+	provider *PaymentProviderService
 }
 
 // NewPaymentModuleService builds the service.
 func NewPaymentModuleService(opts modulessdk.ServiceOptions, joinerConfig *joiner.ModuleJoinerConfig) (*PaymentModuleService, error) {
-	return &PaymentModuleService{MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig)}, nil
+	return &PaymentModuleService{
+		MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig),
+		provider:      NewPaymentProviderService(opts.Providers, opts.Logger),
+	}, nil
+}
+
+// PaymentProviderService returns the provider service.
+func (s *PaymentModuleService) PaymentProviderService() *PaymentProviderService { return s.provider }
+
+func (s *PaymentModuleService) inTx(ctx context.Context, fn func(tx *PaymentModuleService) error) error {
+	return s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
+		return fn(&PaymentModuleService{MedusaService: tx, provider: s.provider})
+	})
 }
 
 func get(r *dal.Record, k string) any {
@@ -34,6 +47,10 @@ func get(r *dal.Record, k string) any {
 	}
 	v, _ := r.Get(k)
 	return v
+}
+
+func has(r *dal.Record, k string) bool {
+	return r != nil && r.Has(k)
 }
 
 func lowerCode(v any) any {
@@ -57,33 +74,24 @@ func merge(rs ...*dal.Record) *dal.Record {
 	return out
 }
 
-func uuid() string {
-	b := make([]byte, 16)
-	_, _ = rand.Read(b)
-	b[6] = (b[6] & 0x0f) | 0x40
-	b[8] = (b[8] & 0x3f) | 0x80
-	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
+func asRecord(v any) *dal.Record {
+	r, _ := v.(*dal.Record)
+	return r
 }
 
-// provider mirrors the payment provider service for the bundled system
-// provider (pp_system_default).
-type providerResult struct {
-	ID     string
-	Data   *dal.Record
-	Status string
-}
-
-func callProvider(providerID, method string) (providerResult, error) {
-	if providerID != "pp_system_default" {
-		return providerResult{}, common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, fmt.Sprintf("Could not find a payment provider with id: %s", providerID))
+// kv builds a record from key/value pairs.
+func kv(pairs ...any) *dal.Record {
+	r := dal.NewRecord()
+	for i := 0; i+1 < len(pairs); i += 2 {
+		r.Set(pairs[i].(string), pairs[i+1])
 	}
-	switch method {
-	case "initiatePayment":
-		return providerResult{ID: uuid(), Data: dal.NewRecord()}, nil
-	case "authorizePayment":
-		return providerResult{Data: dal.NewRecord(), Status: "authorized"}, nil
-	default:
-		return providerResult{Data: dal.NewRecord()}, nil
+	return r
+}
+
+// setDefined sets a key unless the value is undefined (absent).
+func setDefined(r *dal.Record, src *dal.Record, k string) {
+	if v, ok := src.Get(k); ok {
+		r.Set(k, v)
 	}
 }
 
@@ -117,24 +125,44 @@ func (s *PaymentModuleService) CreatePaymentSession(ctx context.Context, collect
 	session := created[0]
 	id := get(session, "id")
 	provider := fmt.Sprint(get(input, "provider_id"))
-	res, err := callProvider(provider, "initiatePayment")
-	if err != nil {
-		_, _ = s.Internal("PaymentSession").Delete(ctx, []any{id})
+	inputData := asRecord(get(input, "data"))
+
+	fail := func(providerSession *dal.Record, err error) (*dal.Record, error) {
+		if providerSession != nil {
+			if _, derr := s.provider.DeleteSession(ctx, provider, kv("data", get(input, "data"))); derr != nil {
+				return nil, derr
+			}
+		}
+		if _, derr := s.Internal("PaymentSession").Delete(ctx, []any{id}); derr != nil {
+			return nil, derr
+		}
 		return nil, err
 	}
-	data, _ := get(input, "data").(*dal.Record)
-	status := res.Status
-	if status == "" {
-		status = "pending"
+
+	pctx := kv("idempotency_key", id)
+	pctx = merge(pctx, asRecord(get(input, "context")))
+	pdata := merge(inputData)
+	pdata.Set("session_id", id)
+	res, err := s.provider.CreateSession(ctx, provider, kv(
+		"context", pctx,
+		"data", pdata,
+		"amount", get(input, "amount"),
+		"currency_code", lowerCode(get(input, "currency_code")),
+	))
+	if err != nil {
+		return fail(nil, err)
+	}
+	status := get(res, "status")
+	if status == nil {
+		status = paymenttypes.StatusPending
 	}
 	u := dal.NewRecord()
 	u.Set("id", id)
-	u.Set("data", merge(data, res.Data))
+	u.Set("data", merge(inputData, asRecord(get(res, "data"))))
 	u.Set("status", status)
 	updated, err := s.Internal("PaymentSession").Update(ctx, []any{u})
 	if err != nil {
-		_, _ = s.Internal("PaymentSession").Delete(ctx, []any{id})
-		return nil, err
+		return fail(res, err)
 	}
 	rows, _ := updated.([]*dal.Record)
 	if len(rows) > 0 {
@@ -149,7 +177,7 @@ func (s *PaymentModuleService) DeletePaymentSession(ctx context.Context, id any)
 	if err != nil {
 		return err
 	}
-	if _, err := callProvider(fmt.Sprint(get(session, "provider_id")), "deletePayment"); err != nil {
+	if _, err := s.provider.DeleteSession(ctx, fmt.Sprint(get(session, "provider_id")), kv("data", get(session, "data"))); err != nil {
 		return err
 	}
 	_, err = s.Internal("PaymentSession").Delete(ctx, []any{id})
@@ -158,24 +186,130 @@ func (s *PaymentModuleService) DeletePaymentSession(ctx context.Context, id any)
 
 // CreateAccountHolder mirrors createAccountHolder.
 func (s *PaymentModuleService) CreateAccountHolder(ctx context.Context, input *dal.Record) (*dal.Record, error) {
-	c, _ := get(input, "context").(*dal.Record)
+	c := asRecord(get(input, "context"))
 	if existing, ok := get(c, "account_holder").(*dal.Record); ok && existing != nil {
 		return existing, nil
 	}
 	provider := fmt.Sprint(get(input, "provider_id"))
-	if provider != "pp_system_default" {
-		return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, fmt.Sprintf("Could not find a payment provider with id: %s", provider))
+	customer := asRecord(get(c, "customer"))
+	pctx := merge(kv("idempotency_key", get(customer, "id")), c)
+	res, err := s.provider.CreateAccountHolder(ctx, provider, kv("context", pctx))
+	if err != nil {
+		return nil, err
 	}
-	customer, _ := get(c, "customer").(*dal.Record)
+	// isPresent: an empty object means the provider created nothing
+	if res == nil || res.Len() == 0 {
+		return nil, nil
+	}
 	row := dal.NewRecord()
-	row.Set("external_id", get(customer, "id"))
+	row.Set("external_id", get(res, "id"))
 	row.Set("email", get(customer, "email"))
+	setDefined(row, res, "data")
 	row.Set("provider_id", provider)
 	created, err := s.Internal("AccountHolder").Create(ctx, []*dal.Record{row})
 	if err != nil {
 		return nil, err
 	}
 	return created[0], nil
+}
+
+// UpdateAccountHolder mirrors updateAccountHolder.
+func (s *PaymentModuleService) UpdateAccountHolder(ctx context.Context, input *dal.Record) (*dal.Record, error) {
+	c := asRecord(get(input, "context"))
+	if get(c, "account_holder") == nil {
+		return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "Missing account holder data while updating account holder.")
+	}
+	res, err := s.provider.UpdateAccountHolder(ctx, fmt.Sprint(get(input, "provider_id")), kv("context", c))
+	if err != nil {
+		return nil, err
+	}
+	u := dal.NewRecord()
+	u.Set("id", get(input, "id"))
+	if d := get(res, "data"); d != nil {
+		u.Set("data", d)
+	}
+	setDefined(u, input, "metadata")
+	updated, err := s.Internal("AccountHolder").Update(ctx, u)
+	if err != nil {
+		return nil, err
+	}
+	r, _ := updated.(*dal.Record)
+	return r, nil
+}
+
+// DeleteAccountHolder mirrors deleteAccountHolder.
+func (s *PaymentModuleService) DeleteAccountHolder(ctx context.Context, id any) error {
+	holder, err := s.Internal("AccountHolder").Retrieve(ctx, id, utilsmodulessdk.FindConfig{Select: []string{"id", "provider_id", "external_id", "email", "data"}})
+	if err != nil {
+		return err
+	}
+	if _, err := s.Internal("AccountHolder").Delete(ctx, []any{id}); err != nil {
+		return err
+	}
+	_, err = s.provider.DeleteAccountHolder(ctx, fmt.Sprint(get(holder, "provider_id")), kv("context", kv("account_holder", holder)))
+	return err
+}
+
+func paymentMethodsOf(list []*dal.Record, providerID any) []*dal.Record {
+	out := make([]*dal.Record, 0, len(list))
+	for _, item := range list {
+		out = append(out, kv("id", get(item, "id"), "data", get(item, "data"), "provider_id", providerID))
+	}
+	return out
+}
+
+// ListPaymentMethods mirrors listPaymentMethods.
+func (s *PaymentModuleService) ListPaymentMethods(ctx context.Context, filters *dal.Record) ([]*dal.Record, error) {
+	res, err := s.provider.ListPaymentMethods(ctx, fmt.Sprint(get(filters, "provider_id")), kv("context", get(filters, "context")))
+	if err != nil {
+		return nil, err
+	}
+	return paymentMethodsOf(res, get(filters, "provider_id")), nil
+}
+
+// ListAndCountPaymentMethods mirrors listAndCountPaymentMethods.
+func (s *PaymentModuleService) ListAndCountPaymentMethods(ctx context.Context, filters *dal.Record) ([]*dal.Record, int, error) {
+	list, err := s.ListPaymentMethods(ctx, filters)
+	return list, len(list), err
+}
+
+// CreatePaymentMethods mirrors createPaymentMethods.
+func (s *PaymentModuleService) CreatePaymentMethods(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	out := make([]*dal.Record, 0, len(data))
+	var errs []string
+	for _, item := range data {
+		res, err := s.provider.SavePaymentMethod(ctx, fmt.Sprint(get(item, "provider_id")), item)
+		if err != nil {
+			errs = append(errs, err.Error())
+			continue
+		}
+		out = append(out, kv("id", get(res, "id"), "data", get(res, "data"), "provider_id", get(item, "provider_id")))
+	}
+	if len(errs) > 0 {
+		return nil, aggregateError(errs)
+	}
+	return out, nil
+}
+
+// DeletePaymentMethods mirrors deletePaymentMethods.
+func (s *PaymentModuleService) DeletePaymentMethods(ctx context.Context, data []*dal.Record) error {
+	var errs []string
+	for _, item := range data {
+		d := merge(asRecord(get(item, "data")))
+		d.Set("id", get(item, "id"))
+		if _, err := s.provider.DeletePaymentMethod(ctx, fmt.Sprint(get(item, "provider_id")), kv("context", get(item, "context"), "data", d)); err != nil {
+			errs = append(errs, err.Error())
+		}
+	}
+	if len(errs) > 0 {
+		return aggregateError(errs)
+	}
+	return nil
+}
+
+// aggregateError mirrors promiseAll(..., { aggregateErrors: true }).
+func aggregateError(messages []string) error {
+	return fmt.Errorf("%s", strings.Join(messages, "\n"))
 }
 
 // currencyDigits mirrors Intl.NumberFormat(..., {style: "currency"})
@@ -273,8 +407,7 @@ func recordList(v any) []*dal.Record {
 	return nil
 }
 
-// AuthorizePaymentSession mirrors authorizePaymentSession (bundled system
-// provider only).
+// AuthorizePaymentSession mirrors authorizePaymentSession.
 func (s *PaymentModuleService) AuthorizePaymentSession(ctx context.Context, id string, context_ *dal.Record) (*dal.Record, error) {
 	ctx = dal.WithSharedIdentityMap(ctx)
 	session, err := s.Internal("PaymentSession").Retrieve(ctx, id, utilsmodulessdk.FindConfig{
@@ -287,65 +420,95 @@ func (s *PaymentModuleService) AuthorizePaymentSession(ctx context.Context, id s
 	if p, ok := get(session, "payment").(*dal.Record); ok && p != nil && get(session, "authorized_at") != nil {
 		return p, nil
 	}
-	res, err := callProvider(fmt.Sprint(get(session, "provider_id")), "authorizePayment")
+	provider := fmt.Sprint(get(session, "provider_id"))
+	res, err := s.provider.AuthorizePayment(ctx, provider, kv(
+		"data", get(session, "data"),
+		"context", merge(kv("idempotency_key", get(session, "id")), context_),
+	))
 	if err != nil {
 		return nil, err
 	}
-	status := res.Status
-	if status == "pending_authorization" {
+	data := get(res, "data")
+	status, _ := get(res, "status").(string)
+	updateSession := func() error {
 		u := dal.NewRecord()
 		u.Set("id", id)
-		u.Set("status", status)
-		u.Set("data", res.Data)
-		if _, err := s.Internal("PaymentSession").Update(ctx, []any{u}); err != nil {
+		u.Set("status", get(res, "status"))
+		setDefined(u, res, "data")
+		_, err := s.Internal("PaymentSession").Update(ctx, []any{u})
+		return err
+	}
+	if status == paymenttypes.StatusPendingAuthorization {
+		if err := updateSession(); err != nil {
 			return nil, err
 		}
 		return nil, s.maybeUpdatePaymentCollection(ctx, get(session, "payment_collection_id"))
 	}
-	if status != "authorized" && status != "captured" {
-		u := dal.NewRecord()
-		u.Set("id", id)
-		u.Set("status", status)
-		u.Set("data", res.Data)
-		if _, err := s.Internal("PaymentSession").Update(ctx, []any{u}); err != nil {
+	if status != paymenttypes.StatusAuthorized && status != paymenttypes.StatusCaptured {
+		if err := updateSession(); err != nil {
 			return nil, err
 		}
 		return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, fmt.Sprintf("Session: %s was not authorized with the provider.", id))
 	}
 	var payment *dal.Record
-	err = s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
-		if status == "captured" {
-			return fmt.Errorf("captured payment sessions are not supported yet")
-		}
-		u := dal.NewRecord()
-		u.Set("id", id)
-		u.Set("data", res.Data)
-		u.Set("status", status)
-		if get(session, "authorized_at") == nil {
-			u.Set("authorized_at", dal.Now())
-		}
-		if _, err := tx.Internal("PaymentSession").Update(ctx, []any{u}); err != nil {
-			return err
-		}
-		p := dal.NewRecord()
-		p.Set("amount", get(session, "amount"))
-		p.Set("currency_code", lowerCode(get(session, "currency_code")))
-		p.Set("payment_session", id)
-		p.Set("payment_collection_id", get(session, "payment_collection_id"))
-		p.Set("provider_id", get(session, "provider_id"))
-		p.Set("data", res.Data)
-		created, err := tx.Internal("Payment").Create(ctx, []*dal.Record{p})
-		if err != nil {
-			return err
-		}
-		payment = created[0]
-		return nil
+	err = s.inTx(ctx, func(tx *PaymentModuleService) error {
+		var err error
+		payment, err = tx.authorizePaymentSession(ctx, session, res, status)
+		return err
 	})
 	if err != nil {
+		// payment is never assigned when the transaction fails:
+		// { idempotency_key: undefined, ...context }
+		cin := kv("data", data, "context", merge(context_))
+		if _, cerr := s.provider.CancelPayment(ctx, provider, cin); cerr != nil {
+			return nil, cerr
+		}
 		return nil, err
 	}
 	if err := s.maybeUpdatePaymentCollection(ctx, get(session, "payment_collection_id")); err != nil {
 		return nil, err
+	}
+	return payment, nil
+}
+
+// authorizePaymentSession mirrors authorizePaymentSession_.
+func (s *PaymentModuleService) authorizePaymentSession(ctx context.Context, session *dal.Record, res *dal.Record, status string) (*dal.Record, error) {
+	isCaptured := false
+	if status == paymenttypes.StatusCaptured {
+		status = paymenttypes.StatusAuthorized
+		isCaptured = true
+	}
+	id := get(session, "id")
+	u := dal.NewRecord()
+	u.Set("id", id)
+	setDefined(u, res, "data")
+	u.Set("status", status)
+	if get(session, "authorized_at") == nil {
+		u.Set("authorized_at", dal.Now())
+	}
+	if _, err := s.Internal("PaymentSession").Update(ctx, []any{u}); err != nil {
+		return nil, err
+	}
+	p := dal.NewRecord()
+	p.Set("amount", get(session, "amount"))
+	p.Set("currency_code", lowerCode(get(session, "currency_code")))
+	p.Set("payment_session", id)
+	p.Set("payment_collection_id", get(session, "payment_collection_id"))
+	p.Set("provider_id", get(session, "provider_id"))
+	setDefined(p, res, "data")
+	created, err := s.Internal("Payment").Create(ctx, []*dal.Record{p})
+	if err != nil {
+		return nil, err
+	}
+	payment := created[0]
+	if isCaptured {
+		c := dal.NewRecord()
+		c.Set("payment_id", get(payment, "id"))
+		c.Set("amount", get(session, "amount"))
+		c.Set("is_captured", true)
+		if _, err := s.capturePayment(ctx, c, true); err != nil {
+			return nil, err
+		}
 	}
 	return payment, nil
 }
@@ -358,7 +521,12 @@ func (s *PaymentModuleService) UpdatePaymentSession(ctx context.Context, data *d
 	if err != nil {
 		return nil, err
 	}
-	res, err := callProvider(fmt.Sprint(get(session, "provider_id")), "updatePayment")
+	pin := dal.NewRecord()
+	setDefined(pin, data, "data")
+	pin.Set("amount", get(data, "amount"))
+	pin.Set("currency_code", lowerCode(get(data, "currency_code")))
+	setDefined(pin, data, "context")
+	res, err := s.provider.UpdateSession(ctx, fmt.Sprint(get(session, "provider_id")), pin)
 	if err != nil {
 		return nil, err
 	}
@@ -366,10 +534,10 @@ func (s *PaymentModuleService) UpdatePaymentSession(ctx context.Context, data *d
 	u.Set("id", get(session, "id"))
 	u.Set("amount", get(data, "amount"))
 	u.Set("currency_code", lowerCode(get(data, "currency_code")))
-	u.Set("data", res.Data)
+	u.Set("data", get(res, "data"))
 	status := get(data, "status")
-	if status == nil && res.Status != "" {
-		status = res.Status
+	if status == nil {
+		status = get(res, "status")
 	}
 	if status == nil {
 		status = get(session, "status")
@@ -386,17 +554,15 @@ func (s *PaymentModuleService) UpdatePaymentSession(ctx context.Context, data *d
 	return nil, nil
 }
 
-// GetWebhookActionAndData mirrors getWebhookActionAndData: the bundled
-// system provider does not support webhooks.
+// GetWebhookActionAndData mirrors getWebhookActionAndData.
 func (s *PaymentModuleService) GetWebhookActionAndData(ctx context.Context, provider string, payload any) (*dal.Record, error) {
 	providerID := provider
 	if !strings.HasPrefix(providerID, "pp_") {
 		providerID = "pp_" + provider
 	}
-	if _, err := callProvider(providerID, "getWebhookActionAndData"); err != nil {
-		return nil, err
+	p, _ := payload.(*dal.Record)
+	if p == nil {
+		p = dal.NewRecord()
 	}
-	out := dal.NewRecord()
-	out.Set("action", "not_supported")
-	return out, nil
+	return s.provider.GetWebhookActionAndData(ctx, providerID, p)
 }

@@ -61,20 +61,9 @@ func LoadModules(ctx context.Context, c *container.MedusaContainer, pool *pgxpoo
 		if !ok {
 			continue
 		}
-		var providers []modulessdk.ProviderInstance
-		for _, p := range mc.Providers {
-			pi := modulessdk.ProviderInstance{ID: p.ID, Options: p.Options, IsDefault: p.IsDefault}
-			if pexp, ok := modules.Registry[p.Resolve]; ok {
-				pi.Identifier = pexp.ProviderIdentifier
-				if pexp.NewProvider != nil {
-					inst, err := pexp.NewProvider(modulessdk.ProviderOptions{ID: p.ID, Options: p.Options, Logger: logger, Container: c})
-					if err != nil {
-						return fmt.Errorf("%s provider %s: %w", mc.Key, p.ID, err)
-					}
-					pi.Instance = inst
-				}
-			}
-			providers = append(providers, pi)
+		providers, err := moduleProviders(mc, logger, c)
+		if err != nil {
+			return err
 		}
 		var svc any
 		switch {
@@ -92,6 +81,36 @@ func LoadModules(ctx context.Context, c *container.MedusaContainer, pool *pgxpoo
 		c.Register(mc.Key, svc)
 	}
 	return nil
+}
+
+// moduleProviders builds the configured providers of a module: one instance
+// per service of each provider package (moduleProviderLoader).
+func moduleProviders(mc config.ModuleConfig, logger *slog.Logger, c *container.MedusaContainer) ([]modulessdk.ProviderInstance, error) {
+	var providers []modulessdk.ProviderInstance
+	for _, p := range mc.Providers {
+		pexp, ok := modules.Registry[p.Resolve]
+		if !ok {
+			providers = append(providers, modulessdk.ProviderInstance{ID: p.ID, Options: p.Options, IsDefault: p.IsDefault})
+			continue
+		}
+		for _, ps := range pexp.Services() {
+			pi := modulessdk.ProviderInstance{Identifier: ps.Identifier, ID: p.ID, Options: p.Options, IsDefault: p.IsDefault}
+			if ps.ValidateOptions != nil {
+				if err := ps.ValidateOptions(p.Options); err != nil {
+					return nil, err
+				}
+			}
+			if ps.NewProvider != nil {
+				inst, err := ps.NewProvider(modulessdk.ProviderOptions{ID: p.ID, Options: p.Options, Logger: logger, Container: c})
+				if err != nil {
+					return nil, fmt.Errorf("%s provider %s: %w", mc.Key, p.ID, err)
+				}
+				pi.Instance = inst
+			}
+			providers = append(providers, pi)
+		}
+	}
+	return providers, nil
 }
 
 // runStartHooks runs, for the enabled modules, the loaders that also run at
@@ -114,8 +133,16 @@ func runStartHooks(ctx context.Context, c *container.MedusaContainer, pool *pgxp
 		if !exp.LoadersOnStart {
 			continue
 		}
+		var providers []modulessdk.ProviderInstance
+		for _, p := range mc.Providers {
+			if pexp, ok := modules.Registry[p.Resolve]; ok {
+				for _, ps := range pexp.Services() {
+					providers = append(providers, modulessdk.ProviderInstance{Identifier: ps.Identifier, ID: p.ID, Options: p.Options})
+				}
+			}
+		}
 		for _, load := range exp.Loaders {
-			if err := load(ctx, modulessdk.LoaderOptions{DB: pool, Logger: logger}); err != nil {
+			if err := load(ctx, modulessdk.LoaderOptions{DB: pool, Providers: providers, Logger: logger}); err != nil {
 				return fmt.Errorf("%s loader: %w", mc.Key, err)
 			}
 		}

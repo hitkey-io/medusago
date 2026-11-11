@@ -10,13 +10,25 @@ import (
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 )
 
-// providerCreateFulfillment mirrors the provider's createFulfillment for the
-// bundled manual provider.
-func (s *FulfillmentModuleService) providerCall(ctx context.Context, providerID string) error {
-	if strings.HasPrefix(providerID, "manual_") {
-		return nil
+// providerResultData mirrors `data: providerResult.data ?? {}` and
+// `labels: providerResult.labels ?? []`.
+func providerResultData(res *dal.Record) (any, any) {
+	data := get(res, "data")
+	if data == nil {
+		data = dal.NewRecord()
 	}
-	return fmt.Errorf("\nUnable to retrieve the fulfillment provider with id: %s\nPlease make sure that the provider is registered in the container and it is configured correctly in your project configuration file.", providerID)
+	labels := get(res, "labels")
+	if labels == nil {
+		labels = []any{}
+	}
+	return data, labels
+}
+
+func recordOrEmpty(v any) *dal.Record {
+	if r, ok := v.(*dal.Record); ok && r != nil {
+		return r
+	}
+	return dal.NewRecord()
 }
 
 // CreateFulfillment mirrors createFulfillment.
@@ -37,20 +49,36 @@ func (s *FulfillmentModuleService) CreateFulfillment(ctx context.Context, data *
 	fulfillment := created[0]
 	id := get(fulfillment, "id")
 	provider := fmt.Sprint(get(fulfillment, "provider_id"))
-	if err := s.providerCall(ctx, provider); err != nil {
+	rest := dal.NewRecord()
+	for _, k := range fulfillment.Keys() {
+		if k == "items" || k == "data" || k == "provider_id" {
+			continue
+		}
+		v, _ := fulfillment.Get(k)
+		rest.Set(k, v)
+	}
+	items, _ := get(fulfillment, "items").([]any)
+	if items == nil {
+		for _, it := range recordsOf(get(fulfillment, "items")) {
+			items = append(items, it)
+		}
+	}
+	res, err := s.provider.CreateFulfillment(ctx, provider, recordOrEmpty(get(fulfillment, "data")), items, recordOrEmpty(get(data, "order")), rest)
+	if err != nil {
 		_, _ = s.Internal("Fulfillment").Delete(ctx, []any{id})
 		return nil, err
 	}
+	resData, resLabels := providerResultData(res)
 	u := dal.NewRecord()
 	u.Set("id", id)
-	u.Set("data", dal.NewRecord())
-	u.Set("labels", []any{})
+	u.Set("data", resData)
+	u.Set("labels", resLabels)
 	if _, err := s.Internal("Fulfillment").Update(ctx, []any{u}); err != nil {
 		_, _ = s.Internal("Fulfillment").Delete(ctx, []any{id})
 		return nil, err
 	}
-	fulfillment.Set("data", dal.NewRecord())
-	fulfillment.Set("labels", []any{})
+	fulfillment.Set("data", resData)
+	fulfillment.Set("labels", resLabels)
 	return fulfillment, nil
 }
 
@@ -148,7 +176,7 @@ func (s *FulfillmentModuleService) CancelFulfillment(ctx context.Context, id any
 	if get(fulfillment, "canceled_at") != nil {
 		return fulfillment, nil
 	}
-	if err := s.providerCall(ctx, fmt.Sprint(get(fulfillment, "provider_id"))); err != nil {
+	if _, err := s.provider.CancelFulfillment(ctx, fmt.Sprint(get(fulfillment, "provider_id")), recordOrEmpty(get(fulfillment, "data"))); err != nil {
 		return nil, err
 	}
 	u := dal.NewRecord()
@@ -180,41 +208,92 @@ func (s *FulfillmentModuleService) CreateReturnFulfillment(ctx context.Context, 
 	}
 	fulfillment := created[0]
 	id := get(fulfillment, "id")
-	if _, err := s.Internal("ShippingOption").Retrieve(ctx, get(fulfillment, "shipping_option_id"), utilsmodulessdk.FindConfig{Select: []string{"id", "name", "data", "metadata"}}); err != nil {
+	shippingOption, err := s.Internal("ShippingOption").Retrieve(ctx, get(fulfillment, "shipping_option_id"), utilsmodulessdk.FindConfig{Select: []string{"id", "name", "data", "metadata"}})
+	if err != nil {
 		return nil, err
 	}
-	if err := s.providerCall(ctx, fmt.Sprint(get(fulfillment, "provider_id"))); err != nil {
+	arg := dal.NewRecord()
+	for _, k := range fulfillment.Keys() {
+		v, _ := fulfillment.Get(k)
+		arg.Set(k, v)
+	}
+	arg.Set("shipping_option", shippingOption)
+	res, err := s.provider.CreateReturn(ctx, fmt.Sprint(get(fulfillment, "provider_id")), arg)
+	if err != nil {
 		_, _ = s.Internal("Fulfillment").Delete(ctx, []any{id})
 		return nil, err
 	}
+	resData, resLabels := providerResultData(res)
 	u := dal.NewRecord()
 	u.Set("id", id)
-	u.Set("data", dal.NewRecord())
-	u.Set("labels", []any{})
+	u.Set("data", resData)
+	u.Set("labels", resLabels)
 	if _, err := s.Internal("Fulfillment").Update(ctx, []any{u}); err != nil {
 		_, _ = s.Internal("Fulfillment").Delete(ctx, []any{id})
 		return nil, err
 	}
-	fulfillment.Set("data", dal.NewRecord())
-	fulfillment.Set("labels", []any{})
+	fulfillment.Set("data", resData)
+	fulfillment.Set("labels", resLabels)
 	return fulfillment, nil
 }
 
 // CalculateShippingOptionsPrices mirrors calculateShippingOptionsPrices: every
 // provider's calculatePrice runs (promiseAll rejects with the first error).
-// The bundled manual provider cannot calculate prices.
 func (s *FulfillmentModuleService) CalculateShippingOptionsPrices(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
 	var firstErr error
 	out := make([]*dal.Record, 0, len(data))
 	for _, d := range data {
 		providerID := fmt.Sprint(get(d, "provider_id"))
-		err := s.providerCall(ctx, providerID)
-		if err == nil {
-			err = fmt.Errorf("Manual fulfillment does not support price calculation")
+		price, err := s.provider.CalculatePrice(ctx, providerID, asRecordOrNil(get(d, "optionData")), asRecordOrNil(get(d, "data")), asRecordOrNil(get(d, "context")))
+		if err != nil {
+			if firstErr == nil {
+				firstErr = err
+			}
+			continue
 		}
-		if firstErr == nil {
+		out = append(out, price)
+	}
+	if firstErr != nil {
+		return nil, firstErr
+	}
+	return out, nil
+}
+
+func asRecordOrNil(v any) *dal.Record {
+	r, _ := v.(*dal.Record)
+	return r
+}
+
+// ValidateFulfillmentData mirrors validateFulfillmentData.
+func (s *FulfillmentModuleService) ValidateFulfillmentData(ctx context.Context, providerID string, optionData, data, context_ *dal.Record) (any, error) {
+	return s.provider.ValidateFulfillmentData(ctx, providerID, optionData, data, context_)
+}
+
+// ValidateFulfillmentOption mirrors validateFulfillmentOption.
+func (s *FulfillmentModuleService) ValidateFulfillmentOption(ctx context.Context, providerID string, data *dal.Record) (bool, error) {
+	return s.provider.ValidateOption(ctx, providerID, data)
+}
+
+// ValidateShippingOptionsForPriceCalculation mirrors
+// validateShippingOptionsForPriceCalculation.
+func (s *FulfillmentModuleService) ValidateShippingOptionsForPriceCalculation(ctx context.Context, options []*dal.Record) ([]bool, error) {
+	var names []string
+	for _, o := range options {
+		if get(o, "price_type") != "calculated" {
+			names = append(names, fmt.Sprint(get(o, "name")))
+		}
+	}
+	if len(names) > 0 {
+		return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "Cannot calculate price for non-calculated shipping options: "+strings.Join(names, ", "))
+	}
+	out := make([]bool, 0, len(options))
+	var firstErr error
+	for _, o := range options {
+		ok, err := s.provider.CanCalculate(ctx, fmt.Sprint(get(o, "provider_id")), o)
+		if err != nil && firstErr == nil {
 			firstErr = err
 		}
+		out = append(out, ok)
 	}
 	if firstErr != nil {
 		return nil, firstErr

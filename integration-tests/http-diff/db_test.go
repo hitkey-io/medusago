@@ -155,5 +155,11 @@ func scenarioModules() []config.ModuleConfig {
 	if os.Getenv("MEDUSA_TEST_CACHE") == "redis" {
 		out = append(out, config.ModuleConfig{Key: "cache", Resolve: "@medusajs/medusa/cache-redis", Options: map[string]any{"redisUrl": os.Getenv("MEDUSA_TEST_REDIS_URL")}})
 	}
+	if m, ok := paymentModule(); ok {
+		out = append(out, m)
+	}
+	if m, ok := fulfillmentModule(); ok {
+		out = append(out, m)
+	}
 	return append(out, redisScenarioModules()...)
 }

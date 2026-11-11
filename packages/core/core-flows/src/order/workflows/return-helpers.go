@@ -6,6 +6,8 @@ import (
 
 	cartworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/workflows"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
+	fulfillmentsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/fulfillment/steps"
+	ordersteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/order/steps"
 	paymentsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/payment/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
@@ -142,8 +144,57 @@ type FetchShippingOptionInput struct {
 	Context          *dal.Record
 }
 
-// FetchShippingOptionForOrderWorkflow mirrors fetchShippingOptionForOrderWorkflow
-// (calculated price options are not supported yet).
+// calculateOrderShippingPrice mirrors the calculated branch shared by
+// fetchShippingOptionForOrderWorkflow and maybeRefreshShippingMethodsWorkflow:
+// the provider prices the option for the order (and the context given).
+//
+// maybeRefreshShippingMethodsWorkflow reads the order with
+// `transform(orderQuery, (data) => data[0])` on the query result object, so
+// its order is undefined and only the given context reaches the provider
+// (spreadOrder false).
+func calculateOrderShippingPrice(e *composer.Execution, option *dal.Record, orderID any, context_ *dal.Record, orderQueryName string, spreadOrder bool) ([]*dal.Record, error) {
+	f := dal.NewRecord()
+	f.Set("id", orderID)
+	isList := false
+	res, err := commonsteps.UseQueryGraphStep.Config(orderQueryName, composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
+		GraphInput: query.GraphInput{Entity: "order", Fields: []string{"id", "shipping_address", "items.*", "items.variant.*"}, Filters: f},
+		IsList:     &isList,
+		Options:    joiner.Options{ThrowIfKeyNotFound: true},
+	})
+	if err != nil {
+		return nil, err
+	}
+	order := rec(res.Data)
+	if order == nil {
+		if list := recs(res.Data); len(list) > 0 {
+			order = list[0]
+		}
+	}
+	if !spreadOrder {
+		order = nil
+	}
+	c := dal.NewRecord()
+	for _, src := range []*dal.Record{order, context_} {
+		if src == nil {
+			continue
+		}
+		for _, k := range src.Keys() {
+			v, _ := src.Get(k)
+			c.Set(k, v)
+		}
+	}
+	if loc := g(rec(g(rec(g(option, "service_zone")), "fulfillment_set")), "location"); loc != nil {
+		c.Set("from_location", loc)
+	}
+	d := dal.NewRecord()
+	d.Set("id", g(option, "id"))
+	d.Set("optionData", g(option, "data"))
+	d.Set("context", c)
+	d.Set("provider_id", g(option, "provider_id"))
+	return fulfillmentsteps.CalculateShippingOptionsPricesStep.Run(e, []*dal.Record{d})
+}
+
+// FetchShippingOptionForOrderWorkflow mirrors fetchShippingOptionForOrderWorkflow.
 var FetchShippingOptionForOrderWorkflow = composer.CreateWorkflow("fetch-shipping-option",
 	func(e *composer.Execution, in FetchShippingOptionInput) (*dal.Record, error) {
 		f := dal.NewRecord()
@@ -157,13 +208,33 @@ var FetchShippingOptionForOrderWorkflow = composer.CreateWorkflow("fetch-shippin
 			return nil, err
 		}
 		initial := rec(res.Data)
-		if g(initial, "price_type") == "calculated" {
-			return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "Calculated shipping option prices are not supported yet")
-		}
 		hookIn := dal.NewRecord()
 		hookIn.Set("input", in)
 		if err := composer.CreateHook(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
 			return nil, err
+		}
+		if g(initial, "price_type") == "calculated" {
+			of := dal.NewRecord()
+			of.Set("id", in.ShippingOptionID)
+			ores, err := commonsteps.UseQueryGraphStep.Config("calculated-option", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
+				GraphInput: query.GraphInput{Entity: "shipping_option", Fields: shippingOptionCommonFields, Filters: of},
+				IsList:     &isList,
+			})
+			if err != nil {
+				return nil, err
+			}
+			option := rec(ores.Data)
+			prices, err := calculateOrderShippingPrice(e, option, in.OrderID, in.Context, "order-query", true)
+			if err != nil {
+				return nil, err
+			}
+			out := dal.NewRecord()
+			out.Set("id", g(option, "id"))
+			out.Set("name", g(option, "name"))
+			if len(prices) > 0 {
+				out.Set("calculated_price", prices[0])
+			}
+			return out, nil
 		}
 		if err := composer.CreateHook(e, "setPricingContext", in); err != nil {
 			return nil, err
@@ -182,8 +253,8 @@ var shippingOptionCommonFields = []string{"id", "name", "price_type", "service_z
 	"service_zone.fulfillment_set.location.*", "service_zone.fulfillment_set.location.address.*", "shipping_profile_id", "provider_id", "data",
 	"type.id", "type.label", "type.description", "type.code", "provider.id", "provider.is_enabled", "rules.attribute", "rules.value", "rules.operator"}
 
-// MaybeRefreshShippingMethodsWorkflow mirrors maybeRefreshShippingMethodsWorkflow
-// (calculated price options are not supported yet).
+// MaybeRefreshShippingMethodsWorkflow mirrors maybeRefreshShippingMethodsWorkflow:
+// the price of a calculated option is computed again.
 var MaybeRefreshShippingMethodsWorkflow = composer.CreateWorkflow("maybe-refresh-shipping-methods",
 	func(e *composer.Execution, in *dal.Record) (any, error) {
 		f := dal.NewRecord()
@@ -208,7 +279,33 @@ var MaybeRefreshShippingMethodsWorkflow = composer.CreateWorkflow("maybe-refresh
 			return nil, err
 		}
 		if len(options) > 0 && g(options[0], "price_type") == "calculated" {
-			return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "Calculated shipping option prices are not supported yet")
+			prices, err := calculateOrderShippingPrice(e, options[0], g(in, "order_id"), rec(g(in, "context")), "order-query", false)
+			if err != nil {
+				return nil, err
+			}
+			var amount any
+			if len(prices) > 0 {
+				amount = g(prices[0], "calculated_amount")
+			}
+			action := dal.NewRecord()
+			action.Set("id", g(in, "action_id"))
+			action.Set("amount", amount)
+			method := dal.NewRecord()
+			method.Set("id", g(in, "shipping_method_id"))
+			method.Set("amount", amount)
+			method.Set("is_custom_amount", false)
+			if err := composer.Parallelize(
+				func() error {
+					_, err := ordersteps.UpdateOrderChangeActionsStep.Run(e, []*dal.Record{action})
+					return err
+				},
+				func() error {
+					_, err := ordersteps.UpdateOrderShippingMethodsStep.Run(e, []*dal.Record{method})
+					return err
+				},
+			); err != nil {
+				return nil, err
+			}
 		}
 		return nil, nil
 	})

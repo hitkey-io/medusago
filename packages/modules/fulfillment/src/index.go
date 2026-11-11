@@ -15,6 +15,8 @@ var Module = modulessdk.ModuleExports{
 	Models:       models.All,
 	JoinerConfig: JoinerConfig,
 	Loaders:      []modulessdk.Loader{loaders.Providers},
+	// providers.ts syncs the providers whenever the module loads
+	LoadersOnStart: true,
 	Service: func(opts modulessdk.ServiceOptions) (any, error) {
 		return services.NewFulfillmentModuleService(opts, JoinerConfig)
 	},

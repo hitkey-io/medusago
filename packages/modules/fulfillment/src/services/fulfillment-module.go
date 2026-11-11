@@ -18,16 +18,20 @@ import (
 // FulfillmentModuleService mirrors FulfillmentModuleService (writes).
 type FulfillmentModuleService struct {
 	*utilsmodulessdk.MedusaService
+	provider *FulfillmentProviderService
 }
 
 // NewFulfillmentModuleService builds the service.
 func NewFulfillmentModuleService(opts modulessdk.ServiceOptions, joinerConfig *joiner.ModuleJoinerConfig) (*FulfillmentModuleService, error) {
-	return &FulfillmentModuleService{MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig)}, nil
+	return &FulfillmentModuleService{
+		MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig),
+		provider:      NewFulfillmentProviderService(opts.Providers, opts.Logger),
+	}, nil
 }
 
 func (s *FulfillmentModuleService) tx(ctx context.Context, fn func(t *FulfillmentModuleService) error) error {
 	return s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
-		return fn(&FulfillmentModuleService{MedusaService: tx})
+		return fn(&FulfillmentModuleService{MedusaService: tx, provider: s.provider})
 	})
 }
 
@@ -774,25 +778,8 @@ func (s *FulfillmentModuleService) SoftDeleteShippingProfiles(ctx context.Contex
 	return s.Internal("ShippingProfile").SoftDelete(ctx, profileIDs)
 }
 
-// manualFulfillmentOptions mirrors ManualFulfillmentService.getFulfillmentOptions.
-func manualFulfillmentOptions() []any {
-	a := dal.NewRecord()
-	a.Set("id", "manual-fulfillment")
-	b := dal.NewRecord()
-	b.Set("id", "manual-fulfillment-return")
-	b.Set("is_return", true)
-	return []any{a, b}
-}
-
 // RetrieveFulfillmentOptions mirrors retrieveFulfillmentOptions: the
-// registered provider's options (only the manual provider is bundled).
+// registered provider's options.
 func (s *FulfillmentModuleService) RetrieveFulfillmentOptions(ctx context.Context, providerID string) ([]any, error) {
-	if strings.HasPrefix(providerID, "manual_") {
-		f := dal.NewRecord()
-		f.Set("id", providerID)
-		if rows, err := s.Internal("FulfillmentProvider").List(ctx, f, utilsmodulessdk.FindConfig{}); err == nil && len(rows) > 0 {
-			return manualFulfillmentOptions(), nil
-		}
-	}
-	return nil, fmt.Errorf("\nUnable to retrieve the fulfillment provider with id: %s\nPlease make sure that the provider is registered in the container and it is configured correctly in your project configuration file.", providerID)
+	return s.provider.GetFulfillmentOptions(ctx, providerID)
 }

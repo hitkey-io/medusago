@@ -245,11 +245,14 @@ func RunModuleLoaders(ctx context.Context, pool *pgxpool.Pool, cfg config.Config
 		}
 		var providers []modulessdk.ProviderInstance
 		for _, p := range mc.Providers {
-			identifier := ""
-			if pexp, ok := modules.Registry[p.Resolve]; ok {
-				identifier = pexp.ProviderIdentifier
+			pexp, ok := modules.Registry[p.Resolve]
+			if !ok {
+				providers = append(providers, modulessdk.ProviderInstance{ID: p.ID, Options: p.Options})
+				continue
 			}
-			providers = append(providers, modulessdk.ProviderInstance{Identifier: identifier, ID: p.ID, Options: p.Options})
+			for _, ps := range pexp.Services() {
+				providers = append(providers, modulessdk.ProviderInstance{Identifier: ps.Identifier, ID: p.ID, Options: p.Options})
+			}
 		}
 		for _, load := range exp.Loaders {
 			if err := load(ctx, modulessdk.LoaderOptions{DB: pool, Providers: providers, Logger: logger}); err != nil {

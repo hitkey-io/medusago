@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 
+	paymentworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/payment/workflows"
+	paymenttypes "github.com/hitkey-io/medusago/packages/core/types/src/payment"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -15,8 +17,9 @@ type webhookActions interface {
 }
 
 // PaymentWebhookHandler mirrors paymentWebhookhandler: events without a
-// session id or with an unhandled action are ignored. The bundled system
-// provider reports not_supported, so processPaymentWorkflow never runs.
+// session id or with an action processPaymentWorkflow does not handle are
+// ignored; the others run processPaymentWorkflow through the workflow
+// engine.
 func PaymentWebhookHandler(ctx context.Context, c composer.Container, data any) error {
 	svc, _ := c.Resolve(utilsmodulessdk.PAYMENT).(webhookActions)
 	input, _ := data.(*dal.Record)
@@ -38,8 +41,10 @@ func PaymentWebhookHandler(ctx context.Context, c composer.Container, data any) 
 		return nil
 	}
 	switch action, _ := processed.Get("action"); action {
-	case "not_supported", "canceled", "failed", "requires_more", "pending_authorization", "pending":
+	case paymenttypes.ActionNotSupported, paymenttypes.ActionCanceled, paymenttypes.ActionFailed, paymenttypes.ActionRequiresMore,
+		paymenttypes.ActionPendingAuthorization, paymenttypes.ActionPending:
 		return nil
 	}
-	return fmt.Errorf("processPaymentWorkflow is not ported")
+	_, _, err = composer.RunByID(ctx, c, paymentworkflows.ProcessPaymentWorkflowID, processed, composer.RunOptions{})
+	return err
 }

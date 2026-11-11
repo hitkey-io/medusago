@@ -112,9 +112,7 @@ func graphList(e *composer.Execution, name, entity string, filters *dal.Record, 
 	return recs(res.Data), nil
 }
 
-func notAllowedCalculated() error {
-	return common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "Calculated shipping option prices are not supported yet")
-}
+
 
 var shippingOptionFieldsForPriceCalculation = []string{"id", "name", "price_type", "service_zone_id", "service_zone.fulfillment_set_id",
 	"service_zone.fulfillment_set.type", "service_zone.fulfillment_set.location.*", "service_zone.fulfillment_set.location.address.*",
@@ -122,8 +120,7 @@ var shippingOptionFieldsForPriceCalculation = []string{"id", "name", "price_type
 	"rules.attribute", "rules.value", "rules.operator"}
 
 // RefreshPendingDraftOrderShippingMethodsWorkflow mirrors
-// refreshPendingDraftOrderShippingMethodsWorkflow (calculated prices are not
-// supported yet).
+// refreshPendingDraftOrderShippingMethodsWorkflow.
 var RefreshPendingDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow("refresh-pending-draft-order-shipping-methods",
 	func(e *composer.Execution, orderID any) (any, error) {
 		f := dal.NewRecord()
@@ -166,20 +163,11 @@ var RefreshPendingDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow("r
 		if err != nil {
 			return nil, err
 		}
-		for _, o := range options {
-			if g(o, "price_type") == "calculated" {
-				return nil, notAllowedCalculated()
-			}
-		}
-		if _, err := ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(orderID)); err != nil {
-			return nil, err
-		}
-		return nil, nil
+		return nil, refreshPendingCalculated(e, orderID, change, methods, options)
 	})
 
 // RefreshConfirmedDraftOrderShippingMethodsWorkflow mirrors
-// refreshConfirmedDraftOrderShippingMethodsWorkflow (calculated prices are
-// not supported yet).
+// refreshConfirmedDraftOrderShippingMethodsWorkflow.
 var RefreshConfirmedDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow("refresh-confirmed-draft-order-shipping-methods",
 	func(e *composer.Execution, orderID any) (any, error) {
 		f := dal.NewRecord()
@@ -209,12 +197,7 @@ var RefreshConfirmedDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow(
 		if err := composer.CreateHook(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
 			return nil, err
 		}
-		for _, o := range options {
-			if g(o, "price_type") == "calculated" {
-				return nil, notAllowedCalculated()
-			}
-		}
-		return nil, nil
+		return nil, refreshConfirmedCalculated(e, orderID, order, options)
 	})
 
 // UpdateDraftOrderWorkflow mirrors updateDraftOrderWorkflow (translations
