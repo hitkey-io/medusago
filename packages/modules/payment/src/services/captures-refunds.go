@@ -50,7 +50,15 @@ func sumAmounts(list []*dal.Record, key string) *totals.BN {
 
 // CapturePayment mirrors capturePayment.
 func (s *PaymentModuleService) CapturePayment(ctx context.Context, data *dal.Record) (*dal.Record, error) {
-	ctx = dal.WithSharedIdentityMap(ctx)
+	return s.capturePayment(ctx, data, false)
+}
+
+// capturePayment mirrors capturePayment; nested runs inside the
+// transaction of authorizePaymentSession_ (sharedContext).
+func (s *PaymentModuleService) capturePayment(ctx context.Context, data *dal.Record, nested bool) (*dal.Record, error) {
+	if !nested {
+		ctx = dal.WithSharedIdentityMap(ctx)
+	}
 	paymentID := get(data, "payment_id")
 	payment, err := s.Internal("Payment").Retrieve(ctx, paymentID, utilsmodulessdk.FindConfig{
 		Select:    []string{"id", "data", "provider_id", "payment_collection_id", "amount", "raw_amount", "currency_code", "captured_at", "canceled_at"},
@@ -109,7 +117,12 @@ func (s *PaymentModuleService) CapturePayment(ctx context.Context, data *dal.Rec
 		return nil, err
 	}
 	if !isCaptured {
-		if _, err := callProvider(fmt.Sprint(get(payment, "provider_id")), "capturePayment"); err != nil {
+		pctx := dal.NewRecord()
+		if capture != nil {
+			pctx.Set("idempotency_key", get(capture, "id"))
+		}
+		res, err := s.provider.CapturePayment(ctx, fmt.Sprint(get(payment, "provider_id")), kv("data", get(payment, "data"), "context", pctx))
+		if err != nil {
 			if capture != nil {
 				_, _ = s.Internal("Capture").Delete(ctx, []any{get(capture, "id")})
 			}
@@ -117,7 +130,7 @@ func (s *PaymentModuleService) CapturePayment(ctx context.Context, data *dal.Rec
 		}
 		u := dal.NewRecord()
 		u.Set("id", get(payment, "id"))
-		u.Set("data", dal.NewRecord())
+		setDefined(u, res, "data")
 		if isFullyCaptured {
 			u.Set("captured_at", dal.Now())
 		}
@@ -237,7 +250,16 @@ func (s *PaymentModuleService) RefundPayment(ctx context.Context, data *dal.Reco
 		return nil, err
 	}
 	if !alreadyRefunded {
-		if _, err := callProvider(fmt.Sprint(get(payment, "provider_id")), "refundPayment"); err != nil {
+		key := get(refund, "idempotency_key")
+		if key == nil {
+			key = get(refund, "id")
+		}
+		res, err := s.provider.RefundPayment(ctx, fmt.Sprint(get(payment, "provider_id")), kv(
+			"data", get(payment, "data"),
+			"amount", get(refund, "raw_amount"),
+			"context", kv("idempotency_key", key),
+		))
+		if err != nil {
 			u := dal.NewRecord()
 			u.Set("id", get(refund, "id"))
 			u.Set("status", "failed")
@@ -247,7 +269,7 @@ func (s *PaymentModuleService) RefundPayment(ctx context.Context, data *dal.Reco
 		}
 		pu := dal.NewRecord()
 		pu.Set("id", get(payment, "id"))
-		pu.Set("data", dal.NewRecord())
+		setDefined(pu, res, "data")
 		if _, err := s.Internal("Payment").Update(ctx, pu); err != nil {
 			return nil, err
 		}
@@ -270,14 +292,14 @@ func (s *PaymentModuleService) CancelPayment(ctx context.Context, id any) (*dal.
 	if err != nil {
 		return nil, err
 	}
-	res, err := callProvider(fmt.Sprint(get(payment, "provider_id")), "cancelPayment")
+	res, err := s.provider.CancelPayment(ctx, fmt.Sprint(get(payment, "provider_id")), kv("data", get(payment, "data"), "context", kv("idempotency_key", get(payment, "id"))))
 	if err != nil {
 		return nil, err
 	}
 	u := dal.NewRecord()
 	u.Set("id", id)
 	u.Set("canceled_at", dal.Now())
-	u.Set("data", res.Data)
+	setDefined(u, res, "data")
 	if _, err := s.Internal("Payment").Update(ctx, u); err != nil {
 		return nil, err
 	}
