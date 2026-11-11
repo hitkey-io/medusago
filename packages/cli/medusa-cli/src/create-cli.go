@@ -285,7 +285,14 @@ func commandsList() []command {
 		{
 			name: "db:generate", usage: "db:generate [modules...]", desc: "Generate migrations for a given module",
 			nodeEnv: "development", required: 1,
-			run: notSupported("db:generate is not supported by the Go CLI: migrations of Go modules are written as Go code (see packages/core/utils/src/migrations)."),
+			run: func(r *runner, a parsedArgs) int {
+				_ = os.Setenv("MEDUSA_WORKER_MODE", "server")
+				cfg, ok := r.mustConfig()
+				if !ok {
+					return 1
+				}
+				return r.report(db.Generate(context.Background(), cfg, db.GenerateOptions{Directory: r.directory, Modules: a.positional}))
+			},
 		},
 		{
 			name: "plugin:db:generate", desc: "Generate migrations for modules in a plugin", nodeEnv: "development",

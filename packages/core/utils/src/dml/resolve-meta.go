@@ -70,6 +70,11 @@ type ormProp struct {
 	cascade               []string
 	fixedOrder            bool
 	fixedOrderColumn      string
+	// schema generator inputs
+	unique                     *bool
+	updateRule                 string
+	createForeignKeyConstraint bool
+	referencedTableName        string
 }
 
 type ormMeta struct {
@@ -78,6 +83,14 @@ type ormMeta struct {
 	props      []*ormProp
 	pks        []string
 	pivot      bool
+	// schema generator inputs: the PostgreSQL schema of the table, the
+	// @Index and @Check decorators applied by the DML entity builder, and
+	// whether the entity is a pivot table MikroORM defines.
+	schema      string
+	indexes     []SchemaIndex
+	checks      []SchemaCheck
+	pivotTable  bool
+	compositePK bool
 }
 
 func (m *ormMeta) prop(name string) *ormProp {
@@ -166,6 +179,9 @@ type deriver struct {
 	entities map[string]*Entity
 	metas    []*ormMeta
 	byName   map[string]*ormMeta
+	// pivots are the pivot table entities MikroORM defines for the many to
+	// many relationships without a pivot entity.
+	pivots []*ormMeta
 }
 
 func deriveMetas(entities []*Entity) ([]EntityMeta, error) {
@@ -203,7 +219,7 @@ func (d *deriver) related(e *Entity, rel *Property) (*Entity, error) {
 // decorators defineProperty and defineRelationship apply.
 func (d *deriver) createEntity(e *Entity) (*ormMeta, error) {
 	pn := parseEntityName(e)
-	m := &ormMeta{className: pn.modelName, collection: pn.tableName}
+	m := &ormMeta{className: pn.modelName, collection: pn.tableName, schema: pn.pgSchema}
 	hasID := false
 	for i := range e.Properties {
 		p := &e.Properties[i]
@@ -215,12 +231,23 @@ func (d *deriver) createEntity(e *Entity) (*ormMeta, error) {
 				hasID = true
 			}
 			defineProperty(m, p)
+			if !p.Field.Computed && p.Name == "deleted_at" {
+				// SPECIAL_PROPERTIES.deleted_at
+				if err := m.applyEntityIndexes(pn.tableName, []Index{{On: []string{"deleted_at"}, Where: "deleted_at IS NULL"}}); err != nil {
+					return nil, err
+				}
+			}
+			m.applyIndexes(pn.tableName, p)
 			continue
 		}
 		if err := d.defineRelationship(m, e, p); err != nil {
 			return nil, err
 		}
 	}
+	if err := m.applyEntityIndexes(pn.tableName, e.Indexes); err != nil {
+		return nil, err
+	}
+	m.applyChecks(e.Checks)
 	// EntitySchema.init: initProperties + initPrimaryKeys
 	for _, p := range m.props {
 		initSchemaProperty(p)
@@ -259,6 +286,23 @@ func initSchemaProperty(p *ormProp) {
 		}
 		if p.owner != nil && *p.owner && p.mappedBy != "" && p.inversedBy == "" {
 			p.inversedBy, p.mappedBy = p.mappedBy, ""
+		}
+	}
+	// addOneToOne: unique defaults to owner; addManyToOne and owning
+	// addOneToOne/addManyToMany: createForeignKeyConstraint defaults to true
+	switch p.kind {
+	case "1:1":
+		if p.unique == nil {
+			p.unique = boolPtr(*p.owner)
+		}
+		if *p.owner {
+			p.createForeignKeyConstraint = true
+		}
+	case "m:1":
+		p.createForeignKeyConstraint = true
+	case "m:n":
+		if p.owner != nil && *p.owner {
+			p.createForeignKeyConstraint = true
 		}
 	}
 	if p.kind != "scalar" && p.cascade == nil {
@@ -441,6 +485,9 @@ func mergeProp(dst, src *ormProp) {
 	if src.formula {
 		dst.formula = true
 	}
+	if src.unique != nil {
+		dst.unique = src.unique
+	}
 }
 
 func foreignKeyName(rel *Property) string {
@@ -504,7 +551,7 @@ func (d *deriver) defineRelationship(m *ormMeta, e *Entity, p *Property) error {
 		if hasMappedBy(rel) {
 			mappedBy = relMappedBy(rel)
 		}
-		op := &ormProp{name: p.Name, kind: "1:1", typ: rn.modelName, fieldNames: []string{fk}, mappedBy: mappedBy}
+		op := &ormProp{name: p.Name, kind: "1:1", typ: rn.modelName, fieldNames: []string{fk}, mappedBy: mappedBy, unique: boolPtr(false)}
 		if rel.Nullable {
 			op.nullable = boolPtr(true)
 		}
@@ -561,17 +608,17 @@ func (d *deriver) defineBelongsTo(m *ormMeta, e *Entity, p *Property, related *E
 			m.assign(op)
 			m.assign(&ormProp{name: p.Name, kind: "m:1", typ: rn.modelName, fieldNames: []string{fk}, persist: boolPtr(false), nullable: boolPtr(rel.Nullable)})
 		}
-		return nil
+		return m.applyEntityIndexes(parseEntityName(e).tableName, []Index{{On: []string{fk}, Where: "deleted_at IS NULL"}})
 	}
 	if otherType == "hasOne" || otherType == "hasOneWithFK" {
 		m.put(&ormProp{name: fk, kind: "scalar", columnTypes: []string{"text"}, typ: "string", nullable: boolPtr(rel.Nullable), persist: boolPtr(false), formula: true})
-		op := &ormProp{name: p.Name, kind: "1:1", typ: rn.modelName, nullable: boolPtr(rel.Nullable), mappedBy: mappedBy, fieldNames: []string{fk}, owner: boolPtr(true)}
+		op := &ormProp{name: p.Name, kind: "1:1", typ: rn.modelName, nullable: boolPtr(rel.Nullable), mappedBy: mappedBy, fieldNames: []string{fk}, owner: boolPtr(true), unique: boolPtr(false)}
 		if shouldCascade {
 			op.deleteRule = "cascade"
 			op.cascade = []string{"persist", "soft-remove"}
 		}
 		m.assign(op)
-		return nil
+		return m.applyEntityIndexes(parseEntityName(e).tableName, []Index{{On: []string{fk}, Where: "deleted_at IS NULL", Unique: true}})
 	}
 	return fmt.Errorf(`Invalid relationship reference for "%s" on "%s" entity. Make sure to define a hasOne or hasMany relationship`, mappedBy, rn.modelName)
 }
@@ -986,6 +1033,7 @@ func (d *deriver) processEntity(m *ormMeta) error {
 			m.pks = append(m.pks, p.name)
 		}
 	}
+	m.compositePK = len(m.pks) > 1
 	if pks := m.primaryProps(); len(pks) == 1 && pks[0].kind != "scalar" && pks[0].deleteRule == "" {
 		pks[0].deleteRule = "cascade"
 	}
@@ -1045,6 +1093,9 @@ func (d *deriver) pkFieldNames(m *ormMeta) []string {
 func (d *deriver) initManyToOneFields(p *ormProp) {
 	t := d.target(p)
 	fieldNames := d.pkFieldNames(t)
+	if p.referencedTableName == "" {
+		p.referencedTableName = t.tableName()
+	}
 	if p.joinColumns == nil {
 		for _, f := range fieldNames {
 			p.joinColumns = append(p.joinColumns, underscore(p.name)+"_"+f)
@@ -1171,7 +1222,72 @@ func (d *deriver) definePivotTableEntity(m *ormMeta, p *ormProp) {
 		p.pivotEntity = exists.className
 		return
 	}
+	for _, pv := range d.pivots {
+		if pv.className == p.pivotTable {
+			p.pivotEntity = pv.className
+			return
+		}
+	}
 	p.pivotEntity = p.pivotTable
+	d.pivots = append(d.pivots, d.newPivotTableEntity(m, p))
+}
+
+// newPivotTableEntity mirrors the entity definePivotTableEntity creates for
+// a many to many relationship without a pivot entity: a table with the two
+// foreign keys as a composite primary key.
+func (d *deriver) newPivotTableEntity(m *ormMeta, p *ormProp) *ormMeta {
+	tableName, schemaName := p.pivotTable, ""
+	if i := strings.Index(tableName, "."); i >= 0 {
+		schemaName, tableName = tableName[:i], tableName[i+1:]
+	}
+	if schemaName == "" {
+		schemaName = m.schema
+	}
+	target := d.target(p)
+	pivot := &ormMeta{className: p.pivotTable, collection: tableName, schema: schemaName, pivotTable: true, compositePK: true}
+	owner := d.definePivotProperty(p, m.className+"_owner", m, true)
+	inverse := d.definePivotProperty(p, target.className+"_inverse", target, false)
+	pivot.props = []*ormProp{owner, inverse}
+	pivot.pks = []string{owner.name, inverse.name}
+	return pivot
+}
+
+// definePivotProperty mirrors MetadataDiscovery.definePivotProperty.
+func (d *deriver) definePivotProperty(p *ormProp, name string, meta *ormMeta, owner bool) *ormProp {
+	ret := &ormProp{
+		name:                       name,
+		typ:                        meta.className,
+		kind:                       "m:1",
+		cascade:                    []string{"all"},
+		primary:                    true,
+		autoincrement:              boolPtr(false),
+		createForeignKeyConstraint: p.createForeignKeyConstraint,
+		owner:                      boolPtr(owner),
+	}
+	schema := meta.schema
+	if schema == "" {
+		schema = "public"
+	}
+	ret.referencedTableName = schema + "." + meta.tableName()
+	if owner {
+		ret.referencedColumnNames = p.referencedColumnNames
+		ret.fieldNames = p.joinColumns
+		ret.joinColumns = p.joinColumns
+	} else {
+		ret.fieldNames = p.inverseJoinColumns
+		ret.joinColumns = p.inverseJoinColumns
+		ret.referencedColumnNames = d.pkFieldNames(meta)
+	}
+	d.initColumnType(ret)
+	return ret
+}
+
+// tableName is the table name without its PostgreSQL schema.
+func (m *ormMeta) tableName() string {
+	if i := strings.Index(m.collection, "."); i >= 0 {
+		return m.collection[i+1:]
+	}
+	return m.collection
 }
 
 func (m *ormMeta) export() EntityMeta {
