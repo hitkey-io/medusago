@@ -113,7 +113,22 @@ func (s *UserModuleService) CreateInvites(ctx context.Context, data []*dal.Recor
 		n.Set("token", tok)
 		toCreate[i] = n
 	}
-	return s.Internal("Invite").Create(ctx, toCreate)
+	created, err := s.Internal("Invite").Create(ctx, toCreate)
+	if err != nil {
+		return nil, err
+	}
+	s.inviteTokenGenerated(ctx, "token_generated", created)
+	return created, nil
+}
+
+// inviteTokenGenerated mirrors the moduleEventBuilderFactory call
+// emitting UserEvents.INVITE_TOKEN_GENERATED for the invites.
+func (s *UserModuleService) inviteTokenGenerated(ctx context.Context, action string, invites []*dal.Record) {
+	ids := make([]any, len(invites))
+	for i, inv := range invites {
+		ids[i] = get(inv, "id")
+	}
+	s.SaveEvent(ctx, utilsmodulessdk.ModuleEventBuilderFactory(utilsmodulessdk.USER, action, "invite", "user.user.invite.token_generated")(ids...))
 }
 
 // RefreshInviteTokens mirrors refreshInviteTokens.
@@ -156,10 +171,11 @@ func (s *UserModuleService) RefreshInviteTokens(ctx context.Context, ids []any) 
 	if err != nil {
 		return nil, err
 	}
-	if r, ok := res.(*dal.Record); ok {
-		return []*dal.Record{r}, nil
-	}
 	out, _ := res.([]*dal.Record)
+	if r, ok := res.(*dal.Record); ok {
+		out = []*dal.Record{r}
+	}
+	s.inviteTokenGenerated(ctx, "created", out)
 	return out, nil
 }
 

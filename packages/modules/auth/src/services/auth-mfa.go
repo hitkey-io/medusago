@@ -194,6 +194,8 @@ type MfaStartResponse struct {
 
 // StartAuthMfa mirrors startAuthMfa.
 func (s *AuthModuleService) StartAuthMfa(ctx context.Context, authIdentityID any, provider string, label any, issuer string, metadata *dal.Record) (MfaStartResponse, error) {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEvents(ctx)
 	var out MfaStartResponse
 	err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
 		t := &AuthModuleService{MedusaService: tx, providers: s.providers, identifiers: s.identifiers}
@@ -275,6 +277,8 @@ func notFoundFactor(id any) error {
 
 // VerifyAuthMfa mirrors verifyAuthMfa (TOTP setup verification).
 func (s *AuthModuleService) VerifyAuthMfa(ctx context.Context, id, authIdentityID any, code string) (*dal.Record, error) {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEvents(ctx)
 	var out *dal.Record
 	err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
 		factor, err := tx.Internal("AuthMfaFactor").Retrieve(ctx, id, utilsmodulessdk.FindConfig{})
@@ -347,6 +351,8 @@ func (s *AuthModuleService) ListAuthMfa(ctx context.Context, filters *dal.Record
 // DisableAuthMfa mirrors disableAuthMfa (disable_policy "session": no code
 // needed).
 func (s *AuthModuleService) DisableAuthMfa(ctx context.Context, id any) (*dal.Record, error) {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEvents(ctx)
 	if _, err := s.Internal("AuthMfaFactor").Retrieve(ctx, id, utilsmodulessdk.FindConfig{}); err != nil {
 		return nil, err
 	}
@@ -362,6 +368,8 @@ func (s *AuthModuleService) DisableAuthMfa(ctx context.Context, id any) (*dal.Re
 
 // GenerateAuthMfaRecoveryCodes mirrors generateAuthMfaRecoveryCodes.
 func (s *AuthModuleService) GenerateAuthMfaRecoveryCodes(ctx context.Context, authIdentityID any, count *int) ([]string, error) {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEvents(ctx)
 	n := defaultRecoveryCodes
 	if count != nil {
 		n = *count
@@ -451,6 +459,8 @@ func challengeKey(id any) string { return fmt.Sprintf("auth:mfa:challenge:%v", i
 
 // createAuthMfaChallenge mirrors createAuthMfaChallenge_.
 func (s *AuthModuleService) createAuthMfaChallenge(ctx context.Context, authIdentityID any, authProvider any, metadata any) (*dal.Record, error) {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEvents(ctx)
 	if err := s.retrieveAuthIdentityExists(ctx, authIdentityID); err != nil {
 		return nil, err
 	}
@@ -483,6 +493,8 @@ func setChallenge(c *dal.Record) {
 
 // VerifyAuthMfaChallenge mirrors verifyAuthMfaChallenge.
 func (s *AuthModuleService) VerifyAuthMfaChallenge(ctx context.Context, id, method, code string, authIdentityID any) (*dal.Record, error) {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEvents(ctx)
 	c := cacheGet(challengeKey(id))
 	if c == nil {
 		return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, fmt.Sprintf(`MFA challenge with id "%s" was not found`, id))
@@ -533,6 +545,8 @@ func (s *AuthModuleService) VerifyAuthMfaChallenge(ctx context.Context, id, meth
 // RequestAuthVerification mirrors requestAuthVerification with the token
 // verification provider.
 func (s *AuthModuleService) RequestAuthVerification(ctx context.Context, authIdentityID, entityID, entityType, codeProvider any, metadata any) (*dal.Record, error) {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEvents(ctx)
 	if codeProvider == nil || codeProvider == "" {
 		return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "Verification provider is required")
 	}
@@ -601,6 +615,8 @@ func (s *AuthModuleService) RequestAuthVerification(ctx context.Context, authIde
 
 // ConfirmAuthVerification mirrors confirmAuthVerification (token provider).
 func (s *AuthModuleService) ConfirmAuthVerification(ctx context.Context, code string, codeProvider any) (*dal.Record, error) {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEvents(ctx)
 	if codeProvider == nil {
 		codeProvider = "token"
 	}

@@ -1,0 +1,689 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzg2NDksImV4cCI6MTc5NDQ2NTA0OX0.Q70zFzdRAOK1h0kq0bUX7Hb8zIlT9SFEDqQpLh9o4bI"
+    }
+  },
+  "stores": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stores": [
+        {
+          "id": "store_01M70XZZVZGMCRNBFVVWA8Q8A3"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "store_locales": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "store": {
+        "id": "store_01M70XZZVZGMCRNBFVVWA8Q8A3",
+        "supported_locales": [
+          {
+            "locale_code": "fr-FR"
+          }
+        ]
+      }
+    }
+  },
+  "refs": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "shipping_profile": {
+            "id": "sp_01M70EKFVXJQ9SQF567TDFDJPE",
+            "name": "Default Shipping Profile",
+            "type": "default",
+            "metadata": null,
+            "created_at": "2026-11-09T15:25:06.813Z",
+            "updated_at": "2026-11-09T15:25:06.813Z",
+            "deleted_at": null
+          }
+        }
+      ],
+      "count": 4,
+      "estimate_count": 4,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "store_fr_before": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+          "title": "Medusa Sweatpants",
+          "description": null,
+          "variants": [
+            {
+              "title": "L",
+              "id": "variant_01M70Y000GM1QZKX7G9P8G7G1S"
+            },
+            {
+              "title": "M",
+              "id": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
+            }
+          ]
+        },
+        {
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "title": "Medusa T-Shirt",
+          "description": "A comfortable cotton t-shirt",
+          "variants": [
+            {
+              "title": "S / Black",
+              "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+            },
+            {
+              "title": "M / White",
+              "id": "variant_01M70Y000GR2HDG6AHJXMDD8MS"
+            }
+          ]
+        }
+      ],
+      "count": 2,
+      "estimate_count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "capture_translate": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "translate_tshirt": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "id": "trans_01M74MTM4G4M9AQFG8CSVQD5Y4",
+          "reference_id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "reference": "product",
+          "locale_code": "fr-FR",
+          "translations": {
+            "title": "T-shirt FR",
+            "description": "Un t-shirt confortable"
+          }
+        }
+      ],
+      "updated": [],
+      "deleted": {
+        "ids": [],
+        "object": "translation",
+        "deleted": true
+      }
+    }
+  },
+  "events_translate": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "translation.translation.created",
+          "data": {
+            "id": "trans_01M74MTM4G4M9AQFG8CSVQD5Y4"
+          },
+          "metadata": {
+            "source": "translation",
+            "object": "translation",
+            "action": "created",
+            "eventGroupId": "01M74MTM46J440BVR6SCK6QQ8E"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "translation.created",
+          "data": {
+            "id": "trans_01M74MTM4G4M9AQFG8CSVQD5Y4"
+          },
+          "metadata": {
+            "eventGroupId": "01M74MTM46J440BVR6SCK6QQ8E"
+          },
+          "options": {}
+        }
+      ]
+    }
+  },
+  "store_fr": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+          "title": "Medusa Sweatpants",
+          "description": null,
+          "variants": [
+            {
+              "title": "L",
+              "id": "variant_01M70Y000GM1QZKX7G9P8G7G1S"
+            },
+            {
+              "title": "M",
+              "id": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
+            }
+          ]
+        },
+        {
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "title": "T-shirt FR",
+          "description": "Un t-shirt confortable",
+          "variants": [
+            {
+              "title": "S / Black",
+              "id": "variant_01M70Y000GD1GFQ2A5BCFM4S8Q"
+            },
+            {
+              "title": "M / White",
+              "id": "variant_01M70Y000GR2HDG6AHJXMDD8MS"
+            }
+          ]
+        }
+      ],
+      "count": 2,
+      "estimate_count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "store_fr_handle": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "title": "T-shirt FR",
+          "description": "Un t-shirt confortable"
+        }
+      ],
+      "count": 2,
+      "estimate_count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "store_en": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "title": "Medusa T-Shirt",
+          "description": "A comfortable cotton t-shirt"
+        }
+      ],
+      "count": 2,
+      "estimate_count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "capture_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product": {
+        "id": "prod_01M74MTM6RQK6ZPKGV02MXC25M",
+        "variants": [
+          {
+            "id": "variant_01M74MTM8WHFM46RVZ5YHRQ50N"
+          }
+        ]
+      }
+    }
+  },
+  "translate_new": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "id": "trans_01M74MTMBAH4D5SJ4SMDED6B7X",
+          "reference_id": "prod_01M74MTM6RQK6ZPKGV02MXC25M",
+          "reference": "product",
+          "locale_code": "fr-FR",
+          "translations": {
+            "title": "Chemise Vivante"
+          }
+        }
+      ],
+      "updated": [],
+      "deleted": {
+        "ids": [],
+        "object": "translation",
+        "deleted": true
+      }
+    }
+  },
+  "translate_new_variant": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "id": "trans_01M74MTMBYCFG03KMYD5CGRDKN",
+          "reference_id": "variant_01M74MTM8WHFM46RVZ5YHRQ50N",
+          "reference": "product_variant",
+          "locale_code": "fr-FR",
+          "translations": {
+            "title": "Petit"
+          }
+        }
+      ],
+      "updated": [],
+      "deleted": {
+        "ids": [],
+        "object": "translation",
+        "deleted": true
+      }
+    }
+  },
+  "store_new_fr": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M74MTM6RQK6ZPKGV02MXC25M",
+          "title": "Chemise Vivante",
+          "variants": [
+            {
+              "title": "Petit",
+              "id": "variant_01M74MTM8WHFM46RVZ5YHRQ50N"
+            }
+          ]
+        }
+      ],
+      "count": 2,
+      "estimate_count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "store_new_en": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M74MTM6RQK6ZPKGV02MXC25M",
+          "title": "Live Locale Shirt",
+          "variants": [
+            {
+              "title": "Small",
+              "id": "variant_01M74MTM8WHFM46RVZ5YHRQ50N"
+            }
+          ]
+        }
+      ],
+      "count": 2,
+      "estimate_count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "store_all_fr": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M74MTM6RQK6ZPKGV02MXC25M",
+          "title": "Chemise Vivante"
+        },
+        {
+          "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+          "title": "Medusa Sweatpants"
+        },
+        {
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "title": "T-shirt FR"
+        }
+      ],
+      "count": 2,
+      "estimate_count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "events_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "product.product-option.created",
+          "data": {
+            "id": "opt_01M74MTM6R88W131Z9Z3WD3PC7"
+          },
+          "metadata": {
+            "source": "product",
+            "object": "product_option",
+            "action": "created",
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "product.product-option-value.created",
+          "data": {
+            "id": "optval_01M74MTM6SB1TWSYN9M8Q95G3W"
+          },
+          "metadata": {
+            "source": "product",
+            "object": "product_option_value",
+            "action": "created",
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "product.product.created",
+          "data": {
+            "id": "prod_01M74MTM6RQK6ZPKGV02MXC25M"
+          },
+          "metadata": {
+            "source": "product",
+            "object": "product",
+            "action": "created",
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "product.product-product-option.created",
+          "data": {
+            "id": "prodopt_01M74MTM71E6GNF45FJY97AKEP"
+          },
+          "metadata": {
+            "source": "product",
+            "object": "product_product_option",
+            "action": "created",
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "product.product-product-option-value.created",
+          "data": {
+            "id": "prodoptval_01M74MTM71PFVPYGF6N2SV8TYX"
+          },
+          "metadata": {
+            "source": "product",
+            "object": "product_product_option_value",
+            "action": "created",
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "LinkProductSalesChannel.attached",
+          "data": {
+            "id": "prodsc_01M74MTM81673XEFTQ33JD4VRN"
+          },
+          "metadata": {
+            "source": "ProductProductSalesChannelSalesChannelLink",
+            "object": "LinkProductSalesChannel",
+            "action": "attached",
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "LinkProductShippingProfile.attached",
+          "data": {
+            "id": "prodsp_01M74MTM8CZJSCWC9HKA0PMMGZ"
+          },
+          "metadata": {
+            "source": "ProductProductFulfillmentShippingProfileLink",
+            "object": "LinkProductShippingProfile",
+            "action": "attached",
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "product.product-variant.created",
+          "data": {
+            "id": "variant_01M74MTM8WHFM46RVZ5YHRQ50N"
+          },
+          "metadata": {
+            "source": "product",
+            "object": "product_variant",
+            "action": "created",
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "pricing.price-set.created",
+          "data": {
+            "id": "pset_01M74MTM9P1Y7HNJT8H7BPJZZ6"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price_set",
+            "action": "created",
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "pricing.price.created",
+          "data": {
+            "id": "price_01M74MTM9NH1MWNMWYT9HX1AGP"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price",
+            "action": "created",
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "LinkProductVariantPriceSet.attached",
+          "data": {
+            "id": "pvps_01M74MTMAA41JVRWJY5T087MGP"
+          },
+          "metadata": {
+            "source": "ProductVariantPricingPriceSetLink",
+            "object": "LinkProductVariantPriceSet",
+            "action": "attached",
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "product-variant.created",
+          "data": {
+            "id": "variant_01M74MTM8WHFM46RVZ5YHRQ50N"
+          },
+          "metadata": {
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {}
+        },
+        {
+          "name": "product.created",
+          "data": {
+            "id": "prod_01M74MTM6RQK6ZPKGV02MXC25M"
+          },
+          "metadata": {
+            "eventGroupId": "01M74MTM6MK8XPA56Q43B3MSW3"
+          },
+          "options": {}
+        },
+        {
+          "name": "translation.translation.created",
+          "data": {
+            "id": "trans_01M74MTMBAH4D5SJ4SMDED6B7X"
+          },
+          "metadata": {
+            "source": "translation",
+            "object": "translation",
+            "action": "created",
+            "eventGroupId": "01M74MTMB2GY12XHSA6PJ9Q9AP"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "translation.created",
+          "data": {
+            "id": "trans_01M74MTMBAH4D5SJ4SMDED6B7X"
+          },
+          "metadata": {
+            "eventGroupId": "01M74MTMB2GY12XHSA6PJ9Q9AP"
+          },
+          "options": {}
+        },
+        {
+          "name": "translation.translation.created",
+          "data": {
+            "id": "trans_01M74MTMBYCFG03KMYD5CGRDKN"
+          },
+          "metadata": {
+            "source": "translation",
+            "object": "translation",
+            "action": "created",
+            "eventGroupId": "01M74MTMBPM0WGF4YPGYCD12CY"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "translation.created",
+          "data": {
+            "id": "trans_01M74MTMBYCFG03KMYD5CGRDKN"
+          },
+          "metadata": {
+            "eventGroupId": "01M74MTMBPM0WGF4YPGYCD12CY"
+          },
+          "options": {}
+        }
+      ]
+    }
+  }
+}

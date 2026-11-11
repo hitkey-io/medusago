@@ -1,0 +1,37 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "stores", "method": "GET", "bearer": "login", "path": "/admin/stores?fields=id" },
+  { "name": "store_locales", "method": "POST", "bearer": "login", "path": "/admin/stores/{{stores.stores.0.id}}?fields=id,supported_locales.locale_code", "body": { "supported_locales": [{ "locale_code": "fr-FR" }] } },
+  { "name": "refs", "method": "GET", "bearer": "login", "path": "/admin/products?handle=t-shirt&fields=id,*shipping_profile" },
+  { "name": "store_fr_before", "method": "GET", "path": "/store/products?order=title&fields=id,title,description,variants.title&locale=fr-FR", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
+
+  { "name": "capture_translate", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "translate_tshirt", "method": "POST", "bearer": "login", "path": "/admin/translations/batch", "body": { "create": [{ "reference_id": "{{refs.products.0.id}}", "reference": "product", "locale_code": "fr-FR", "translations": { "title": "T-shirt FR", "description": "Un t-shirt confortable" } }] } },
+  { "name": "events_translate", "method": "GET", "path": "/events-capture" },
+  { "name": "store_fr", "method": "GET", "path": "/store/products?order=title&fields=id,title,description,variants.title&locale=fr-FR", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
+  { "name": "store_fr_handle", "method": "GET", "path": "/store/products?fields=id,title,description&handle=t-shirt&locale=fr-FR", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
+  { "name": "store_en", "method": "GET", "path": "/store/products?fields=id,title,description&handle=t-shirt", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
+
+  { "name": "capture_create", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "create", "method": "POST", "bearer": "login", "path": "/admin/products?fields=id,variants.id",
+    "body": {
+      "title": "Live Locale Shirt",
+      "handle": "live-locale-shirt",
+      "status": "published",
+      "shipping_profile_id": "{{refs.products.0.shipping_profile.id}}",
+      "sales_channels": [{ "id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ" }],
+      "options": [{ "title": "Size", "values": ["S"] }],
+      "variants": [{ "title": "Small", "manage_inventory": false, "options": { "Size": "S" }, "prices": [{ "amount": 15, "currency_code": "usd" }] }]
+    }
+  },
+  { "name": "translate_new", "method": "POST", "bearer": "login", "path": "/admin/translations/batch", "body": { "create": [
+    { "reference_id": "{{create.product.id}}", "reference": "product", "locale_code": "fr-FR", "translations": { "title": "Chemise Vivante" } }
+  ] } },
+  { "name": "translate_new_variant", "method": "POST", "bearer": "login", "path": "/admin/translations/batch", "body": { "create": [
+    { "reference_id": "{{create.product.variants.0.id}}", "reference": "product_variant", "locale_code": "fr-FR", "translations": { "title": "Petit" } }
+  ] } },
+  { "name": "store_new_fr", "method": "GET", "until": "products.0", "path": "/store/products?fields=id,title,variants.title&handle=live-locale-shirt&locale=fr-FR", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
+  { "name": "store_new_en", "method": "GET", "path": "/store/products?fields=id,title,variants.title&handle=live-locale-shirt", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
+  { "name": "store_all_fr", "method": "GET", "path": "/store/products?order=title&fields=id,title&locale=fr-FR", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
+  { "name": "events_create", "method": "GET", "path": "/events-capture" }
+]

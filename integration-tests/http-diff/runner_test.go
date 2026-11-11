@@ -62,6 +62,10 @@ type Step struct {
 	// Until repeats the request (for up to 30s) until this dotted body path
 	// resolves to a value: it waits for background workflows.
 	Until string `json:"until,omitempty"`
+	// UntilAbsent repeats the request (for up to 30s) while this dotted
+	// body path resolves to a value: it waits for asynchronous subscribers
+	// (index engine updates) to remove something.
+	UntilAbsent string `json:"until_absent,omitempty"`
 	// Totp names a body path ("step.path") holding a TOTP secret: the
 	// current code replaces "__TOTP__" in the body.
 	Totp string `json:"totp,omitempty"`
@@ -352,6 +356,10 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 			}
 		}
 		if step.Until != "" && lookupPath(rec.Body, step.Until) == nil && time.Now().Before(deadline) {
+			time.Sleep(200 * time.Millisecond)
+			goto retry
+		}
+		if step.UntilAbsent != "" && lookupPath(rec.Body, step.UntilAbsent) != nil && time.Now().Before(deadline) {
 			time.Sleep(200 * time.Millisecond)
 			goto retry
 		}

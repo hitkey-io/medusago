@@ -94,13 +94,28 @@ func cond(op string, v any) *dal.Record {
 // CreateProductCategories mirrors createProductCategories.
 func (s *ProductModuleService) CreateProductCategories(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
 	var out []*dal.Record
-	err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
+	err := s.InTransaction(dal.WithoutEvents(ctx), func(tx *utilsmodulessdk.MedusaService) error {
 		t := &ProductModuleService{MedusaService: tx, db: tx.DB()}
 		var err error
 		out, err = t.createCategories(ctx, data)
 		return err
 	})
-	return out, err
+	if err != nil {
+		return nil, err
+	}
+	s.categoryEvent(ctx, "created", out)
+	return out, nil
+}
+
+// categoryEvent mirrors eventBuilders.<action>ProductCategory: the custom
+// category service writes outside the entity subscriber, so the category
+// events are the explicitly built ones.
+func (s *ProductModuleService) categoryEvent(ctx context.Context, action string, categories []*dal.Record) {
+	ids := make([]any, len(categories))
+	for i, c := range categories {
+		ids[i], _ = c.Get("id")
+	}
+	s.SaveEvent(ctx, utilsmodulessdk.ModuleEventBuilderFactory(utilsmodulessdk.PRODUCT, action, "product_category", "product.product-category."+action)(ids...))
 }
 
 func (s *ProductModuleService) createCategories(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
@@ -162,7 +177,12 @@ func (s *ProductModuleService) createCategories(ctx context.Context, data []*dal
 // UpdateProductCategories mirrors updateProductCategories(idOrSelector, data).
 func (s *ProductModuleService) UpdateProductCategories(ctx context.Context, idOrSelector any, data *dal.Record) ([]*dal.Record, error) {
 	var out []*dal.Record
-	err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
+	defer func() {
+		if out != nil {
+			s.categoryEvent(ctx, "updated", out)
+		}
+	}()
+	err := s.InTransaction(dal.WithoutEvents(ctx), func(tx *utilsmodulessdk.MedusaService) error {
 		t := &ProductModuleService{MedusaService: tx, db: tx.DB()}
 		var input []*dal.Record
 		if id, ok := idOrSelector.(string); ok {
@@ -189,8 +209,14 @@ func (s *ProductModuleService) UpdateProductCategories(ctx context.Context, idOr
 
 // UpsertProductCategories mirrors upsertProductCategories.
 func (s *ProductModuleService) UpsertProductCategories(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
-	var out []*dal.Record
-	err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
+	var out, created, updated []*dal.Record
+	defer func() {
+		if out != nil {
+			s.categoryEvent(ctx, "created", created)
+			s.categoryEvent(ctx, "updated", updated)
+		}
+	}()
+	err := s.InTransaction(dal.WithoutEvents(ctx), func(tx *utilsmodulessdk.MedusaService) error {
 		t := &ProductModuleService{MedusaService: tx, db: tx.DB()}
 		var forCreate, forUpdate []*dal.Record
 		for _, c := range data {
@@ -205,6 +231,7 @@ func (s *ProductModuleService) UpsertProductCategories(ctx context.Context, data
 			if err != nil {
 				return err
 			}
+			created = c
 			out = append(out, c...)
 		}
 		if len(forUpdate) > 0 {
@@ -212,6 +239,7 @@ func (s *ProductModuleService) UpsertProductCategories(ctx context.Context, data
 			if err != nil {
 				return err
 			}
+			updated = u
 			out = append(out, u...)
 		}
 		return nil
@@ -329,7 +357,7 @@ func (s *ProductModuleService) updateCategories(ctx context.Context, data []*dal
 // SoftDeleteProductCategories mirrors softDeleteProductCategories (the
 // category repository softDelete: no children allowed, siblings reranked).
 func (s *ProductModuleService) SoftDeleteProductCategories(ctx context.Context, ids []any) error {
-	return s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
+	err := s.InTransaction(dal.WithoutEvents(ctx), func(tx *utilsmodulessdk.MedusaService) error {
 		t := &ProductModuleService{MedusaService: tx, db: tx.DB()}
 		if err := t.baseDeleteCategories(ctx, ids); err != nil {
 			return err
@@ -337,11 +365,21 @@ func (s *ProductModuleService) SoftDeleteProductCategories(ctx context.Context, 
 		_, err := t.categories().SoftDelete(ctx, ids)
 		return err
 	})
+	if err != nil {
+		return err
+	}
+	deleted := make([]*dal.Record, len(ids))
+	for i, id := range ids {
+		deleted[i] = dal.NewRecord()
+		deleted[i].Set("id", id)
+	}
+	s.categoryEvent(ctx, "deleted", deleted)
+	return nil
 }
 
 // DeleteProductCategories mirrors deleteProductCategories (hard delete).
 func (s *ProductModuleService) DeleteProductCategories(ctx context.Context, ids []any) error {
-	return s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
+	return s.InTransaction(dal.WithoutEvents(ctx), func(tx *utilsmodulessdk.MedusaService) error {
 		t := &ProductModuleService{MedusaService: tx, db: tx.DB()}
 		if err := t.baseDeleteCategories(ctx, ids); err != nil {
 			return err
@@ -353,7 +391,7 @@ func (s *ProductModuleService) DeleteProductCategories(ctx context.Context, ids 
 
 // RestoreProductCategories mirrors restoreProductCategories.
 func (s *ProductModuleService) RestoreProductCategories(ctx context.Context, ids []any) error {
-	_, err := s.categories().Restore(ctx, ids)
+	_, err := s.categories().Restore(dal.WithoutEvents(ctx), ids)
 	return err
 }
 
