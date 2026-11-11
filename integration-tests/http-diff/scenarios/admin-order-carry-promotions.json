@@ -1,0 +1,749 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "pk",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/api-keys",
+  "body": {
+   "title": "Store",
+   "type": "publishable"
+  }
+ },
+ {
+  "name": "channels",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/sales-channels?order=name&fields=id,name"
+ },
+ {
+  "name": "link",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/api-keys/{{pk.api_key.id}}/sales-channels?fields=id",
+  "body": {
+   "add": [
+    "{{channels.sales_channels.0.id}}"
+   ]
+  }
+ },
+ {
+  "name": "locations",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/stock-locations?fields=id"
+ },
+ {
+  "name": "profiles",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/shipping-profiles?fields=id"
+ },
+ {
+  "name": "fs",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/stock-locations/{{locations.stock_locations.0.id}}/fulfillment-sets?fields=id,fulfillment_sets.id",
+  "body": {
+   "name": "EU",
+   "type": "shipping"
+  }
+ },
+ {
+  "name": "zone",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/fulfillment-sets/{{fs.stock_location.fulfillment_sets.0.id}}/service-zones?fields=id,service_zones.id",
+  "body": {
+   "name": "Germany",
+   "geo_zones": [
+    {
+     "type": "country",
+     "country_code": "de"
+    }
+   ]
+  }
+ },
+ {
+  "name": "link_provider",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/stock-locations/{{locations.stock_locations.0.id}}/fulfillment-providers?fields=id",
+  "body": {
+   "add": [
+    "manual_manual"
+   ]
+  }
+ },
+ {
+  "name": "regions",
+  "method": "GET",
+  "path": "/store/regions?order=name&fields=id,name",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "so_std",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/shipping-options?fields=id",
+  "body": {
+   "name": "Standard",
+   "service_zone_id": "{{zone.fulfillment_set.service_zones.0.id}}",
+   "shipping_profile_id": "{{profiles.shipping_profiles.0.id}}",
+   "price_type": "flat",
+   "provider_id": "manual_manual",
+   "type": {
+    "label": "Standard",
+    "code": "standard",
+    "description": "3-5 days"
+   },
+   "prices": [
+    {
+     "currency_code": "eur",
+     "amount": 5
+    },
+    {
+     "region_id": "{{regions.regions.0.id}}",
+     "amount": 4.5
+    }
+   ],
+   "rules": [
+    {
+     "attribute": "enabled_in_store",
+     "operator": "eq",
+     "value": "true"
+    },
+    {
+     "attribute": "is_return",
+     "operator": "eq",
+     "value": "false"
+    }
+   ]
+  }
+ },
+ {
+  "name": "so_return",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/shipping-options?fields=id",
+  "body": {
+   "name": "Return",
+   "service_zone_id": "{{zone.fulfillment_set.service_zones.0.id}}",
+   "shipping_profile_id": "{{profiles.shipping_profiles.0.id}}",
+   "price_type": "flat",
+   "provider_id": "manual_manual",
+   "type": {
+    "label": "Return",
+    "code": "return"
+   },
+   "prices": [
+    {
+     "currency_code": "eur",
+     "amount": 7
+    }
+   ],
+   "rules": [
+    {
+     "attribute": "is_return",
+     "operator": "eq",
+     "value": "true"
+    }
+   ]
+  }
+ },
+ {
+  "name": "products",
+  "method": "GET",
+  "path": "/store/products?fields=id,title,variants.id&order=title",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "tax_region",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/tax-regions?country_code=de&fields=id"
+ },
+ {
+  "name": "rate_default",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/tax-rates?fields=id",
+  "body": {
+   "tax_region_id": "{{tax_region.tax_regions.0.id}}",
+   "name": "DE VAT",
+   "code": "DE19",
+   "rate": 19,
+   "is_default": true
+  }
+ },
+ {
+  "name": "register",
+  "method": "POST",
+  "path": "/auth/customer/emailpass/register",
+  "body": {
+   "email": "buyer@example.test",
+   "password": "secret"
+  }
+ },
+ {
+  "name": "customer",
+  "method": "POST",
+  "path": "/store/customers?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "email": "buyer@example.test",
+   "first_name": "Test",
+   "last_name": "Buyer"
+  },
+  "bearer": "register"
+ },
+ {
+  "name": "customer_login",
+  "method": "POST",
+  "path": "/auth/customer/emailpass",
+  "body": {
+   "email": "buyer@example.test",
+   "password": "secret"
+  }
+ },
+ {
+  "name": "carry10",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/promotions?fields=id,code",
+  "body": {
+   "code": "CARRY10",
+   "type": "standard",
+   "status": "active",
+   "application_method": {
+    "type": "percentage",
+    "target_type": "items",
+    "allocation": "each",
+    "value": 10,
+    "max_quantity": 5
+   }
+  }
+ },
+ {
+  "name": "ship2",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/promotions?fields=id,code",
+  "body": {
+   "code": "SHIP2",
+   "type": "standard",
+   "status": "active",
+   "application_method": {
+    "type": "fixed",
+    "target_type": "shipping_methods",
+    "allocation": "each",
+    "value": 2,
+    "max_quantity": 1,
+    "currency_code": "eur"
+   }
+  }
+ },
+ {
+  "name": "fix3",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/promotions?fields=id,code",
+  "body": {
+   "code": "FIX3",
+   "type": "standard",
+   "status": "active",
+   "application_method": {
+    "type": "fixed",
+    "target_type": "items",
+    "allocation": "across",
+    "value": 3,
+    "currency_code": "eur"
+   }
+  }
+ },
+ {
+  "name": "cart",
+  "method": "POST",
+  "path": "/store/carts?fields=id,items.id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "region_id": "{{regions.regions.0.id}}",
+   "shipping_address": {
+    "first_name": "Test",
+    "last_name": "Buyer",
+    "address_1": "Example Street 1",
+    "country_code": "de",
+    "city": "Berlin",
+    "postal_code": "10115"
+   },
+   "billing_address": {
+    "country_code": "de",
+    "city": "Berlin"
+   },
+   "items": [
+    {
+     "variant_id": "{{products.products.1.variants.0.id}}",
+     "quantity": 2
+    }
+   ],
+   "metadata": {
+    "source": "scenario"
+   }
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "add_shipping",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/shipping-methods?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "option_id": "{{so_std.shipping_option.id}}"
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "promos",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,discount_total,promotions.code,items.adjustments.code,items.adjustments.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "promo_codes": [
+    "CARRY10",
+    "SHIP2"
+   ]
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "pc",
+  "method": "POST",
+  "path": "/store/payment-collections?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "cart_id": "{{cart.cart.id}}"
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "session",
+  "method": "POST",
+  "path": "/store/payment-collections/{{pc.payment_collection.id}}/payment-sessions?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "provider_id": "pp_system_default"
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "complete",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/complete?fields=id,items.id,promotions.code",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {},
+  "bearer": "customer_login"
+ },
+ {
+  "name": "edit",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-edits",
+  "body": {
+   "order_id": "{{complete.order.id}}"
+  }
+ },
+ {
+  "name": "edit_add",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-edits/{{complete.order.id}}/items",
+  "body": {
+   "items": [
+    {
+     "variant_id": "{{products.products.0.variants.0.id}}",
+     "quantity": 1
+    }
+   ]
+  }
+ },
+ {
+  "name": "edit_carry_missing",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-changes/ordch_missing",
+  "body": {
+   "carry_over_promotions": true
+  }
+ },
+ {
+  "name": "edit_carry_on",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-changes/{{edit.order_change.id}}",
+  "body": {
+   "carry_over_promotions": true
+  }
+ },
+ {
+  "name": "edit_preview_on",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/preview?fields=id,total,discount_total,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount"
+ },
+ {
+  "name": "edit_changes_on",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/changes?fields=id,change_type,status,carry_over_promotions,actions.action,actions.details,actions.amount,actions.ordering"
+ },
+ {
+  "name": "edit_carry_off",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-changes/{{edit.order_change.id}}",
+  "body": {
+   "carry_over_promotions": false
+  }
+ },
+ {
+  "name": "edit_preview_off",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/preview?fields=id,total,discount_total,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount"
+ },
+ {
+  "name": "edit_carry_on2",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-changes/{{edit.order_change.id}}",
+  "body": {
+   "carry_over_promotions": true,
+   "internal_note": "carry"
+  }
+ },
+ {
+  "name": "edit_qty",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-edits/{{complete.order.id}}/items/item/{{complete.order.items.0.id}}",
+  "body": {
+   "quantity": 3
+  }
+ },
+ {
+  "name": "edit_preview_qty",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/preview?fields=id,total,discount_total,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount"
+ },
+ {
+  "name": "edit_request",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-edits/{{complete.order.id}}/request",
+  "body": {}
+ },
+ {
+  "name": "edit_confirm",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-edits/{{complete.order.id}}/confirm?fields=id,total,discount_total,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount"
+ },
+ {
+  "name": "order_after_edit",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}?fields=id,version,total,discount_total,summary,items.quantity,items.adjustments.code,items.adjustments.amount,items.adjustments.version,shipping_methods.adjustments.code,shipping_methods.adjustments.amount"
+ },
+ {
+  "name": "ex",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/exchanges?fields=id",
+  "body": {
+   "order_id": "{{complete.order.id}}"
+  }
+ },
+ {
+  "name": "ex_out",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/exchanges/{{ex.exchange.id}}/outbound/items?fields=id",
+  "body": {
+   "items": [
+    {
+     "variant_id": "{{products.products.0.variants.0.id}}",
+     "quantity": 1
+    }
+   ]
+  }
+ },
+ {
+  "name": "ex_changes",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/changes?fields=id,change_type,status&status=pending"
+ },
+ {
+  "name": "ex_carry_on",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-changes/{{ex_changes.order_changes.0.id}}?fields=id,carry_over_promotions,exchange_id",
+  "body": {
+   "carry_over_promotions": true
+  }
+ },
+ {
+  "name": "ex_preview_on",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/preview?fields=id,total,discount_total,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount"
+ },
+ {
+  "name": "ex_out2",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/exchanges/{{ex.exchange.id}}/outbound/items?fields=id",
+  "body": {
+   "items": [
+    {
+     "variant_id": "{{products.products.1.variants.0.id}}",
+     "quantity": 1
+    }
+   ]
+  }
+ },
+ {
+  "name": "ex_preview_on2",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/preview?fields=id,total,discount_total,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount"
+ },
+ {
+  "name": "ex_cancel",
+  "method": "DELETE",
+  "bearer": "login",
+  "path": "/admin/exchanges/{{ex.exchange.id}}/request"
+ },
+ {
+  "name": "claim",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims?fields=id",
+  "body": {
+   "type": "replace",
+   "order_id": "{{complete.order.id}}"
+  }
+ },
+ {
+  "name": "claim_out",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/claims/{{claim.claim.id}}/outbound/items?fields=id",
+  "body": {
+   "items": [
+    {
+     "variant_id": "{{products.products.0.variants.0.id}}",
+     "quantity": 2
+    }
+   ]
+  }
+ },
+ {
+  "name": "claim_changes",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/changes?fields=id,change_type,status&status=pending"
+ },
+ {
+  "name": "claim_carry_on",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-changes/{{claim_changes.order_changes.0.id}}?fields=id,carry_over_promotions,claim_id",
+  "body": {
+   "carry_over_promotions": true
+  }
+ },
+ {
+  "name": "claim_preview_on",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/preview?fields=id,total,discount_total,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount"
+ },
+ {
+  "name": "claim_carry_off",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-changes/{{claim_changes.order_changes.0.id}}?fields=id,carry_over_promotions",
+  "body": {
+   "carry_over_promotions": false
+  }
+ },
+ {
+  "name": "claim_preview_off",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/orders/{{complete.order.id}}/preview?fields=id,total,discount_total,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount"
+ },
+ {
+  "name": "claim_cancel",
+  "method": "DELETE",
+  "bearer": "login",
+  "path": "/admin/claims/{{claim.claim.id}}/request"
+ },
+ {
+  "name": "claim_carry_inactive",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-changes/{{claim_changes.order_changes.0.id}}",
+  "body": {
+   "carry_over_promotions": true
+  }
+ },
+ {
+  "name": "cart2",
+  "method": "POST",
+  "path": "/store/carts?fields=id,items.id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "region_id": "{{regions.regions.0.id}}",
+   "shipping_address": {
+    "first_name": "Test",
+    "last_name": "Buyer",
+    "address_1": "Example Street 1",
+    "country_code": "de",
+    "city": "Berlin",
+    "postal_code": "10115"
+   },
+   "billing_address": {
+    "country_code": "de",
+    "city": "Berlin"
+   },
+   "items": [
+    {
+     "variant_id": "{{products.products.1.variants.0.id}}",
+     "quantity": 2
+    }
+   ],
+   "metadata": {
+    "source": "scenario"
+   }
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "add_shipping2",
+  "method": "POST",
+  "path": "/store/carts/{{cart2.cart.id}}/shipping-methods?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "option_id": "{{so_std.shipping_option.id}}"
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "promos2",
+  "method": "POST",
+  "path": "/store/carts/{{cart2.cart.id}}/promotions?fields=id,total,discount_total,promotions.code,items.adjustments.code,items.adjustments.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "promo_codes": [
+    "FIX3"
+   ]
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "pc2",
+  "method": "POST",
+  "path": "/store/payment-collections?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "cart_id": "{{cart2.cart.id}}"
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "session2",
+  "method": "POST",
+  "path": "/store/payment-collections/{{pc2.payment_collection.id}}/payment-sessions?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "provider_id": "pp_system_default"
+  },
+  "bearer": "customer_login"
+ },
+ {
+  "name": "complete2",
+  "method": "POST",
+  "path": "/store/carts/{{cart2.cart.id}}/complete?fields=id,items.id,promotions.code",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {},
+  "bearer": "customer_login"
+ },
+ {
+  "name": "edit2",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-edits",
+  "body": {
+   "order_id": "{{complete2.order.id}}"
+  }
+ },
+ {
+  "name": "edit2_carry_invalid",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-changes/{{edit2.order_change.id}}",
+  "body": {
+   "carry_over_promotions": true
+  }
+ },
+ {
+  "name": "edit2_carry_off",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/order-changes/{{edit2.order_change.id}}?fields=id,carry_over_promotions",
+  "body": {
+   "carry_over_promotions": false
+  }
+ }
+]

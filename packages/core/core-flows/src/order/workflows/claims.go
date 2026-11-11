@@ -11,9 +11,9 @@ import (
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	fulfillmentworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/fulfillment/workflows"
 	ordersteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/order/steps"
+	promotionservices "github.com/hitkey-io/medusago/packages/modules/promotion/src/services"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
-	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -32,8 +32,7 @@ type ComputeAdjustmentsForPreviewInput struct {
 	OrderChange *dal.Record
 }
 
-// ComputeAdjustmentsForPreviewWorkflow mirrors computeAdjustmentsForPreviewWorkflow
-// (carried over promotions are not supported yet).
+// ComputeAdjustmentsForPreviewWorkflow mirrors computeAdjustmentsForPreviewWorkflow.
 var ComputeAdjustmentsForPreviewWorkflow = composer.CreateWorkflow("compute-adjustments-for-preview",
 	func(e *composer.Execution, in ComputeAdjustmentsForPreviewInput) (any, error) {
 		previewed, err := ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(g(in.Order, "id")))
@@ -44,11 +43,14 @@ var ComputeAdjustmentsForPreviewWorkflow = composer.CreateWorkflow("compute-adju
 		hookIn.Set("order", in.Order)
 		hookIn.Set("orderChange", in.OrderChange)
 		hookIn.Set("previewedOrder", previewed)
-		if err := composer.CreateHook(e, "setPromotionContext", hookIn); err != nil {
+		hookResult, err := composer.CreateHookWithResult(e, "setPromotionContext", hookIn)
+		if err != nil {
 			return nil, err
 		}
 		if len(recs(g(in.Order, "promotions"))) > 0 && truthy(g(in.OrderChange, "carry_over_promotions")) {
-			return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "Carrying over promotions to order changes is not supported yet")
+			if err := carryOverPromotions(e, in.Order, in.OrderChange, previewed, rec(hookResult)); err != nil {
+				return nil, err
+			}
 		}
 		if !truthy(g(rec(g(previewed, "order_change")), "carry_over_promotions")) {
 			itemIDs, err := ordersteps.ListOrderChangeActionsByTypeStep.Config("list-item-adjustment-actions-for-deletion", composer.StepOptions{}).Run(e,
@@ -68,6 +70,83 @@ var ComputeAdjustmentsForPreviewWorkflow = composer.CreateWorkflow("compute-adju
 		}
 		return nil, nil
 	})
+
+// carryOverPromotions computes the adjustments of the order promotions for
+// the previewed order and records them as ITEM_ADJUSTMENTS_REPLACE and
+// SHIPPING_ADJUSTMENTS_REPLACE actions of the order change.
+func carryOverPromotions(e *composer.Execution, order, orderChange, previewed, additionalContext *dal.Record) error {
+	computeContext, err := PrepareOrderComputeActionContextStep.Run(e, PrepareOrderComputeActionContextInput{Order: order, PreviewedOrder: previewed})
+	if err != nil {
+		return err
+	}
+	codes := []string{}
+	for _, p := range recs(g(order, "promotions")) {
+		if c := g(p, "code"); c != nil {
+			codes = append(codes, fmt.Sprint(c))
+		}
+	}
+	actions, err := cartsteps.GetActionsToComputeFromPromotionsStep.Run(e, cartsteps.ActionsInput{
+		ComputeActionContext:       computeContext,
+		PromotionCodesToApply:      codes,
+		Options:                    promotionservices.ComputeActionOptions{SkipUsageLimitChecks: true},
+		AdditionalPromotionContext: additionalContext,
+	})
+	if err != nil {
+		return err
+	}
+	prepared, err := cartsteps.PrepareAdjustmentsFromPromotionActionsStep.Run(e, actions)
+	if err != nil {
+		return err
+	}
+	orUndefined := func(v any) any {
+		if v == nil {
+			return nil
+		}
+		return v
+	}
+	newAction := func(actionType string, referenceID any, adjustments []any) *dal.Record {
+		a := dal.NewRecord()
+		a.Set("order_change_id", g(orderChange, "id"))
+		a.Set("order_id", g(order, "id"))
+		// `?? undefined`: absent keys
+		for _, k := range []string{"exchange_id", "claim_id", "return_id"} {
+			if v := orUndefined(g(orderChange, k)); v != nil {
+				a.Set(k, v)
+			}
+		}
+		a.Set("version", g(orderChange, "version"))
+		a.Set("action", actionType)
+		d := dal.NewRecord()
+		d.Set("reference_id", referenceID)
+		d.Set("adjustments", adjustments)
+		a.Set("details", d)
+		return a
+	}
+	var input []*dal.Record
+	for _, item := range recs(g(previewed, "items")) {
+		adjustments := []any{}
+		for _, adj := range prepared.LineItemAdjustmentsToCreate {
+			if g(adj, "item_id") == g(item, "id") {
+				adjustments = append(adjustments, adj)
+			}
+		}
+		input = append(input, newAction("ITEM_ADJUSTMENTS_REPLACE", g(item, "id"), adjustments))
+	}
+	for _, method := range recs(g(previewed, "shipping_methods")) {
+		adjustments := []any{}
+		for _, adj := range prepared.ShippingMethodAdjustmentsToCreate {
+			if g(adj, "shipping_method_id") == g(method, "id") {
+				adjustments = append(adjustments, adj)
+			}
+		}
+		input = append(input, newAction("SHIPPING_ADJUSTMENTS_REPLACE", g(method, "id"), adjustments))
+	}
+	if input == nil {
+		input = []*dal.Record{}
+	}
+	_, err = CreateOrderChangeActionsWorkflow.RunAsStep(e, input)
+	return err
+}
 
 func withPromotions(order *dal.Record) *dal.Record {
 	o := dal.NewRecord()

@@ -43,6 +43,10 @@ func filterFields(data any, fields []string, expands *NestedExpands) any {
 				continue
 			}
 			v, present := rec.Get(key)
+			if records, isRecords := v.([]*dal.Record); isRecords {
+				// collections decorated by module services (e.g. order totals)
+				v = toAnyList(records)
+			}
 			if list, isList := v.([]any); isList {
 				out := make([]any, len(list))
 				for i, item := range list {
@@ -68,6 +72,14 @@ func filterFields(data any, fields []string, expands *NestedExpands) any {
 		return nil
 	}
 	return filtered
+}
+
+func toAnyList(records []*dal.Record) []any {
+	out := make([]any, len(records))
+	for i, r := range records {
+		out[i] = r
+	}
+	return out
 }
 
 func dedupeIDs(ids []any) []any {

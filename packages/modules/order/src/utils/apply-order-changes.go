@@ -106,7 +106,9 @@ func ApplyChangesToOrder(orders []*dal.Record, actionsMap map[string][]*dal.Reco
 					a.Set("item_id", itemID)
 					a.Set("version", version)
 					a.Set("amount", get(adj, "amount"))
-					a.Set("description", get(adj, "description"))
+					if adj.Has("description") {
+						a.Set("description", get(adj, "description"))
+					}
 					a.Set("promotion_id", get(adj, "promotion_id"))
 					a.Set("code", get(adj, "code"))
 					a.Set("is_tax_inclusive", get(adj, "is_tax_inclusive"))
@@ -172,7 +174,9 @@ func ApplyChangesToOrder(orders []*dal.Record, actionsMap map[string][]*dal.Reco
 					a.Set("shipping_method_id", associated)
 					a.Set("version", version)
 					a.Set("amount", get(adj, "amount"))
-					a.Set("description", get(adj, "description"))
+					if adj.Has("description") {
+						a.Set("description", get(adj, "description"))
+					}
 					a.Set("promotion_id", get(adj, "promotion_id"))
 					a.Set("code", get(adj, "code"))
 					res.ShippingMethodAdjustmentsToCreate = append(res.ShippingMethodAdjustmentsToCreate, a)
