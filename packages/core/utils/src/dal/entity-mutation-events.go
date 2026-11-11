@@ -79,6 +79,23 @@ type Recorder struct {
 	// rawSynced lists the entities whose raw big number columns a partial
 	// selection already marked changed (see markPartialBigNumbers).
 	rawSynced map[string]bool
+	// discard: the transaction's mutations reach no aggregator (see
+	// DiscardEvents).
+	discard bool
+}
+
+// DiscardEvents mirrors a transaction whose entity subscriber was
+// registered by a write without a message aggregator in its context (a
+// module method without @EmitEvents writing first): the subscriber keeps
+// that context, so none of the transaction's mutation events is saved.
+func DiscardEvents(db Querier) {
+	if rec := recorderOf(db); rec != nil {
+		rec.mu.Lock()
+		rec.discard = true
+		rec.pending = nil
+		rec.ready = nil
+		rec.mu.Unlock()
+	}
 }
 
 // HoldPending mirrors an internal service method that loads every entity
@@ -407,7 +424,9 @@ func (r *Repository) recordMutation(change int, action string, e *dml.Entity, da
 		id = data["id"]
 	}
 	rec.mu.Lock()
-	rec.pending = append(rec.pending, mutation{change: change, action: action, entity: e, source: r.Schema.Source, id: id})
+	if !rec.discard {
+		rec.pending = append(rec.pending, mutation{change: change, action: action, entity: e, source: r.Schema.Source, id: id})
+	}
 	rec.mu.Unlock()
 }
 
@@ -645,7 +664,9 @@ func (r *Repository) recordDispatched(action string, e *dml.Entity, id any) {
 		return
 	}
 	rec.mu.Lock()
-	rec.ready = append(rec.ready, mutationEvent(mutation{action: action, entity: e, source: r.Schema.Source, id: id}))
+	if !rec.discard {
+		rec.ready = append(rec.ready, mutationEvent(mutation{action: action, entity: e, source: r.Schema.Source, id: id}))
+	}
 	rec.mu.Unlock()
 }
 

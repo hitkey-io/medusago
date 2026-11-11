@@ -382,6 +382,10 @@ where "ppo"."product_option_id" = any($1) and "ppo"."deleted_at" is null and "p"
 			return err
 		}
 		if len(ppos) > 0 {
+			// the pivot soft deletes write first, from a context without
+			// a message aggregator: the transaction's entity subscriber
+			// keeps that context and no mutation event is saved
+			dal.DiscardEvents(t.db)
 			ppoIDs := make([]any, len(ppos))
 			for i, r := range ppos {
 				ppoIDs[i], _ = r.Get("id")
