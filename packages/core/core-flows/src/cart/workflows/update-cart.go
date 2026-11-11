@@ -169,6 +169,9 @@ var UpdateCartsStep = composer.CreateStep("update-carts",
 var UpdateCartWorkflow = composer.CreateWorkflow("update-cart",
 	func(e *composer.Execution, input *dal.Record) (any, error) {
 		id := Str(input, "id")
+		if err := acquireLock(e, id, 2, 10); err != nil {
+			return nil, err
+		}
 		cartToUpdate, err := fetchCart(e, "get-cart", id, []string{"id", "email", "customer_id", "sales_channel_id", "locale", "shipping_address.*", "region.*", "region.countries.*"}, true)
 		if err != nil {
 			return nil, err
@@ -299,5 +302,5 @@ var UpdateCartWorkflow = composer.CreateWorkflow("update-cart",
 		if err := composer.CreateHook(e, "cartUpdated", ch); err != nil {
 			return nil, err
 		}
-		return nil, nil
+		return nil, releaseLock(e, id)
 	})

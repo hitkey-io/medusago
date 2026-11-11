@@ -50,6 +50,9 @@ var UpdateTaxLinesWorkflow = composer.CreateWorkflow("update-tax-lines",
 		if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
 			return nil, err
 		}
+		if err := acquireLock(e, Str(cart, "id"), 2, 10); err != nil {
+			return nil, err
+		}
 		hookIn := dal.NewRecord()
 		hookIn.Set("cart", cart)
 		hookIn.Set("items", Get(cart, "items"))
@@ -73,7 +76,7 @@ var UpdateTaxLinesWorkflow = composer.CreateWorkflow("update-tax-lines",
 		if _, err := steps.SetTaxLinesForItemsStep.Run(e, steps.SetTaxLinesInput{Cart: cart, ItemTaxLines: translated.ItemTaxLines, ShippingTaxLines: translated.ShippingTaxLines}); err != nil {
 			return nil, err
 		}
-		return nil, nil
+		return nil, releaseLock(e, Str(cart, "id"))
 	})
 
 // UpdateCartPromotionsInput mirrors UpdateCartPromotionsWorkflowInput.
@@ -88,6 +91,13 @@ type UpdateCartPromotionsInput struct {
 // UpdateCartPromotionsWorkflow mirrors updateCartPromotionsWorkflow.
 var UpdateCartPromotionsWorkflow = composer.CreateWorkflow("update-cart-promotions",
 	func(e *composer.Execution, in UpdateCartPromotionsInput) (*dal.Record, error) {
+		cartID := in.CartID
+		if cartID == "" {
+			cartID = Str(in.Cart, "id")
+		}
+		if err := acquireLock(e, cartID, 2, 10); err != nil {
+			return nil, err
+		}
 		cart := in.Cart
 		if cart == nil {
 			var err error
@@ -156,6 +166,9 @@ var UpdateCartPromotionsWorkflow = composer.CreateWorkflow("update-cart-promotio
 				return nil, err
 			}
 		}
+		if err := releaseLock(e, cartID); err != nil {
+			return nil, err
+		}
 		out := dal.NewRecord()
 		skipped := make([]any, len(prepared.SkippedPromoCodes))
 		for i, s := range prepared.SkippedPromoCodes {
@@ -195,6 +208,9 @@ var RefreshPaymentCollectionForCartWorkflow = composer.CreateWorkflow("refresh-p
 		if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
 			return nil, err
 		}
+		if err := acquireLock(e, Str(cart, "id"), 2, 10); err != nil {
+			return nil, err
+		}
 		hookIn := dal.NewRecord()
 		hookIn.Set("cart", cart)
 		if err := composer.CreateHook(e, "validate", hookIn); err != nil {
@@ -214,5 +230,5 @@ var RefreshPaymentCollectionForCartWorkflow = composer.CreateWorkflow("refresh-p
 				return nil, err
 			}
 		}
-		return nil, nil
+		return nil, releaseLock(e, Str(cart, "id"))
 	})

@@ -152,6 +152,9 @@ var updateLineItemsStepWithSelector = composer.CreateStep("update-line-items-wit
 // UpdateLineItemInCartWorkflow mirrors updateLineItemInCartWorkflow.
 var UpdateLineItemInCartWorkflow = composer.CreateWorkflow("update-line-item-in-cart",
 	func(e *composer.Execution, in UpdateLineItemInCartInput) (any, error) {
+		if err := acquireLock(e, in.CartID, 2, 10); err != nil {
+			return nil, err
+		}
 		cart, err := fetchCart(e, "get-cart", in.CartID, updateItemCartFields, true)
 		if err != nil {
 			return nil, err
@@ -216,7 +219,13 @@ var UpdateLineItemInCartWorkflow = composer.CreateWorkflow("update-line-item-in-
 		}
 		ev := dal.NewRecord()
 		ev.Set("id", in.CartID)
-		_, err = commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "cart.updated", Data: ev})
+		err = composer.Parallelize(
+			func() error { return releaseLock(e, in.CartID) },
+			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "cart.updated", Data: ev})
+				return err
+			},
+		)
 		return nil, err
 	})
 
@@ -246,6 +255,9 @@ var deleteLineItemsStep = composer.CreateStep("delete-line-items",
 // DeleteLineItemsWorkflow mirrors deleteLineItemsWorkflow (line-item/workflows).
 var DeleteLineItemsWorkflow = composer.CreateWorkflow("delete-line-items",
 	func(e *composer.Execution, in DeleteLineItemsInput) (any, error) {
+		if err := acquireLock(e, in.CartID, 2, 10); err != nil {
+			return nil, err
+		}
 		if _, err := deleteLineItemsStep.Run(e, in.IDs); err != nil {
 			return nil, err
 		}
@@ -261,5 +273,8 @@ var DeleteLineItemsWorkflow = composer.CreateWorkflow("delete-line-items",
 				return err
 			},
 		)
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
+		return nil, releaseLock(e, in.CartID)
 	})

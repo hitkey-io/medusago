@@ -28,6 +28,9 @@ func findOption(options []*dal.Record, id any) *dal.Record {
 // AddShippingMethodToCartWorkflow mirrors addShippingMethodToCartWorkflow.
 var AddShippingMethodToCartWorkflow = composer.CreateWorkflow("add-shipping-method-to-cart",
 	func(e *composer.Execution, in AddShippingMethodInput) (any, error) {
+		if err := acquireLock(e, in.CartID, 2, 10); err != nil {
+			return nil, err
+		}
 		cart, err := fetchCart(e, "use-remote-query", in.CartID, CartFieldsForRefreshSteps, true)
 		if err != nil {
 			return nil, err
@@ -102,6 +105,12 @@ var AddShippingMethodToCartWorkflow = composer.CreateWorkflow("add-shipping-meth
 		}
 		ev := dal.NewRecord()
 		ev.Set("id", in.CartID)
-		_, err = commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "cart.updated", Data: ev})
+		err = composer.Parallelize(
+			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "cart.updated", Data: ev})
+				return err
+			},
+			func() error { return releaseLock(e, Str(cart, "id")) },
+		)
 		return nil, err
 	})

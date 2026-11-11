@@ -16,8 +16,8 @@ type TransferCartCustomerInput struct {
 	AdditionalData *dal.Record
 }
 
-// TransferCartCustomerWorkflow mirrors transferCartCustomerWorkflow (locks
-// are not ported).
+// TransferCartCustomerWorkflow mirrors transferCartCustomerWorkflow: the cart
+// is locked while it is transferred.
 var TransferCartCustomerWorkflow = composer.CreateWorkflow("transfer-cart-customer",
 	func(e *composer.Execution, in TransferCartCustomerInput) (any, error) {
 		f := dal.NewRecord()
@@ -55,6 +55,9 @@ var TransferCartCustomerWorkflow = composer.CreateWorkflow("transfer-cart-custom
 		if Get(Rec(cart, "customer"), "id") == Get(customer, "id") {
 			return nil, nil
 		}
+		if err := acquireLock(e, Str(cart, "id"), 2, 10); err != nil {
+			return nil, err
+		}
 		u := dal.NewRecord()
 		u.Set("id", Get(cart, "id"))
 		u.Set("customer_id", Get(customer, "id"))
@@ -68,6 +71,12 @@ var TransferCartCustomerWorkflow = composer.CreateWorkflow("transfer-cart-custom
 		// customer.customer_id is undefined upstream (the event carries no customer)
 		ev := dal.NewRecord()
 		ev.Set("id", in.ID)
-		_, err = commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "cart.customer_transferred", Data: ev})
+		err = composer.Parallelize(
+			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "cart.customer_transferred", Data: ev})
+				return err
+			},
+			func() error { return releaseLock(e, Str(cart, "id")) },
+		)
 		return nil, err
 	})

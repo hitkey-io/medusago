@@ -734,8 +734,14 @@ var MarkOrderFulfillmentAsDeliveredWorkflow = composer.CreateWorkflow("mark-orde
 		delivery.Set("reference", utilsmodulessdk.FULFILLMENT)
 		delivery.Set("reference_id", g(orderFulfillment, "id"))
 		delivery.Set("items", orderFulfillmentItems(order, orderFulfillment, false, true))
+		if err := acquireLock(e, in.OrderID, 2, 10); err != nil {
+			return nil, err
+		}
 		delivered, err := fulfillmentworkflows.MarkFulfillmentAsDeliveredWorkflow.RunAsStep(e, g(fulfillment, "id"))
 		if err != nil {
+			return nil, err
+		}
+		if err := releaseLock(e, in.OrderID); err != nil {
 			return nil, err
 		}
 		if _, err := ordersteps.RegisterOrderDeliveryStep.Run(e, delivery); err != nil {

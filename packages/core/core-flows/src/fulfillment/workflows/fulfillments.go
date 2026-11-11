@@ -2,6 +2,7 @@ package workflows
 
 import (
 	"context"
+	lockingsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/locking/steps"
 
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
@@ -176,6 +177,10 @@ var ValidateFulfillmentDeliverabilityStep = composer.CreateStep("validate-fulfil
 // MarkFulfillmentAsDeliveredWorkflow mirrors markFulfillmentAsDeliveredWorkflow.
 var MarkFulfillmentAsDeliveredWorkflow = composer.CreateWorkflow("mark-fulfillment-as-delivered-workflow",
 	func(e *composer.Execution, id any) (*dal.Record, error) {
+		key, _ := id.(string)
+		if _, err := lockingsteps.AcquireLockStep.Run(e, lockingsteps.AcquireLockStepInput{Key: lockingsteps.Key(key), Timeout: 2, TTL: 10}); err != nil {
+			return nil, err
+		}
 		v := dal.NewRecord()
 		v.Set("id", id)
 		list := false
@@ -193,7 +198,14 @@ var MarkFulfillmentAsDeliveredWorkflow = composer.CreateWorkflow("mark-fulfillme
 		u := dal.NewRecord()
 		u.Set("id", id)
 		u.Set("delivered_at", dal.Now())
-		return UpdateFulfillmentWorkflow.RunAsStep(e, u)
+		updated, err := UpdateFulfillmentWorkflow.RunAsStep(e, u)
+		if err != nil {
+			return nil, err
+		}
+		if _, err := lockingsteps.ReleaseLockStep.Run(e, lockingsteps.ReleaseLockStepInput{Key: lockingsteps.Key(key)}); err != nil {
+			return nil, err
+		}
+		return updated, nil
 	})
 
 // CancelFulfillmentStep mirrors cancelFulfillmentStep.

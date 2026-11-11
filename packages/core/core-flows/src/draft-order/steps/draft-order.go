@@ -7,6 +7,7 @@ import (
 
 	cartsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/steps"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
+	lockingsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/locking/steps"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -261,9 +262,13 @@ type RefreshDraftOrderAdjustmentsInput struct {
 
 // RefreshDraftOrderAdjustmentsWorkflow mirrors refreshDraftOrderAdjustmentsWorkflow
 // (defined with the steps so that order workflows can run it without an
-// import cycle; locks are not ported).
+// import cycle).
 var RefreshDraftOrderAdjustmentsWorkflow = composer.CreateWorkflow("refresh-draft-order-adjustments",
 	func(e *composer.Execution, in RefreshDraftOrderAdjustmentsInput) (any, error) {
+		key, _ := get(in.Order, "id").(string)
+		if _, err := lockingsteps.AcquireLockStep.Run(e, lockingsteps.AcquireLockStepInput{Key: lockingsteps.Key(key), Timeout: 2, TTL: 10}); err != nil {
+			return nil, err
+		}
 		hookIn := dal.NewRecord()
 		hookIn.Set("order", in.Order)
 		hookIn.Set("promo_codes", in.PromoCodes)
@@ -283,7 +288,7 @@ var RefreshDraftOrderAdjustmentsWorkflow = composer.CreateWorkflow("refresh-draf
 		if err != nil {
 			return nil, err
 		}
-		return nil, composer.Parallelize(
+		err = composer.Parallelize(
 			func() error {
 				_, err := RemoveDraftOrderLineItemAdjustmentsStep.Run(e, prepared.LineItemAdjustmentIDsToRemove)
 				return err
@@ -305,6 +310,11 @@ var RefreshDraftOrderAdjustmentsWorkflow = composer.CreateWorkflow("refresh-draf
 				return err
 			},
 		)
+		if err != nil {
+			return nil, err
+		}
+		_, err = lockingsteps.ReleaseLockStep.Run(e, lockingsteps.ReleaseLockStepInput{Key: lockingsteps.Key(key)})
+		return nil, err
 	})
 
 // UpdateDraftOrderStepInput mirrors UpdateDraftOrderStepInput.
