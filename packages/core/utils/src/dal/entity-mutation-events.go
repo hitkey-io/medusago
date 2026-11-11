@@ -72,8 +72,8 @@ type Recorder struct {
 	// touched lists the classes with a loaded entity modified in memory
 	// (see Touch).
 	touched map[string]bool
-	// hidden: the mutations recorded from this index on are not persisted
-	// in the unit of work yet (see HoldPending); -1 when none.
+	// while holding, the mutations recorded from index hidden on are not
+	// persisted in the unit of work yet (see HoldPending).
 	hidden  int
 	holding bool
 	// rawSynced lists the entities whose raw big number columns a partial
@@ -365,15 +365,6 @@ func EmitPoint(ctx context.Context, db Querier) {
 		return
 	}
 	sink.EmitModuleEvents(WithEmit(ctx), events)
-}
-
-// FlushAndEmit mirrors a generated MedusaService method (@EmitEvents) whose
-// query auto flushes the unit of work, called inside a transaction: the
-// pending mutations are flushed, then everything aggregated so far is
-// emitted.
-func FlushAndEmit(ctx context.Context, db Querier) {
-	FlushEvents(db)
-	EmitPoint(ctx, db)
 }
 
 // RecordEvent saves an explicitly built event (moduleEventBuilderFactory)
