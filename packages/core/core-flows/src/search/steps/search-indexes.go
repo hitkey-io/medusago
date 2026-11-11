@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 
+	searchtypes "github.com/hitkey-io/medusago/packages/core/types/src/search"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -69,30 +70,38 @@ var DeleteSearchIndexStep = composer.CreateStep("delete-search-index",
 	}, nil)
 
 type indexReindexer interface {
-	Reindex(ctx context.Context, indexes []string, input *dal.Record) (*dal.Record, error)
+	Reindex(ctx context.Context, input searchtypes.ReindexInput) (searchtypes.ReindexResult, error)
 }
 
-// ReindexSearchIndexesStep mirrors reindexSearchIndexesStep.
+// ReindexSearchIndexesStep mirrors reindexSearchIndexesStep: an
+// unparseable `since` fails here rather than rebuilding nothing.
 var ReindexSearchIndexesStep = composer.CreateStep("reindex-search-indexes",
 	func(sc composer.StepExecutionContext, in SearchIndexesInput) (composer.StepResponse[*dal.Record], error) {
 		svc, _ := resolveSearch(sc.Container).(indexReindexer)
-		input := dal.NewRecord()
+		input := searchtypes.ReindexInput{Index: in.Index, Filters: in.Filters}
 		if in.Since != nil && *in.Since != "" {
 			since, ok := common.ParseJSDate(*in.Since)
 			if !ok {
 				return composer.StepResponse[*dal.Record]{}, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, fmt.Sprintf(`"%s" is not a valid date to reindex since`, *in.Since))
 			}
-			input.Set("since", since)
-		}
-		if in.Filters != nil {
-			input.Set("filters", in.Filters)
+			input.Since = &since
 		}
 		if in.Strategy != nil {
-			input.Set("strategy", *in.Strategy)
+			input.Strategy = *in.Strategy
 		}
-		result, err := svc.Reindex(sc.Context, in.Index, input)
+		if svc == nil {
+			return composer.StepResponse[*dal.Record]{}, fmt.Errorf("Cannot read properties of undefined (reading 'reindex')")
+		}
+		result, err := svc.Reindex(sc.Context, input)
 		if err != nil {
 			return composer.StepResponse[*dal.Record]{}, err
 		}
-		return composer.NewStepResponse(result), nil
+		out := dal.NewRecord()
+		out.Set("job_id", result.JobID)
+		indexes := make([]any, len(result.Indexes))
+		for i, name := range result.Indexes {
+			indexes[i] = name
+		}
+		out.Set("indexes", indexes)
+		return composer.NewStepResponse(out), nil
 	}, nil)

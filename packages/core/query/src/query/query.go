@@ -19,6 +19,8 @@ type Query struct {
 	fetcher *ModuleDataFetcher
 	// indexModule is the index module (nil when it is not loaded).
 	indexModule IndexService
+	// searchModule is the search module (nil when it is not loaded).
+	searchModule SearchService
 	// translations mirrors the translation feature flag (applyTranslations).
 	translations bool
 }

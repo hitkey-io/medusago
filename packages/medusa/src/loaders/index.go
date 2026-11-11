@@ -34,8 +34,8 @@ type MedusaApp struct {
 	Handler   nethttp.Handler
 	// App is the router behind Handler (routes and middlewares can be
 	// added to it by Options.OnLoad hooks).
-	App *medusahttp.App
-	Pool      *pgxpool.Pool
+	App  *medusahttp.App
+	Pool *pgxpool.Pool
 	// shutdown mirrors the shutdown returned by the express loader.
 	shutdown []func()
 }
@@ -237,6 +237,9 @@ type Options struct {
 	// requests: the hook of a project to register its own routes,
 	// subscribers or container entries.
 	OnLoad []func(ctx context.Context, app *MedusaApp) error
+	// Middlewares are the project's middlewares (src/api/middlewares.ts),
+	// applied after the core ones.
+	Middlewares []medusahttp.MiddlewareRoute
 }
 
 // Initialize mirrors the loaders of `medusa start`: container, modules,
@@ -297,11 +300,19 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 		bus.Subscribe("payment.webhook_received", func(ctx context.Context, ev eventbuslocal.Event) error {
 			return subscribers.PaymentWebhookHandler(ctx, c, ev.Data)
 		})
+		for _, event := range subscribers.SearchIngestionEvents() {
+			bus.Subscribe(event, func(ctx context.Context, ev eventbuslocal.Event) error {
+				return subscribers.SearchIngestionHandler(ctx, c, ev.Name, ev.Data, ev.Metadata)
+			})
+		}
 	}
 
-	// createQuery's indexModule
+	// createQuery's indexModule and searchModule
 	if index, ok := c.Resolve(utilsmodulessdk.INDEX).(query.IndexService); ok {
 		q.SetIndexModule(index)
+	}
+	if search, ok := c.Resolve(utilsmodulessdk.SEARCH).(query.SearchService); ok {
+		q.SetSearchModule(search)
 	}
 	// loaders/index.ts: createDefaultsWorkflow runs at every start, before
 	// the modules' onApplicationStart hooks.
@@ -342,7 +353,7 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 	// by path only, so its position does not change the routing.
 	medusahttp.LoadAPI(app, medusahttp.ApiLoaderOptions{
 		Routes:               api.Routes(),
-		Middlewares:          api.Middlewares(),
+		Middlewares:          append(api.Middlewares(), opts.Middlewares...),
 		AdminCors:            cfg.ProjectConfig.HTTP.AdminCors,
 		StoreCors:            cfg.ProjectConfig.HTTP.StoreCors,
 		AuthCors:             cfg.ProjectConfig.HTTP.AuthCors,

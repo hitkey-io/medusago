@@ -79,6 +79,7 @@ import (
 	storeregionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/regions"
 	storereasonsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons"
 	storereturnsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/returns"
+	storesearch "github.com/hitkey-io/medusago/packages/medusa/src/api/store/search"
 	storeshippingoptionsmw "github.com/hitkey-io/medusago/packages/medusa/src/api/store/shipping-options"
 )
 
@@ -156,6 +157,7 @@ func Middlewares() []medusahttp.MiddlewareRoute {
 	out = append(out, admintranslations.Middlewares...)
 	out = append(out, adminlocales.Middlewares...)
 	out = append(out, storelocales.Middlewares...)
+	out = append(out, storesearch.Middlewares...)
 	out = append(out, viewsconfigurations.Middlewares...)
 	out = append(out, layoutzoneconfiguration.Middlewares...)
 	out = append(out, cloudauthusers.Middlewares...)

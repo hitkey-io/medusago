@@ -256,8 +256,11 @@ func commandsList() []command {
 				if !ok {
 					return 1
 				}
-				db.MigrateSearch(cfg, r.logger)
-				return 0
+				_ = os.Setenv("MEDUSA_WORKER_MODE", "server")
+				return r.report(db.MigrateSearch(context.Background(), cfg, db.MigrateSearchOptions{
+					ExecuteAll:  a.bool("execute-all-search"),
+					ExecuteSafe: a.bool("execute-safe-search"),
+				}))
 			},
 		},
 		{

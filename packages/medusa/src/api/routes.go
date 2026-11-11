@@ -318,6 +318,7 @@ import (
 	storereasons "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons"
 	storereasonid "github.com/hitkey-io/medusago/packages/medusa/src/api/store/return-reasons/id_"
 	storereturns "github.com/hitkey-io/medusago/packages/medusa/src/api/store/returns"
+	storesearch "github.com/hitkey-io/medusago/packages/medusa/src/api/store/search"
 	storeshippingoptions "github.com/hitkey-io/medusago/packages/medusa/src/api/store/shipping-options"
 	storeshippingoptionscalculate "github.com/hitkey-io/medusago/packages/medusa/src/api/store/shipping-options/id_/calculate"
 )
@@ -604,6 +605,7 @@ func Routes() []medusahttp.RouteFile {
 		{Path: "/admin/locales", Route: adminlocales.Route, FeatureFlag: admintranslations.FeatureFlag},
 		{Path: "/admin/locales/:code", Route: adminlocalecode.Route, FeatureFlag: admintranslations.FeatureFlag},
 		{Path: "/store/returns", Route: storereturns.Route},
+		{Path: "/store/search", Route: storesearch.Route},
 		{Path: "/store/regions/:id", Route: storeregionid.Route},
 		{Path: "/store/currencies", Route: storecurrencies.Route},
 		{Path: "/store/currencies/:code", Route: storecurrencycode.Route},
