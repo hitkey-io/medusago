@@ -18,6 +18,9 @@ type WorkflowOptions struct {
 	// RetentionTime is in seconds; a finished execution is kept that long.
 	RetentionTime int
 	Idempotent    bool
+	// Schedule mirrors the schedule option: the workflow runs on the
+	// workflow engine's scheduler.
+	Schedule *SchedulerOptions
 }
 
 // ExecutionRow is one workflow_execution row.
@@ -88,38 +91,6 @@ func (e *Execution) removeExecution() {
 	}
 }
 
-// stepResult is what setStepSuccess / setStepFailure deliver to a waiting
-// async step.
-type stepResult struct {
-	output any
-	err    error
-}
-
-var (
-	waitersMu sync.Mutex
-	waiters   = map[string]chan stepResult{}
-)
-
-func waiterKey(workflowID, transactionID, stepID string) string {
-	return workflowID + ":" + transactionID + ":" + stepID
-}
-
-func registerWaiter(key string) chan stepResult {
-	ch := make(chan stepResult, 1)
-	waitersMu.Lock()
-	waiters[key] = ch
-	waitersMu.Unlock()
-	return ch
-}
-
-func takeWaiter(key string) chan stepResult {
-	waitersMu.Lock()
-	defer waitersMu.Unlock()
-	ch := waiters[key]
-	delete(waiters, key)
-	return ch
-}
-
 // IdempotencyKey mirrors the { action, transactionId, stepId, workflowId }
 // key of setStepSuccess / setStepFailure.
 type IdempotencyKey struct {
@@ -148,10 +119,10 @@ func IsRegisteredWorkflow(id string) bool {
 	return registry[id]
 }
 
-// notFoundWaiting mirrors the errors of registerStepSuccess for a step that
+// NotFoundWaiting mirrors the errors of registerStepSuccess for a step that
 // is not waiting in this process: an unknown workflow, else an unknown
 // transaction.
-func notFoundWaiting(key IdempotencyKey) error {
+func NotFoundWaiting(key IdempotencyKey) error {
 	if !IsRegisteredWorkflow(key.WorkflowID) {
 		return fmt.Errorf("Workflow with id \"%s\" not found.", key.WorkflowID)
 	}
@@ -163,25 +134,47 @@ func notFoundWorkflow(id string) error {
 	return common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, fmt.Sprintf("Workflow with id \"%s\" not found.", id))
 }
 
-// SetStepSuccess mirrors workflowEngine.setStepSuccess: the waiting async
-// step completes with the response and the workflow continues.
-func SetStepSuccess(key IdempotencyKey, response any) error {
-	ch := takeWaiter(waiterKey(key.WorkflowID, key.TransactionID, key.StepID))
-	if ch == nil {
-		return notFoundWaiting(key)
+// StepResponseOptions are the options of setStepSuccess / setStepFailure.
+type StepResponseOptions struct {
+	// WithContainer reports options.container being passed (the
+	// workflows-executions steps routes pass req.scope).
+	WithContainer bool
+}
+
+// containerOptionRejecter is implemented by a workflow engine module that
+// cannot take options.container (the Redis engine JSON-clones the options,
+// so the container loses createScope and the call throws).
+type containerOptionRejecter interface {
+	ContainerOptionError() error
+}
+
+func checkContainerOption(c Container, opts []StepResponseOptions) error {
+	if len(opts) == 0 || !opts[0].WithContainer || c == nil {
+		return nil
 	}
-	ch <- stepResult{output: response}
+	if r, ok := c.Resolve(utilsmodulessdk.WORKFLOW_ENGINE).(containerOptionRejecter); ok {
+		return r.ContainerOptionError()
+	}
 	return nil
 }
 
-// SetStepFailure mirrors workflowEngine.setStepFailure.
-func SetStepFailure(key IdempotencyKey, err error) error {
-	ch := takeWaiter(waiterKey(key.WorkflowID, key.TransactionID, key.StepID))
-	if ch == nil {
-		return notFoundWaiting(key)
+// SetStepSuccess mirrors workflowEngine.setStepSuccess: the waiting async
+// step completes with the response and the workflow continues. The
+// workflow engine module of the container delivers it (to a step waiting in
+// another instance with the Redis engine).
+func SetStepSuccess(ctx context.Context, c Container, key IdempotencyKey, response any, opts ...StepResponseOptions) error {
+	if err := checkContainerOption(c, opts); err != nil {
+		return err
 	}
-	ch <- stepResult{err: err}
-	return nil
+	return stepCoordinator(c).Deliver(ctx, key, StepResult{Output: response})
+}
+
+// SetStepFailure mirrors workflowEngine.setStepFailure.
+func SetStepFailure(ctx context.Context, c Container, key IdempotencyKey, err error, opts ...StepResponseOptions) error {
+	if cerr := checkContainerOption(c, opts); cerr != nil {
+		return cerr
+	}
+	return stepCoordinator(c).Deliver(ctx, key, StepResult{Err: err})
 }
 
 // convertOutput converts a value delivered by setStepSuccess (JSON-like) to

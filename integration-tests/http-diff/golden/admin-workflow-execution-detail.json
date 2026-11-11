@@ -1,0 +1,159 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzODAzNTgsImV4cCI6MTc5NDQ2Njc1OH0.9OhrdzSlkgByrnPbcy55ZINHa6zqiqVTPh5apnudtoc"
+    }
+  },
+  "up_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "1794380358507-detail_a.csv",
+          "url": "http://localhost:9000/static/1794380358507-detail_a.csv"
+        }
+      ]
+    }
+  },
+  "import_a": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "transaction_id": "auto-01M74PERVERDPG2GAYSA966Z7P",
+      "summary": {
+        "toCreate": 1,
+        "toUpdate": 0
+      }
+    }
+  },
+  "up_b": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "1794380358673-detail_b.csv",
+          "url": "http://localhost:9000/static/1794380358673-detail_b.csv"
+        }
+      ]
+    }
+  },
+  "import_b": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "transaction_id": "auto-01M74PES0KSHXV9MRV3SBCBB3R",
+      "summary": {
+        "toCreate": 1,
+        "toUpdate": 0
+      }
+    }
+  },
+  "list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_executions": [
+        {
+          "workflow_id": "import-products-as-chunks",
+          "transaction_id": "auto-01M74PERVERDPG2GAYSA966Z7P",
+          "state": "invoking",
+          "id": "wf_exec_01M74PERVMSRGBH06CXN5HGW8T"
+        },
+        {
+          "workflow_id": "import-products-as-chunks",
+          "transaction_id": "auto-01M74PES0KSHXV9MRV3SBCBB3R",
+          "state": "invoking",
+          "id": "wf_exec_01M74PES0PNKVB3Y2RYWTRB1R0"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "detail_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_execution": {
+        "workflow_id": "import-products-as-chunks",
+        "transaction_id": "auto-01M74PERVERDPG2GAYSA966Z7P",
+        "state": "invoking",
+        "id": "wf_exec_01M74PERVMSRGBH06CXN5HGW8T"
+      }
+    }
+  },
+  "detail_b": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_execution": {
+        "workflow_id": "import-products-as-chunks",
+        "transaction_id": "auto-01M74PERVERDPG2GAYSA966Z7P",
+        "state": "invoking",
+        "id": "wf_exec_01M74PERVMSRGBH06CXN5HGW8T"
+      }
+    }
+  },
+  "detail_unknown_tx": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_execution": {
+        "workflow_id": "import-products-as-chunks",
+        "transaction_id": "auto-01M74PERVERDPG2GAYSA966Z7P",
+        "state": "invoking",
+        "id": "wf_exec_01M74PERVMSRGBH06CXN5HGW8T"
+      }
+    }
+  },
+  "detail_unknown_workflow": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  }
+}

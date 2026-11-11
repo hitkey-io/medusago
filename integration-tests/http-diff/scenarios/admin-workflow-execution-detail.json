@@ -1,0 +1,95 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "up_a",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/uploads",
+    "files": [
+      {
+        "field": "files",
+        "name": "detail_a.csv",
+        "type": "text/csv",
+        "content": "Product Handle,Product Title,Product Status,Variant Title,Variant Sku,Variant Price EUR,Variant Option 1 Name,Variant Option 1 Value\ndetail-mug,Detail Mug,published,Standard,DETAIL-MUG-1,9,Size,Standard\n"
+      }
+    ]
+  },
+  {
+    "name": "import_a",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports",
+    "body": {
+      "file_key": "{{up_a.files.0.id}}",
+      "originalname": "detail_a.csv",
+      "extension": "csv",
+      "size": 100,
+      "mime_type": "text/csv"
+    }
+  },
+  {
+    "name": "up_b",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/uploads",
+    "files": [
+      {
+        "field": "files",
+        "name": "detail_b.csv",
+        "type": "text/csv",
+        "content": "Product Handle,Product Title,Product Status,Variant Title,Variant Sku,Variant Price EUR,Variant Option 1 Name,Variant Option 1 Value\ndetail-mug,Detail Mug,published,Standard,DETAIL-MUG-1,9,Size,Standard\n"
+      }
+    ]
+  },
+  {
+    "name": "import_b",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports",
+    "body": {
+      "file_key": "{{up_b.files.0.id}}",
+      "originalname": "detail_b.csv",
+      "extension": "csv",
+      "size": 100,
+      "mime_type": "text/csv"
+    }
+  },
+  {
+    "name": "list",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/workflows-executions?workflow_id=import-products-as-chunks&order=created_at&fields=workflow_id,transaction_id,state"
+  },
+  {
+    "name": "detail_a",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/workflows-executions/import-products-as-chunks/{{import_a.transaction_id}}?fields=workflow_id,transaction_id,state"
+  },
+  {
+    "name": "detail_b",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/workflows-executions/import-products-as-chunks/{{import_b.transaction_id}}?fields=workflow_id,transaction_id,state"
+  },
+  {
+    "name": "detail_unknown_tx",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/workflows-executions/import-products-as-chunks/auto-unknown?fields=workflow_id,transaction_id,state"
+  },
+  {
+    "name": "detail_unknown_workflow",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/workflows-executions/no-such-workflow/{{import_a.transaction_id}}?fields=workflow_id,transaction_id,state"
+  }
+]

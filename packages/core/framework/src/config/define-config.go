@@ -217,6 +217,10 @@ func DefineConfig(input InputConfig) ConfigModule {
 
 	modules := defaultModules(input.FeatureFlags)
 	for _, um := range input.Modules {
+		// getKnownModuleName: the key, else the key of a known package
+		if um.Key == "" {
+			um.Key = modulessdk.ReversedModulePackageName(um.Resolve)
+		}
 		replaced := false
 		for i := range modules {
 			if modules[i].Key == um.Key {

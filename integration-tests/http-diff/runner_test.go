@@ -758,13 +758,14 @@ func goServer(t *testing.T, scenario string) string {
 		return base
 	}
 	projectMiddlewares := registerTestSearchIndexes()
+	prepareRedis(t)
 	dbURL := setupDatabase(t, "medusa_http_go_"+strings.ReplaceAll(scenario, "-", "_"))
 	// Same CORS settings as record.sh passes to upstream.
 	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{
 		DatabaseURL: dbURL,
 		HTTP:        config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
 	}, Modules: scenarioModules()})
-	app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares})
+	app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, OnLoad: scenarioHooks(t)})
 	if err != nil {
 		t.Fatal(err)
 	}

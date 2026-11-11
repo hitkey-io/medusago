@@ -6,7 +6,6 @@ import (
 	defaultsworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/defaults/workflows"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/medusa/src/subscribers"
-	eventbuslocal "github.com/hitkey-io/medusago/packages/modules/event-bus-local/src/services"
 	"log/slog"
 	nethttp "net/http"
 	"os"
@@ -20,6 +19,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/framework/src/http/middlewares"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
+	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 	ff "github.com/hitkey-io/medusago/packages/core/utils/src/feature-flags"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/ioredis"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -317,12 +317,12 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 	}
 
 	// subscribers loader (packages/medusa/src/subscribers)
-	if bus, ok := c.Resolve(utilsmodulessdk.EVENT_BUS).(*eventbuslocal.LocalEventBusService); ok {
-		bus.Subscribe("payment.webhook_received", func(ctx context.Context, ev eventbuslocal.Event) error {
+	if bus, ok := c.Resolve(utilsmodulessdk.EVENT_BUS).(eventbus.Subscribable); ok {
+		bus.Subscribe("payment.webhook_received", func(ctx context.Context, ev eventbus.Event) error {
 			return subscribers.PaymentWebhookHandler(ctx, c, ev.Data)
 		})
 		for _, event := range subscribers.SearchIngestionEvents() {
-			bus.Subscribe(event, func(ctx context.Context, ev eventbuslocal.Event) error {
+			bus.Subscribe(event, func(ctx context.Context, ev eventbus.Event) error {
 				return subscribers.SearchIngestionHandler(ctx, c, ev.Name, ev.Data, ev.Metadata)
 			})
 		}

@@ -73,3 +73,29 @@ var MODULE_PACKAGE_NAMES = map[string]string{
 	TRANSLATION:     "@medusajs/medusa/translation",
 	RBAC:            "@medusajs/medusa/rbac",
 }
+
+// TEMPORARY_REDIS_MODULE_PACKAGE_NAMES mirrors
+// TEMPORARY_REDIS_MODULE_PACKAGE_NAMES.
+var TEMPORARY_REDIS_MODULE_PACKAGE_NAMES = map[string]string{
+	EVENT_BUS:       "@medusajs/medusa/event-bus-redis",
+	CACHE:           "@medusajs/medusa/cache-redis",
+	WORKFLOW_ENGINE: "@medusajs/medusa/workflow-engine-redis",
+	LOCKING:         "@medusajs/medusa/locking-redis",
+}
+
+// ReversedModulePackageName mirrors REVERSED_MODULE_PACKAGE_NAMES[resolve]
+// (including the temporary Redis package names): the module key of a
+// package, "" when unknown.
+func ReversedModulePackageName(resolve string) string {
+	for k, v := range MODULE_PACKAGE_NAMES {
+		if v == resolve {
+			return k
+		}
+	}
+	for k, v := range TEMPORARY_REDIS_MODULE_PACKAGE_NAMES {
+		if v == resolve {
+			return k
+		}
+	}
+	return ""
+}
