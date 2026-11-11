@@ -6,6 +6,9 @@ import modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules
 
 // Registry maps "@medusajs/medusa/<name>" package names to their exports.
 var Registry = map[string]*modulessdk.ModuleExports{
+	"@medusajs/medusa/analytics":                &Analytics,
+	"@medusajs/medusa/analytics-local":          &AnalyticsLocal,
+	"@medusajs/medusa/analytics-posthog":        &AnalyticsPosthog,
 	"@medusajs/medusa/notification-local":       &NotificationLocal,
 	"@medusajs/medusa/notification-sendgrid":    &NotificationSendgrid,
 	"@medusajs/medusa/file-local":               &FileLocal,

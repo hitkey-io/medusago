@@ -34,8 +34,8 @@ type MedusaApp struct {
 	Handler   nethttp.Handler
 	// App is the router behind Handler (routes and middlewares can be
 	// added to it by Options.OnLoad hooks).
-	App *medusahttp.App
-	Pool      *pgxpool.Pool
+	App  *medusahttp.App
+	Pool *pgxpool.Pool
 	// shutdown mirrors the shutdown returned by the express loader.
 	shutdown []func()
 }
@@ -360,6 +360,16 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 		return nil
 	})
 	medusaApp := &MedusaApp{Container: c, Handler: app, App: app, Pool: pool, shutdown: []func(){closeStore}}
+	// module services __hooks.onApplicationShutdown (e.g. analytics flushes)
+	for _, mc := range cfg.Modules {
+		if h, ok := c.Resolve(mc.Key).(interface{ OnApplicationShutdown(context.Context) error }); ok && !mc.Disable {
+			medusaApp.shutdown = append(medusaApp.shutdown, func() {
+				if err := h.OnApplicationShutdown(context.Background()); err != nil {
+					logger.Error(fmt.Sprintf("%s onApplicationShutdown: %v", mc.Key, err))
+				}
+			})
+		}
+	}
 	// admin loader (upstream registers it once the bundler is imported, after
 	// the synchronous registrations).
 	if !opts.SkipAdmin {

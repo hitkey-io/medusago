@@ -257,6 +257,24 @@ async function posthog() {
       out.calls.push({ method, data, error: e.message })
     }
   }
+  // the analytics module service over the provider (error wrapping)
+  const AnalyticsService = req("@medusajs/analytics/dist/services/analytics-service").default
+  const ProviderService = req("@medusajs/analytics/dist/services/provider-service").default
+  const moduleService = new AnalyticsService({ analyticsProviderService: new ProviderService({ "aly_analytics-posthog_posthog": s }) })
+  out.module_calls = []
+  for (const [method, data] of calls.filter(([, , ], i) => i >= 3 && i !== 6 && i !== 7 && i !== 8)) {
+    try {
+      await moduleService[method](data)
+      out.module_calls.push({ method, data, result: "ok" })
+    } catch (e) {
+      out.module_calls.push({ method, data, error: { type: e.type, message: e.message } })
+    }
+  }
+  try {
+    new ProviderService({})
+  } catch (e) {
+    out.provider_service_error = { type: e.type, message: e.message }
+  }
   await s.shutdown()
   out.requests = rec.requests.map((r) => ({
     method: r.method,

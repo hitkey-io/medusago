@@ -1,0 +1,274 @@
+{
+  "options": {
+    "posthogEventsKey": "phc_test"
+  },
+  "calls": [
+    {
+      "method": "track",
+      "data": {
+        "event": "order_placed",
+        "actor_id": "cus_1",
+        "properties": {
+          "total": 10,
+          "items": [
+            "a"
+          ]
+        }
+      },
+      "result": "ok"
+    },
+    {
+      "method": "track",
+      "data": {
+        "event": "cart_created",
+        "actor_id": "cus_2",
+        "group": {
+          "type": "company",
+          "id": "comp_1"
+        },
+        "properties": {
+          "a": 1
+        }
+      },
+      "result": "ok"
+    },
+    {
+      "method": "track",
+      "data": {
+        "event": "no_props",
+        "actor_id": "cus_3"
+      },
+      "result": "ok"
+    },
+    {
+      "method": "track",
+      "data": {
+        "event": "",
+        "actor_id": "cus_1"
+      },
+      "error": "Event name is required when tracking an event with Posthog"
+    },
+    {
+      "method": "track",
+      "data": {
+        "event": "x"
+      },
+      "error": "Actor ID is required when tracking an event with Posthog"
+    },
+    {
+      "method": "track",
+      "data": {
+        "event": "x",
+        "actor_id": "a",
+        "group": {
+          "id": "g"
+        }
+      },
+      "error": "Group type is required if passing group id when tracking an event with Posthog"
+    },
+    {
+      "method": "identify",
+      "data": {
+        "actor_id": "cus_1",
+        "properties": {
+          "email": "c@example.test",
+          "name": "C"
+        }
+      },
+      "result": "ok"
+    },
+    {
+      "method": "identify",
+      "data": {
+        "group": {
+          "type": "company",
+          "id": "comp_1"
+        },
+        "actor_id": "cus_1",
+        "properties": {
+          "plan": "pro"
+        }
+      },
+      "result": "ok"
+    },
+    {
+      "method": "identify",
+      "data": {
+        "group": {
+          "type": "company",
+          "id": "comp_2"
+        }
+      },
+      "result": "ok"
+    },
+    {
+      "method": "identify",
+      "data": {
+        "properties": {}
+      },
+      "error": "Actor or group is required when identifying an entity with Posthog"
+    }
+  ],
+  "module_calls": [
+    {
+      "method": "track",
+      "data": {
+        "event": "",
+        "actor_id": "cus_1"
+      },
+      "error": {
+        "type": "unexpected_state",
+        "message": "Error tracking event for : Event name is required when tracking an event with Posthog"
+      }
+    },
+    {
+      "method": "track",
+      "data": {
+        "event": "x"
+      },
+      "error": {
+        "type": "unexpected_state",
+        "message": "Error tracking event for x: Actor ID is required when tracking an event with Posthog"
+      }
+    },
+    {
+      "method": "track",
+      "data": {
+        "event": "x",
+        "actor_id": "a",
+        "group": {
+          "id": "g"
+        }
+      },
+      "error": {
+        "type": "unexpected_state",
+        "message": "Error tracking event for x: Group type is required if passing group id when tracking an event with Posthog"
+      }
+    },
+    {
+      "method": "identify",
+      "data": {
+        "properties": {}
+      },
+      "error": {
+        "type": "unexpected_state",
+        "message": "Error identifying event for undefined: Actor or group is required when identifying an entity with Posthog"
+      }
+    }
+  ],
+  "provider_service_error": {
+    "type": "invalid_data",
+    "message": "Analytics module should be initialized with exactly one provider"
+  },
+  "requests": [
+    {
+      "method": "POST",
+      "url": "/batch/",
+      "headers": {
+        "content-type": "application/json",
+        "content-encoding": "gzip",
+        "user-agent": "posthog-node/5.57.0"
+      },
+      "body": {
+        "api_key": "phc_test",
+        "batch": [
+          {
+            "event": "order_placed",
+            "properties": {
+              "total": 10,
+              "items": [
+                "a"
+              ],
+              "$lib": "posthog-node",
+              "$lib_version": "5.57.0",
+              "$is_server": true,
+              "$geoip_disable": true
+            },
+            "timestamp": "2026-11-11T06:50:08.714Z",
+            "uuid": "01a1c95e-ffca-7fa1-8672-a7b5d7a07308",
+            "distinct_id": "cus_1"
+          },
+          {
+            "event": "cart_created",
+            "properties": {
+              "a": 1,
+              "$groups": {
+                "company": "comp_1"
+              },
+              "$lib": "posthog-node",
+              "$lib_version": "5.57.0",
+              "$is_server": true,
+              "$geoip_disable": true
+            },
+            "timestamp": "2026-11-11T06:50:08.715Z",
+            "uuid": "01a1c95e-ffcb-7b6e-8b7c-df1a7a004119",
+            "distinct_id": "cus_2"
+          },
+          {
+            "event": "no_props",
+            "properties": {
+              "$lib": "posthog-node",
+              "$lib_version": "5.57.0",
+              "$is_server": true,
+              "$geoip_disable": true
+            },
+            "timestamp": "2026-11-11T06:50:08.715Z",
+            "uuid": "01a1c95e-ffcb-7b6e-8b7c-df1c418d2bb7",
+            "distinct_id": "cus_3"
+          },
+          {
+            "event": "$identify",
+            "properties": {
+              "$set": {
+                "email": "c@example.test",
+                "name": "C"
+              },
+              "$set_once": {},
+              "$lib": "posthog-node",
+              "$lib_version": "5.57.0",
+              "$is_server": true,
+              "$geoip_disable": true
+            },
+            "timestamp": "2026-11-11T06:50:08.720Z",
+            "uuid": "01a1c95e-ffd0-7a8a-8e1e-948639ef1174",
+            "distinct_id": "cus_1"
+          },
+          {
+            "event": "$groupidentify",
+            "properties": {
+              "$group_type": "company",
+              "$group_key": "comp_1",
+              "$group_set": {
+                "plan": "pro"
+              },
+              "$lib": "posthog-node",
+              "$lib_version": "5.57.0",
+              "$is_server": true,
+              "$geoip_disable": true
+            },
+            "timestamp": "2026-11-11T06:50:08.720Z",
+            "uuid": "01a1c95e-ffd0-7a8a-8e1e-948716f1b643",
+            "distinct_id": "cus_1"
+          },
+          {
+            "event": "$groupidentify",
+            "properties": {
+              "$group_type": "company",
+              "$group_key": "comp_2",
+              "$group_set": {},
+              "$lib": "posthog-node",
+              "$lib_version": "5.57.0",
+              "$is_server": true,
+              "$geoip_disable": true
+            },
+            "timestamp": "2026-11-11T06:50:08.720Z",
+            "uuid": "01a1c95e-ffd0-7a8a-8e1e-9488d9050f7d",
+            "distinct_id": "$company_comp_2"
+          }
+        ],
+        "sent_at": "2026-11-11T06:50:08.720Z"
+      }
+    }
+  ],
+  "constructor_error": "Posthog API key is not set, but is required"
+}
