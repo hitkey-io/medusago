@@ -21,6 +21,8 @@ import (
 // databases.
 func setupDatabase(t *testing.T, name string) string {
 	t.Helper()
+	// MEDUSA_TEST_DB_PREFIX lets parallel runs (other checkouts) use their own databases.
+	name = os.Getenv("MEDUSA_TEST_DB_PREFIX") + name
 	admin := os.Getenv("MEDUSA_TEST_PG_ADMIN_URL")
 	if admin == "" {
 		t.Skip("MEDUSA_TEST_PG_ADMIN_URL is not set (e.g. postgres://postgres:postgres@localhost:54329/postgres)")
