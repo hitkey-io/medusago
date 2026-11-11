@@ -72,6 +72,41 @@ type Recorder struct {
 	// touched lists the classes with a loaded entity modified in memory
 	// (see Touch).
 	touched map[string]bool
+	// hidden: the mutations recorded from this index on are not persisted
+	// in the unit of work yet (see HoldPending); -1 when none.
+	hidden  int
+	holding bool
+}
+
+// HoldPending mirrors an internal service method that loads every entity
+// it updates before it persists the changes (update with selectors): the
+// mutations recorded until release are invisible to the flushes the loads
+// trigger. release makes them pending.
+func HoldPending(db Querier) (release func()) {
+	rec := recorderOf(db)
+	if rec == nil {
+		return func() {}
+	}
+	rec.mu.Lock()
+	defer rec.mu.Unlock()
+	if rec.holding {
+		return func() {}
+	}
+	rec.holding = true
+	rec.hidden = len(rec.pending)
+	return func() {
+		rec.mu.Lock()
+		rec.holding = false
+		rec.mu.Unlock()
+	}
+}
+
+// visiblePending returns the mutations a flush persists now.
+func (r *Recorder) visiblePending() []mutation {
+	if r.holding && r.hidden <= len(r.pending) {
+		return r.pending[:r.hidden]
+	}
+	return r.pending
 }
 
 // Touched reports whether Touch marked the class and no query on it has
@@ -391,7 +426,7 @@ func (r *Repository) autoFlush(e *dml.Entity) {
 		rec.flushLocked()
 		return
 	}
-	for _, m := range rec.pending {
+	for _, m := range rec.visiblePending() {
 		if m.entity.Meta.ClassName == e.Meta.ClassName {
 			rec.flushLocked()
 			return
@@ -403,17 +438,28 @@ func (r *Repository) autoFlush(e *dml.Entity) {
 // (creates and updates in commit order, deletes in reverse commit order)
 // and turns them into events.
 func (r *Recorder) flushLocked() {
-	if len(r.pending) == 0 {
+	visible := r.visiblePending()
+	if len(visible) == 0 {
 		return
 	}
-	order := commitOrder(r.pending, r.persisted)
+	var held []mutation
+	if len(visible) < len(r.pending) {
+		held = append(held, r.pending[len(visible):]...)
+	}
+	r.flushMutations(visible)
+	r.pending = held
+	r.hidden = 0
+}
+
+func (r *Recorder) flushMutations(pending []mutation) {
+	order := commitOrder(pending, r.persisted)
 	emit := func(change int, reverse bool) {
 		for i := range order {
 			c := order[i]
 			if reverse {
 				c = order[len(order)-1-i]
 			}
-			for _, m := range r.pending {
+			for _, m := range pending {
 				if m.change == change && m.entity.Meta.ClassName == c {
 					r.ready = append(r.ready, mutationEvent(m))
 				}
@@ -423,7 +469,6 @@ func (r *Recorder) flushLocked() {
 	emit(changeCreate, false)
 	emit(changeUpdate, false)
 	emit(changeDelete, true)
-	r.pending = nil
 	r.persisted = nil
 }
 

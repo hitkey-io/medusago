@@ -3,7 +3,9 @@ package services
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"reflect"
 	"slices"
 	"strings"
 
@@ -253,6 +255,69 @@ func (s *OrderModuleService) listOrders(ctx context.Context, filters *dal.Record
 		return nil, 0, err
 	}
 	return utils.FormatOrder(rows, utils.FormatOrderOptions{Entity: "Order", IncludeTotals: include}), n, nil
+}
+
+// listOrdersInTransaction mirrors listOrders_ inside a write transaction:
+// formatOrder with totals (decorateCartTotals) sets pending_difference on
+// the totals object of the loaded summary entity itself, so the unit of
+// work updates the summaries whose totals changed when it flushes. The
+// returned records are those summary updates ({ id, totals }).
+func (s *OrderModuleService) listOrdersInTransaction(ctx context.Context, filters *dal.Record, config utilsmodulessdk.FindConfig) ([]*dal.Record, []*dal.Record, error) {
+	include := shouldIncludeTotals(&config)
+	rows, _, err := s.findOrders(ctx, filters, config, false)
+	if err != nil {
+		return nil, nil, err
+	}
+	// the summary loaded with each order (by order id) and its totals
+	type loaded struct {
+		id     any
+		before string
+	}
+	summaries := map[string]loaded{}
+	if include {
+		for _, o := range rows {
+			for _, sum := range records(get(o, "summary")) {
+				t := asRecord(get(sum, "totals"))
+				if t == nil || get(sum, "id") == nil {
+					continue
+				}
+				raw, _ := dal.MarshalValue(t)
+				summaries[fmt.Sprint(get(o, "id"))] = loaded{id: get(sum, "id"), before: string(raw)}
+				break
+			}
+		}
+	}
+	formatted := utils.FormatOrder(rows, utils.FormatOrderOptions{Entity: "Order", IncludeTotals: include})
+	var updates []*dal.Record
+	for _, o := range formatted {
+		l, ok := summaries[fmt.Sprint(get(o, "id"))]
+		t := asRecord(get(o, "summary"))
+		if !ok || t == nil {
+			continue
+		}
+		raw, _ := dal.MarshalValue(t)
+		if jsonEqual(l.before, string(raw)) {
+			continue
+		}
+		after, err := dal.DecodeOrderedJSON(raw)
+		if err != nil {
+			return nil, nil, err
+		}
+		u := dal.NewRecord()
+		u.Set("id", l.id)
+		u.Set("totals", after)
+		updates = append(updates, u)
+	}
+	return formatted, updates, nil
+}
+
+// jsonEqual compares two JSON documents by value (jsonb semantics).
+func jsonEqual(a, b string) bool {
+	var x, y any
+	if json.Unmarshal([]byte(a), &x) != nil || json.Unmarshal([]byte(b), &y) != nil {
+		return a == b
+	}
+	return reflect.DeepEqual(x, y)
 }
 
 // ListBySuffix dispatches list<suffix> (listOrders formats the orders).

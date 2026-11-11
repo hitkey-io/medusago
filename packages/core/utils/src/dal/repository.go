@@ -127,6 +127,20 @@ func WithSharedIdentityMap(ctx context.Context) context.Context {
 	return context.WithValue(ctx, sharedIdentityMapKey{}, identityMap{})
 }
 
+type noAutoFlushKey struct{}
+
+// WithoutAutoFlush marks finds that must not auto flush the unit of work:
+// the Go service loads rows upstream changes in memory without a query.
+func WithoutAutoFlush(ctx context.Context) context.Context {
+	return context.WithValue(ctx, noAutoFlushKey{}, true)
+}
+
+// WithFreshIdentityMap starts a new shared identity map: the next finds
+// load the rows from the database again instead of the in-memory entities.
+func WithFreshIdentityMap(ctx context.Context) context.Context {
+	return context.WithValue(ctx, sharedIdentityMapKey{}, identityMap{})
+}
+
 func sharedIdentityMap(ctx context.Context) identityMap {
 	if m, ok := ctx.Value(sharedIdentityMapKey{}).(identityMap); ok {
 		return m
@@ -238,7 +252,9 @@ func (r *Repository) count(ctx context.Context, opts FindOptions) (int, error) {
 }
 
 func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, identityMap, error) {
-	r.autoFlush(r.Entity)
+	if ctx.Value(noAutoFlushKey{}) == nil {
+		r.autoFlush(r.Entity)
+	}
 	opts = r.pruneFindOptions(opts)
 	// Orders on relation fields ("images.rank") order the select-in query
 	// loading that relation; the root query keeps the orders of its own

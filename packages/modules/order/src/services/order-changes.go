@@ -307,10 +307,10 @@ func (s *OrderModuleService) applyOrderChanges(ctx context.Context, changeAction
 	// an order change created in this transaction touched the orders: the
 	// orders query flushes, and the queries of the promiseAll below do not
 	orderFlushed := dal.Touched(s.DB(), "Order")
-	orders, _, err := s.listOrders(dal.WithSharedIdentityMap(ctx), f, utilsmodulessdk.FindConfig{
+	orders, summaryUpdates, err := s.listOrdersInTransaction(dal.WithSharedIdentityMap(ctx), f, utilsmodulessdk.FindConfig{
 		Select:    []string{"id", "version", "items.detail", "summary", "total", "email"},
 		Relations: []string{"transactions", "credit_lines"},
-	}, false)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -326,12 +326,22 @@ func (s *OrderModuleService) applyOrderChanges(ctx context.Context, changeAction
 	// promiseAll([order update, actions update, upserts, creates]): the
 	// upserts and creates persist their entities while the order and the
 	// actions are still being loaded; the order query auto flushes them
-	// (the orders were modified in memory by applyChangesToOrder), then the
-	// actions query flushes the order update, and the actions update waits
-	// for the next flush.
+	// (the orders were modified in memory by applyChangesToOrder). The
+	// actions update loads every action with its own query, each one auto
+	// flushing: the order update, persisted once its query returned, is
+	// flushed by the third one; the actions updates wait for the next
+	// flush.
 	out := &OrderChangeReturn{}
 	if err := s.applyOrderChangesUpserts(ctx, res, out); err != nil {
 		return nil, err
+	}
+	if len(summaryUpdates) > 0 {
+		// the loaded summaries whose totals formatOrder changed (compared
+		// with the stored rows, not the decorated in-memory ones); upstream
+		// changed the entities in memory, no query flushes
+		if _, err := s.Internal("OrderSummary").Update(dal.WithoutAutoFlush(dal.WithFreshIdentityMap(ctx)), toAny(summaryUpdates)); err != nil {
+			return nil, err
+		}
 	}
 	if len(res.OrderToUpdate) > 0 {
 		if !orderFlushed {
@@ -342,7 +352,7 @@ func (s *OrderModuleService) applyOrderChanges(ctx context.Context, changeAction
 		}
 	}
 	if len(usedActions) > 0 {
-		if !orderFlushed {
+		if !orderFlushed && len(usedActions) >= 3 {
 			dal.FlushEvents(s.DB())
 		}
 		if _, err := s.Internal("OrderChangeAction").Update(ctx, usedActions); err != nil {
