@@ -59,6 +59,17 @@ func executionStore(c Container) ExecutionStore {
 	return s
 }
 
+// persistIfChanged persists the checkpoint when the journal changed since
+// the last persist.
+func (e *Execution) persistIfChanged(state string) {
+	e.journal.mu.Lock()
+	changed := e.journal.rev != e.persistedRev
+	e.journal.mu.Unlock()
+	if changed {
+		e.persist(state)
+	}
+}
+
 // persist writes the current checkpoint (saveToDb).
 func (e *Execution) persist(state string) {
 	store := executionStore(e.container)
@@ -66,6 +77,9 @@ func (e *Execution) persist(state string) {
 		return
 	}
 	e.journal.setState(state)
+	e.journal.mu.Lock()
+	e.persistedRev = e.journal.rev
+	e.journal.mu.Unlock()
 	row := ExecutionRow{
 		WorkflowID: e.rootWorkflowID, TransactionID: e.transactionID, RunID: e.journal.runID, State: state,
 		Execution: e.journal.flow(e.rootWorkflowID, e.transactionID, e.eventGroupID, e.rootOptions),
@@ -166,6 +180,9 @@ func SetStepSuccess(ctx context.Context, c Container, key IdempotencyKey, respon
 	if err := checkContainerOption(c, opts); err != nil {
 		return err
 	}
+	if de := durableEngine(c); de != nil {
+		return deliverDurable(ctx, c, de, key, StepResult{Output: response}, false)
+	}
 	return stepCoordinator(c).Deliver(ctx, key, StepResult{Output: response})
 }
 
@@ -173,6 +190,9 @@ func SetStepSuccess(ctx context.Context, c Container, key IdempotencyKey, respon
 func SetStepFailure(ctx context.Context, c Container, key IdempotencyKey, err error, opts ...StepResponseOptions) error {
 	if cerr := checkContainerOption(c, opts); cerr != nil {
 		return cerr
+	}
+	if de := durableEngine(c); de != nil {
+		return deliverDurable(ctx, c, de, key, StepResult{Err: err}, true)
 	}
 	return stepCoordinator(c).Deliver(ctx, key, StepResult{Err: err})
 }

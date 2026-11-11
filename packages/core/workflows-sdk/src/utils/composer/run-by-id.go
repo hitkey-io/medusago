@@ -25,6 +25,7 @@ func registerRunner[I, O any](w *Workflow[I, O]) {
 		opts.Notify = true
 		return w.RunWithInfo(ctx, c, in, opts)
 	}
+	registerResumer(w)
 	registryMu.Unlock()
 }
 
