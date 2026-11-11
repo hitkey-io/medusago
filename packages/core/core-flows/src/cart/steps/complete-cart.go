@@ -94,7 +94,6 @@ var ValidateCartPaymentsStep = composer.CreateStep("validate-cart-payments",
 		return composer.NewStepResponse(toProcess), nil
 	}, nil)
 
-
 // ValidateShippingStepInput mirrors ValidateShippingInput.
 type ValidateShippingStepInput struct {
 	Cart            *dal.Record
