@@ -26,7 +26,7 @@ func (t *Type) Field(name string) *FieldDefinition {
 
 // Schema is a merged schema: its types in definition order.
 type Schema struct {
-	Types []*Type
+	Types  []*Type
 	byName map[string]*Type
 }
 

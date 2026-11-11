@@ -9,18 +9,18 @@ import (
 
 // JoinerRelationship mirrors JoinerRelationship.
 type JoinerRelationship struct {
-	Alias         string         `json:"alias"`
-	ForeignKey    string         `json:"foreignKey"`
-	PrimaryKey    string         `json:"primaryKey"`
-	ServiceName   string         `json:"serviceName"`
-	Entity        string         `json:"entity,omitempty"`
-	Inverse       bool           `json:"inverse,omitempty"`
-	IsList        bool           `json:"isList,omitempty"`
-	HasMany       bool           `json:"hasMany,omitempty"`
-	DeleteCascade bool           `json:"deleteCascade,omitempty"`
+	Alias         string `json:"alias"`
+	ForeignKey    string `json:"foreignKey"`
+	PrimaryKey    string `json:"primaryKey"`
+	ServiceName   string `json:"serviceName"`
+	Entity        string `json:"entity,omitempty"`
+	Inverse       bool   `json:"inverse,omitempty"`
+	IsList        bool   `json:"isList,omitempty"`
+	HasMany       bool   `json:"hasMany,omitempty"`
+	DeleteCascade bool   `json:"deleteCascade,omitempty"`
 	// Filterable lists the fields the index module may filter on (defineLink).
-	Filterable []string `json:"filterable,omitempty"`
-	Args          map[string]any `json:"args,omitempty"`
+	Filterable []string       `json:"filterable,omitempty"`
+	Args       map[string]any `json:"args,omitempty"`
 }
 
 // FieldAlias is either a plain path ("inventory_items.inventory") or an
