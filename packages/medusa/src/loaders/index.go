@@ -220,6 +220,27 @@ func sessionStore(cfg config.ProjectConfig) (medusahttp.SessionStore, func()) {
 	return store, func() { _ = client.Close() }
 }
 
+// applicationShutdowner is a module service with an onApplicationShutdown
+// hook (Redis connections of the locking and cache modules).
+type applicationShutdowner interface {
+	OnApplicationShutdown(ctx context.Context) error
+}
+
+// moduleShutdowns returns the onApplicationShutdown hooks of the loaded
+// modules.
+func moduleShutdowns(c *container.MedusaContainer, cfg config.ConfigModule) []func() {
+	var out []func()
+	for _, mc := range cfg.Modules {
+		if mc.Disable {
+			continue
+		}
+		if s, ok := c.Resolve(mc.Key).(applicationShutdowner); ok {
+			out = append(out, func() { _ = s.OnApplicationShutdown(context.Background()) })
+		}
+	}
+	return out
+}
+
 // applicationStarter is a module service with an onApplicationStart hook.
 type applicationStarter interface {
 	OnApplicationStart(ctx context.Context) error
@@ -359,7 +380,7 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 		res.Status(200).Send("OK")
 		return nil
 	})
-	medusaApp := &MedusaApp{Container: c, Handler: app, App: app, Pool: pool, shutdown: []func(){closeStore}}
+	medusaApp := &MedusaApp{Container: c, Handler: app, App: app, Pool: pool, shutdown: append([]func(){closeStore}, moduleShutdowns(c, cfg)...)}
 	// admin loader (upstream registers it once the bundler is imported, after
 	// the synchronous registrations).
 	if !opts.SkipAdmin {

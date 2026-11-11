@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	lockingtypes "github.com/hitkey-io/medusago/packages/core/types/src/locking"
 	"log/slog"
 	"os"
 	"strings"
@@ -68,7 +69,7 @@ func NewIndexModuleService(opts modulessdktypes.ServiceOptions) (*IndexModuleSer
 		indexMetadata: base.Internal("IndexMetadata"),
 		indexSync:     base.Internal("IndexSync"),
 	}
-	s.synchronizer = &DataSynchronizer{db: opts.DB, query: s.query, logger: logger, indexMetadata: s.indexMetadata, indexSync: s.indexSync}
+	s.synchronizer = &DataSynchronizer{db: opts.DB, query: s.query, locking: s.locking, logger: logger, indexMetadata: s.indexMetadata, indexSync: s.indexSync}
 	return s, nil
 }
 
@@ -85,6 +86,15 @@ func (s *IndexModuleService) query() *query.Query {
 	}
 	q, _ := s.container.Resolve(common.ContainerRegistrationKeys.QUERY).(*query.Query)
 	return q
+}
+
+// locking resolves the locking module (Modules.LOCKING dependency).
+func (s *IndexModuleService) locking() lockingtypes.ILockingModule {
+	if s.container == nil {
+		return nil
+	}
+	l, _ := s.container.Resolve(modulessdk.LOCKING).(lockingtypes.ILockingModule)
+	return l
 }
 
 func (s *IndexModuleService) eventBus() eventBus {
@@ -115,6 +125,7 @@ func (s *IndexModuleService) onApplicationStart(ctx context.Context) error {
 		s.schema = schema
 	}
 	s.storage = NewPostgresProvider(s.db, s.query, s.schema)
+	s.storage.locking = s.locking
 	s.registerListeners()
 	if err := s.storage.OnApplicationStart(ctx); err != nil {
 		return err

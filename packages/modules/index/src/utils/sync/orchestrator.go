@@ -7,60 +7,59 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	stdsync "sync"
-	"time"
+
+	lockingtypes "github.com/hitkey-io/medusago/packages/core/types/src/locking"
 )
-
-// locks mirrors the in-memory locking provider: one owner per key until
-// released or expired.
-var (
-	locksMu stdsync.Mutex
-	locks   = map[string]lockEntry{}
-)
-
-type lockEntry struct {
-	owner   string
-	expires time.Time
-}
-
-func acquire(key, owner string, expire time.Duration) bool {
-	locksMu.Lock()
-	defer locksMu.Unlock()
-	if l, ok := locks[key]; ok && l.owner != owner && time.Now().Before(l.expires) {
-		return false
-	}
-	locks[key] = lockEntry{owner: owner, expires: time.Now().Add(expire)}
-	return true
-}
-
-func release(key, owner string) error {
-	locksMu.Lock()
-	defer locksMu.Unlock()
-	if l, ok := locks[key]; ok && l.owner != owner {
-		return errors.New("lock owned by another owner")
-	}
-	delete(locks, key)
-	return nil
-}
 
 // Orchestrator mirrors Orchestrator: processes the entities one by one,
-// each under a lock.
+// each under a lock of the locking module (owner index-sync-<pid>), so
+// several processes do not sync the same entity.
 type Orchestrator struct {
+	locking      lockingtypes.ILockingModule
 	logger       *slog.Logger
 	lockingOwner string
 	state        string
-	lockDuration time.Duration
+	// lockDuration in seconds
+	lockDuration float64
 	entities     []string
 }
 
 // NewOrchestrator mirrors new Orchestrator(lockingModule, entities, options).
-func NewOrchestrator(entities []string, lockDuration time.Duration, logger *slog.Logger) *Orchestrator {
-	return &Orchestrator{logger: logger, lockingOwner: fmt.Sprintf("index-sync-%d", os.Getpid()), state: "idle", lockDuration: lockDuration, entities: entities}
+func NewOrchestrator(locking lockingtypes.ILockingModule, entities []string, lockDuration float64, logger *slog.Logger) *Orchestrator {
+	return &Orchestrator{locking: locking, logger: logger, lockingOwner: fmt.Sprintf("index-sync-%d", os.Getpid()), state: "idle", lockDuration: lockDuration, entities: entities}
+}
+
+// acquireLock mirrors #acquireLock: false when the lock is held elsewhere.
+func (o *Orchestrator) acquireLock(ctx context.Context, key string) bool {
+	if o.locking == nil {
+		return true
+	}
+	owner := o.lockingOwner
+	return o.locking.Acquire(ctx, []string{key}, lockingtypes.AcquireArgs{Expire: o.lockDuration, OwnerID: &owner}) == nil
 }
 
 // RenewLock mirrors renewLock.
-func (o *Orchestrator) RenewLock(key string) bool {
-	return acquire(key, o.lockingOwner, o.lockDuration)
+func (o *Orchestrator) RenewLock(ctx context.Context, key string) bool {
+	return o.acquireLock(ctx, key)
+}
+
+// processEntity mirrors #processEntity.
+func (o *Orchestrator) processEntity(ctx context.Context, taskRunner func(ctx context.Context, entity string) error, entity string) error {
+	if !o.acquireLock(ctx, entity) {
+		o.logger.Warn(fmt.Sprintf("[Index engine] failed to acquire lock for entity '%s' on pid %d. It means another process is already processing this entity or a lock is still present in your locking provider.", entity, os.Getpid()))
+		return nil
+	}
+	err := taskRunner(ctx, entity)
+	if err != nil {
+		o.state = "error"
+	}
+	if o.locking != nil {
+		owner := o.lockingOwner
+		if _, rerr := o.locking.Release(ctx, []string{entity}, lockingtypes.ReleaseArgs{OwnerID: &owner}); rerr != nil {
+			o.logger.Error(fmt.Sprintf("[Index engine] failed to release lock for entity '%s'", entity))
+		}
+	}
+	return err
 }
 
 // Process mirrors process(taskRunner).
@@ -74,16 +73,7 @@ func (o *Orchestrator) Process(ctx context.Context, taskRunner func(ctx context.
 			o.state = "completed"
 			break
 		}
-		if !acquire(entity, o.lockingOwner, o.lockDuration) {
-			o.logger.Warn(fmt.Sprintf("[Index engine] failed to acquire lock for entity '%s' on pid %d. It means another process is already processing this entity or a lock is still present in your locking provider.", entity, os.Getpid()))
-			continue
-		}
-		err := taskRunner(ctx, entity)
-		if rerr := release(entity, o.lockingOwner); rerr != nil {
-			o.logger.Error(fmt.Sprintf("[Index engine] failed to release lock for entity '%s'", entity))
-		}
-		if err != nil {
-			o.state = "error"
+		if err := o.processEntity(ctx, taskRunner, entity); err != nil {
 			return err
 		}
 	}

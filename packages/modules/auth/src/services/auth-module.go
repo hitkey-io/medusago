@@ -20,6 +20,8 @@ type AuthModuleService struct {
 	providers map[string]authtypes.AuthProvider
 	// identifiers mirrors auth_providers_identifier (registration order).
 	identifiers []string
+	// container resolves the cache module (Modules.CACHE dependency).
+	container modulessdk.Resolver
 }
 
 // NewAuthModuleService builds the service with the configured providers.
@@ -27,6 +29,7 @@ func NewAuthModuleService(opts modulessdk.ServiceOptions, joinerConfig *joiner.M
 	s := &AuthModuleService{
 		MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig),
 		providers:     map[string]authtypes.AuthProvider{},
+		container:     opts.Container,
 	}
 	for _, p := range opts.Providers {
 		prov, ok := p.Instance.(authtypes.AuthProvider)

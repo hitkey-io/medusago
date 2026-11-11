@@ -14,6 +14,8 @@ var Registry = map[string]*modulessdk.ModuleExports{
 	"@medusajs/medusa/fulfillment-manual":       &FulfillmentManual,
 	"@medusajs/medusa/api-key":                  &ApiKey,
 	"@medusajs/medusa/auth":                     &Auth,
+	"@medusajs/medusa/cache-inmemory":           &CacheInmemory,
+	"@medusajs/medusa/cache-redis":              &CacheRedis,
 	"@medusajs/medusa/cart":                     &Cart,
 	"@medusajs/medusa/currency":                 &Currency,
 	"@medusajs/medusa/customer":                 &Customer,

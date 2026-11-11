@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	lockingtypes "github.com/hitkey-io/medusago/packages/core/types/src/locking"
 	"strings"
 	"sync"
 
@@ -29,6 +30,9 @@ type PostgresProvider struct {
 	query  func() *query.Query
 	schema *utils.SchemaObjectRepresentation
 
+	// locking resolves the locking module (nil: none registered)
+	locking func() lockingtypes.ILockingModule
+
 	ready     chan struct{}
 	readyErr  error
 	readyOnce sync.Once
@@ -48,17 +52,31 @@ func NewPostgresProvider(db dal.Querier, q func() *query.Query, schema *utils.Sc
 	return &PostgresProvider{db: db, query: q, schema: schema, ready: make(chan struct{})}
 }
 
-// partitionsLock serializes the partition DDL of the instances of this
-// process (the locking module's execute with the
-// "index-module:create-partitions" key).
-var partitionsLock sync.Mutex
+// createPartitionsLockKey mirrors CREATE_PARTITIONS_LOCK_KEY.
+const createPartitionsLockKey = "index-module:create-partitions"
 
-// OnApplicationStart mirrors onApplicationStart: creates the partitions;
-// queries and event consumers wait for it.
+// createPartitionsLockTimeout mirrors CREATE_PARTITIONS_LOCK_TIMEOUT
+// (seconds).
+const createPartitionsLockTimeout = 300
+
+// OnApplicationStart mirrors onApplicationStart: creates the partitions
+// (serialized across instances with the locking module); queries and event
+// consumers wait for it.
 func (p *PostgresProvider) OnApplicationStart(ctx context.Context) error {
-	partitionsLock.Lock()
-	err := utils.CreatePartitions(ctx, p.db, p.schema, nil)
-	partitionsLock.Unlock()
+	run := func(ctx context.Context) (any, error) {
+		return nil, utils.CreatePartitions(ctx, p.db, p.schema, nil)
+	}
+	var err error
+	var locking lockingtypes.ILockingModule
+	if p.locking != nil {
+		locking = p.locking()
+	}
+	if locking != nil {
+		timeout := float64(createPartitionsLockTimeout)
+		_, err = locking.Execute(ctx, []string{createPartitionsLockKey}, run, lockingtypes.ExecuteArgs{Timeout: &timeout})
+	} else {
+		_, err = run(ctx)
+	}
 	p.readyOnce.Do(func() {
 		p.readyErr = err
 		close(p.ready)

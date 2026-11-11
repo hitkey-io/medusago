@@ -3,10 +3,11 @@ package services
 import (
 	"context"
 	"fmt"
+	"math"
 	"os"
-	"sync"
 	"time"
 
+	cachetypes "github.com/hitkey-io/medusago/packages/core/types/src/cache"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -16,8 +17,8 @@ import (
 // MFA mirrors the MFA part of AuthModuleService with the built-in "totp"
 // and "recovery_code" providers and the default options: the encryption
 // key comes from AUTH_MFA_ENCRYPTION_KEY (defineConfig), challenges live
-// 300s with 5 attempts in the in-memory cache, disable_policy "session",
-// 10 recovery codes.
+// 300s with 5 attempts in the cache module (Modules.CACHE),
+// disable_policy "session", 10 recovery codes.
 
 const (
 	totpIssuer           = "Medusa"
@@ -38,38 +39,74 @@ func mfaEncryptionKey() (string, error) {
 	return key, nil
 }
 
-// challengeCache mirrors the in-memory cache module (process local, TTL).
-var challengeCache = struct {
-	mu      sync.Mutex
-	entries map[string]cacheEntry
-}{entries: map[string]cacheEntry{}}
-
-type cacheEntry struct {
-	value   *dal.Record
-	expires time.Time
+// getCache mirrors getCache_: the cache module is required for the MFA
+// challenges.
+func (s *AuthModuleService) getCache() (cachetypes.ICacheService, error) {
+	if s.container != nil {
+		if c, ok := s.container.Resolve(utilsmodulessdk.CACHE).(cachetypes.ICacheService); ok {
+			return c, nil
+		}
+	}
+	return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_ARGUMENT, "Cache module dependency is required when using MFA challenges")
 }
 
-func cacheSet(key string, value *dal.Record, ttlSeconds int) {
-	if ttlSeconds < 1 {
-		return
+// jsDate mirrors new Date(value) for a cached date (a Date in memory, an
+// ISO string from Redis).
+func jsDate(v any) any {
+	switch t := v.(type) {
+	case time.Time:
+		return t
+	case string:
+		if d, ok := common.ParseJSDate(t); ok {
+			return d
+		}
 	}
-	challengeCache.mu.Lock()
-	challengeCache.entries[key] = cacheEntry{value: cloneRecord(value), expires: time.Now().Add(time.Duration(ttlSeconds) * time.Second)}
-	challengeCache.mu.Unlock()
+	return v
 }
 
-func cacheGet(key string) *dal.Record {
-	challengeCache.mu.Lock()
-	defer challengeCache.mu.Unlock()
-	e, ok := challengeCache.entries[key]
-	if !ok {
+// retrieveMfaChallenge mirrors retrieveMfaChallenge_: nil when the challenge
+// is not cached.
+func (s *AuthModuleService) retrieveMfaChallenge(ctx context.Context, id string) (*dal.Record, error) {
+	cache, err := s.getCache()
+	if err != nil {
+		return nil, err
+	}
+	v, err := cache.Get(ctx, challengeKey(id))
+	if err != nil {
+		return nil, err
+	}
+	cached, _ := v.(*dal.Record)
+	if cached == nil {
+		return nil, nil
+	}
+	c := cloneRecord(cached)
+	c.Set("expires_at", jsDate(recGet(c, "expires_at")))
+	if completed := recGet(c, "completed_at"); completed != nil && completed != false && completed != "" {
+		c.Set("completed_at", jsDate(completed))
+	} else {
+		c.Set("completed_at", nil)
+	}
+	return c, nil
+}
+
+// setMfaChallenge mirrors setMfaChallenge_: the ttl defaults to the time
+// left before expires_at (rounded up); nothing is cached under 1s.
+func (s *AuthModuleService) setMfaChallenge(ctx context.Context, c *dal.Record, ttlSeconds *float64) error {
+	var ttl float64
+	if ttlSeconds != nil {
+		ttl = *ttlSeconds
+	} else {
+		expires, _ := recGet(c, "expires_at").(time.Time)
+		ttl = math.Ceil(float64(expires.UnixMilli()-time.Now().UnixMilli()) / 1000)
+	}
+	if ttl < 1 {
 		return nil
 	}
-	if !e.expires.After(time.Now()) {
-		delete(challengeCache.entries, key)
-		return nil
+	cache, err := s.getCache()
+	if err != nil {
+		return err
 	}
-	return cloneRecord(e.value)
+	return cache.Set(ctx, challengeKey(recGet(c, "id")), cloneRecord(c), &ttl)
 }
 
 func cloneRecord(r *dal.Record) *dal.Record {
@@ -471,19 +508,19 @@ func (s *AuthModuleService) createAuthMfaChallenge(ctx context.Context, authIden
 	c.Set("max_attempts", float64(challengeMaxAttempt))
 	c.Set("completed_at", nil)
 	c.Set("metadata", metadata)
-	cacheSet(challengeKey(recGet(c, "id")), c, challengeTTLSeconds)
+	ttl := float64(challengeTTLSeconds)
+	if err := s.setMfaChallenge(ctx, c, &ttl); err != nil {
+		return nil, err
+	}
 	return c, nil
-}
-
-func setChallenge(c *dal.Record) {
-	expires, _ := recGet(c, "expires_at").(time.Time)
-	ttl := int((time.Until(expires) + time.Second - 1) / time.Second)
-	cacheSet(challengeKey(recGet(c, "id")), c, ttl)
 }
 
 // VerifyAuthMfaChallenge mirrors verifyAuthMfaChallenge.
 func (s *AuthModuleService) VerifyAuthMfaChallenge(ctx context.Context, id, method, code string, authIdentityID any) (*dal.Record, error) {
-	c := cacheGet(challengeKey(id))
+	c, err := s.retrieveMfaChallenge(ctx, id)
+	if err != nil {
+		return nil, err
+	}
 	if c == nil {
 		return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, fmt.Sprintf(`MFA challenge with id "%s" was not found`, id))
 	}
@@ -519,14 +556,18 @@ func (s *AuthModuleService) VerifyAuthMfaChallenge(ctx context.Context, id, meth
 	if !valid {
 		attempts++
 		c.Set("attempts", attempts)
-		setChallenge(c)
+		if err := s.setMfaChallenge(ctx, c, nil); err != nil {
+			return nil, err
+		}
 		if attempts >= maxAttempts {
 			return nil, notAllowed("MFA challenge has too many failed attempts")
 		}
 		return nil, notAllowed("Invalid MFA challenge code")
 	}
 	c.Set("completed_at", time.Now())
-	setChallenge(c)
+	if err := s.setMfaChallenge(ctx, c, nil); err != nil {
+		return nil, err
+	}
 	return c, nil
 }
 
