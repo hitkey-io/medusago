@@ -12,7 +12,6 @@ import (
 	orderworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/order/workflows"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
-	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -198,8 +197,7 @@ var RefreshConfirmedDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow(
 		return nil, refreshConfirmedCalculated(e, orderID, order, options)
 	})
 
-// UpdateDraftOrderWorkflow mirrors updateDraftOrderWorkflow (translations
-// are not ported).
+// UpdateDraftOrderWorkflow mirrors updateDraftOrderWorkflow.
 var UpdateDraftOrderWorkflow = composer.CreateWorkflow("update-draft-order",
 	func(e *composer.Execution, in *dal.Record) (*dal.Record, error) {
 		id := g(in, "id")
@@ -284,7 +282,9 @@ var UpdateDraftOrderWorkflow = composer.CreateWorkflow("update-draft-order",
 			}
 		}
 		if truthy(g(in, "locale")) && g(in, "locale") != g(order, "locale") {
-			return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "Updating the locale of a draft order is not supported yet")
+			if err := orderworkflows.RetranslateOrder(e, fmt.Sprint(id), fmt.Sprint(g(in, "locale")), recs(g(order, "shipping_methods")), true); err != nil {
+				return nil, err
+			}
 		}
 		ev := dal.NewRecord()
 		ev.Set("id", id)

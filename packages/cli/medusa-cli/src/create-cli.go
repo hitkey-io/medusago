@@ -51,7 +51,7 @@ type Options struct {
 	// Config returns the project configuration (the object passed to
 	// defineConfig in medusa-config.ts). It is called after the .env files
 	// are loaded, so it may read environment variables. When nil, the
-	// medusa-config.json file of the project directory is used.
+	// medusa-config.json (or .yaml/.yml) file of the project directory is used.
 	Config func() config.InputConfig
 	// Scripts are the scripts `medusa exec <name>` can run. A script given
 	// by file path (./src/scripts/seed.ts) resolves to the name "seed".

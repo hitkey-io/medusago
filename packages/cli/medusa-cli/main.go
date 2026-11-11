@@ -1,7 +1,7 @@
 // Command medusa-cli mirrors @medusajs/cli: the `medusa` command line tool.
 //
 // It is the CLI library (packages/cli/medusa-cli/src) without project hooks:
-// a project configured with medusa-config.json only. Go projects call
+// a project configured with medusa-config.json (or .yaml) only. Go projects call
 // cli.Run from their own main package instead.
 package main
 

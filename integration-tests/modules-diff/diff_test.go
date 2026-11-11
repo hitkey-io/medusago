@@ -37,6 +37,13 @@ type testCase struct {
 	Module string          `json:"module"`
 	Method string          `json:"method"`
 	Args   json.RawMessage `json:"args"`
+	// Service calls the module's own service (its overridden methods)
+	// instead of the generated MedusaService.
+	Service bool `json:"service"`
+	// SortBy maps dotted output paths ("*" for every array item) of arrays
+	// upstream returns in a nondeterministic order (e.g. rows of a hash join)
+	// to the item field they are compared sorted by.
+	SortBy map[string]string `json:"sortby"`
 }
 
 // setupDatabase creates a database migrated by the Go implementation and
@@ -151,6 +158,7 @@ func resolveRefs(v any, outputs map[string]any) any {
 
 var (
 	generatedIDRe = regexp.MustCompile(`^([a-z]+_)?[0-9A-HJKMNP-TV-Z]{26}$`)
+	embeddedIDRe  = regexp.MustCompile(`\b[a-z]+_[0-9A-HJKMNP-TV-Z]{26}\b`)
 	timestampRe   = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$`)
 )
 
@@ -184,7 +192,17 @@ func normalize(v any, known map[string]bool, ids map[string]string) any {
 			ids[t] = fmt.Sprintf("<generated %d>", len(ids)+1)
 			return ids[t]
 		}
-		return t
+		// generated identifiers inside messages
+		return embeddedIDRe.ReplaceAllStringFunc(t, func(id string) string {
+			if known[id] {
+				return id
+			}
+			if p, ok := ids[id]; ok {
+				return p
+			}
+			ids[id] = fmt.Sprintf("<generated %d>", len(ids)+1)
+			return ids[id]
+		})
 	case []any:
 		for i := range t {
 			t[i] = normalize(t[i], known, ids)
@@ -233,7 +251,7 @@ func graphInput(arg any) query.GraphInput {
 }
 
 // run executes one case and returns it encoded like run-calls.js does.
-func run(ctx context.Context, svc *modulessdk.MedusaService, q *query.Query, c testCase, outputs map[string]any) ([]byte, error) {
+func run(ctx context.Context, svc *modulessdk.MedusaService, custom any, q *query.Query, c testCase, outputs map[string]any) ([]byte, error) {
 	decoded, err := dal.DecodeOrderedJSON(c.Args)
 	if err != nil {
 		return nil, err
@@ -246,6 +264,8 @@ func run(ctx context.Context, svc *modulessdk.MedusaService, q *query.Query, c t
 			arg = args[0]
 		}
 		result, err = q.Graph(ctx, graphInput(arg), joiner.Options{})
+	} else if custom != nil {
+		result, err = callService(ctx, custom, c.Method, args)
 	} else {
 		result, err = svc.Call(ctx, c.Method, args)
 	}
@@ -341,29 +361,34 @@ func firstDifference(path string, want, got any) string {
 }
 
 // orderedKeys lists every object's keys in order, to compare JSON key order.
-func orderedKeys(data []byte) (string, error) {
+func orderedKeys(data []byte, unorderedArrays bool) (string, error) {
 	v, err := dal.DecodeOrderedJSON(data)
 	if err != nil {
 		return "", err
 	}
-	var b strings.Builder
-	var walk func(any)
-	walk = func(v any) {
+	var walk func(any) string
+	walk = func(v any) string {
 		switch t := v.(type) {
 		case *dal.Record:
-			b.WriteString("{" + strings.Join(t.Keys(), ",") + "}")
+			s := "{" + strings.Join(t.Keys(), ",") + "}"
 			for _, k := range t.Keys() {
 				x, _ := t.Get(k)
-				walk(x)
+				s += walk(x)
 			}
+			return s
 		case []any:
-			for _, x := range t {
-				walk(x)
+			items := make([]string, len(t))
+			for i, x := range t {
+				items[i] = walk(x)
 			}
+			if unorderedArrays {
+				sort.Strings(items)
+			}
+			return strings.Join(items, "")
 		}
+		return ""
 	}
-	walk(v)
-	return b.String(), nil
+	return walk(v), nil
 }
 
 func TestModulesMatchUpstream(t *testing.T) {
@@ -404,11 +429,17 @@ func TestModulesMatchUpstream(t *testing.T) {
 						t.Fatal(err)
 					}
 				}
+				var custom any
+				if c.Service {
+					if custom, err = moduleServiceInstance(pool, c.Module); err != nil {
+						t.Fatal(err)
+					}
+				}
 				q, err := loaders.NewDefaultQuery(pool)
 				if err != nil {
 					t.Fatal(err)
 				}
-				got, err := run(ctx, svc, q, c, outputs)
+				got, err := run(ctx, svc, custom, q, c, outputs)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -420,13 +451,17 @@ func TestModulesMatchUpstream(t *testing.T) {
 				var saved any
 				_ = json.Unmarshal(got, &saved)
 				outputs[c.Name] = saved
+				for path, field := range c.SortBy {
+					wantV = sortAt(wantV, strings.Split(path, "."), field)
+					gotV = sortAt(gotV, strings.Split(path, "."), field)
+				}
 				wantV = normalize(wantV, known, map[string]string{})
 				gotV = normalize(gotV, known, map[string]string{})
 				if d := firstDifference("$", wantV, gotV); d != "" {
 					t.Fatalf("%s\n got: %.600s", d, got)
 				}
-				wantKeys, _ := orderedKeys(golden[c.Name])
-				gotKeys, _ := orderedKeys(got)
+				wantKeys, _ := orderedKeys(golden[c.Name], len(c.SortBy) > 0)
+				gotKeys, _ := orderedKeys(got, len(c.SortBy) > 0)
 				if wantKeys != gotKeys {
 					t.Fatalf("key order differs:\nwant %.400s\n got %.400s", wantKeys, gotKeys)
 				}

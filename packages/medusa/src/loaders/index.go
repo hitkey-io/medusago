@@ -233,18 +233,25 @@ func sessionOptions(cfg config.ProjectConfig) medusahttp.SessionOptions {
 }
 
 // sessionStore mirrors the store selection of the express loader: with
+// sessionOptions.dynamodbOptions, connect-dynamodb; with
 // projectConfig.redisUrl, connect-redis over an ioredis client created with
 // redisOptions and the key prefix `${redisPrefix ?? ""}sess:`; otherwise
 // express-session's MemoryStore. The returned func disconnects the client.
-// (sessionOptions.dynamodbOptions, checked first upstream, is not ported.)
-func sessionStore(cfg config.ProjectConfig) (medusahttp.SessionStore, func()) {
+func sessionStore(cfg config.ProjectConfig) (medusahttp.SessionStore, func(), error) {
+	if cfg.SessionOptions != nil && cfg.SessionOptions.DynamodbOptions != nil {
+		store, err := medusahttp.NewDynamoDBStore(cfg.SessionOptions.DynamodbOptions, nil)
+		if err != nil {
+			return nil, nil, err
+		}
+		return store, store.Close, nil
+	}
 	if cfg.RedisURL == "" {
-		return medusahttp.NewMemoryStore(), func() {}
+		return medusahttp.NewMemoryStore(), func() {}, nil
 	}
 	client := ioredis.New(cfg.RedisURL, cfg.RedisOptions)
 	prefix := cfg.RedisPrefix + "sess:"
 	store := medusahttp.NewRedisStore(medusahttp.RedisStoreOptions{Client: client, Prefix: &prefix})
-	return store, func() { _ = client.Close() }
+	return store, func() { _ = client.Close() }, nil
 }
 
 // applicationShutdowner is a module service with an onApplicationShutdown
@@ -391,7 +398,10 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 	}
 	// express loader
 	sessOpts := sessionOptions(cfg.ProjectConfig)
-	store, closeStore := sessionStore(cfg.ProjectConfig)
+	store, closeStore, err := sessionStore(cfg.ProjectConfig)
+	if err != nil {
+		return nil, err
+	}
 	sessOpts.Store = store
 	app.Use("/", medusahttp.SessionMiddleware(sessOpts))
 	if opts.Directory != "" {

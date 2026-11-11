@@ -11,6 +11,7 @@ import (
 
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/dml"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 )
 
@@ -224,8 +225,11 @@ func validateProductCreatePayload(p *dal.Record) error {
 			vo := recordOf(func() any { x, _ := vr.Get("options"); return x }())
 			for _, o := range options {
 				t := strOf(recordOf(o), "title")
-				val, _ := vo.Get(t)
-				if vo == nil || val == nil || val == "" {
+				var val any
+				if vo != nil {
+					val, _ = vo.Get(t)
+				}
+				if val == nil || val == "" {
 					missing = append(missing, strOf(vr, "title"))
 				}
 			}
@@ -396,6 +400,7 @@ func (s *ProductModuleService) createProducts(ctx context.Context, data []*dal.R
 		options   []*dal.Record
 	}
 	var optionsToCreate []pendingOption
+	var variantLinks []pendingVariant
 	var toCreate []*dal.Record
 	productIDs := make([]string, len(normalized))
 	for i, p := range normalized {
@@ -413,8 +418,20 @@ func (s *ProductModuleService) createProducts(ctx context.Context, data []*dal.R
 				optionsToCreate = append(optionsToCreate, pendingOption{productID: pid, options: newOpts})
 			}
 		}
+		var variants []any
 		if vs, _ := p.Get("variants"); len(list(vs)) > 0 {
-			return nil, invalid("Creating variants through createProducts is not supported yet")
+			opts, _ := p.Get("options")
+			for _, v := range list(vs) {
+				variant := clone(recordOf(v))
+				variant.Set("id", common.GenerateEntityID(strOf(variant, "id"), "variant"))
+				links, err := variantOptionLinks(variant, list(opts))
+				if err != nil {
+					return nil, err
+				}
+				variant.Delete("options")
+				variantLinks = append(variantLinks, pendingVariant{variant: variant, links: links})
+				variants = append(variants, variant)
+			}
 		}
 		if tags, _ := p.Get("tags"); len(list(tags)) > 0 {
 			for _, t := range list(tags) {
@@ -426,16 +443,17 @@ func (s *ProductModuleService) createProducts(ctx context.Context, data []*dal.R
 		}
 		c := clone(p)
 		c.Delete("options")
+		if variants != nil {
+			c.Set("variants", variants)
+		}
 		toCreate = append(toCreate, c)
 	}
 
-	if _, err := s.Internal("Product").Create(ctx, toCreate); err != nil {
-		return nil, err
-	}
-
-	// options created with the products
+	// options created with the products (inserted before them upstream)
 	optionIDsByProduct := map[string][]string{}
 	var allOptions []*dal.Record
+	createdOptionByInput := map[*dal.Record]*dal.Record{}
+	linkedValues := map[string][]string{}
 	for _, po := range optionsToCreate {
 		for _, o := range po.options {
 			c := clone(o)
@@ -446,9 +464,48 @@ func (s *ProductModuleService) createProducts(ctx context.Context, data []*dal.R
 		}
 	}
 	if len(allOptions) > 0 {
-		if _, err := s.createOptions(ctx, allOptions); err != nil {
+		created, err := s.createOptions(ctx, allOptions)
+		if err != nil {
 			return nil, err
 		}
+		k := 0
+		for _, po := range optionsToCreate {
+			for _, o := range po.options {
+				if k < len(created) {
+					createdOptionByInput[o] = created[k]
+				}
+				k++
+			}
+		}
+	}
+	// The variants are linked to the values of the options created with the
+	// product (the values of existing options are not linked upstream).
+	for _, pv := range variantLinks {
+		var refs []any
+		for _, l := range pv.links {
+			created := createdOptionByInput[l.option]
+			if created == nil {
+				continue
+			}
+			vals, _ := created.Get("values")
+			values := list(vals)
+			if l.value >= len(values) {
+				continue
+			}
+			r := dal.NewRecord()
+			r.Set("id", strOf(recordOf(values[l.value]), "id"))
+			refs = append(refs, r)
+		}
+		if len(refs) > 0 {
+			pv.variant.Set("options", refs)
+			for _, r := range refs {
+				linkedValues[strOf(pv.variant, "id")] = append(linkedValues[strOf(pv.variant, "id")], strOf(recordOf(r), "id"))
+			}
+		}
+	}
+
+	if _, err := s.Internal("Product").Create(ctx, toCreate); err != nil {
+		return nil, err
 	}
 	var pairs []optionPair
 	for i, pid := range productIDs {
@@ -469,7 +526,228 @@ func (s *ProductModuleService) createProducts(ctx context.Context, data []*dal.R
 			return nil, err
 		}
 	}
-	return s.findByIDsWithSplitPopulate(ctx, productIDs, []string{"options", "options.values", "variants", "images", "tags"})
+	out, err := s.findByIDsWithSplitPopulate(ctx, productIDs, []string{"options", "options.values", "variants", "images", "tags"})
+	if err != nil {
+		return nil, err
+	}
+	createdOptions := map[string]bool{}
+	for _, ids := range optionIDsByProduct {
+		for _, id := range ids {
+			createdOptions[id] = true
+		}
+	}
+	categoriesByProduct := map[string]any{}
+	for i, p := range normalized {
+		if cats, ok := p.Get("categories"); ok {
+			var refs []any
+			for _, c := range list(cats) {
+				r := dal.NewRecord()
+				r.Set("id", strOf(recordOf(c), "id"))
+				refs = append(refs, r)
+			}
+			categoriesByProduct[productIDs[i]] = orEmpty(refs)
+		}
+	}
+	s.decorateCreatedProducts(out, createdOptions, linkedValues, categoriesByProduct)
+	return out, nil
+}
+
+// decorateCreatedProducts gives the created products the shape upstream
+// serializes from the entities of its unit of work: the collections of the
+// new entities are initialized (product_options, categories, the variants'
+// images, the new option values' variants and product_options), the
+// variants carry their option values (with their option) and the values of
+// the new options their variants.
+func (s *ProductModuleService) decorateCreatedProducts(products []*dal.Record, createdOptions map[string]bool, linkedValues map[string][]string, categories map[string]any) {
+	productOrder := collectionOrder(s.Internal("Product").Repository.Entity)
+	for _, p := range products {
+		pid := strOf(p, "id")
+		valueByID := map[string]*dal.Record{}
+		optionOf := map[string]*dal.Record{}
+		opts, _ := p.Get("options")
+		for _, o := range list(opts) {
+			or := recordOf(o)
+			vals, _ := or.Get("values")
+			for _, v := range list(vals) {
+				vr := recordOf(v)
+				valueByID[strOf(vr, "id")] = vr
+				optionOf[strOf(vr, "id")] = or
+			}
+		}
+		// the variants as serialized under an option value (no options:
+		// circular reference)
+		vs, _ := p.Get("variants")
+		variantsByValue := map[string][]any{}
+		for _, v := range list(vs) {
+			vr := recordOf(v)
+			if !vr.Has("images") {
+				vr.Set("images", []any{})
+			}
+			short := clone(vr)
+			for _, valueID := range linkedValues[strOf(vr, "id")] {
+				variantsByValue[valueID] = append(variantsByValue[valueID], short)
+			}
+		}
+		for _, v := range list(vs) {
+			vr := recordOf(v)
+			var values []any
+			for _, valueID := range linkedValues[strOf(vr, "id")] {
+				value := valueByID[valueID]
+				if value == nil {
+					continue
+				}
+				option := clone(optionOf[valueID])
+				option.Delete("values")
+				nv := dal.NewRecord()
+				for _, k := range value.Keys() {
+					if k == "variants" || k == "product_options" {
+						continue
+					}
+					x, _ := value.Get(k)
+					nv.Set(k, x)
+					if k == "option_id" {
+						nv.Set("option", option)
+					}
+				}
+				nv.Set("product_options", []any{})
+				values = append(values, nv)
+			}
+			vr.Set("options", orEmpty(values))
+		}
+		for _, o := range list(opts) {
+			or := recordOf(o)
+			if !createdOptions[strOf(or, "id")] {
+				continue
+			}
+			vals, _ := or.Get("values")
+			for _, v := range list(vals) {
+				vr := recordOf(v)
+				vr.Set("variants", orEmpty(variantsByValue[strOf(vr, "id")]))
+				vr.Set("product_options", []any{})
+			}
+		}
+		setInMetaOrder(p, productOrder, "product_options", []any{})
+		cats, ok := categories[pid]
+		if !ok {
+			cats = []any{}
+		}
+		setInMetaOrder(p, productOrder, "categories", cats)
+	}
+}
+
+// collectionOrder is the position of every collection of an entity (the
+// serializer emits the initialized collections last, in property order).
+func collectionOrder(e *dml.Entity) map[string]int {
+	order := map[string]int{}
+	for i, mp := range e.Meta.Properties {
+		if mp.Kind == "1:m" || mp.Kind == "m:n" {
+			order[mp.Name] = i
+		}
+	}
+	return order
+}
+
+// setInMetaOrder sets key in rec, placing a new key before the first key
+// that follows it in the given order.
+func setInMetaOrder(rec *dal.Record, order map[string]int, key string, value any) {
+	if rec.Has(key) {
+		rec.Set(key, value)
+		return
+	}
+	pos, known := order[key]
+	keys := rec.Keys()
+	at := len(keys)
+	if known {
+		for i, k := range keys {
+			if o, ok := order[k]; ok && o > pos {
+				at = i
+				break
+			}
+		}
+	}
+	if at == len(keys) {
+		rec.Set(key, value)
+		return
+	}
+	vals := make([]any, len(keys))
+	for i, k := range keys {
+		vals[i], _ = rec.Get(k)
+		rec.Delete(k)
+	}
+	for i, k := range keys {
+		if i == at {
+			rec.Set(key, value)
+		}
+		rec.Set(k, vals[i])
+	}
+}
+
+type pendingVariant struct {
+	variant *dal.Record
+	links   []variantOptionLink
+}
+
+// variantOptionLink is the option value (by index in the option's values) a
+// variant of createProducts references.
+type variantOptionLink struct {
+	option *dal.Record
+	value  int
+}
+
+// variantOptionLinks mirrors the variant normalization of createProducts_:
+// every { title: value } entry of variant.options resolves to a value of the
+// product option with that title (restricted to the option's value_ids). The
+// links follow the product options order (the order the option values add
+// the variant upstream).
+func variantOptionLinks(variant *dal.Record, options []any) ([]variantOptionLink, error) {
+	vo := recordOf(func() any { x, _ := variant.Get("options"); return x }())
+	if vo == nil {
+		return nil, nil
+	}
+	matched := map[*dal.Record]int{}
+	for _, key := range vo.Keys() {
+		value, _ := vo.Get(key)
+		var option *dal.Record
+		for _, o := range options {
+			if or := recordOf(o); or != nil && strOf(or, "title") == key {
+				option = or
+				break
+			}
+		}
+		if option == nil {
+			// (productOption as any).values on undefined
+			return nil, fmt.Errorf("Cannot read properties of undefined (reading 'values')")
+		}
+		var allowed map[string]bool
+		if vids, ok := option.Get("value_ids"); ok {
+			if arr, isArr := vids.([]any); isArr {
+				allowed = map[string]bool{}
+				for _, id := range arr {
+					allowed[fmt.Sprint(id)] = true
+				}
+			}
+		}
+		vals, _ := option.Get("values")
+		values := list(vals)
+		v, err := resolveAllowedOptionValues(key, value, values, allowed)
+		if err != nil {
+			return nil, err
+		}
+		for i, candidate := range values {
+			if recordOf(candidate) == v {
+				matched[option] = i
+				break
+			}
+		}
+	}
+	var links []variantOptionLink
+	for _, o := range options {
+		or := recordOf(o)
+		if i, ok := matched[or]; ok {
+			links = append(links, variantOptionLink{option: or, value: i})
+		}
+	}
+	return links, nil
 }
 
 // createOptions mirrors createOptions_.

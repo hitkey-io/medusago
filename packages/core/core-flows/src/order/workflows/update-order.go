@@ -1,6 +1,8 @@
 package workflows
 
 import (
+	"fmt"
+
 	cartsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/steps"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	ordersteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/order/steps"
@@ -28,8 +30,7 @@ var updateOrderValidationStep = composer.CreateStep("update-order-validation",
 		return composer.NewStepResponse[any](nil), nil
 	}, nil)
 
-// UpdateOrderWorkflow mirrors updateOrderWorkflow (the locale-changed
-// translation steps of the translation feature are not ported).
+// UpdateOrderWorkflow mirrors updateOrderWorkflow.
 var UpdateOrderWorkflow = composer.CreateWorkflow("update-order-workflow",
 	func(e *composer.Execution, input *dal.Record) (any, error) {
 		f := dal.NewRecord()
@@ -124,8 +125,38 @@ var UpdateOrderWorkflow = composer.CreateWorkflow("update-order-workflow",
 		if _, err := ordersteps.RegisterOrderChangesStep.Run(e, changes); err != nil {
 			return nil, err
 		}
+		if l := g(input, "locale"); truthy(l) && l != g(order, "locale") {
+			if err := RetranslateOrder(e, fmt.Sprint(g(input, "id")), fmt.Sprint(l), recs(g(order, "shipping_methods")), false); err != nil {
+				return nil, err
+			}
+		}
 		if _, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.updated", Data: idEvent(g(input, "id"))}); err != nil {
 			return nil, err
 		}
 		return nil, nil
 	})
+
+// RetranslateOrder runs the locale-changed steps of updateOrderWorkflow
+// (items, shipping methods, tax lines) and of updateDraftOrderWorkflow
+// (draftOrder: shipping methods, tax lines, items) in parallel.
+func RetranslateOrder(e *composer.Execution, orderID, locale string, shippingMethods []*dal.Record, draftOrder bool) error {
+	if shippingMethods == nil {
+		shippingMethods = []*dal.Record{}
+	}
+	items := func() error {
+		_, err := ordersteps.UpdateOrderItemsTranslationsStep.Run(e, ordersteps.UpdateOrderItemsTranslationsStepInput{OrderID: orderID, Locale: locale})
+		return err
+	}
+	shipping := func() error {
+		_, err := ordersteps.UpdateOrderShippingMethodsTranslationsStep.Run(e, ordersteps.UpdateOrderShippingMethodsTranslationsStepInput{ShippingMethods: shippingMethods, Locale: locale})
+		return err
+	}
+	taxLines := func() error {
+		_, err := ordersteps.UpdateOrderTaxLinesTranslationsStep.Run(e, ordersteps.UpdateOrderTaxLinesTranslationsStepInput{OrderID: orderID, Locale: locale})
+		return err
+	}
+	if draftOrder {
+		return composer.Parallelize(shipping, taxLines, items)
+	}
+	return composer.Parallelize(items, shipping, taxLines)
+}

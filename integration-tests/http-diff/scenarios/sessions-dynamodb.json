@@ -1,0 +1,69 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "origin": "http://localhost:5173",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "me_unauthenticated",
+  "method": "GET",
+  "path": "/admin/users/me",
+  "origin": "http://localhost:5173"
+ },
+ {
+  "name": "session",
+  "method": "POST",
+  "path": "/auth/session",
+  "origin": "http://localhost:5173",
+  "bearer": "login"
+ },
+ {
+  "name": "me",
+  "method": "GET",
+  "path": "/admin/users/me",
+  "origin": "http://localhost:5173"
+ },
+ {
+  "name": "session_again",
+  "method": "POST",
+  "path": "/auth/session",
+  "origin": "http://localhost:5173",
+  "bearer": "login"
+ },
+ {
+  "name": "me_again",
+  "method": "GET",
+  "path": "/admin/users/me?fields=id,email",
+  "origin": "http://localhost:5173"
+ },
+ {
+  "name": "stores",
+  "method": "GET",
+  "path": "/admin/stores",
+  "origin": "http://localhost:5173"
+ },
+ {
+  "name": "me_bearer",
+  "method": "GET",
+  "path": "/admin/users/me",
+  "bearer": "login",
+  "nocookies": true
+ },
+ {
+  "name": "logout",
+  "method": "DELETE",
+  "path": "/auth/session",
+  "origin": "http://localhost:5173"
+ },
+ {
+  "name": "me_after_logout",
+  "method": "GET",
+  "path": "/admin/users/me",
+  "origin": "http://localhost:5173"
+ }
+]

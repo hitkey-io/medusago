@@ -803,13 +803,18 @@ func pretty(v any) string {
 	return b.String()
 }
 
-// scenarioFiles lists the scenarios, filtered by MEDUSA_HTTP_SCENARIO.
+// scenarioFiles lists the scenarios, filtered by MEDUSA_HTTP_SCENARIO (a
+// comma separated list of names).
 func scenarioFiles() []string {
 	files, _ := filepath.Glob("scenarios/*.json")
 	if only := os.Getenv("MEDUSA_HTTP_SCENARIO"); only != "" {
+		names := map[string]bool{}
+		for _, n := range strings.Split(only, ",") {
+			names[strings.TrimSpace(n)] = true
+		}
 		var out []string
 		for _, f := range files {
-			if strings.TrimSuffix(filepath.Base(f), ".json") == only {
+			if names[strings.TrimSuffix(filepath.Base(f), ".json")] {
 				out = append(out, f)
 			}
 		}
@@ -869,11 +874,22 @@ func goServer(t *testing.T, scenario string) string {
 	}
 	projectMiddlewares := registerTestSearchIndexes()
 	prepareRedis(t)
+	if endpoint := os.Getenv("MEDUSA_SESSION_DYNAMODB_ENDPOINT"); endpoint != "" {
+		// the scenario needs a local DynamoDB (docker amazon/dynamodb-local)
+		if u, err := url.Parse(endpoint); err == nil {
+			if conn, err := net.DialTimeout("tcp", u.Host, 2*time.Second); err != nil {
+				t.Skipf("DynamoDB at %s is not reachable: %v", endpoint, err)
+			} else {
+				conn.Close()
+			}
+		}
+	}
 	dbURL := setupDatabase(t, "medusa_http_go_"+strings.ReplaceAll(scenario, "-", "_"))
 	// Same CORS settings as record.sh passes to upstream.
 	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{
-		DatabaseURL: dbURL,
-		HTTP:        config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
+		DatabaseURL:    dbURL,
+		HTTP:           config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
+		SessionOptions: scenarioSessionOptions(),
 	}, Modules: scenarioModules()})
 	app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, OnLoad: scenarioHooks(t)})
 	if err != nil {
@@ -885,6 +901,33 @@ func goServer(t *testing.T, scenario string) string {
 		app.Shutdown()
 	})
 	return srv.URL
+}
+
+// scenarioSessionOptions mirrors the sessionOptions of the reference app
+// (medusa-config.js of REF_APP): the DynamoDB session store when
+// MEDUSA_SESSION_DYNAMODB_ENDPOINT is set (a local DynamoDB).
+func scenarioSessionOptions() *config.SessionOptions {
+	endpoint := os.Getenv("MEDUSA_SESSION_DYNAMODB_ENDPOINT")
+	if endpoint == "" {
+		return nil
+	}
+	table := os.Getenv("MEDUSA_SESSION_DYNAMODB_TABLE")
+	if table == "" {
+		table = "sessions"
+	}
+	prefix := os.Getenv("MEDUSA_SESSION_DYNAMODB_PREFIX")
+	if prefix == "" {
+		prefix = "sess:"
+	}
+	return &config.SessionOptions{DynamodbOptions: map[string]any{
+		"table":  table,
+		"prefix": prefix,
+		"clientOptions": map[string]any{
+			"endpoint":    endpoint,
+			"region":      "us-east-1",
+			"credentials": map[string]any{"accessKeyId": "local", "secretAccessKey": "local"},
+		},
+	}}
 }
 
 // TestMatchUpstream runs every scenario against the Go application (each on
