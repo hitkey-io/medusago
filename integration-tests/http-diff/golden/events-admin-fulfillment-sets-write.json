@@ -1,0 +1,1099 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzgxNDgsImV4cCI6MTc5NDQ2NDU0OH0.QM5GzUpf1SEVW-BURWVyefeEsKOGHC71Dw-Pe6VWm-M"
+    }
+  },
+  "locations": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_locations": [
+        {
+          "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+          "name": "European Warehouse"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "profiles": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_profiles": [
+        {
+          "id": "sp_01M70EKFVXJQ9SQF567TDFDJPE",
+          "name": "Default Shipping Profile",
+          "type": "default",
+          "metadata": null,
+          "created_at": "2026-11-09T15:25:06.813Z",
+          "updated_at": "2026-11-09T15:25:06.813Z"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "events_start": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "profile_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_profile": {
+        "id": "sp_01M74MBAH7A6H1CMF6YTQXJ8MC",
+        "name": "Heavy",
+        "type": "custom",
+        "metadata": {
+          "a": 1
+        },
+        "created_at": "2026-11-11T06:22:28.391Z",
+        "updated_at": "2026-11-11T06:22:28.391Z"
+      }
+    }
+  },
+  "events__profile_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.shipping-profile.created",
+          "data": {
+            "id": "sp_01M74MBAH7A6H1CMF6YTQXJ8MC"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "shipping_profile",
+            "action": "created",
+            "eventGroupId": "01M74MBAH4ZCDG0MNEM2Z6J24T"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__profile_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "profile_create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'type' is required; Unrecognized fields: 'foo'"
+    }
+  },
+  "events__profile_create_invalid": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__profile_create_invalid": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "profile_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_profile": {
+        "id": "sp_01M74MBAH7A6H1CMF6YTQXJ8MC",
+        "name": "Heavy goods",
+        "type": "custom",
+        "metadata": null,
+        "created_at": "2026-11-11T06:22:28.391Z",
+        "updated_at": "2026-11-11T06:22:28.451Z"
+      }
+    }
+  },
+  "events__profile_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.shipping-profile.updated",
+          "data": {
+            "id": "sp_01M74MBAH7A6H1CMF6YTQXJ8MC"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "shipping_profile",
+            "action": "updated",
+            "eventGroupId": "01M74MBAJYMX71FR32DNB1397S"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__profile_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "profile_get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_profile": {
+        "id": "sp_01M74MBAH7A6H1CMF6YTQXJ8MC",
+        "name": "Heavy goods",
+        "type": "custom",
+        "metadata": null,
+        "created_at": "2026-11-11T06:22:28.391Z",
+        "updated_at": "2026-11-11T06:22:28.451Z"
+      }
+    }
+  },
+  "profile_get_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "fs_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+        "fulfillment_sets": [
+          {
+            "name": "EU shipping",
+            "type": "shipping",
+            "id": "fuset_01M74MBAN80SEAGTW7CTYV8S1Z"
+          }
+        ]
+      }
+    }
+  },
+  "events__fs_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.fulfillment-set.created",
+          "data": {
+            "id": "fuset_01M74MBAN80SEAGTW7CTYV8S1Z"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "fulfillment_set",
+            "action": "created",
+            "eventGroupId": "01M74MBAN10SN7W2VAVAEJDD9C"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "LinkLocationFulfillmentSet.attached",
+          "data": {
+            "id": "locfs_01M74MBANWJYECQ8DD6MTFAG7J"
+          },
+          "metadata": {
+            "source": "StockLocationStockLocationFulfillmentFulfillmentSetLink",
+            "object": "LinkLocationFulfillmentSet",
+            "action": "attached",
+            "eventGroupId": "01M74MBAN10SN7W2VAVAEJDD9C"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__fs_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "fs_create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'type' is required"
+    }
+  },
+  "events__fs_create_invalid": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__fs_create_invalid": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "location_sets": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+        "fulfillment_sets": [
+          {
+            "id": "fuset_01M74MBAN80SEAGTW7CTYV8S1Z",
+            "name": "EU shipping",
+            "type": "shipping",
+            "metadata": null,
+            "created_at": "2026-11-11T06:22:28.520Z",
+            "updated_at": "2026-11-11T06:22:28.520Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "zone_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "fulfillment_set": {
+        "id": "fuset_01M74MBAN80SEAGTW7CTYV8S1Z",
+        "name": "EU shipping",
+        "type": "shipping",
+        "created_at": "2026-11-11T06:22:28.520Z",
+        "updated_at": "2026-11-11T06:22:28.520Z",
+        "deleted_at": null,
+        "service_zones": [
+          {
+            "id": "serzo_01M74MBARESV7C2JQM17ZJ09PT",
+            "name": "Western Europe",
+            "fulfillment_set_id": "fuset_01M74MBAN80SEAGTW7CTYV8S1Z",
+            "metadata": null,
+            "created_at": "2026-11-11T06:22:28.622Z",
+            "updated_at": "2026-11-11T06:22:28.622Z",
+            "deleted_at": null,
+            "geo_zones": [
+              {
+                "id": "fgz_01M74MBARE08PCS5YJHXBEEWNW",
+                "type": "country",
+                "country_code": "de",
+                "province_code": null,
+                "city": null,
+                "postal_expression": null,
+                "service_zone_id": "serzo_01M74MBARESV7C2JQM17ZJ09PT",
+                "metadata": null,
+                "created_at": "2026-11-11T06:22:28.622Z",
+                "updated_at": "2026-11-11T06:22:28.622Z",
+                "deleted_at": null
+              },
+              {
+                "id": "fgz_01M74MBAREF0RBTQVEN2R74TN4",
+                "type": "province",
+                "country_code": "fr",
+                "province_code": "fr-idf",
+                "city": null,
+                "postal_expression": null,
+                "service_zone_id": "serzo_01M74MBARESV7C2JQM17ZJ09PT",
+                "metadata": null,
+                "created_at": "2026-11-11T06:22:28.622Z",
+                "updated_at": "2026-11-11T06:22:28.622Z",
+                "deleted_at": null
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "events__zone_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.service-zone.created",
+          "data": {
+            "id": "serzo_01M74MBARESV7C2JQM17ZJ09PT"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "service_zone",
+            "action": "created",
+            "eventGroupId": "01M74MBARCBKPVBZVVDM05565N"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.geo-zone.created",
+          "data": {
+            "id": "fgz_01M74MBARE08PCS5YJHXBEEWNW"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "geo_zone",
+            "action": "created",
+            "eventGroupId": "01M74MBARCBKPVBZVVDM05565N"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.geo-zone.created",
+          "data": {
+            "id": "fgz_01M74MBAREF0RBTQVEN2R74TN4"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "geo_zone",
+            "action": "created",
+            "eventGroupId": "01M74MBARCBKPVBZVVDM05565N"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__zone_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "zone_create_bad_geo": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'geo_zones, 0, type' is required"
+    }
+  },
+  "events__zone_create_bad_geo": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__zone_create_bad_geo": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "zone_create_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Service zone with name: Western Europe, already exists."
+    }
+  },
+  "events__zone_create_dup": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__zone_create_dup": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "zone_get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "service_zone": {
+        "id": "serzo_01M74MBARESV7C2JQM17ZJ09PT",
+        "name": "Western Europe",
+        "created_at": "2026-11-11T06:22:28.622Z",
+        "updated_at": "2026-11-11T06:22:28.622Z",
+        "deleted_at": null,
+        "geo_zones": [
+          {
+            "id": "fgz_01M74MBARE08PCS5YJHXBEEWNW",
+            "type": "country",
+            "country_code": "de",
+            "province_code": null,
+            "city": null,
+            "postal_expression": null,
+            "service_zone_id": "serzo_01M74MBARESV7C2JQM17ZJ09PT",
+            "metadata": null,
+            "created_at": "2026-11-11T06:22:28.622Z",
+            "updated_at": "2026-11-11T06:22:28.622Z",
+            "deleted_at": null
+          },
+          {
+            "id": "fgz_01M74MBAREF0RBTQVEN2R74TN4",
+            "type": "province",
+            "country_code": "fr",
+            "province_code": "fr-idf",
+            "city": null,
+            "postal_expression": null,
+            "service_zone_id": "serzo_01M74MBARESV7C2JQM17ZJ09PT",
+            "metadata": null,
+            "created_at": "2026-11-11T06:22:28.622Z",
+            "updated_at": "2026-11-11T06:22:28.622Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "zone_get_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Service zone with id: serzo_missing not found"
+    }
+  },
+  "zone_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "fulfillment_set": {
+        "id": "fuset_01M74MBAN80SEAGTW7CTYV8S1Z",
+        "service_zones": [
+          {
+            "name": "Central Europe",
+            "id": "serzo_01M74MBARESV7C2JQM17ZJ09PT",
+            "geo_zones": [
+              {
+                "type": "country",
+                "country_code": "ch",
+                "id": "fgz_01M74MBAXBGQTQ0E4VASMVNZ7H"
+              },
+              {
+                "type": "country",
+                "country_code": "at",
+                "id": "fgz_01M74MBARE08PCS5YJHXBEEWNW"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "events__zone_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.geo-zone.deleted",
+          "data": {
+            "id": "fgz_01M74MBAREF0RBTQVEN2R74TN4"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "geo_zone",
+            "action": "deleted",
+            "eventGroupId": "01M74MBAWZM9NDMMJ6P5R4ZMPV"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.geo-zone.created",
+          "data": {
+            "id": "fgz_01M74MBAXBGQTQ0E4VASMVNZ7H"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "geo_zone",
+            "action": "created",
+            "eventGroupId": "01M74MBAWZM9NDMMJ6P5R4ZMPV"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.service-zone.updated",
+          "data": {
+            "id": "serzo_01M74MBARESV7C2JQM17ZJ09PT"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "service_zone",
+            "action": "updated",
+            "eventGroupId": "01M74MBAWZM9NDMMJ6P5R4ZMPV"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.geo-zone.updated",
+          "data": {
+            "id": "fgz_01M74MBARE08PCS5YJHXBEEWNW"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "geo_zone",
+            "action": "updated",
+            "eventGroupId": "01M74MBAWZM9NDMMJ6P5R4ZMPV"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__zone_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "zone_update_missing_geo": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "The following geo zones does not exists: fgz_missing"
+    }
+  },
+  "events__zone_update_missing_geo": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__zone_update_missing_geo": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "zone_update_wrong_set": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "FulfillmentSet with id: fuset_missing was not found"
+    }
+  },
+  "events__zone_update_wrong_set": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__zone_update_wrong_set": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "zone_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "serzo_01M74MBARESV7C2JQM17ZJ09PT",
+      "object": "service_zone",
+      "deleted": true,
+      "parent": {
+        "id": "fuset_01M74MBAN80SEAGTW7CTYV8S1Z",
+        "name": "EU shipping",
+        "type": "shipping",
+        "metadata": null,
+        "created_at": "2026-11-11T06:22:28.520Z",
+        "updated_at": "2026-11-11T06:22:28.520Z",
+        "deleted_at": null,
+        "service_zones": [
+          {
+            "id": "serzo_01M74MBARESV7C2JQM17ZJ09PT",
+            "name": "Central Europe",
+            "fulfillment_set_id": "fuset_01M74MBAN80SEAGTW7CTYV8S1Z",
+            "metadata": null,
+            "created_at": "2026-11-11T06:22:28.622Z",
+            "updated_at": "2026-11-11T06:22:28.780Z",
+            "deleted_at": null
+          }
+        ]
+      }
+    }
+  },
+  "events__zone_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.service-zone.deleted",
+          "data": {
+            "id": "serzo_01M74MBARESV7C2JQM17ZJ09PT"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "service_zone",
+            "action": "deleted",
+            "eventGroupId": "01M74MBAYMH3TG4WPH7KJ7Z2ED"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.geo-zone.deleted",
+          "data": {
+            "id": "fgz_01M74MBAXBGQTQ0E4VASMVNZ7H"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "geo_zone",
+            "action": "deleted",
+            "eventGroupId": "01M74MBAYMH3TG4WPH7KJ7Z2ED"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.geo-zone.deleted",
+          "data": {
+            "id": "fgz_01M74MBARE08PCS5YJHXBEEWNW"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "geo_zone",
+            "action": "deleted",
+            "eventGroupId": "01M74MBAYMH3TG4WPH7KJ7Z2ED"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__zone_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "zone_get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Service zone with id: serzo_01M74MBARESV7C2JQM17ZJ09PT not found"
+    }
+  },
+  "fs_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "fuset_01M74MBAN80SEAGTW7CTYV8S1Z",
+      "object": "fulfillment_set",
+      "deleted": true
+    }
+  },
+  "events__fs_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.fulfillment-set.deleted",
+          "data": {
+            "id": "fuset_01M74MBAN80SEAGTW7CTYV8S1Z"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "fulfillment_set",
+            "action": "deleted",
+            "eventGroupId": "01M74MBAZDZV8402SHJ6CPX508"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.service-zone.updated",
+          "data": {
+            "id": "serzo_01M74MBARESV7C2JQM17ZJ09PT"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "service_zone",
+            "action": "updated",
+            "eventGroupId": "01M74MBAZDZV8402SHJ6CPX508"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.geo-zone.updated",
+          "data": {
+            "id": "fgz_01M74MBAXBGQTQ0E4VASMVNZ7H"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "geo_zone",
+            "action": "updated",
+            "eventGroupId": "01M74MBAZDZV8402SHJ6CPX508"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.geo-zone.updated",
+          "data": {
+            "id": "fgz_01M74MBARE08PCS5YJHXBEEWNW"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "geo_zone",
+            "action": "updated",
+            "eventGroupId": "01M74MBAZDZV8402SHJ6CPX508"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "LinkLocationFulfillmentSet.detached",
+          "data": {
+            "id": "locfs_01M74MBANWJYECQ8DD6MTFAG7J"
+          },
+          "metadata": {
+            "source": "StockLocationStockLocationFulfillmentFulfillmentSetLink",
+            "object": "LinkLocationFulfillmentSet",
+            "action": "detached",
+            "eventGroupId": "01M74MBAZDZV8402SHJ6CPX508"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__fs_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "location_sets_after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+        "fulfillment_sets": []
+      }
+    }
+  },
+  "profile_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "sp_01M74MBAH7A6H1CMF6YTQXJ8MC",
+      "object": "shipping_profile",
+      "deleted": true
+    }
+  },
+  "events__profile_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__profile_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "profile_delete_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "ShippingProfile with id: sp_missing was not found"
+    }
+  },
+  "events__profile_delete_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__profile_delete_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "profile_delete_linked": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Cannot delete following shipping profiles because they are linked to products: prod_01M70XZZZ4FBS8GYD7B7RQYZPR, prod_01M70XZZZ4QCEP179PD336GCSV, prod_01M70XZZZ49MK9W0NV0YSF74CE"
+    }
+  },
+  "events__profile_delete_linked": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__profile_delete_linked": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "profiles_after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_profiles": [
+        {
+          "name": "Default Shipping Profile",
+          "type": "default",
+          "id": "sp_01M70EKFVXJQ9SQF567TDFDJPE"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  }
+}

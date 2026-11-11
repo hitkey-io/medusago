@@ -1,0 +1,775 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzkxNTQsImV4cCI6MTc5NDQ2NTU1NH0.OKH3-zOm1G1YHRENu2VoCmddXbPJ6X3AaaV3eyHONlg"
+    }
+  },
+  "events_start": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS",
+        "name": "London Hub",
+        "metadata": {
+          "a": 1
+        },
+        "created_at": "2026-11-11T06:39:14.476Z",
+        "updated_at": "2026-11-11T06:39:14.476Z",
+        "address": {
+          "id": "laddr_01M74NA11BBTF0CY55CPNBT99K",
+          "address_1": "1 Test Street",
+          "address_2": null,
+          "city": "London",
+          "country_code": "GB",
+          "phone": null,
+          "province": null,
+          "postal_code": "E1 1AA",
+          "metadata": {
+            "dock": 3
+          }
+        }
+      }
+    }
+  },
+  "events__create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "stock_location.stock-location-address.created",
+          "data": {
+            "id": "laddr_01M74NA11BBTF0CY55CPNBT99K"
+          },
+          "metadata": {
+            "source": "stock_location",
+            "object": "stock_location_address",
+            "action": "created",
+            "eventGroupId": "01M74NA115561SADA431108TBJ"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "stock_location.stock-location.created",
+          "data": {
+            "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS"
+          },
+          "metadata": {
+            "source": "stock_location",
+            "object": "stock_location",
+            "action": "created",
+            "eventGroupId": "01M74NA115561SADA431108TBJ"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "create_plain": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M74NA124XW3X31JNRRE50JRW",
+        "name": "Paris",
+        "address": null
+      }
+    }
+  },
+  "events__create_plain": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "stock_location.stock-location.created",
+          "data": {
+            "id": "sloc_01M74NA124XW3X31JNRRE50JRW"
+          },
+          "metadata": {
+            "source": "stock_location",
+            "object": "stock_location",
+            "action": "created",
+            "eventGroupId": "01M74NA1227ZC88N9GWXK1FCKQ"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__create_plain": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'address, address_1' is required; Field 'address, country_code' is required"
+    }
+  },
+  "events__create_invalid": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__create_invalid": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "name": "London Hub",
+        "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS",
+        "address": {
+          "id": "laddr_01M74NA11BBTF0CY55CPNBT99K",
+          "address_1": "1 Test Street",
+          "address_2": null,
+          "company": null,
+          "city": "London",
+          "country_code": "GB",
+          "phone": null,
+          "province": null,
+          "postal_code": "E1 1AA",
+          "metadata": {
+            "dock": 3
+          },
+          "created_at": "2026-11-11T06:39:14.475Z",
+          "updated_at": "2026-11-11T06:39:14.475Z",
+          "deleted_at": null
+        }
+      }
+    }
+  },
+  "update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS",
+        "name": "London Main",
+        "metadata": {
+          "a": 1
+        },
+        "created_at": "2026-11-11T06:39:14.476Z",
+        "updated_at": "2026-11-11T06:39:14.548Z",
+        "address": {
+          "id": "laddr_01M74NA11BBTF0CY55CPNBT99K",
+          "address_1": "2 Test Street",
+          "address_2": null,
+          "city": null,
+          "country_code": "gb",
+          "phone": null,
+          "province": null,
+          "postal_code": "E1 1AA",
+          "metadata": {
+            "dock": 3
+          }
+        }
+      }
+    }
+  },
+  "events__update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "stock_location.stock-location-address.updated",
+          "data": {
+            "id": "laddr_01M74NA11BBTF0CY55CPNBT99K"
+          },
+          "metadata": {
+            "source": "stock_location",
+            "object": "stock_location_address",
+            "action": "updated",
+            "eventGroupId": "01M74NA12WTXTK5TYP9WNH8ENS"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "stock_location.stock-location.updated",
+          "data": {
+            "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS"
+          },
+          "metadata": {
+            "source": "stock_location",
+            "object": "stock_location",
+            "action": "updated",
+            "eventGroupId": "01M74NA12WTXTK5TYP9WNH8ENS"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "update_no_address": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M74NA124XW3X31JNRRE50JRW",
+        "name": "Paris",
+        "address": null
+      }
+    }
+  },
+  "events__update_no_address": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "stock_location.stock-location-address.created",
+          "data": {
+            "id": "laddr_01M74NA148VHKMY2CA41JX3MHV"
+          },
+          "metadata": {
+            "source": "stock_location",
+            "object": "stock_location_address",
+            "action": "created",
+            "eventGroupId": "01M74NA142FW9Y16TR73VH3ZRC"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "stock_location.stock-location.updated",
+          "data": {
+            "id": "sloc_01M74NA124XW3X31JNRRE50JRW"
+          },
+          "metadata": {
+            "source": "stock_location",
+            "object": "stock_location",
+            "action": "updated",
+            "eventGroupId": "01M74NA142FW9Y16TR73VH3ZRC"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__update_no_address": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "link_sc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS",
+        "sales_channels": [
+          {
+            "name": "Default Sales Channel",
+            "id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ"
+          }
+        ]
+      }
+    }
+  },
+  "events__link_sc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "LinkSalesChannelStockLocation.attached",
+          "data": {
+            "id": "scloc_01M74NA14YHTE4Q47N98TGP1X5"
+          },
+          "metadata": {
+            "source": "SalesChannelSalesChannelStockLocationLocationLink",
+            "object": "LinkSalesChannelStockLocation",
+            "action": "attached",
+            "eventGroupId": "01M74NA14VN467PNVJSE641H87"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__link_sc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "link_fp": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS",
+        "fulfillment_providers": [
+          {
+            "id": "manual_manual"
+          }
+        ]
+      }
+    }
+  },
+  "events__link_fp": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "LinkLocationFulfillmentProvider.attached",
+          "data": {
+            "id": "locfp_01M74NA15GTXH4HAH1TN4NBTEA"
+          },
+          "metadata": {
+            "source": "StockLocationStockLocationFulfillmentFulfillmentProviderLink",
+            "object": "LinkLocationFulfillmentProvider",
+            "action": "attached",
+            "eventGroupId": "01M74NA15CH5WEK9FZK01HFYS9"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__link_fp": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "list_by_sc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_locations": [
+        {
+          "name": "European Warehouse",
+          "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX"
+        },
+        {
+          "name": "London Main",
+          "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "unlink_sc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS",
+        "sales_channels": []
+      }
+    }
+  },
+  "events__unlink_sc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "LinkSalesChannelStockLocation.detached",
+          "data": {
+            "id": "scloc_01M74NA14YHTE4Q47N98TGP1X5"
+          },
+          "metadata": {
+            "source": "SalesChannelSalesChannelStockLocationLocationLink",
+            "object": "LinkSalesChannelStockLocation",
+            "action": "detached",
+            "eventGroupId": "01M74NA16MS1ZNCZVSQR8FQFN4"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__unlink_sc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "unlink_fp": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS",
+        "fulfillment_providers": []
+      }
+    }
+  },
+  "events__unlink_fp": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "LinkLocationFulfillmentProvider.detached",
+          "data": {
+            "id": "locfp_01M74NA15GTXH4HAH1TN4NBTEA"
+          },
+          "metadata": {
+            "source": "StockLocationStockLocationFulfillmentFulfillmentProviderLink",
+            "object": "LinkLocationFulfillmentProvider",
+            "action": "detached",
+            "eventGroupId": "01M74NA174J9T4GEJEFYXVW147"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__unlink_fp": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "relink_sc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS"
+      }
+    }
+  },
+  "events__relink_sc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "LinkSalesChannelStockLocation.attached",
+          "data": {
+            "id": "scloc_01M74NA17QY8CTQJAMGG573CJF"
+          },
+          "metadata": {
+            "source": "SalesChannelSalesChannelStockLocationLocationLink",
+            "object": "LinkSalesChannelStockLocation",
+            "action": "attached",
+            "eventGroupId": "01M74NA17MZ1V99J2GQ4W2H55F"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__relink_sc": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS",
+      "object": "stock_location",
+      "deleted": true
+    }
+  },
+  "events__delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "stock_location.stock-location.deleted",
+          "data": {
+            "id": "sloc_01M74NA11B5GYCE8HWJPNKEHNS"
+          },
+          "metadata": {
+            "source": "stock_location",
+            "object": "stock_location",
+            "action": "deleted",
+            "eventGroupId": "01M74NA183AY8T0H4RHPZYNYR4"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "stock_location.stock-location-address.deleted",
+          "data": {
+            "id": "laddr_01M74NA11BBTF0CY55CPNBT99K"
+          },
+          "metadata": {
+            "source": "stock_location",
+            "object": "stock_location_address",
+            "action": "deleted",
+            "eventGroupId": "01M74NA183AY8T0H4RHPZYNYR4"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "LinkSalesChannelStockLocation.detached",
+          "data": {
+            "id": "scloc_01M74NA17QY8CTQJAMGG573CJF"
+          },
+          "metadata": {
+            "source": "SalesChannelSalesChannelStockLocationLocationLink",
+            "object": "LinkSalesChannelStockLocation",
+            "action": "detached",
+            "eventGroupId": "01M74NA183AY8T0H4RHPZYNYR4"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Stock location with id: sloc_01M74NA11B5GYCE8HWJPNKEHNS was not found"
+    }
+  },
+  "sc_locations": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "sales_channel": {
+        "id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+        "stock_locations": [
+          {
+            "name": "European Warehouse",
+            "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX"
+          }
+        ]
+      }
+    }
+  },
+  "list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_locations": [
+        {
+          "name": "European Warehouse",
+          "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+          "address": {
+            "id": "laddr_01M70XZZY3GTD63ABN5T1JH1DT",
+            "address_1": "Main 1",
+            "address_2": null,
+            "company": null,
+            "city": "Berlin",
+            "country_code": "DE",
+            "phone": null,
+            "province": null,
+            "postal_code": null,
+            "metadata": null,
+            "created_at": "2026-11-09T19:54:05.123Z",
+            "updated_at": "2026-11-09T19:54:05.123Z",
+            "deleted_at": null
+          }
+        },
+        {
+          "name": "Paris",
+          "id": "sloc_01M74NA124XW3X31JNRRE50JRW"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 20
+    }
+  }
+}

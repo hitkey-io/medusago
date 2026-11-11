@@ -1,0 +1,50 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "refs", "method": "GET", "bearer": "login", "path": "/admin/products?handle=t-shirt&fields=id,*shipping_profile,*tags,*categories,*sales_channels" },
+
+  { "name": "capture_create", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "create", "method": "POST", "bearer": "login", "path": "/admin/products?fields=id,variants.id",
+    "body": {
+      "title": "Event Shirt",
+      "status": "published",
+      "images": [{ "url": "https://example.com/event-1.png" }],
+      "shipping_profile_id": "{{refs.products.0.shipping_profile.id}}",
+      "sales_channels": [{ "id": "{{refs.products.0.sales_channels.0.id}}" }],
+      "tags": [{ "id": "{{refs.products.0.tags.0.id}}" }],
+      "categories": [{ "id": "{{refs.products.0.categories.0.id}}" }],
+      "options": [{ "title": "Size", "values": ["S", "M"] }],
+      "variants": [
+        { "title": "S", "sku": "EVENT-S", "options": { "Size": "S" }, "prices": [{ "amount": 10, "currency_code": "usd" }, { "amount": 9, "currency_code": "eur" }] }
+      ]
+    }
+  },
+  { "name": "events_create", "method": "GET", "path": "/events-capture" },
+
+  { "name": "capture_update", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "update", "method": "POST", "bearer": "login", "path": "/admin/products/{{create.product.id}}?fields=id", "body": { "title": "Event Shirt 2", "subtitle": "New" } },
+  { "name": "events_update", "method": "GET", "path": "/events-capture" },
+
+  { "name": "capture_update_noop", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "update_noop", "method": "POST", "bearer": "login", "path": "/admin/products/{{create.product.id}}?fields=id", "body": { "title": "Event Shirt 2" } },
+  { "name": "events_update_noop", "method": "GET", "path": "/events-capture" },
+
+  { "name": "capture_add_variant", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "add_variant", "method": "POST", "bearer": "login", "path": "/admin/products/{{create.product.id}}/variants?fields=id,variants.id",
+    "body": { "title": "M", "sku": "EVENT-M", "manage_inventory": false, "options": { "Size": "M" }, "prices": [{ "amount": 12, "currency_code": "usd" }] } },
+  { "name": "events_add_variant", "method": "GET", "path": "/events-capture" },
+
+  { "name": "capture_update_variant", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "update_variant", "method": "POST", "bearer": "login", "path": "/admin/products/{{create.product.id}}/variants/{{create.product.variants.0.id}}?fields=id",
+    "body": { "title": "Small", "prices": [{ "amount": 11, "currency_code": "usd" }] } },
+  { "name": "events_update_variant", "method": "GET", "path": "/events-capture" },
+
+  { "name": "capture_delete_variant", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "delete_variant", "method": "DELETE", "bearer": "login", "path": "/admin/products/{{create.product.id}}/variants/{{create.product.variants.0.id}}?fields=id" },
+  { "name": "events_delete_variant", "method": "GET", "path": "/events-capture" },
+
+  { "name": "delete_variant_m", "method": "DELETE", "bearer": "login", "path": "/admin/products/{{create.product.id}}/variants/{{add_variant.product.variants.1.id}}?fields=id" },
+
+  { "name": "capture_delete", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "delete", "method": "DELETE", "bearer": "login", "path": "/admin/products/{{create.product.id}}" },
+  { "name": "events_delete", "method": "GET", "path": "/events-capture" }
+]

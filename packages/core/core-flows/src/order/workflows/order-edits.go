@@ -531,13 +531,13 @@ var CancelBeginOrderEditWorkflow = composer.CreateWorkflow("cancel-begin-order-e
 		ev.Set("actions", g(orderChange, "actions"))
 		return nil, composer.Parallelize(
 			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order-edit.canceled", Data: ev})
+				return err
+			},
+			func() error {
 				_, err := ordersteps.DeleteOrderChangesStep.Run(e, []any{g(orderChange, "id")})
 				return err
 			},
 			func() error { _, err := ordersteps.DeleteOrderShippingMethodsStep.Run(e, shippingToRemove); return err },
-			func() error {
-				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order-edit.canceled", Data: ev})
-				return err
-			},
 		)
 	}))

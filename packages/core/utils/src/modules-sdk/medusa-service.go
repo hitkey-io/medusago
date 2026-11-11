@@ -3,12 +3,12 @@ package modulessdk
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5"
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dml"
+	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 )
 
 // MedusaService mirrors MedusaService: the generated methods of a module
@@ -18,6 +18,8 @@ type MedusaService struct {
 	byName       map[string]*InternalService
 	bySuffix     map[string]*InternalService
 	linkableKeys map[string][]linkableKey
+	schema       *dal.Schema
+	events       *ModuleEventSink
 }
 
 type linkableKey struct {
@@ -29,7 +31,14 @@ type linkableKey struct {
 // method suffixes and linkable keys come from the module joiner config.
 func NewMedusaService(db dal.Querier, models []*dml.Entity, joinerConfig *joiner.ModuleJoinerConfig) *MedusaService {
 	schema := dal.NewSchema(models)
-	s := &MedusaService{byName: map[string]*InternalService{}, bySuffix: map[string]*InternalService{}, linkableKeys: map[string][]linkableKey{}}
+	events := &ModuleEventSink{}
+	// MedusaService subscribes every internal service to the entity
+	// mutations, except for the index module.
+	if joinerConfig != nil && joinerConfig.ServiceName != "index" {
+		schema.Source = joinerConfig.ServiceName
+		schema.Sink = events
+	}
+	s := &MedusaService{byName: map[string]*InternalService{}, bySuffix: map[string]*InternalService{}, linkableKeys: map[string][]linkableKey{}, schema: schema, events: events}
 	for _, m := range models {
 		svc := &InternalService{Repository: &dal.Repository{DB: db, Schema: schema, Entity: m}}
 		s.byName[m.Meta.ClassName] = svc
@@ -254,7 +263,7 @@ func ParseFindConfig(v any) (FindConfig, error) {
 
 // withDB returns a copy of the service whose internal services use db.
 func (s *MedusaService) withDB(db dal.Querier) *MedusaService {
-	c := &MedusaService{byName: map[string]*InternalService{}, bySuffix: map[string]*InternalService{}, linkableKeys: s.linkableKeys}
+	c := &MedusaService{byName: map[string]*InternalService{}, bySuffix: map[string]*InternalService{}, linkableKeys: s.linkableKeys, schema: s.schema, events: s.events}
 	copies := map[*InternalService]*InternalService{}
 	for name, svc := range s.byName {
 		repo := *svc.Repository
@@ -279,12 +288,37 @@ func (s *MedusaService) DB() dal.Querier {
 
 // InTransaction mirrors @InjectTransactionManager: fn runs with a copy of
 // the service bound to one transaction (a savepoint when already in one).
+//
+// The outermost transaction emits the entity mutation events of the module
+// once committed (see dal.Transaction).
 func (s *MedusaService) InTransaction(ctx context.Context, fn func(tx *MedusaService) error) error {
-	db, ok := s.DB().(txBeginner)
-	if !ok {
-		return fn(s)
-	}
-	return pgx.BeginFunc(ctx, db, func(tx pgx.Tx) error {
+	return dal.Transaction(ctx, s.DB(), s.schema, func(tx dal.Querier) error {
+		if tx == s.DB() {
+			return fn(s)
+		}
 		return fn(s.withDB(tx))
 	})
+}
+
+// SetEventBus sets the event bus the module emits its events to.
+func (s *MedusaService) SetEventBus(bus eventbus.Emitter) {
+	s.events.SetEventBus(bus)
+}
+
+// EventSink returns the emitter of the module events.
+func (s *MedusaService) EventSink() dal.EventSink {
+	if s.schema.Sink == nil {
+		return nil
+	}
+	return s.events
+}
+
+// EventSource returns the module service name of the events ("" when the
+// module emits none).
+func (s *MedusaService) EventSource() string { return s.schema.Source }
+
+// SaveEvent saves an explicitly built event of this module (see the
+// package-level SaveEvent).
+func (s *MedusaService) SaveEvent(ctx context.Context, ev *dal.ReadyEvent) {
+	SaveEvent(ctx, s.DB(), s.EventSink(), ev)
 }

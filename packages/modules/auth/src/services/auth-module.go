@@ -99,6 +99,8 @@ func (s *AuthModuleService) ListAuthProviders(ids []string) []*dal.Record {
 // Authenticate mirrors authenticate: provider errors become an
 // unsuccessful response.
 func (s *AuthModuleService) Authenticate(ctx context.Context, provider string, in authtypes.AuthenticationInput) authtypes.AuthenticationResponse {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEmit(ctx)
 	p, err := s.retrieveProvider(provider)
 	if err != nil {
 		return authtypes.AuthenticationResponse{Error: err.Error()}
@@ -116,6 +118,8 @@ func (s *AuthModuleService) Authenticate(ctx context.Context, provider string, i
 
 // Register mirrors register.
 func (s *AuthModuleService) Register(ctx context.Context, provider string, in authtypes.AuthenticationInput) authtypes.AuthenticationResponse {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEmit(ctx)
 	p, err := s.retrieveProvider(provider)
 	if err != nil {
 		return authtypes.AuthenticationResponse{Error: err.Error()}
@@ -129,6 +133,8 @@ func (s *AuthModuleService) Register(ctx context.Context, provider string, in au
 
 // UpdateProvider mirrors updateProvider.
 func (s *AuthModuleService) UpdateProvider(ctx context.Context, provider string, data *dal.Record) authtypes.AuthenticationResponse {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEmit(ctx)
 	p, err := s.retrieveProvider(provider)
 	if err != nil {
 		return authtypes.AuthenticationResponse{Error: err.Error()}
@@ -142,6 +148,8 @@ func (s *AuthModuleService) UpdateProvider(ctx context.Context, provider string,
 
 // ValidateCallback mirrors validateCallback.
 func (s *AuthModuleService) ValidateCallback(ctx context.Context, provider string, in authtypes.AuthenticationInput) authtypes.AuthenticationResponse {
+	// no @EmitEvents upstream: the auth module writes emit no events
+	ctx = dal.WithoutEmit(ctx)
 	p, err := s.retrieveProvider(provider)
 	if err != nil {
 		return authtypes.AuthenticationResponse{Error: err.Error()}

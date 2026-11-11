@@ -633,7 +633,8 @@ func (s *PromotionModuleService) RemovePromotionTargetRules(ctx context.Context,
 
 // RemovePromotionBuyRules mirrors removePromotionBuyRules.
 func (s *PromotionModuleService) RemovePromotionBuyRules(ctx context.Context, promotionID any, ruleIDs []any) error {
-	return s.removeRules(ctx, promotionID, ruleIDs, "buy_rules")
+	// no @EmitEvents upstream
+	return s.removeRules(dal.WithoutEmit(ctx), promotionID, ruleIDs, "buy_rules")
 }
 
 func (s *PromotionModuleService) removeRules(ctx context.Context, promotionID any, ruleIDs []any, relation string) error {

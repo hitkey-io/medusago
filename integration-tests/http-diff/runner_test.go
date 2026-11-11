@@ -68,6 +68,10 @@ type Step struct {
 	// resolves to a value ("path=value": to that value): it waits for
 	// background workflows.
 	Until string `json:"until,omitempty"`
+	// UntilAbsent repeats the request (for up to 30s) while this dotted
+	// body path resolves to a value: it waits for asynchronous subscribers
+	// (index engine updates) to remove something.
+	UntilAbsent string `json:"until_absent,omitempty"`
 	// Totp names a body path ("step.path") holding a TOTP secret: the
 	// current code replaces "__TOTP__" in the body.
 	Totp string `json:"totp,omitempty"`
@@ -412,6 +416,10 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 				}
 			}
 			if step.Until != "" && !untilReached(rec.Body, step.Until) && time.Now().Before(deadline) {
+				time.Sleep(200 * time.Millisecond)
+				continue
+			}
+			if step.UntilAbsent != "" && lookupPath(rec.Body, step.UntilAbsent) != nil && time.Now().Before(deadline) {
 				time.Sleep(200 * time.Millisecond)
 				continue
 			}
@@ -905,7 +913,7 @@ func goServer(t *testing.T, scenario string) string {
 		HTTP:           config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
 		SessionOptions: scenarioSessionOptions(),
 	}, Modules: scenarioModules()})
-	app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, Routes: routes, OnLoad: scenarioHooks(t)})
+	app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, Routes: routes, OnLoad: append(scenarioHooks(t), registerEventsCapture)})
 	if err != nil {
 		t.Fatal(err)
 	}

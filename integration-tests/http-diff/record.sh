@@ -34,6 +34,11 @@ MFA_KEY=http-diff-mfa-encryption-key
 
 psql_db() { docker exec -i "$PG_CONTAINER" psql -U postgres -v ON_ERROR_STOP=1 -q "$@"; }
 
+# The events-capture route (events-capture-route.js; the Go server registers
+# the same route in events_capture_test.go) records the published events.
+mkdir -p "$APP/src/api/events-capture"
+cp "$HERE/events-capture-route.js" "$APP/src/api/events-capture/route.js"
+
 scenarios=("$@")
 if [ ${#scenarios[@]} -eq 0 ]; then
   for f in "$HERE"/scenarios/*.json; do scenarios+=("$(basename "$f" .json)"); done

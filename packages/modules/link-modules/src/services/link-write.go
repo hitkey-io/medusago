@@ -8,6 +8,7 @@ import (
 	"github.com/oklog/ulid/v2"
 
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 )
 
 // LinkInput is one link to create: the values of the two foreign keys (in
@@ -80,9 +81,12 @@ func (s *LinkModuleService) Create(ctx context.Context, links []LinkInput) ([]*d
 	cols = append(cols, "deleted_at")
 	var args []any
 	var values []string
+	var ids []any
 	type defaultValue struct{}
 	for _, l := range links {
-		row := []any{l.Primary, l.Foreign, s.idPrefix() + "_" + ulid.Make().String()}
+		id := s.idPrefix() + "_" + ulid.Make().String()
+		ids = append(ids, id)
+		row := []any{l.Primary, l.Foreign, id}
 		for _, c := range extraCols {
 			var v any = defaultValue{}
 			if l.Extra != nil {
@@ -140,6 +144,7 @@ func (s *LinkModuleService) Create(ctx context.Context, links []LinkInput) ([]*d
 			}
 		}
 	}
+	s.emitLinkEvent(ctx, eventbus.CommonEvents.ATTACHED, ids)
 	return out, nil
 }
 
@@ -170,6 +175,7 @@ func (s *LinkModuleService) Dismiss(ctx context.Context, pairs [][2]any) ([]*dal
 		r["deleted_at"] = now
 		out[i] = s.serializeRow(r)
 	}
+	s.emitLinkEvent(ctx, eventbus.CommonEvents.DETACHED, rowIDs(rows))
 	return out, nil
 }
 
@@ -260,6 +266,7 @@ func (s *LinkModuleService) SoftDelete(ctx context.Context, filters []*dal.Recor
 	if err != nil {
 		return nil, err
 	}
+	s.emitLinkEvent(ctx, eventbus.CommonEvents.DETACHED, rowIDs(rows))
 	return s.mapLinkableKeys(rows, returnLinkableKeys), nil
 }
 
@@ -269,5 +276,6 @@ func (s *LinkModuleService) Restore(ctx context.Context, filters []*dal.Record, 
 	if err != nil {
 		return nil, err
 	}
+	s.emitLinkEvent(ctx, eventbus.CommonEvents.ATTACHED, rowIDs(rows))
 	return s.mapLinkableKeys(rows, returnLinkableKeys), nil
 }

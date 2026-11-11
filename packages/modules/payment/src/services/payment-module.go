@@ -116,7 +116,12 @@ func (s *PaymentModuleService) CreatePaymentSession(ctx context.Context, collect
 	row.Set("amount", get(input, "amount"))
 	row.Set("currency_code", lowerCode(get(input, "currency_code")))
 	row.Set("context", get(input, "context"))
-	row.Set("data", get(input, "data"))
+	// data: undefined keeps the column default ({})
+	if v, ok := input.Get("data"); ok && v != nil {
+		if r, isRec := v.(*dal.Record); !isRec || r != nil {
+			row.Set("data", v)
+		}
+	}
 	row.Set("metadata", get(input, "metadata"))
 	created, err := s.Internal("PaymentSession").Create(ctx, []*dal.Record{row})
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/modules/link-modules/src/utils"
 )
@@ -16,6 +17,30 @@ import (
 type LinkModuleService struct {
 	Config     *joiner.ModuleJoinerConfig
 	repository *dal.Repository
+	events     utilsmodulessdk.ModuleEventSink
+}
+
+// SetEventBus sets the event bus the attached / detached events are
+// emitted to (eventBusModuleService_).
+func (s *LinkModuleService) SetEventBus(bus eventbus.Emitter) { s.events.SetEventBus(bus) }
+
+// emitLinkEvent mirrors the moduleEventBuilderFactory call of the link
+// module service methods (@EmitEvents): `<entityName>.<action>` with the
+// ids of the links, from source serviceName and object entityName.
+func (s *LinkModuleService) emitLinkEvent(ctx context.Context, action string, ids []any) {
+	entity := s.repository.Entity.Meta.ClassName
+	ev := utilsmodulessdk.ModuleEventBuilderFactory(s.Config.ServiceName, action, entity, entity+"."+action)(ids...)
+	if ev != nil {
+		s.events.EmitModuleEvents(ctx, []dal.ReadyEvent{*ev})
+	}
+}
+
+func rowIDs(rows []dal.Row) []any {
+	ids := make([]any, len(rows))
+	for i, r := range rows {
+		ids[i] = r["id"]
+	}
+	return ids
 }
 
 // NewLinkModuleService builds the service of a link module.

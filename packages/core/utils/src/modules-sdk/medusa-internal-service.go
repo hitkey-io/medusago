@@ -120,7 +120,8 @@ func (s *InternalService) inTransaction(ctx context.Context, fn func(repo *dal.R
 	if !ok {
 		return fn(s.Repository)
 	}
-	return pgx.BeginFunc(ctx, db, func(tx pgx.Tx) error {
+	_ = db
+	return dal.Transaction(ctx, s.Repository.DB, s.Repository.Schema, func(tx dal.Querier) error {
 		repo := *s.Repository
 		repo.DB = tx
 		return fn(&repo)

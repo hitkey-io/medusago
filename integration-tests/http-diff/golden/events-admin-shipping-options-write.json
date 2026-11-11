@@ -1,0 +1,1296 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzkwOTQsImV4cCI6MTc5NDQ2NTQ5NH0.Bbznp_ioI33967hbJuh13gZZAMCpQl4qm6pVYw30HF8"
+    }
+  },
+  "locations": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_locations": [
+        {
+          "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "regions": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "regions": [
+        {
+          "id": "reg_01M70XZZXEGXRXTCSXMSQJ4FC9",
+          "currency_code": "eur"
+        },
+        {
+          "id": "reg_01M70XZZXEVGVSAJJZV0JE97QY",
+          "currency_code": "usd"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "profiles": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_profiles": [
+        {
+          "id": "sp_01M70EKFVXJQ9SQF567TDFDJPE"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "providers": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "fulfillment_providers": [
+        {
+          "id": "manual_manual",
+          "is_enabled": true
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "provider_options": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "fulfillment_options": [
+        {
+          "id": "manual-fulfillment"
+        },
+        {
+          "id": "manual-fulfillment-return",
+          "is_return": true
+        }
+      ],
+      "count": 2,
+      "limit": 2,
+      "offset": 0
+    }
+  },
+  "provider_options_missing": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "code": "unknown_error",
+      "type": "unknown_error",
+      "message": "An unknown error occurred."
+    }
+  },
+  "events_start": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "fs_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+        "fulfillment_sets": [
+          {
+            "id": "fuset_01M74N86F29V53TDMH9T1GZBTS"
+          }
+        ]
+      }
+    }
+  },
+  "events__fs_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.fulfillment-set.created",
+          "data": {
+            "id": "fuset_01M74N86F29V53TDMH9T1GZBTS"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "fulfillment_set",
+            "action": "created",
+            "eventGroupId": "01M74N86EXCDK9RQVK5KN5Q5SF"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "LinkLocationFulfillmentSet.attached",
+          "data": {
+            "id": "locfs_01M74N86FG1B3FWR16N4JE5AJW"
+          },
+          "metadata": {
+            "source": "StockLocationStockLocationFulfillmentFulfillmentSetLink",
+            "object": "LinkLocationFulfillmentSet",
+            "action": "attached",
+            "eventGroupId": "01M74N86EXCDK9RQVK5KN5Q5SF"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__fs_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "zone_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "fulfillment_set": {
+        "id": "fuset_01M74N86F29V53TDMH9T1GZBTS",
+        "service_zones": [
+          {
+            "id": "serzo_01M74N86G6X53RKM0YYXXDE51A"
+          }
+        ]
+      }
+    }
+  },
+  "events__zone_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.service-zone.created",
+          "data": {
+            "id": "serzo_01M74N86G6X53RKM0YYXXDE51A"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "service_zone",
+            "action": "created",
+            "eventGroupId": "01M74N86G35JAPDJEABXN8K74V"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.geo-zone.created",
+          "data": {
+            "id": "fgz_01M74N86G5WTJ84BPBXATQ9KMA"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "geo_zone",
+            "action": "created",
+            "eventGroupId": "01M74N86G35JAPDJEABXN8K74V"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__zone_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "so_create_no_provider": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Providers (manual_manual) are not enabled for the service location"
+    }
+  },
+  "events__so_create_no_provider": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__so_create_no_provider": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "link_provider": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX"
+      }
+    }
+  },
+  "events__link_provider": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "LinkLocationFulfillmentProvider.attached",
+          "data": {
+            "id": "locfp_01M74N86HP00AC4EJJX3EF4XGN"
+          },
+          "metadata": {
+            "source": "StockLocationStockLocationFulfillmentFulfillmentProviderLink",
+            "object": "LinkLocationFulfillmentProvider",
+            "action": "attached",
+            "eventGroupId": "01M74N86HK0708HPEJAS582Q5H"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__link_provider": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "providers_by_location": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "fulfillment_providers": [
+        {
+          "id": "manual_manual",
+          "is_enabled": true
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "so_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_option": {
+        "id": "so_01M74N86JHF4BE5N29R6Y26C2T",
+        "name": "Standard",
+        "price_type": "flat",
+        "data": {
+          "id": "manual-fulfillment"
+        },
+        "provider_id": "manual_manual",
+        "metadata": null,
+        "created_at": "2026-11-11T06:38:14.609Z",
+        "updated_at": "2026-11-11T06:38:14.609Z",
+        "service_zone_id": "serzo_01M74N86G6X53RKM0YYXXDE51A",
+        "shipping_profile_id": "sp_01M70EKFVXJQ9SQF567TDFDJPE",
+        "rules": [
+          {
+            "id": "sorul_01M74N86JHQ3Y7Z0F5B6F35C5D",
+            "attribute": "enabled_in_store",
+            "operator": "eq",
+            "value": "true",
+            "shipping_option_id": "so_01M74N86JHF4BE5N29R6Y26C2T",
+            "created_at": "2026-11-11T06:38:14.609Z",
+            "updated_at": "2026-11-11T06:38:14.609Z",
+            "deleted_at": null
+          },
+          {
+            "id": "sorul_01M74N86JHQE8R115A6DH13F1T",
+            "attribute": "is_return",
+            "operator": "eq",
+            "value": "false",
+            "shipping_option_id": "so_01M74N86JHF4BE5N29R6Y26C2T",
+            "created_at": "2026-11-11T06:38:14.609Z",
+            "updated_at": "2026-11-11T06:38:14.609Z",
+            "deleted_at": null
+          }
+        ],
+        "type": {
+          "id": "sotype_01M74N86JHMYNBJ0Q2909KSB08",
+          "label": "Standard",
+          "description": "3-5 days",
+          "code": "standard",
+          "created_at": "2026-11-11T06:38:14.609Z",
+          "updated_at": "2026-11-11T06:38:14.609Z",
+          "deleted_at": null
+        },
+        "service_zone": {
+          "id": "serzo_01M74N86G6X53RKM0YYXXDE51A",
+          "name": "Germany",
+          "fulfillment_set_id": "fuset_01M74N86F29V53TDMH9T1GZBTS",
+          "fulfillment_set": {
+            "id": "fuset_01M74N86F29V53TDMH9T1GZBTS"
+          },
+          "metadata": null,
+          "created_at": "2026-11-11T06:38:14.534Z",
+          "updated_at": "2026-11-11T06:38:14.534Z",
+          "deleted_at": null
+        },
+        "shipping_profile": {
+          "id": "sp_01M70EKFVXJQ9SQF567TDFDJPE",
+          "name": "Default Shipping Profile",
+          "type": "default",
+          "metadata": null,
+          "created_at": "2026-11-09T15:25:06.813Z",
+          "updated_at": "2026-11-09T15:25:06.813Z",
+          "deleted_at": null
+        },
+        "provider": {
+          "id": "manual_manual",
+          "is_enabled": true,
+          "created_at": "2026-11-09T15:25:03.919Z",
+          "updated_at": "2026-11-09T15:25:03.919Z",
+          "deleted_at": null
+        },
+        "prices": [
+          {
+            "id": "price_01M74N86JZW3YFY6W3Z5MFNP5Q",
+            "title": null,
+            "currency_code": "eur",
+            "rules_count": 0,
+            "price_set_id": "pset_01M74N86JZKMSKR0HFF4YJNKF6",
+            "price_list_id": null,
+            "price_list": null,
+            "raw_amount": {
+              "value": "10",
+              "precision": 20
+            },
+            "raw_min_quantity": null,
+            "raw_max_quantity": null,
+            "created_at": "2026-11-11T06:38:14.623Z",
+            "updated_at": "2026-11-11T06:38:14.623Z",
+            "deleted_at": null,
+            "price_rules": [],
+            "amount": 10,
+            "min_quantity": null,
+            "max_quantity": null
+          },
+          {
+            "id": "price_01M74N86JZNYFK8K9M00GGWFF2",
+            "title": null,
+            "currency_code": "usd",
+            "rules_count": 1,
+            "price_set_id": "pset_01M74N86JZKMSKR0HFF4YJNKF6",
+            "price_list_id": null,
+            "price_list": null,
+            "raw_amount": {
+              "value": "12",
+              "precision": 20
+            },
+            "raw_min_quantity": null,
+            "raw_max_quantity": null,
+            "created_at": "2026-11-11T06:38:14.623Z",
+            "updated_at": "2026-11-11T06:38:14.623Z",
+            "deleted_at": null,
+            "price_rules": [
+              {
+                "id": "prule_01M74N86JZCVP7CSS7D4RZEM61",
+                "attribute": "region_id",
+                "value": "reg_01M70XZZXEVGVSAJJZV0JE97QY",
+                "operator": "eq",
+                "priority": 0,
+                "price_id": "price_01M74N86JZNYFK8K9M00GGWFF2",
+                "created_at": "2026-11-11T06:38:14.623Z",
+                "updated_at": "2026-11-11T06:38:14.623Z",
+                "deleted_at": null
+              }
+            ],
+            "amount": 12,
+            "min_quantity": null,
+            "max_quantity": null
+          }
+        ]
+      }
+    }
+  },
+  "events__so_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.shipping-option-type.created",
+          "data": {
+            "id": "sotype_01M74N86JHMYNBJ0Q2909KSB08"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "shipping_option_type",
+            "action": "created",
+            "eventGroupId": "01M74N86J43WYYT6PK214TBDCZ"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.shipping-option.created",
+          "data": {
+            "id": "so_01M74N86JHF4BE5N29R6Y26C2T"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "shipping_option",
+            "action": "created",
+            "eventGroupId": "01M74N86J43WYYT6PK214TBDCZ"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.shipping-option-rule.created",
+          "data": {
+            "id": "sorul_01M74N86JHQ3Y7Z0F5B6F35C5D"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "shipping_option_rule",
+            "action": "created",
+            "eventGroupId": "01M74N86J43WYYT6PK214TBDCZ"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.shipping-option-rule.created",
+          "data": {
+            "id": "sorul_01M74N86JHQE8R115A6DH13F1T"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "shipping_option_rule",
+            "action": "created",
+            "eventGroupId": "01M74N86J43WYYT6PK214TBDCZ"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "pricing.price-set.created",
+          "data": {
+            "id": "pset_01M74N86JZKMSKR0HFF4YJNKF6"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price_set",
+            "action": "created",
+            "eventGroupId": "01M74N86J43WYYT6PK214TBDCZ"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "pricing.price.created",
+          "data": {
+            "id": "price_01M74N86JZW3YFY6W3Z5MFNP5Q"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price",
+            "action": "created",
+            "eventGroupId": "01M74N86J43WYYT6PK214TBDCZ"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "pricing.price.created",
+          "data": {
+            "id": "price_01M74N86JZNYFK8K9M00GGWFF2"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price",
+            "action": "created",
+            "eventGroupId": "01M74N86J43WYYT6PK214TBDCZ"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "pricing.price-rule.created",
+          "data": {
+            "id": "prule_01M74N86JZCVP7CSS7D4RZEM61"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price_rule",
+            "action": "created",
+            "eventGroupId": "01M74N86J43WYYT6PK214TBDCZ"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "shipping-option.created",
+          "data": {
+            "id": "so_01M74N86JHF4BE5N29R6Y26C2T"
+          },
+          "metadata": {
+            "eventGroupId": "01M74N86J43WYYT6PK214TBDCZ"
+          },
+          "options": {}
+        },
+        {
+          "name": "LinkShippingOptionPriceSet.attached",
+          "data": {
+            "id": "sops_01M74N86KSW2DXW4PVTEZ4JPYG"
+          },
+          "metadata": {
+            "source": "FulfillmentShippingOptionPricingPriceSetLink",
+            "object": "LinkShippingOptionPriceSet",
+            "action": "attached",
+            "eventGroupId": "01M74N86J43WYYT6PK214TBDCZ"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__so_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "so_create_both_types": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Exactly one of 'type' or 'type_id' must be provided, but not both"
+    }
+  },
+  "events__so_create_both_types": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__so_create_both_types": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "so_create_bad_region": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Cannot create prices for non-existent regions. Region with ids [reg_missing] were not found."
+    }
+  },
+  "events__so_create_bad_region": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__so_create_bad_region": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "so_create_calculated": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Cannot calcuate pricing for: [Calc] shipping option(s)."
+    }
+  },
+  "events__so_create_calculated": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__so_create_calculated": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "so_create_bad_rule": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Rule value must be an array for in/nin operators"
+    }
+  },
+  "events__so_create_bad_rule": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__so_create_bad_rule": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "so_get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_option": {
+        "id": "so_01M74N86JHF4BE5N29R6Y26C2T",
+        "name": "Standard",
+        "rules": [
+          {
+            "id": "sorul_01M74N86JHQ3Y7Z0F5B6F35C5D",
+            "attribute": "enabled_in_store",
+            "operator": "eq",
+            "value": "true",
+            "shipping_option_id": "so_01M74N86JHF4BE5N29R6Y26C2T",
+            "created_at": "2026-11-11T06:38:14.609Z",
+            "updated_at": "2026-11-11T06:38:14.609Z",
+            "deleted_at": null
+          },
+          {
+            "id": "sorul_01M74N86JHQE8R115A6DH13F1T",
+            "attribute": "is_return",
+            "operator": "eq",
+            "value": "false",
+            "shipping_option_id": "so_01M74N86JHF4BE5N29R6Y26C2T",
+            "created_at": "2026-11-11T06:38:14.609Z",
+            "updated_at": "2026-11-11T06:38:14.609Z",
+            "deleted_at": null
+          }
+        ],
+        "type": {
+          "id": "sotype_01M74N86JHMYNBJ0Q2909KSB08",
+          "label": "Standard",
+          "description": "3-5 days",
+          "code": "standard",
+          "created_at": "2026-11-11T06:38:14.609Z",
+          "updated_at": "2026-11-11T06:38:14.609Z",
+          "deleted_at": null
+        },
+        "prices": [
+          {
+            "id": "price_01M74N86JZW3YFY6W3Z5MFNP5Q",
+            "title": null,
+            "currency_code": "eur",
+            "rules_count": 0,
+            "price_set_id": "pset_01M74N86JZKMSKR0HFF4YJNKF6",
+            "price_list_id": null,
+            "price_list": null,
+            "raw_amount": {
+              "value": "10",
+              "precision": 20
+            },
+            "raw_min_quantity": null,
+            "raw_max_quantity": null,
+            "created_at": "2026-11-11T06:38:14.623Z",
+            "updated_at": "2026-11-11T06:38:14.623Z",
+            "deleted_at": null,
+            "price_rules": [],
+            "amount": 10,
+            "min_quantity": null,
+            "max_quantity": null
+          },
+          {
+            "id": "price_01M74N86JZNYFK8K9M00GGWFF2",
+            "title": null,
+            "currency_code": "usd",
+            "rules_count": 1,
+            "price_set_id": "pset_01M74N86JZKMSKR0HFF4YJNKF6",
+            "price_list_id": null,
+            "price_list": null,
+            "raw_amount": {
+              "value": "12",
+              "precision": 20
+            },
+            "raw_min_quantity": null,
+            "raw_max_quantity": null,
+            "created_at": "2026-11-11T06:38:14.623Z",
+            "updated_at": "2026-11-11T06:38:14.623Z",
+            "deleted_at": null,
+            "price_rules": [
+              {
+                "attribute": "region_id",
+                "value": "reg_01M70XZZXEVGVSAJJZV0JE97QY"
+              }
+            ],
+            "amount": 12,
+            "min_quantity": null,
+            "max_quantity": null
+          }
+        ]
+      }
+    }
+  },
+  "so_get_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Shipping Option with id: so_missing not found"
+    }
+  },
+  "so_list_location": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_options": [
+        {
+          "id": "so_01M74N86JHF4BE5N29R6Y26C2T",
+          "name": "Standard",
+          "price_type": "flat"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "so_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_option": {
+        "id": "so_01M74N86JHF4BE5N29R6Y26C2T",
+        "name": "Standard 2",
+        "rules": [
+          {
+            "attribute": "enabled_in_store",
+            "value": "false"
+          }
+        ],
+        "prices": [
+          {
+            "amount": 15,
+            "currency_code": "eur",
+            "id": "price_01M74N86JZW3YFY6W3Z5MFNP5Q"
+          },
+          {
+            "amount": 20,
+            "currency_code": "usd",
+            "id": "price_01M74N86PXQ2M7JYJJNNQR3JF2"
+          }
+        ]
+      }
+    }
+  },
+  "events__so_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.shipping-option.updated",
+          "data": {
+            "id": "so_01M74N86JHF4BE5N29R6Y26C2T"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "shipping_option",
+            "action": "updated",
+            "eventGroupId": "01M74N86P35H43DNQ9EW4H05NM"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.shipping-option-rule.updated",
+          "data": {
+            "id": "sorul_01M74N86JHQ3Y7Z0F5B6F35C5D"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "shipping_option_rule",
+            "action": "updated",
+            "eventGroupId": "01M74N86P35H43DNQ9EW4H05NM"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.shipping-option-rule.deleted",
+          "data": {
+            "id": "sorul_01M74N86JHQE8R115A6DH13F1T"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "shipping_option_rule",
+            "action": "deleted",
+            "eventGroupId": "01M74N86P35H43DNQ9EW4H05NM"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "shipping-option.updated",
+          "data": "so_01M74N86JHF4BE5N29R6Y26C2T",
+          "metadata": {
+            "eventGroupId": "01M74N86P35H43DNQ9EW4H05NM"
+          },
+          "options": {}
+        },
+        {
+          "name": "pricing.price.created",
+          "data": {
+            "id": "price_01M74N86PXQ2M7JYJJNNQR3JF2"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price",
+            "action": "created",
+            "eventGroupId": "01M74N86P35H43DNQ9EW4H05NM"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "pricing.price.deleted",
+          "data": {
+            "id": "price_01M74N86JZNYFK8K9M00GGWFF2"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price",
+            "action": "deleted",
+            "eventGroupId": "01M74N86P35H43DNQ9EW4H05NM"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "pricing.price.updated",
+          "data": {
+            "id": "price_01M74N86JZW3YFY6W3Z5MFNP5Q"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price",
+            "action": "updated",
+            "eventGroupId": "01M74N86P35H43DNQ9EW4H05NM"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__so_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "so_update_type": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_option": {
+        "id": "so_01M74N86JHF4BE5N29R6Y26C2T",
+        "type": {
+          "code": "standard"
+        }
+      }
+    }
+  },
+  "events__so_update_type": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "shipping-option.updated",
+          "data": "so_01M74N86JHF4BE5N29R6Y26C2T",
+          "metadata": {
+            "eventGroupId": "01M74N86QEWDDT7RED9CFSGSZY"
+          },
+          "options": {}
+        }
+      ]
+    }
+  },
+  "events_reset__so_update_type": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "so_update_missing": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Providers () are not enabled for the service location"
+    }
+  },
+  "events__so_update_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__so_update_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "so_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "so_01M74N86JHF4BE5N29R6Y26C2T",
+      "object": "shipping_option",
+      "deleted": true
+    }
+  },
+  "events__so_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "fulfillment.shipping-option.deleted",
+          "data": {
+            "id": "so_01M74N86JHF4BE5N29R6Y26C2T"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "shipping_option",
+            "action": "deleted",
+            "eventGroupId": "01M74N86R6T0M0JGC6WYHHB03H"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "fulfillment.shipping-option-rule.deleted",
+          "data": {
+            "id": "sorul_01M74N86JHQ3Y7Z0F5B6F35C5D"
+          },
+          "metadata": {
+            "source": "fulfillment",
+            "object": "shipping_option_rule",
+            "action": "deleted",
+            "eventGroupId": "01M74N86R6T0M0JGC6WYHHB03H"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "shipping-option.deleted",
+          "data": "so_01M74N86JHF4BE5N29R6Y26C2T",
+          "metadata": {
+            "eventGroupId": "01M74N86R6T0M0JGC6WYHHB03H"
+          },
+          "options": {}
+        },
+        {
+          "name": "LinkShippingOptionPriceSet.detached",
+          "data": {
+            "id": "sops_01M74N86KSW2DXW4PVTEZ4JPYG"
+          },
+          "metadata": {
+            "source": "FulfillmentShippingOptionPricingPriceSetLink",
+            "object": "LinkShippingOptionPriceSet",
+            "action": "detached",
+            "eventGroupId": "01M74N86R6T0M0JGC6WYHHB03H"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "pricing.price-set.deleted",
+          "data": {
+            "id": "pset_01M74N86JZKMSKR0HFF4YJNKF6"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price_set",
+            "action": "deleted",
+            "eventGroupId": "01M74N86R6T0M0JGC6WYHHB03H"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "pricing.price.deleted",
+          "data": {
+            "id": "price_01M74N86PXQ2M7JYJJNNQR3JF2"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price",
+            "action": "deleted",
+            "eventGroupId": "01M74N86R6T0M0JGC6WYHHB03H"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "pricing.price.deleted",
+          "data": {
+            "id": "price_01M74N86JZW3YFY6W3Z5MFNP5Q"
+          },
+          "metadata": {
+            "source": "pricing",
+            "object": "price",
+            "action": "deleted",
+            "eventGroupId": "01M74N86R6T0M0JGC6WYHHB03H"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__so_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "so_get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Shipping Option with id: so_01M74N86JHF4BE5N29R6Y26C2T not found"
+    }
+  },
+  "so_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "shipping_options": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 20
+    }
+  }
+}

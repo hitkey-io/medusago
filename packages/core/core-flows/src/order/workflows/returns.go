@@ -410,13 +410,13 @@ var ConfirmReturnRequestWorkflow = composer.CreateWorkflow("confirm-return-reque
 		ev.Set("order_id", g(order, "id"))
 		ev.Set("return_id", g(orderReturn, "id"))
 		err = composer.Parallelize(
+			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.return_requested", Data: ev})
+				return err
+			},
 			func() error { _, err := ordersteps.UpdateReturnsStep.Run(e, []*dal.Record{u}); return err },
 			func() error {
 				_, err := ordersteps.ConfirmOrderChangesStep.Run(e, ordersteps.ConfirmOrderChangesInput{OrderID: g(order, "id"), Changes: []*dal.Record{orderChange}, ConfirmedBy: in.ConfirmedBy})
-				return err
-			},
-			func() error {
-				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.return_requested", Data: ev})
 				return err
 			},
 		)
@@ -729,7 +729,6 @@ var ConfirmReturnReceiveWorkflow = composer.CreateWorkflow("confirm-return-recei
 		ev.Set("order_id", g(order, "id"))
 		ev.Set("return_id", g(orderReturn, "id"))
 		err = composer.Parallelize(
-			func() error { _, err := CreateOrUpdateOrderPaymentCollectionWorkflow.RunAsStep(e, pc); return err },
 			func() error {
 				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.return_received", Data: ev})
 				return err
@@ -738,6 +737,7 @@ var ConfirmReturnReceiveWorkflow = composer.CreateWorkflow("confirm-return-recei
 				_, err := commonsteps.EmitEventStep.Config("emit-inventory-level-updated", composer.StepOptions{}).Run(e, commonsteps.EmitEventStepInput{EventName: "inventory-level.updated", Data: levelEvents})
 				return err
 			},
+			func() error { _, err := CreateOrUpdateOrderPaymentCollectionWorkflow.RunAsStep(e, pc); return err },
 		)
 		if err != nil {
 			return nil, err

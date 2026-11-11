@@ -9,6 +9,11 @@ import (
 // Schema indexes the models of a module by class name.
 type Schema struct {
 	entities map[string]*dml.Entity
+	// Source is the module service name the entity mutation events are
+	// emitted for ("" emits none: link modules, the index module).
+	Source string
+	// Sink receives the events of the committed transactions.
+	Sink EventSink
 }
 
 // NewSchema builds the schema of a module from its models.

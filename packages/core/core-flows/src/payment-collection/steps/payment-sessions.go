@@ -185,13 +185,13 @@ var CreatePaymentSessionStep = composer.CreateStep("create-payment-session",
 		p.Set("currency_code", g(in, "currency_code"))
 		p.Set("amount", g(in, "amount"))
 		data := g(in, "data")
-		if data == nil {
+		if r, isRec := data.(*dal.Record); data == nil || (isRec && r == nil) {
 			data = dal.NewRecord()
 		}
 		p.Set("data", data)
 		p.Set("context", g(in, "context"))
 		meta := g(in, "metadata")
-		if meta == nil {
+		if r, isRec := meta.(*dal.Record); meta == nil || (isRec && r == nil) {
 			meta = dal.NewRecord()
 		}
 		p.Set("metadata", meta)

@@ -332,7 +332,8 @@ func (s *SettingsModuleService) DeletePropertyLabels(ctx context.Context, ids []
 
 // UpsertPropertyLabels mirrors upsertPropertyLabels.
 func (s *SettingsModuleService) UpsertPropertyLabels(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
-	return s.Internal("PropertyLabel").Upsert(ctx, data)
+	// no @EmitEvents upstream
+	return s.Internal("PropertyLabel").Upsert(dal.WithoutEmit(ctx), data)
 }
 
 // InitializeEntityDiscovery mirrors the onApplicationStart hook: entity

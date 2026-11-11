@@ -92,16 +92,18 @@ var AcceptInviteWorkflow = composer.CreateWorkflow("accept-invite-workflow",
 			return nil, err
 		}
 		userID, _ := users[0].Get("id")
-		if _, err := authsteps.SetAuthAppMetadataStep.Run(e, authsteps.SetAuthAppMetadataStepInput{AuthIdentityID: input.AuthIdentityID, ActorType: "user", Value: userID}); err != nil {
-			return nil, err
-		}
 		inviteID, _ := invite.Get("id")
-		if _, err := steps.DeleteInvitesStep.Run(e, []any{inviteID}); err != nil {
-			return nil, err
-		}
+		// parallelize(setAuthAppMetadata, deleteInvites, ..., emitEvent): the
+		// event step (no I/O) completes first upstream
 		ev := dal.NewRecord()
 		ev.Set("id", inviteID)
 		if _, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "invite.accepted", Data: ev}); err != nil {
+			return nil, err
+		}
+		if _, err := authsteps.SetAuthAppMetadataStep.Run(e, authsteps.SetAuthAppMetadataStepInput{AuthIdentityID: input.AuthIdentityID, ActorType: "user", Value: userID}); err != nil {
+			return nil, err
+		}
+		if _, err := steps.DeleteInvitesStep.Run(e, []any{inviteID}); err != nil {
 			return nil, err
 		}
 		return users, nil

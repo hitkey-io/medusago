@@ -68,12 +68,13 @@ var CreateShippingOptionsWorkflow = composer.CreateWorkflow("create-shipping-opt
 			ev.Set("id", id)
 			events[i] = ev
 		}
+		// parallel branches: the event step (no I/O) completes first upstream
 		err = composer.Parallelize(
-			func() error { _, err := steps.SetShippingOptionsPriceSetsStep.Run(e, links); return err },
 			func() error {
 				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "shipping-option.created", Data: events})
 				return err
 			},
+			func() error { _, err := steps.SetShippingOptionsPriceSetsStep.Run(e, links); return err },
 		)
 		if err != nil {
 			return nil, err
@@ -115,12 +116,13 @@ var UpdateShippingOptionsWorkflow = composer.CreateWorkflow("update-shipping-opt
 				prices[i].ID, _ = updated[i].Get("id")
 			}
 		}
+		// parallel branches: the event step (no I/O) completes first upstream
 		err = composer.Parallelize(
-			func() error { _, err := steps.SetShippingOptionsPricesStep.Run(e, prices); return err },
 			func() error {
 				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "shipping-option.updated", Data: ids})
 				return err
 			},
+			func() error { _, err := steps.SetShippingOptionsPricesStep.Run(e, prices); return err },
 		)
 		if err != nil {
 			return nil, err
@@ -137,15 +139,15 @@ var DeleteShippingOptionsWorkflow = composer.CreateWorkflow("delete-shipping-opt
 		}
 		err = composer.Parallelize(
 			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "shipping-option.deleted", Data: ids})
+				return err
+			},
+			func() error {
 				var entries []*dal.Record
 				if deleted != nil {
 					entries = []*dal.Record{deleted}
 				}
 				_, err := commonsteps.RemoveRemoteLinkStep.Run(e, entries)
-				return err
-			},
-			func() error {
-				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "shipping-option.deleted", Data: ids})
 				return err
 			},
 		)

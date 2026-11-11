@@ -40,6 +40,7 @@ import (
 
 	"github.com/oklog/ulid/v2"
 
+	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 )
 
@@ -162,13 +163,15 @@ func (d *detacher) detach() { d.once.Do(func() { close(d.ch) }) }
 
 // Execution is one workflow run (a DistributedTransaction).
 type Execution struct {
-	ctx           context.Context
-	container     Container
-	workflowID    string
-	transactionID string
-	eventGroupID  string
-	compensations []compensation
-	mu            sync.Mutex
+	sharedAggregator     *eventbus.SharedAggregator
+	sharedAggregatorOnce sync.Once
+	ctx                  context.Context
+	container            Container
+	workflowID           string
+	transactionID        string
+	eventGroupID         string
+	compensations        []compensation
+	mu                   sync.Mutex
 	// errors mirrors transaction.getErrors(INVOKE).
 	errors []error
 	hooks  *hookRegistry
@@ -196,6 +199,12 @@ func (e *Execution) WorkflowID() string { return e.workflowID }
 // TransactionID returns the transaction id.
 func (e *Execution) TransactionID() string { return e.transactionID }
 
+// aggregator returns the message aggregator of the run's medusaContext.
+func (e *Execution) aggregator() *eventbus.SharedAggregator {
+	e.sharedAggregatorOnce.Do(func() { e.sharedAggregator = eventbus.NewSharedAggregator() })
+	return e.sharedAggregator
+}
+
 // EventGroupID returns the event group of the run.
 func (e *Execution) EventGroupID() string { return e.eventGroupID }
 
@@ -207,7 +216,9 @@ func (e *Execution) pushCompensation(c compensation) {
 
 func (e *Execution) stepContext(name, action string, attempt int) StepExecutionContext {
 	return StepExecutionContext{
-		Context: e.ctx, Container: e.container, WorkflowID: e.workflowID, StepName: name,
+		// the module services called from a step get the run's event group
+		// and message aggregator (the workflow medusaContext)
+		Context: eventbus.WithSharedAggregator(eventbus.WithEventGroupID(e.ctx, e.eventGroupID), e.aggregator()), Container: e.container, WorkflowID: e.workflowID, StepName: name,
 		TransactionID: e.transactionID, Action: action, EventGroupID: e.eventGroupID, Attempt: attempt, exec: e,
 	}
 }

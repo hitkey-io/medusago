@@ -80,6 +80,15 @@ func LoadModules(ctx context.Context, c *container.MedusaContainer, pool *pgxpoo
 		}
 		c.Register(mc.Key, svc)
 	}
+	// module services emit their events to the event bus module
+	// (eventBusModuleService_, resolved from the module container)
+	if bus, ok := c.Resolve(utilsmodulessdk.EVENT_BUS).(eventbus.Emitter); ok {
+		for _, mc := range cfg.Modules {
+			if s, ok := c.Resolve(mc.Key).(interface{ SetEventBus(eventbus.Emitter) }); ok {
+				s.SetEventBus(bus)
+			}
+		}
+	}
 	return nil
 }
 

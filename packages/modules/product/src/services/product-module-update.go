@@ -142,6 +142,7 @@ func (s *ProductModuleService) updateProducts(ctx context.Context, input []*dal.
 				return nil, err
 			}
 		}
+		dal.FlushEvents(s.db)
 	}
 	normalized := make([]*dal.Record, len(data))
 	for i, p := range data {
@@ -584,6 +585,9 @@ func (s *ProductModuleService) UpdateProductVariants(ctx context.Context, idOrSe
 
 // UpsertProductVariants mirrors upsertProductVariants.
 func (s *ProductModuleService) UpsertProductVariants(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	// @EmitEvents runs inside the transaction upstream (before the flush):
+	// the mutations wait in the shared aggregator for the next @EmitEvents
+	ctx = dal.WithDeferredEmit(ctx)
 	var forCreate, forUpdate []*dal.Record
 	for _, v := range data {
 		if id, _ := v.Get("id"); id != nil && id != "" {

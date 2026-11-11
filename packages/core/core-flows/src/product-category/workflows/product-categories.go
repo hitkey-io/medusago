@@ -86,15 +86,15 @@ var DeleteProductCategoriesWorkflow = composer.CreateWorkflow("delete-product-ca
 		}
 		err := composer.Parallelize(
 			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "product-category.deleted", Data: events})
+				return err
+			},
+			func() error {
 				inner := dal.NewRecord()
 				inner.Set("product_category_id", ids)
 				entry := dal.NewRecord()
 				entry.Set(utilsmodulessdk.PRODUCT, inner)
 				_, err := commonsteps.RemoveRemoteLinkStep.Run(e, []*dal.Record{entry})
-				return err
-			},
-			func() error {
-				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "product-category.deleted", Data: events})
 				return err
 			},
 		)

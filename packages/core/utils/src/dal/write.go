@@ -514,6 +514,7 @@ func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, i
 	if err := r.insertRow(ctx, e, data); err != nil {
 		return nil, err
 	}
+	r.recordMutation(changeCreate, ActionCreated, e, data)
 	inserted := maps.Clone(data)
 	inst := idm.get(e, data)
 	// @BeforeCreate ran before the insert upstream; hooks changing columns
@@ -802,6 +803,8 @@ func (r *Repository) applyScalarUpdate(ctx context.Context, inst *instance, data
 		columns = append(columns, c)
 	}
 	slices.Sort(columns)
+	beforeDeletedAt := inst.data["deleted_at"]
+	_, deletedAtChanged := changed["deleted_at"]
 	var sets []string
 	var args []any
 	for _, c := range columns {
@@ -813,6 +816,7 @@ func (r *Repository) applyScalarUpdate(ctx context.Context, inst *instance, data
 		sets = append(sets, fmt.Sprintf("%s = $%d", quote(c), len(args)))
 		inst.data[c] = changed[c]
 	}
+	defer r.recordUpdate(e, inst.data, deletedAtChanged, beforeDeletedAt, inst.data["deleted_at"])
 	var where []string
 	for _, pk := range e.Meta.PrimaryKey {
 		args = append(args, inst.data[pk])
@@ -944,6 +948,7 @@ func (r *Repository) Delete(ctx context.Context, where *Record) ([]any, error) {
 	ids := make([]any, len(rows))
 	for i, row := range rows {
 		ids[i] = row[fieldColumn(r.Entity, pk)]
+		r.recordDispatched(ActionDeleted, r.Entity, ids[i])
 	}
 	return ids, nil
 }
@@ -994,6 +999,11 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 		insts  []*instance
 	}
 	level := []pending{{r.Entity, roots}}
+	type softDeleted struct {
+		inst   *instance
+		before any
+	}
+	var changedInsts []softDeleted
 	touched := map[*dml.Entity][]*instance{}
 	var order []*dml.Entity
 	for len(level) > 0 {
@@ -1006,14 +1016,15 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 				order = append(order, group.entity)
 			}
 			for _, inst := range group.insts {
+				before := inst.data["deleted_at"]
 				inst.data["deleted_at"] = deletedAt
 				result.add(group.entity.Meta.ClassName, inst.data)
 				touched[group.entity] = append(touched[group.entity], inst)
-			}
-			for _, relation := range group.entity.Cascades.Delete {
-				if !softRemoveCascades(r.Schema, group.entity, relation) {
-					continue
+				if !sameValue(before, deletedAt) {
+					changedInsts = append(changedInsts, softDeleted{inst, before})
 				}
+			}
+			for _, relation := range r.softRemoveCascades(group.entity) {
 				children, err := r.loadRelation(ctx, group.insts, relation, idm, true, nil)
 				if err != nil {
 					return nil, err
@@ -1047,6 +1058,9 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 			return nil, err
 		}
 	}
+	for _, c := range changedInsts {
+		r.recordUpdate(c.inst.entity, c.inst.data, true, c.before, c.inst.data["deleted_at"])
+	}
 	return result, nil
 }
 
@@ -1054,6 +1068,12 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 // collection and flushing: pivot rows of targets no longer present are
 // deleted, then the missing ones inserted in the given order.
 func (r *Repository) ReplaceManyToMany(ctx context.Context, ownerID any, relation string, targetIDs []any) error {
+	return r.replaceManyToMany(ctx, ownerID, relation, targetIDs, nil)
+}
+
+// replaceManyToMany is ReplaceManyToMany; with pa (upsertWithReplace), the
+// rows of a pivot entity with its own id are reported as performed actions.
+func (r *Repository) replaceManyToMany(ctx context.Context, ownerID any, relation string, targetIDs []any, pa *performedActions) error {
 	join, err := r.Schema.ResolveJoin(r.Entity, relation)
 	if err != nil {
 		return err
@@ -1082,9 +1102,17 @@ func (r *Repository) ReplaceManyToMany(ctx context.Context, ownerID any, relatio
 			removed = append(removed, k)
 		}
 	}
+	pivotEntity, _ := r.Schema.Entity(join.Relation.PivotEntity)
+	pivotOwnID := pivotEntity != nil && len(pivotEntity.Meta.PrimaryKey) == 1 && pivotEntity.Meta.PrimaryKey[0] == "id"
 	if len(removed) > 0 {
-		if err := r.exec(ctx, fmt.Sprintf("delete from %s where %s = $1 and %s = any($2)", quote(join.PivotTable), src, dst), ownerID, removed); err != nil {
-			return err
+		deleted, err := QueryRows(ctx, r.DB, fmt.Sprintf("delete from %s where %s = $1 and %s = any($2) returning *", quote(join.PivotTable), src, dst), ownerID, removed)
+		if err != nil {
+			return MapDBError(err)
+		}
+		if pa != nil && pivotOwnID {
+			for _, row := range deleted {
+				pa.deleted.add(pivotEntity, row["id"])
+			}
 		}
 	}
 	_ = keep
@@ -1107,6 +1135,9 @@ func (r *Repository) ReplaceManyToMany(ctx context.Context, ownerID any, relatio
 			data[join.PivotTargetColumns[0]] = id
 			if err := r.insertRow(ctx, pivot, data); err != nil {
 				return err
+			}
+			if pa != nil && pivotOwnID {
+				pa.created.add(pivot, data["id"])
 			}
 			continue
 		}
@@ -1183,6 +1214,9 @@ func (r *Repository) assignOneToManyCollections(ctx context.Context, inst *insta
 			if err := r.exec(ctx, fmt.Sprintf("delete from %s where \"id\" = any($1)", quote(target.Meta.Collection)), orphans); err != nil {
 				return err
 			}
+			for _, id := range orphans {
+				r.recordMutation(changeDelete, ActionDeleted, target, Row{"id": id})
+			}
 		}
 		// MikroORM flushes the inserts before the updates (physical order).
 		idm := identityMap{}
@@ -1234,22 +1268,35 @@ func setChildFK(target *dml.Entity, input *Record, column string, value any) {
 	input.Set(column, value)
 }
 
-// softRemoveCascades reports whether a relation of cascades.delete gets the
-// "soft-remove" cascade (define-relationship.ts): a hasOne whose other side
-// is a belongsTo only gets the delete rule, not the cascade.
-func softRemoveCascades(schema *Schema, e *dml.Entity, relation string) bool {
-	p, ok := e.Property(relation)
-	if !ok || p.Relation == nil || p.Relation.Type != "hasOne" {
-		return true
+// softRemoveCascades lists the relations with the "soft-remove" cascade of
+// the MikroORM entity built from the DML (define-relationship.ts): the
+// relations of cascades.delete, except a one-to-one whose other side owns
+// the foreign key (belongsTo): there the cascade is put on the owning side
+// instead, so a belongsTo one-to-one cascades when its target lists the
+// inverse relation in cascades.delete.
+func (r *Repository) softRemoveCascades(e *dml.Entity) []string {
+	var out []string
+	for _, relation := range e.Cascades.Delete {
+		if p, ok := e.MetaProperty(relation); ok && p.Kind == "1:1" && !p.Owner {
+			continue
+		}
+		out = append(out, relation)
 	}
-	mp, ok := e.MetaProperty(relation)
-	if !ok || mp.MappedBy == "" {
-		return true
+	for _, p := range e.Meta.Properties {
+		if p.Kind != "1:1" || !p.Owner || slices.Contains(out, p.Name) {
+			continue
+		}
+		inverse := p.InversedBy
+		if inverse == "" {
+			inverse = p.MappedBy
+		}
+		target, err := r.Schema.Entity(p.Entity)
+		if err != nil || inverse == "" {
+			continue
+		}
+		if slices.Contains(target.Cascades.Delete, inverse) {
+			out = append(out, p.Name)
+		}
 	}
-	target, err := schema.Entity(mp.Entity)
-	if err != nil {
-		return true
-	}
-	other, ok := target.Property(mp.MappedBy)
-	return !(ok && other.Relation != nil && other.Relation.Type == "belongsTo")
+	return out
 }

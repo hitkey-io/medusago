@@ -131,7 +131,8 @@ func (r *Repository) UpsertWithReplace(ctx context.Context, data []*Record, rela
 		}
 		plain[i] = p
 	}
-	if err := r.upsertMany(ctx, e, plain, false); err != nil {
+	pa := &performedActions{}
+	if err := r.upsertMany(ctx, e, plain, false, pa); err != nil {
 		return nil, err
 	}
 
@@ -198,10 +199,14 @@ func (r *Repository) UpsertWithReplace(ctx context.Context, data []*Record, rela
 				sql += " and \"id\" <> all($2)"
 				args = append(args, keepIDs)
 			}
-			if err := r.exec(ctx, sql, args...); err != nil {
-				return nil, err
+			deletedRows, err := QueryRows(ctx, r.DB, sql+` returning "id"`, args...)
+			if err != nil {
+				return nil, MapDBError(err)
 			}
-			if err := r.upsertMany(ctx, join.Target, all, false); err != nil {
+			for _, row := range deletedRows {
+				pa.deleted.add(join.Target, row["id"])
+			}
+			if err := r.upsertMany(ctx, join.Target, all, false, pa); err != nil {
 				return nil, err
 			}
 			continue
@@ -214,7 +219,7 @@ func (r *Repository) UpsertWithReplace(ctx context.Context, data []*Record, rela
 			}
 			response[p.index].Set(name, list)
 			if len(p.items) > 0 {
-				if err := r.upsertMany(ctx, join.Target, p.items, true); err != nil {
+				if err := r.upsertMany(ctx, join.Target, p.items, true, pa); err != nil {
 					return nil, err
 				}
 			}
@@ -222,11 +227,12 @@ func (r *Repository) UpsertWithReplace(ctx context.Context, data []*Record, rela
 			for j, it := range p.items {
 				ids[j], _ = it.Get("id")
 			}
-			if err := r.ReplaceManyToMany(ctx, p.id, name, ids); err != nil {
+			if err := r.replaceManyToMany(ctx, p.id, name, ids, pa); err != nil {
 				return nil, err
 			}
 		}
 	}
+	r.dispatchPerformedActions(pa)
 	return response, nil
 }
 
@@ -240,7 +246,7 @@ func toStrings(values []any) []string {
 
 // upsertMany mirrors upsertMany_: rows whose id exists are natively updated
 // (unless skipUpdate), the others inserted.
-func (r *Repository) upsertMany(ctx context.Context, e *dml.Entity, entries []*Record, skipUpdate bool) error {
+func (r *Repository) upsertMany(ctx context.Context, e *dml.Entity, entries []*Record, skipUpdate bool, pa *performedActions) error {
 	if len(entries) == 0 {
 		return nil
 	}
@@ -265,6 +271,7 @@ func (r *Repository) upsertMany(ctx context.Context, e *dml.Entity, entries []*R
 	for _, row := range rows {
 		existing[fmt.Sprint(row["id"])] = true
 	}
+	var created, updated []any
 	for _, en := range unique {
 		id, _ := en.Get("id")
 		if existing[fmt.Sprint(id)] {
@@ -274,6 +281,7 @@ func (r *Repository) upsertMany(ctx context.Context, e *dml.Entity, entries []*R
 			if err := r.nativeUpdate(ctx, e, en); err != nil {
 				return err
 			}
+			updated = append(updated, id)
 			continue
 		}
 		data := Row{}
@@ -283,6 +291,11 @@ func (r *Repository) upsertMany(ctx context.Context, e *dml.Entity, entries []*R
 		if err := r.insertRow(ctx, e, data); err != nil {
 			return err
 		}
+		created = append(created, data[fieldColumn(e, "id")])
+	}
+	if pa != nil {
+		pa.created.add(e, created...)
+		pa.updated.add(e, updated...)
 	}
 	return nil
 }

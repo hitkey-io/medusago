@@ -205,6 +205,13 @@ func (q *Query) Index(ctx context.Context, in GraphInput, joinFilters *dal.Recor
 	if final == nil {
 		final = []any{}
 	}
+	// index() translates the final result set for the request locale too
+	// (graph() already did for the fetched entities)
+	if opts.Locale != "" {
+		if err := q.ApplyTranslations(ctx, opts.Locale, final); err != nil {
+			return nil, err
+		}
+	}
 	return &GraphResult{Data: final, Metadata: metadata}, nil
 }
 

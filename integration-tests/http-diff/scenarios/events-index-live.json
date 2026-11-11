@@ -1,0 +1,48 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "refs", "method": "GET", "bearer": "login", "path": "/admin/products?handle=t-shirt&fields=id,*shipping_profile" },
+  { "name": "before", "method": "GET", "bearer": "login", "path": "/admin/products?fields=id,title&handle=live-index-shirt" },
+
+  { "name": "capture_create", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "create", "method": "POST", "bearer": "login", "path": "/admin/products?fields=id,variants.id",
+    "body": {
+      "title": "Live Index Shirt",
+      "handle": "live-index-shirt",
+      "status": "published",
+      "shipping_profile_id": "{{refs.products.0.shipping_profile.id}}",
+      "sales_channels": [{ "id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ" }],
+      "options": [{ "title": "Size", "values": ["S"] }],
+      "variants": [{ "title": "S", "sku": "LIVE-S", "manage_inventory": false, "options": { "Size": "S" }, "prices": [{ "amount": 15, "currency_code": "usd" }] }]
+    }
+  },
+  { "name": "admin_after_create", "method": "GET", "bearer": "login", "until": "products.0", "path": "/admin/products?fields=id,title,handle,status,variants.sku&handle=live-index-shirt" },
+  { "name": "admin_list_after_create", "method": "GET", "bearer": "login", "path": "/admin/products?fields=id,title&status[]=published&order=title" },
+  { "name": "admin_channel_after_create", "method": "GET", "bearer": "login", "path": "/admin/products?fields=id,title&sales_channel_id[]=sc_01M70XZZVJETKWXXT8RHV5DWRZ&order=title" },
+  { "name": "store_after_create", "method": "GET", "until": "products.0", "path": "/store/products?fields=id,title,handle&handle=live-index-shirt", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
+  { "name": "store_q_after_create", "method": "GET", "path": "/store/products?fields=id,title,variants.sku&q=live", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
+  { "name": "events_create", "method": "GET", "path": "/events-capture" },
+
+  { "name": "capture_update", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "update", "method": "POST", "bearer": "login", "path": "/admin/products/{{create.product.id}}?fields=id", "body": { "title": "Live Index Shirt Updated", "handle": "live-index-shirt-2" } },
+  { "name": "admin_after_update", "method": "GET", "bearer": "login", "until": "products.0", "path": "/admin/products?fields=id,title,handle&handle=live-index-shirt-2" },
+  { "name": "admin_old_handle", "method": "GET", "bearer": "login", "until_absent": "products.0", "path": "/admin/products?fields=id,title,handle&handle=live-index-shirt" },
+  { "name": "store_after_update", "method": "GET", "until": "products.0", "path": "/store/products?fields=id,title,handle&handle=live-index-shirt-2", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
+  { "name": "events_update", "method": "GET", "path": "/events-capture" },
+
+  { "name": "capture_variant", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "update_variant", "method": "POST", "bearer": "login", "path": "/admin/products/{{create.product.id}}/variants/{{create.product.variants.0.id}}?fields=id", "body": { "sku": "LIVE-SMALL" } },
+  { "name": "admin_after_variant", "method": "GET", "bearer": "login", "until": "products.0", "path": "/admin/products?fields=id,variants.sku&q=LIVE-SMALL" },
+  { "name": "events_variant", "method": "GET", "path": "/events-capture" },
+
+  { "name": "capture_unpublish", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "unpublish", "method": "POST", "bearer": "login", "path": "/admin/products/{{create.product.id}}?fields=id", "body": { "status": "draft" } },
+  { "name": "admin_draft", "method": "GET", "bearer": "login", "until": "products.0", "path": "/admin/products?fields=id,status&status[]=draft&handle=live-index-shirt-2" },
+  { "name": "store_unpublished", "method": "GET", "until_absent": "products.0", "path": "/store/products?fields=id&handle=live-index-shirt-2", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
+  { "name": "events_unpublish", "method": "GET", "path": "/events-capture" },
+
+  { "name": "capture_delete", "method": "POST", "path": "/events-capture", "body": {} },
+  { "name": "delete", "method": "DELETE", "bearer": "login", "path": "/admin/products/{{create.product.id}}" },
+  { "name": "admin_after_delete", "method": "GET", "bearer": "login", "until_absent": "products.0", "path": "/admin/products?fields=id&handle=live-index-shirt-2" },
+  { "name": "admin_list_after_delete", "method": "GET", "bearer": "login", "path": "/admin/products?fields=id,title&status[]=published&status[]=draft&order=title" },
+  { "name": "events_delete", "method": "GET", "path": "/events-capture", "unordered": ["events"] }
+]

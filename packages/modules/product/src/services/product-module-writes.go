@@ -522,10 +522,15 @@ func (s *ProductModuleService) createProducts(ctx context.Context, data []*dal.R
 		}
 	}
 	if len(pairs) > 0 {
+		// upstream flushes the created options before linking them
+		if len(allOptions) > 0 {
+			dal.FlushEvents(s.db)
+		}
 		if err := s.addProductOptionToProduct(ctx, pairs); err != nil {
 			return nil, err
 		}
 	}
+	dal.FlushEvents(s.db)
 	out, err := s.findByIDsWithSplitPopulate(ctx, productIDs, []string{"options", "options.values", "variants", "images", "tags"})
 	if err != nil {
 		return nil, err
