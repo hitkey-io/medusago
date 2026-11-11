@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"log/slog"
 	"net"
 	"net/http"
@@ -26,6 +27,9 @@ type StartOptions struct {
 	Directory string
 	// OnLoad hooks run once the application is loaded (see loaders.Options).
 	OnLoad []func(ctx context.Context, app *loaders.MedusaApp) error
+	// Routes and Middlewares are the project API routes (see loaders.Options).
+	Routes      []medusahttp.RouteFile
+	Middlewares []medusahttp.MiddlewareRoute
 }
 
 // displayAdminURL mirrors displayAdminUrl: outside production, the admin
@@ -51,7 +55,7 @@ func Start(opts StartOptions) error {
 	defer stop()
 
 	logger.Info("Creating server")
-	app, err := loaders.InitializeWithOptions(ctx, opts.Config, loaders.Options{Directory: opts.Directory, OnLoad: opts.OnLoad})
+	app, err := loaders.InitializeWithOptions(ctx, opts.Config, loaders.Options{Directory: opts.Directory, OnLoad: opts.OnLoad, Routes: opts.Routes, Middlewares: opts.Middlewares})
 	if err != nil {
 		logger.Error("Error starting server", "error", err)
 		return err

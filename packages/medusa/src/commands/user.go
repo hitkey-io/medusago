@@ -1,6 +1,7 @@
 package commands
 
 import (
+	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"context"
 	"fmt"
 	"log/slog"
@@ -25,13 +26,16 @@ type UserOptions struct {
 	// Directory and OnLoad are passed to the loaders.
 	Directory string
 	OnLoad    []func(ctx context.Context, app *loaders.MedusaApp) error
+	// Routes and Middlewares are the project API routes (see loaders.Options).
+	Routes      []medusahttp.RouteFile
+	Middlewares []medusahttp.MiddlewareRoute
 }
 
 // User mirrors commands/user.ts: an invite (its token is logged) or a user
 // with an emailpass auth identity. RBAC roles are Enterprise and skipped.
 func User(opts UserOptions) error {
 	ctx := context.Background()
-	app, err := loaders.InitializeWithOptions(ctx, opts.Config, loaders.Options{Directory: opts.Directory, SkipAdmin: true, OnLoad: opts.OnLoad})
+	app, err := loaders.InitializeWithOptions(ctx, opts.Config, loaders.Options{Directory: opts.Directory, SkipAdmin: true, OnLoad: opts.OnLoad, Routes: opts.Routes, Middlewares: opts.Middlewares})
 	if err != nil {
 		return err
 	}

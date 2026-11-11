@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"log/slog"
 	"os"
 	"path"
@@ -26,6 +27,9 @@ type ExecOptions struct {
 	Config    config.ConfigModule
 	Directory string
 	OnLoad    []func(ctx context.Context, app *loaders.MedusaApp) error
+	// Routes and Middlewares are the project API routes (see loaders.Options).
+	Routes      []medusahttp.RouteFile
+	Middlewares []medusahttp.MiddlewareRoute
 }
 
 // scriptExtensions are dropped when a script is named by its file path.
@@ -85,7 +89,7 @@ func Exec(opts ExecOptions) error {
 	}
 
 	ctx := context.Background()
-	app, err := loaders.InitializeWithOptions(ctx, opts.Config, loaders.Options{Directory: opts.Directory, SkipAdmin: true, OnLoad: opts.OnLoad})
+	app, err := loaders.InitializeWithOptions(ctx, opts.Config, loaders.Options{Directory: opts.Directory, SkipAdmin: true, OnLoad: opts.OnLoad, Routes: opts.Routes, Middlewares: opts.Middlewares})
 	if err != nil {
 		logger.Error("Error running script", "error", err)
 		return err
