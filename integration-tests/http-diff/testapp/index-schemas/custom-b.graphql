@@ -1,0 +1,55 @@
+  type Product @Listeners(values: ["product.product.created", "product.product.updated", "product.product.deleted", "product.product.restored"]) {
+    id: ID
+    title: String
+    handle: String
+    status: String
+    material: String
+    type_id: String
+    collection_id: String
+    created_at: DateTime
+    updated_at: DateTime
+
+    variants: [ProductVariant]
+    sales_channels: [SalesChannel]
+    collection: ProductCollection
+    type: ProductType
+  }
+
+  type ProductVariant @Listeners(values: ["product.product-variant.created", "product.product-variant.updated", "product.product-variant.deleted", "product.product-variant.restored"]) {
+    id: ID
+    product_id: String
+    sku: String
+    title: String
+
+    prices: [Price]
+    inventory_items: [InventoryItem]
+  }
+
+  type Price @Listeners(values: ["pricing.price.created", "pricing.price.updated", "pricing.price.deleted", "pricing.price.restored"]) {
+    id: ID
+    amount: Float
+    currency_code: String
+    price_list_id: String
+  }
+
+  type SalesChannel @Listeners(values: ["sales_channel.sales-channel.created", "sales_channel.sales-channel.updated", "sales_channel.sales-channel.deleted", "sales_channel.sales-channel.restored"]) {
+    id: ID
+    name: String
+    is_disabled: Boolean
+  }
+
+  type ProductCollection @Listeners(values: ["product.product-collection.created", "product.product-collection.updated", "product.product-collection.deleted", "product.product-collection.restored"]) {
+    id: ID
+    title: String
+  }
+
+  type ProductType @Listeners(values: ["product.product-type.created", "product.product-type.updated", "product.product-type.deleted", "product.product-type.restored"]) {
+    id: ID
+    value: String
+  }
+
+  type InventoryItem @Listeners(values: ["inventory.inventory-item.created", "inventory.inventory-item.updated", "inventory.inventory-item.deleted", "inventory.inventory-item.restored"]) {
+    id: ID
+    sku: String
+    title: String
+  }

@@ -95,6 +95,10 @@ type Step struct {
 	// recording, MEDUSA_HTTP_RESTART_CMD (set by record.sh) kills the
 	// upstream server and starts it again.
 	Restart bool `json:"restart,omitempty"`
+	// RestartEnv sets environment variables for the restarted server (both
+	// servers; e.g. another module option read by the reference app's
+	// medusa-config.js and by scenarioModules).
+	RestartEnv map[string]string `json:"restart_env,omitempty"`
 }
 
 // restartServer restarts the server of the running scenario (set by
@@ -256,23 +260,44 @@ func sortByField(rec any, keys map[string]string) any {
 		return rec
 	}
 	for k, field := range keys {
-		v, _ := b.Get(k)
-		arr, ok := v.([]any)
-		if !ok {
-			continue
-		}
-		sorted := append([]any{}, arr...)
-		key := func(item any) string {
-			if ir, ok := item.(*dal.Record); ok {
-				fv, _ := ir.Get(field)
-				return fmt.Sprint(fv)
-			}
-			return ""
-		}
-		sort.SliceStable(sorted, func(i, j int) bool { return key(sorted[i]) < key(sorted[j]) })
-		b.Set(k, sorted)
+		sortAtPath(b, strings.Split(k, "."), field)
 	}
 	return rec
+}
+
+// sortAtPath sorts the array at the dotted path of the record by the item
+// field; a "*" segment walks every item of an array (e.g. "data.*.variants").
+func sortAtPath(r *dal.Record, path []string, field string) {
+	v, _ := r.Get(path[0])
+	if len(path) > 1 {
+		var items []any
+		if path[1] == "*" {
+			items, _ = v.([]any)
+			path = path[1:]
+		} else {
+			items = []any{v}
+		}
+		for _, item := range items {
+			if ir, ok := item.(*dal.Record); ok && len(path) > 1 {
+				sortAtPath(ir, path[1:], field)
+			}
+		}
+		return
+	}
+	arr, ok := v.([]any)
+	if !ok {
+		return
+	}
+	sorted := append([]any{}, arr...)
+	key := func(item any) string {
+		if ir, ok := item.(*dal.Record); ok {
+			fv, _ := ir.Get(field)
+			return fmt.Sprint(fv)
+		}
+		return ""
+	}
+	sort.SliceStable(sorted, func(i, j int) bool { return key(sorted[i]) < key(sorted[j]) })
+	r.Set(path[0], sorted)
 }
 
 // recordedHeaders are compared between implementations.
@@ -458,6 +483,9 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 
 	for i := 0; i < len(steps); {
 		if steps[i].Restart {
+			for k, v := range steps[i].RestartEnv {
+				t.Setenv(k, v)
+			}
 			restart(t)
 		}
 		// consecutive steps of one parallel group are sent concurrently
@@ -939,14 +967,15 @@ func goServer(t *testing.T, scenario string) string {
 		routes = brand.Routes
 	}
 	dbURL := setupDatabase(t, "medusa_http_go_"+strings.ReplaceAll(scenario, "-", "_"))
-	// Same CORS settings as record.sh passes to upstream.
-	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{
-		DatabaseURL:    dbURL,
-		HTTP:           config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
-		SessionOptions: scenarioSessionOptions(),
-	}, Modules: scenarioModules()})
 	start := func() *loaders.MedusaApp {
-		app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, Routes: append(routes, scenarioRoutes()...), OnLoad: append(scenarioHooks(t), registerEventsCapture)})
+		// Same CORS settings as record.sh passes to upstream; the modules
+		// are read again at every (re)start (restart_env).
+		cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{
+			DatabaseURL:    dbURL,
+			HTTP:           config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
+			SessionOptions: scenarioSessionOptions(),
+		}, Modules: scenarioModules()})
+		app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, Routes: append(append(routes, scenarioRoutes()...), indexQueryRoutes()...), OnLoad: append(scenarioHooks(t), registerEventsCapture)})
 		if err != nil {
 			t.Fatal(err)
 		}

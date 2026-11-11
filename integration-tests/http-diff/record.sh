@@ -38,6 +38,10 @@ psql_db() { docker exec -i "$PG_CONTAINER" psql -U postgres -v ON_ERROR_STOP=1 -
 # the same route in events_capture_test.go) records the published events.
 mkdir -p "$APP/src/api/events-capture"
 cp "$HERE/events-capture-route.js" "$APP/src/api/events-capture/route.js"
+# The index-query route (index-query-route.js; the Go server registers the
+# same route in index_query_test.go) runs query.index() / the index module.
+mkdir -p "$APP/src/api/index-query"
+cp "$HERE/index-query-route.js" "$APP/src/api/index-query/route.js"
 
 scenarios=("$@")
 if [ ${#scenarios[@]} -eq 0 ]; then
