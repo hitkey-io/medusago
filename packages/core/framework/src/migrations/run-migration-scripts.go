@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+
+	lockingtypes "github.com/hitkey-io/medusago/packages/core/types/src/locking"
 )
 
 const migrationTableName = "script_migrations"
@@ -61,6 +63,31 @@ func ensureMigrationsTable(ctx context.Context, db *pgxpool.Pool) error {
 // connection, so a crashed run is picked up again), run, and marked as
 // finished.
 func RunScripts(ctx context.Context, db *pgxpool.Pool, scripts []Script) error {
+	return RunScriptsWithLock(ctx, db, scripts, nil)
+}
+
+// ScriptsLock is the locking module the scripts run under.
+type ScriptsLock interface {
+	Acquire(ctx context.Context, keys []string, args lockingtypes.AcquireArgs) error
+	Release(ctx context.Context, keys []string, args lockingtypes.ReleaseArgs) (bool, error)
+}
+
+// migrationScriptsLockKey mirrors the lock key of MigrationScriptsMigrator.run.
+const migrationScriptsLockKey = "migration-scripts-running"
+
+// RunScriptsWithLock is RunScripts holding the "migration-scripts-running"
+// lock of the locking module (expire 1h) like MigrationScriptsMigrator.run.
+func RunScriptsWithLock(ctx context.Context, db *pgxpool.Pool, scripts []Script, lock ScriptsLock) (err error) {
+	if lock != nil {
+		if err := lock.Acquire(ctx, []string{migrationScriptsLockKey}, lockingtypes.AcquireArgs{Expire: 60 * 60}); err != nil {
+			return err
+		}
+		defer func() {
+			if _, rerr := lock.Release(context.Background(), []string{migrationScriptsLockKey}, lockingtypes.ReleaseArgs{}); rerr != nil && err == nil {
+				err = rerr
+			}
+		}()
+	}
 	if err := ensureMigrationsTable(ctx, db); err != nil {
 		return err
 	}

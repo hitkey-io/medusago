@@ -126,9 +126,27 @@ func isGenerated(s string) (bool, string) {
 // default configuration, like the reference application's
 // medusa-config.js: the index engine needs the index module besides its
 // feature flag (MEDUSA_FF_INDEX_ENGINE=true).
+//
+// MEDUSA_TEST_LOCKING_PROVIDER (postgres or redis) makes the provider the
+// default of the locking module, MEDUSA_TEST_CACHE=redis selects
+// cache-redis; both use MEDUSA_TEST_REDIS_URL.
 func scenarioModules() []config.ModuleConfig {
+	var out []config.ModuleConfig
 	if os.Getenv("MEDUSA_FF_INDEX_ENGINE") == "true" {
-		return []config.ModuleConfig{{Key: "index", Resolve: "@medusajs/medusa/index-module"}}
+		out = append(out, config.ModuleConfig{Key: "index", Resolve: "@medusajs/medusa/index-module"})
 	}
-	return nil
+	switch os.Getenv("MEDUSA_TEST_LOCKING_PROVIDER") {
+	case "postgres":
+		out = append(out, config.ModuleConfig{Key: "locking", Resolve: "@medusajs/medusa/locking", Providers: []config.ModuleProviderConfig{
+			{Resolve: "@medusajs/medusa/locking-postgres", ID: "locking-postgres", IsDefault: true},
+		}})
+	case "redis":
+		out = append(out, config.ModuleConfig{Key: "locking", Resolve: "@medusajs/medusa/locking", Providers: []config.ModuleProviderConfig{
+			{Resolve: "@medusajs/medusa/locking-redis", ID: "locking-redis", IsDefault: true, Options: map[string]any{"redisUrl": os.Getenv("MEDUSA_TEST_REDIS_URL")}},
+		}})
+	}
+	if os.Getenv("MEDUSA_TEST_CACHE") == "redis" {
+		out = append(out, config.ModuleConfig{Key: "cache", Resolve: "@medusajs/medusa/cache-redis", Options: map[string]any{"redisUrl": os.Getenv("MEDUSA_TEST_REDIS_URL")}})
+	}
+	return out
 }

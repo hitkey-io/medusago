@@ -15,6 +15,7 @@ import (
 	mfautils "github.com/hitkey-io/medusago/packages/modules/auth/src/utils"
 	"io"
 	"mime/multipart"
+	"net"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
@@ -26,6 +27,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -65,6 +67,11 @@ type Step struct {
 	// Totp names a body path ("step.path") holding a TOTP secret: the
 	// current code replaces "__TOTP__" in the body.
 	Totp string `json:"totp,omitempty"`
+	// Parallel groups consecutive steps sent concurrently (e.g. two
+	// completions of one cart); they may only reference earlier steps.
+	Parallel string `json:"parallel,omitempty"`
+	// DelayMs waits before sending the step (staggers a parallel group).
+	DelayMs int `json:"delay_ms,omitempty"`
 }
 
 var otpSecretRe = regexp.MustCompile(`secret=[A-Z2-7]+`)
@@ -268,9 +275,12 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 	plain := &http.Client{CheckRedirect: client.CheckRedirect}
 	out := map[string]Response{}
 	tokens := map[string]string{}
+	var tokensMu sync.Mutex
 
 	bodies := map[string]any{}
-	for _, step := range steps {
+	// doStep sends one step (bodies is only read: the steps of a parallel
+	// group are stored once the group is done).
+	doStep := func(step Step) (Response, error) {
 		step.Path = resolveRefs(step.Path, bodies, true)
 		// absolute URLs from bodies (file urls) are requested on the target
 		if strings.HasPrefix(step.Path, "http%3A") {
@@ -279,84 +289,121 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 		if u, err := url.Parse(step.Path); err == nil && u.IsAbs() {
 			step.Path = u.RequestURI()
 		}
+		if step.DelayMs > 0 {
+			time.Sleep(time.Duration(step.DelayMs) * time.Millisecond)
+		}
 		deadline := time.Now().Add(30 * time.Second)
-	retry:
-		var body io.Reader
-		if len(step.Body) > 0 {
-			raw := resolveRefs(string(step.Body), bodies, false)
-			if step.Totp != "" {
-				stepName, path, _ := strings.Cut(step.Totp, ".")
-				secret := fmt.Sprint(lookupPath(bodies[stepName], path))
-				code, err := mfautils.GenerateTotpCode(secret, 6, 30, time.Now())
-				if err != nil {
-					t.Fatalf("%s: totp: %v", step.Name, err)
-				}
-				raw = strings.ReplaceAll(raw, "__TOTP__", code)
-			}
-			body = strings.NewReader(raw)
-		}
-		contentType := ""
-		if len(step.Body) > 0 {
-			contentType = "application/json"
-		}
-		if len(step.Files) > 0 {
-			body, contentType = multipartBody(step.Files)
-		}
-		req, err := http.NewRequest(step.Method, baseURL+step.Path, body)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if contentType != "" {
-			req.Header.Set("Content-Type", contentType)
-		}
-		if step.Origin != "" {
-			req.Header.Set("Origin", step.Origin)
-		}
-		for k, v := range step.Headers {
-			req.Header.Set(k, resolveRefs(v, bodies, true))
-		}
-		if step.Bearer != "" {
-			req.Header.Set("Authorization", "Bearer "+tokens[step.Bearer])
-		}
-		c := client
-		if step.NoCookies {
-			c = plain
-		}
-		res, err := c.Do(req)
-		if err != nil {
-			t.Fatalf("%s: %v", step.Name, err)
-		}
-		raw, _ := io.ReadAll(res.Body)
-		res.Body.Close()
-
-		rec := Response{Status: res.StatusCode, Headers: map[string]string{}}
-		for _, h := range recordedHeaders {
-			if v := res.Header.Values(h); len(v) > 0 {
-				rec.Headers[h] = strings.Join(v, ", ")
-			}
-		}
-		for _, c := range res.Header.Values("Set-Cookie") {
-			rec.SetCookie = append(rec.SetCookie, maskCookie(c))
-		}
-		sort.Strings(rec.SetCookie)
-		if len(raw) > 0 {
-			if v, err := dal.DecodeOrderedJSON(raw); err == nil {
-				rec.Body = v
-				if r, ok := v.(*dal.Record); ok {
-					if tok, ok := r.Get("token"); ok {
-						tokens[step.Name] = fmt.Sprint(tok)
+		for {
+			var body io.Reader
+			if len(step.Body) > 0 {
+				raw := resolveRefs(string(step.Body), bodies, false)
+				if step.Totp != "" {
+					stepName, path, _ := strings.Cut(step.Totp, ".")
+					secret := fmt.Sprint(lookupPath(bodies[stepName], path))
+					code, err := mfautils.GenerateTotpCode(secret, 6, 30, time.Now())
+					if err != nil {
+						return Response{}, fmt.Errorf("%s: totp: %v", step.Name, err)
 					}
+					raw = strings.ReplaceAll(raw, "__TOTP__", code)
 				}
-			} else {
-				rec.Body = string(raw)
+				body = strings.NewReader(raw)
+			}
+			contentType := ""
+			if len(step.Body) > 0 {
+				contentType = "application/json"
+			}
+			if len(step.Files) > 0 {
+				body, contentType = multipartBody(step.Files)
+			}
+			req, err := http.NewRequest(step.Method, baseURL+step.Path, body)
+			if err != nil {
+				return Response{}, err
+			}
+			if contentType != "" {
+				req.Header.Set("Content-Type", contentType)
+			}
+			if step.Origin != "" {
+				req.Header.Set("Origin", step.Origin)
+			}
+			for k, v := range step.Headers {
+				req.Header.Set(k, resolveRefs(v, bodies, true))
+			}
+			if step.Bearer != "" {
+				tokensMu.Lock()
+				req.Header.Set("Authorization", "Bearer "+tokens[step.Bearer])
+				tokensMu.Unlock()
+			}
+			c := client
+			if step.NoCookies {
+				c = plain
+			}
+			res, err := c.Do(req)
+			if err != nil {
+				return Response{}, fmt.Errorf("%s: %v", step.Name, err)
+			}
+			raw, _ := io.ReadAll(res.Body)
+			res.Body.Close()
+
+			rec := Response{Status: res.StatusCode, Headers: map[string]string{}}
+			for _, h := range recordedHeaders {
+				if v := res.Header.Values(h); len(v) > 0 {
+					rec.Headers[h] = strings.Join(v, ", ")
+				}
+			}
+			for _, c := range res.Header.Values("Set-Cookie") {
+				rec.SetCookie = append(rec.SetCookie, maskCookie(c))
+			}
+			sort.Strings(rec.SetCookie)
+			if len(raw) > 0 {
+				if v, err := dal.DecodeOrderedJSON(raw); err == nil {
+					rec.Body = v
+					if r, ok := v.(*dal.Record); ok {
+						if tok, ok := r.Get("token"); ok {
+							tokensMu.Lock()
+							tokens[step.Name] = fmt.Sprint(tok)
+							tokensMu.Unlock()
+						}
+					}
+				} else {
+					rec.Body = string(raw)
+				}
+			}
+			if step.Until != "" && lookupPath(rec.Body, step.Until) == nil && time.Now().Before(deadline) {
+				time.Sleep(200 * time.Millisecond)
+				continue
+			}
+			return rec, nil
+		}
+	}
+
+	for i := 0; i < len(steps); {
+		// consecutive steps of one parallel group are sent concurrently
+		j := i + 1
+		if steps[i].Parallel != "" {
+			for j < len(steps) && steps[j].Parallel == steps[i].Parallel {
+				j++
 			}
 		}
-		if step.Until != "" && lookupPath(rec.Body, step.Until) == nil && time.Now().Before(deadline) {
-			time.Sleep(200 * time.Millisecond)
-			goto retry
+		group := steps[i:j]
+		results := make([]Response, len(group))
+		errs := make([]error, len(group))
+		var wg sync.WaitGroup
+		for k := range group {
+			wg.Add(1)
+			go func(k int) {
+				defer wg.Done()
+				results[k], errs[k] = doStep(group[k])
+			}(k)
 		}
-		out[step.Name] = rec
-		bodies[step.Name] = rec.Body
+		wg.Wait()
+		for k, step := range group {
+			if errs[k] != nil {
+				t.Fatal(errs[k])
+			}
+			out[step.Name] = results[k]
+			bodies[step.Name] = results[k].Body
+		}
+		i = j
 	}
 	return out
 }
@@ -686,6 +733,16 @@ func goServer(t *testing.T, scenario string) string {
 	t.Setenv("AUTH_MFA_ENCRYPTION_KEY", mfaEncryptionKey)
 	for k, v := range scenarioEnv(t, scenario) {
 		t.Setenv(k, v)
+	}
+	// scenarios of the Redis providers need the Redis their .env names
+	if redisURL := os.Getenv("MEDUSA_TEST_REDIS_URL"); redisURL != "" {
+		if u, err := url.Parse(redisURL); err == nil {
+			conn, err := net.DialTimeout("tcp", u.Host, 2*time.Second)
+			if err != nil {
+				t.Skipf("Redis %s is not reachable (start it, e.g. docker run -p %s:6379 redis:7-alpine)", redisURL, u.Port())
+			}
+			conn.Close()
+		}
 	}
 	if base := os.Getenv("MEDUSA_HTTP_TARGET_URL"); base != "" {
 		return base

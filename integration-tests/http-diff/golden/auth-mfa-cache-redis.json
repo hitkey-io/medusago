@@ -1,0 +1,461 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzg0NDgsImV4cCI6MTc5NDQ2NDg0OH0.iJFhtFG0em3w3CWCCjlA8hayLxVDIstZAWvJYK6dIKg"
+    }
+  },
+  "factors_empty": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "mfa_factors": []
+    }
+  },
+  "enroll": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "mfa_factor": {
+        "id": "authmfa_01M74MMF6PQ1C5VKAN6PNZJ9NB",
+        "auth_identity_id": "authid_01M70Y01VANH9W8XESKQM685FJ",
+        "provider": "totp",
+        "status": "pending",
+        "metadata": {
+          "device": "phone",
+          "label": "Admin device"
+        }
+      },
+      "secret": "4JRTKCZOW6WCEO2DGCBNGXMKOID5C74Q",
+      "otpauth_url": "otpauth://totp/Medusa:Admin%20device?secret=4JRTKCZOW6WCEO2DGCBNGXMKOID5C74Q&issuer=Medusa"
+    }
+  },
+  "enroll_duplicate": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "An active TOTP factor already exists for this auth identity"
+    }
+  },
+  "enroll_unknown": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "code": "unknown_error",
+      "type": "unknown_error",
+      "message": "An unknown error occurred."
+    }
+  },
+  "verify_wrong": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Invalid TOTP code"
+    }
+  },
+  "recovery_before": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Recovery codes require an enabled MFA factor"
+    }
+  },
+  "verify": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "mfa_factor": {
+        "id": "authmfa_01M74MMF6PQ1C5VKAN6PNZJ9NB",
+        "auth_identity_id": "authid_01M70Y01VANH9W8XESKQM685FJ",
+        "auth_identity": {
+          "id": "authid_01M70Y01VANH9W8XESKQM685FJ"
+        },
+        "provider": "totp",
+        "status": "enabled",
+        "metadata": {
+          "label": "Admin device",
+          "device": "phone"
+        },
+        "created_at": "2026-11-11T06:27:28.087Z",
+        "updated_at": "2026-11-11T06:27:28.087Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "recovery": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "recovery_codes": [
+        "7bf7-c6bb-97d4-370a-8bfa-b085-e331-39e4",
+        "37ac-ecc0-9409-7ef0-dbfe-f458-484d-1329",
+        "86c6-34ce-e971-a8fc-6f8a-876f-37f3-2c82"
+      ]
+    }
+  },
+  "recovery_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Value for field 'count' too big, expected at most: '50'"
+    }
+  },
+  "factors": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "mfa_factors": [
+        {
+          "id": "authmfa_01M74MMF6PQ1C5VKAN6PNZJ9NB",
+          "auth_identity_id": "authid_01M70Y01VANH9W8XESKQM685FJ",
+          "auth_identity": {
+            "id": "authid_01M70Y01VANH9W8XESKQM685FJ"
+          },
+          "provider": "totp",
+          "status": "enabled",
+          "metadata": {
+            "label": "Admin device",
+            "device": "phone"
+          },
+          "created_at": "2026-11-11T06:27:28.087Z",
+          "updated_at": "2026-11-11T06:27:28.198Z",
+          "deleted_at": null
+        }
+      ]
+    }
+  },
+  "login_mfa": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "mfa_required": true,
+      "mfa_challenge": {
+        "id": "authmfachal_01M74MMFFCJXMF663PEZGCFBY4",
+        "auth_identity_id": "authid_01M70Y01VANH9W8XESKQM685FJ",
+        "auth_provider": "emailpass",
+        "methods": [
+          "totp",
+          "recovery_code"
+        ],
+        "expires_at": "2026-11-11T06:32:28.364Z",
+        "attempts": 0,
+        "max_attempts": 5,
+        "completed_at": null,
+        "metadata": null
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6IiIsImFjdG9yX3R5cGUiOiJ1c2VyIiwiYXV0aF9pZGVudGl0eV9pZCI6ImF1dGhpZF8wMU03MFkwMVZBTkg5VzhYRVNLUU02ODVGSiIsImF1dGhfcHJvdmlkZXIiOiJlbWFpbHBhc3MiLCJtZmFfZW5hYmxlZCI6dHJ1ZSwibWZhX2NoYWxsZW5nZV9jb21wbGV0ZWRfYXQiOm51bGwsImFwcF9tZXRhZGF0YSI6e30sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzg0NDgsImV4cCI6MTc5NDQ2NDg0OH0.LhwmgFHazY5Yh7A4NpB-z8GpnO4utQIJy9NMZFvIphM"
+    }
+  },
+  "me_partial": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "message": "MFA verification is required to complete this request"
+    }
+  },
+  "challenge_wrong": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Invalid MFA challenge code"
+    }
+  },
+  "challenge_bad_method": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "MFA challenge does not support method \"sms\""
+    }
+  },
+  "challenge_recovery": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOnRydWUsIm1mYV9jaGFsbGVuZ2VfY29tcGxldGVkX2F0IjoiMjAyNi0xMS0xMVQwNjoyNzoyOC40NThaIiwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzg0NDgsImV4cCI6MTc5NDQ2NDg0OH0.b8Rr_t0r-ziNrUvYAULkfNq41EHrmVLQCORb4T45jQ0"
+    }
+  },
+  "challenge_again": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "MFA challenge has already been completed"
+    }
+  },
+  "me_full": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "user": {
+        "id": "user_01M70Y01SPRY6AWYTJKZK9YEES"
+      }
+    }
+  },
+  "login_mfa2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "mfa_required": true,
+      "mfa_challenge": {
+        "id": "authmfachal_01M74MMFMNH7123PGHE25DXWYG",
+        "auth_identity_id": "authid_01M70Y01VANH9W8XESKQM685FJ",
+        "auth_provider": "emailpass",
+        "methods": [
+          "totp",
+          "recovery_code"
+        ],
+        "expires_at": "2026-11-11T06:32:28.533Z",
+        "attempts": 0,
+        "max_attempts": 5,
+        "completed_at": null,
+        "metadata": null
+      },
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6IiIsImFjdG9yX3R5cGUiOiJ1c2VyIiwiYXV0aF9pZGVudGl0eV9pZCI6ImF1dGhpZF8wMU03MFkwMVZBTkg5VzhYRVNLUU02ODVGSiIsImF1dGhfcHJvdmlkZXIiOiJlbWFpbHBhc3MiLCJtZmFfZW5hYmxlZCI6dHJ1ZSwibWZhX2NoYWxsZW5nZV9jb21wbGV0ZWRfYXQiOm51bGwsImFwcF9tZXRhZGF0YSI6e30sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzg0NDgsImV4cCI6MTc5NDQ2NDg0OH0.LhwmgFHazY5Yh7A4NpB-z8GpnO4utQIJy9NMZFvIphM"
+    }
+  },
+  "challenge_totp": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOnRydWUsIm1mYV9jaGFsbGVuZ2VfY29tcGxldGVkX2F0IjoiMjAyNi0xMS0xMVQwNjoyNzoyOC41MzhaIiwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzg0NDgsImV4cCI6MTc5NDQ2NDg0OH0.az_MCAJIk72MrmqQcO_IuPLXRKN60uwxkb7Ia1OLVi0"
+    }
+  },
+  "challenge_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "MFA challenge with id \"authmfachal_missing\" was not found"
+    }
+  },
+  "disable": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "mfa_factor": {
+        "id": "authmfa_01M74MMF6PQ1C5VKAN6PNZJ9NB",
+        "auth_identity_id": "authid_01M70Y01VANH9W8XESKQM685FJ",
+        "auth_identity": {
+          "id": "authid_01M70Y01VANH9W8XESKQM685FJ"
+        },
+        "provider": "totp",
+        "status": "disabled",
+        "metadata": {
+          "label": "Admin device",
+          "device": "phone"
+        },
+        "created_at": "2026-11-11T06:27:28.087Z",
+        "updated_at": "2026-11-11T06:27:28.547Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "disable_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "MFA factor with id \"authmfa_missing\" was not found"
+    }
+  },
+  "login_plain": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzg0NDgsImV4cCI6MTc5NDQ2NDg0OH0.iJFhtFG0em3w3CWCCjlA8hayLxVDIstZAWvJYK6dIKg"
+    }
+  },
+  "verification_request": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "verification": {
+        "auth_identity_id": "authid_01M70Y01VANH9W8XESKQM685FJ",
+        "entity_id": "admin@medusa-test.com",
+        "entity_type": "email",
+        "code_provider": "token",
+        "verified_at": null,
+        "requested_at": "2026-11-11T06:27:28.666Z",
+        "provider_metadata": {
+          "token_hash": "ea18213a9ece0fceb2ffececff85f7a783d006a23039c2c6d391195b14a7f94d"
+        },
+        "metadata": {},
+        "created_at": "2026-11-11T06:27:28.668Z",
+        "updated_at": "2026-11-11T06:27:28.668Z",
+        "deleted_at": null,
+        "id": "authver_01M74MMFRWE4Z4X41BQYGPFFYT"
+      }
+    }
+  },
+  "verification_request_again": {
+    "status": 201,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "verification": {
+        "auth_identity_id": "authid_01M70Y01VANH9W8XESKQM685FJ",
+        "auth_identity": {
+          "id": "authid_01M70Y01VANH9W8XESKQM685FJ"
+        },
+        "entity_id": "admin@medusa-test.com",
+        "entity_type": "email",
+        "code_provider": "token",
+        "verified_at": null,
+        "requested_at": "2026-11-11T06:27:28.683Z",
+        "provider_metadata": {
+          "token_hash": "3671e9ababfb7bcbb8d8956d71eac6d8e9762aa91fa1d1386861436dcd2dc261"
+        },
+        "metadata": {},
+        "created_at": "2026-11-11T06:27:28.668Z",
+        "updated_at": "2026-11-11T06:27:28.684Z",
+        "deleted_at": null,
+        "id": "authver_01M74MMFRWE4Z4X41BQYGPFFYT"
+      }
+    }
+  },
+  "verification_confirm_wrong": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Verification code is invalid or already used"
+    }
+  },
+  "verification_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Value for field 'entity_id' too small, expected at least: '1'; Field 'entity_type' is required"
+    }
+  },
+  "factors_unauth": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "message": "Unauthorized"
+    }
+  }
+}
