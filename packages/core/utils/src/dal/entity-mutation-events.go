@@ -76,6 +76,9 @@ type Recorder struct {
 	// in the unit of work yet (see HoldPending); -1 when none.
 	hidden  int
 	holding bool
+	// rawSynced lists the entities whose raw big number columns a partial
+	// selection already marked changed (see markPartialBigNumbers).
+	rawSynced map[string]bool
 }
 
 // HoldPending mirrors an internal service method that loads every entity
@@ -119,6 +122,17 @@ func Touched(db Querier, className string) bool {
 	rec.mu.Lock()
 	defer rec.mu.Unlock()
 	return rec.touched[className]
+}
+
+// Untouch clears what Touch marked.
+func Untouch(db Querier, classNames ...string) {
+	if rec := recorderOf(db); rec != nil {
+		rec.mu.Lock()
+		for _, c := range classNames {
+			delete(rec.touched, c)
+		}
+		rec.mu.Unlock()
+	}
 }
 
 // Touch marks an entity class of the transaction db belongs to as touched:

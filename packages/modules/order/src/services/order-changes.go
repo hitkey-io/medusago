@@ -26,6 +26,10 @@ func asRecord(v any) *dal.Record {
 	return r
 }
 
+// orderLoadedMarker marks a transaction where createOrderChange_ loaded the
+// orders (dal.Touch with a name no entity class has).
+const orderLoadedMarker = "Order@loaded"
+
 // createOrderChange mirrors createOrderChange_.
 func (s *OrderModuleService) createOrderChange(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
 	var orderIDs []any
@@ -86,9 +90,17 @@ func (s *OrderModuleService) createOrderChange(ctx context.Context, data []*dal.
 	}
 	created, err := s.Internal("OrderChange").Create(ctx, input)
 	if err == nil {
-		// the new changes join the collections of the loaded orders: the
-		// next query on orders in this transaction auto flushes
-		dal.Touch(s.DB(), "Order")
+		// persisting the changes cascades to their order (return, claim,
+		// exchange) references: the next query on these classes in this
+		// transaction auto flushes
+		dal.Touch(s.DB(), "Order", orderLoadedMarker)
+		for _, c := range input {
+			for k, class := range map[string]string{"return_id": "Return", "claim_id": "OrderClaim", "exchange_id": "OrderExchange"} {
+				if get(c, k) != nil {
+					dal.Touch(s.DB(), class)
+				}
+			}
+		}
 	}
 	return created, err
 }
@@ -305,8 +317,10 @@ func (s *OrderModuleService) applyOrderChanges(ctx context.Context, changeAction
 	f := dal.NewRecord()
 	f.Set("id", dedupeAny(orderIDs))
 	// an order change created in this transaction touched the orders: the
-	// orders query flushes, and the queries of the promiseAll below do not
-	orderFlushed := dal.Touched(s.DB(), "Order")
+	// orders query flushes. The orders loaded earlier in the transaction
+	// (by createOrderChange_) are not marked changed by formatOrder, so the
+	// queries of the promiseAll below do not flush.
+	orderFlushed := dal.Touched(s.DB(), orderLoadedMarker)
 	orders, summaryUpdates, err := s.listOrdersInTransaction(dal.WithSharedIdentityMap(ctx), f, utilsmodulessdk.FindConfig{
 		Select:    []string{"id", "version", "items.detail", "summary", "total", "email"},
 		Relations: []string{"transactions", "credit_lines"},
@@ -343,19 +357,41 @@ func (s *OrderModuleService) applyOrderChanges(ctx context.Context, changeAction
 			return nil, err
 		}
 	}
-	if len(res.OrderToUpdate) > 0 {
-		if !orderFlushed {
-			dal.FlushEvents(s.DB())
+	updateOrders := func() error {
+		if len(res.OrderToUpdate) == 0 {
+			return nil
 		}
-		if _, err := s.Internal("Order").Update(ctx, toAny(res.OrderToUpdate)); err != nil {
+		_, err := s.Internal("Order").Update(ctx, toAny(res.OrderToUpdate))
+		return err
+	}
+	updateActions := func() error {
+		if len(usedActions) == 0 {
+			return nil
+		}
+		_, err := s.Internal("OrderChangeAction").Update(ctx, usedActions)
+		return err
+	}
+	if !orderFlushed && (len(res.OrderToUpdate) > 0 || len(usedActions) > 0) {
+		dal.FlushEvents(s.DB())
+	}
+	switch {
+	case !orderFlushed && len(usedActions) == 1:
+		// one action query: the actions update is persisted before the
+		// order update
+		if err := updateActions(); err != nil {
 			return nil, err
 		}
-	}
-	if len(usedActions) > 0 {
+		if err := updateOrders(); err != nil {
+			return nil, err
+		}
+	default:
+		if err := updateOrders(); err != nil {
+			return nil, err
+		}
 		if !orderFlushed && len(usedActions) >= 3 {
 			dal.FlushEvents(s.DB())
 		}
-		if _, err := s.Internal("OrderChangeAction").Update(ctx, usedActions); err != nil {
+		if err := updateActions(); err != nil {
 			return nil, err
 		}
 	}

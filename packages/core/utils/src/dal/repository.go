@@ -383,6 +383,9 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 	if err := r.populate(ctx, roots, idm, r.relationPaths(opts), opts.WithDeleted, relationOrder, opts.PopulateWhere, tree); err != nil {
 		return nil, nil, err
 	}
+	if err := r.markPartialBigNumbers(ctx, roots, tree); err != nil {
+		return nil, nil, err
+	}
 	return roots, idm, nil
 }
 
