@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/product/helpers"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	filetypes "github.com/hitkey-io/medusago/packages/core/types/src/file"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/csv"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -47,7 +49,7 @@ var ExportProductsStep = composer.CreateStep("export-products",
 		}
 		regions := recordList(regionRes.Data)
 		filename := fmt.Sprintf("%d-product-exports.csv", time.Now().UnixMilli())
-		stream, err := commonsteps.FileStreamServiceOf(ctx.Container).GetUploadStream(ctx.Context, filename, "")
+		stream, err := commonsteps.FileStreamServiceOf(ctx.Container).GetUploadStream(ctx.Context, filetypes.ProviderUploadStreamDTO{Filename: filename, MimeType: "text/csv"})
 		if err != nil {
 			return zero, err
 		}
@@ -132,8 +134,8 @@ var ExportProductsStep = composer.CreateStep("export-products",
 		}
 
 		hasHeader := false
-		werr := func() error {
-			defer stream.File.Close()
+		werr := func() (err error) {
+			defer func() { err = errors.Join(err, stream.File.Close()) }()
 			for i := 0; i < len(allIDs); i += pageSize {
 				f := dal.NewRecord()
 				f.Set("id", allIDs[i:min(i+pageSize, len(allIDs))])

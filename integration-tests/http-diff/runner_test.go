@@ -79,6 +79,9 @@ type Step struct {
 	// Sign signs the body like the named provider's webhooks ("stripe":
 	// a stripe-signature header).
 	Sign string `json:"sign,omitempty"`
+	// External requests an absolute URL (a fake service, an uploaded file)
+	// as is instead of a path of the server.
+	External string `json:"external,omitempty"`
 }
 
 var otpSecretRe = regexp.MustCompile(`secret=[A-Z2-7]+`)
@@ -348,7 +351,11 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 					headers[k] = v
 				}
 			}
-			req, err := http.NewRequest(step.Method, base+step.Path, body)
+			target := base + step.Path
+			if step.External != "" {
+				target = resolveTextRefs(step.External, bodies)
+			}
+			req, err := http.NewRequest(step.Method, target, body)
 			if err != nil {
 				return Response{}, err
 			}
@@ -466,8 +473,39 @@ func resolveRefs(s string, bodies map[string]any, inPath bool) string {
 	}
 	return re.ReplaceAllStringFunc(s, func(m string) string {
 		sm := re.FindStringSubmatch(m)
-		var cur any = bodies[sm[1]]
-		for _, seg := range strings.Split(sm[2], ".") {
+		cur := refValue(bodies, sm[1], sm[2])
+		if inPath {
+			return url.QueryEscape(fmt.Sprint(cur))
+		}
+		raw, _ := dal.MarshalValue(cur)
+		return string(raw)
+	})
+}
+
+// resolveTextRefs replaces {{step.path}} with the plain text of the value.
+func resolveTextRefs(s string, bodies map[string]any) string {
+	return refRe.ReplaceAllStringFunc(s, func(m string) string {
+		sm := refRe.FindStringSubmatch(m)
+		return fmt.Sprint(refValue(bodies, sm[1], sm[2]))
+	})
+}
+
+// refValue resolves a reference path in a step body: object keys, array
+// indexes, and "?name" for a query parameter of a URL string.
+func refValue(bodies map[string]any, stepName, path string) any {
+	var cur any = bodies[stepName]
+	{
+		for _, seg := range strings.Split(path, ".") {
+			if name, ok := strings.CutPrefix(seg, "?"); ok {
+				if s, isStr := cur.(string); isStr {
+					if u, err := url.Parse(s); err == nil {
+						cur = u.Query().Get(name)
+						continue
+					}
+				}
+				cur = nil
+				continue
+			}
 			switch t := cur.(type) {
 			case *dal.Record:
 				cur, _ = t.Get(seg)
@@ -483,12 +521,8 @@ func resolveRefs(s string, bodies map[string]any, inPath bool) string {
 				cur = nil
 			}
 		}
-		if inPath {
-			return url.QueryEscape(fmt.Sprint(cur))
-		}
-		raw, _ := dal.MarshalValue(cur)
-		return string(raw)
-	})
+	}
+	return cur
 }
 
 func encode(v any) []byte {
@@ -507,6 +541,13 @@ func TestRecord(t *testing.T) {
 		t.Skip("MEDUSA_HTTP_RECORD_URL is not set")
 	}
 	for _, file := range scenarioFiles() {
+		t.Run(strings.TrimSuffix(filepath.Base(file), ".json"), func(t *testing.T) { recordScenario(t, base, file) })
+	}
+}
+
+// recordScenario records one scenario (with its fake services).
+func recordScenario(t *testing.T, base, file string) {
+	{
 		steps := loadScenario(t, file)
 		env := scenarioEnv(t, strings.TrimSuffix(filepath.Base(file), ".json"))
 		for k, v := range env {
@@ -558,6 +599,34 @@ var (
 	embeddedDateRe = regexp.MustCompile(`\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{3})?Z`)
 )
 
+var (
+	// presigned S3 URLs: signing time and signature
+	amzDateRe       = regexp.MustCompile(`X-Amz-Date=\d{8}T\d{6}Z`)
+	amzSignatureRe  = regexp.MustCompile(`X-Amz-Signature=[0-9a-f]{64}`)
+	amzCredentialRe = regexp.MustCompile(`(X-Amz-Credential=[^&%]+%2F)\d{8}%2F`)
+	// OAuth state keys (crypto.randomBytes(32).toString("hex"))
+	oauthStateRe = regexp.MustCompile(`state=[0-9a-f]{64}\b`)
+	// ULIDs inside file keys ("name-<ULID>.ext", "<ULID>.png")
+	keyULIDRe = regexp.MustCompile(`(^|[-/])([0-9A-HJKMNP-TV-Z]{26})([./?%]|$)`)
+)
+
+// maskProviderValues masks the generated parts of values produced by the
+// module providers (S3 keys and presigned URLs, OAuth redirects).
+func (p *placeholders) maskProviderValues(s string) string {
+	if strings.Contains(s, "X-Amz-") {
+		s = amzDateRe.ReplaceAllString(s, "X-Amz-Date=<date>")
+		s = amzSignatureRe.ReplaceAllString(s, "X-Amz-Signature=<signature>")
+		s = amzCredentialRe.ReplaceAllString(s, "${1}<date>%2F")
+	}
+	if strings.Contains(s, "state=") {
+		s = oauthStateRe.ReplaceAllString(s, "state=<state>")
+	}
+	return keyULIDRe.ReplaceAllStringFunc(s, func(m string) string {
+		sm := keyULIDRe.FindStringSubmatch(m)
+		return sm[1] + p.of(sm[2]) + sm[3]
+	})
+}
+
 // placeholders maps generated values to stable names within a scenario.
 type placeholders struct {
 	names map[string]string
@@ -571,6 +640,9 @@ func newPlaceholders() *placeholders {
 func (p *placeholders) of(s string) string {
 	s = fileTimestampRe.ReplaceAllString(s, "<ms>-")
 	gen, kind := isGenerated(s)
+	if !gen && kind == "" {
+		s = p.maskProviderValues(s)
+	}
 	if !gen {
 		if kind == "" && len(s) > 30 {
 			// generated ids and dates inside messages (and CSV files)

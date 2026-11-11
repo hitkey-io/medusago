@@ -23,6 +23,7 @@ var serviceURLs = map[string]string{}
 // medusa-config.js does the same for upstream).
 func startFakes(t *testing.T, env map[string]string) {
 	t.Helper()
+	startProviderFakes(t, env)
 	serviceURLs = map[string]string{}
 	if u := env["MEDUSA_TEST_STRIPE_URL"]; u != "" {
 		startFakeStripe(t, u)

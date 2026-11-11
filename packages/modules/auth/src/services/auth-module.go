@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	authtypes "github.com/hitkey-io/medusago/packages/core/types/src/auth"
+	cachetypes "github.com/hitkey-io/medusago/packages/core/types/src/cache"
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
@@ -272,6 +273,50 @@ func (i *identityProviderService) Update(ctx context.Context, entityID string, d
 	updated, _ := res.(*dal.Record)
 	identity.Set("provider_identities", append(others, updated))
 	return identity, nil
+}
+
+// SetState mirrors setState: the state is kept in the cache module (20
+// minutes by default).
+func (i *identityProviderService) SetState(ctx context.Context, key string, value *dal.Record, ttlSeconds int) error {
+	cache, err := i.s.stateCache()
+	if err != nil {
+		return err
+	}
+	if ttlSeconds == 0 {
+		ttlSeconds = 1200
+	}
+	ttl := float64(ttlSeconds)
+	return cache.Set(ctx, key, value, &ttl)
+}
+
+// GetState mirrors getState: a state is single use (consumed on read).
+func (i *identityProviderService) GetState(ctx context.Context, key string) (*dal.Record, error) {
+	cache, err := i.s.stateCache()
+	if err != nil {
+		return nil, err
+	}
+	v, err := cache.Get(ctx, key)
+	if err != nil {
+		return nil, err
+	}
+	if v == nil {
+		return nil, nil
+	}
+	if err := cache.Invalidate(ctx, key); err != nil {
+		return nil, err
+	}
+	rec, _ := v.(*dal.Record)
+	return rec, nil
+}
+
+// stateCache is the cache module for OAuth states.
+func (s *AuthModuleService) stateCache() (cachetypes.ICacheService, error) {
+	if s.container != nil {
+		if c, ok := s.container.Resolve(utilsmodulessdk.CACHE).(cachetypes.ICacheService); ok {
+			return c, nil
+		}
+	}
+	return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_ARGUMENT, "Cache module dependency is required when using OAuth providers that require state")
 }
 
 func toRecords(v any) []*dal.Record {

@@ -3,14 +3,14 @@ package workflows
 
 import (
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/file/steps"
+	filetypes "github.com/hitkey-io/medusago/packages/core/types/src/file"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
-	localfile "github.com/hitkey-io/medusago/packages/modules/providers/file-local/src/services"
 )
 
 // UploadFilesWorkflow mirrors uploadFilesWorkflow.
 var UploadFilesWorkflow = composer.CreateWorkflow("upload-files",
-	func(e *composer.Execution, files []*localfile.UploadFile) ([]*dal.Record, error) {
+	func(e *composer.Execution, files []*filetypes.ProviderUploadFileDTO) ([]*dal.Record, error) {
 		return steps.UploadFilesStep.Run(e, files)
 	})
 

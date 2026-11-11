@@ -220,6 +220,9 @@ func DefineConfig(input InputConfig) ConfigModule {
 		// getKnownModuleName: the key, else the key of a known package
 		if um.Key == "" {
 			um.Key = modulessdk.ReversedModulePackageName(um.Resolve)
+			if um.Key == "" {
+				um.Key = ModuleKeyFromResolve(um.Resolve)
+			}
 		}
 		replaced := false
 		for i := range modules {

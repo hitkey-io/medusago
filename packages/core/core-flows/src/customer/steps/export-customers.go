@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -8,6 +9,7 @@ import (
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	filetypes "github.com/hitkey-io/medusago/packages/core/types/src/file"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/csv"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -97,15 +99,15 @@ var ExportCustomersStep = composer.CreateStep("export-customers",
 			format = "csv"
 		}
 		filename := fmt.Sprintf("%d-customer-exports.%s", time.Now().UnixMilli(), format)
-		stream, err := commonsteps.FileStreamServiceOf(ctx.Container).GetUploadStream(ctx.Context, filename, "")
+		stream, err := commonsteps.FileStreamServiceOf(ctx.Container).GetUploadStream(ctx.Context, filetypes.ProviderUploadStreamDTO{Filename: filename, MimeType: map[bool]string{true: "text/csv", false: "application/json"}[format == "csv"]})
 		if err != nil {
 			return zero, err
 		}
 		pageSize := commonsteps.BatchSize(in.BatchSize, 50)
 		fields := commonsteps.Deduplicate(append(append([]string{}, exportCustomersDefaultFields...), in.Select...))
 		hasHeader, hasWrittenRecord := false, false
-		werr := func() error {
-			defer stream.File.Close()
+		werr := func() (err error) {
+			defer func() { err = errors.Join(err, stream.File.Close()) }()
 			write := func(s string) error {
 				_, err := stream.File.WriteString(s)
 				return err

@@ -161,5 +161,6 @@ func scenarioModules() []config.ModuleConfig {
 	if m, ok := fulfillmentModule(); ok {
 		out = append(out, m)
 	}
+	out = append(out, envModules()...)
 	return append(out, redisScenarioModules()...)
 }

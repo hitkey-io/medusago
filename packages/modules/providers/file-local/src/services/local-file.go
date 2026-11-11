@@ -2,9 +2,11 @@
 package services
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"net/url"
 	"os"
@@ -13,8 +15,11 @@ import (
 	"strings"
 	"time"
 
+	filetypes "github.com/hitkey-io/medusago/packages/core/types/src/file"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 )
+
+var _ filetypes.IFileProvider = (*LocalFileService)(nil)
 
 // LocalFileService mirrors LocalFileService.
 type LocalFileService struct {
@@ -45,18 +50,10 @@ func NewLocalFileService(options map[string]any) *LocalFileService {
 }
 
 // UploadFile mirrors ProviderUploadFileDTO.
-type UploadFile struct {
-	Filename string
-	MimeType string
-	Content  string
-	Access   string
-}
+type UploadFile = filetypes.ProviderUploadFileDTO
 
 // FileResult mirrors ProviderFileResultDTO.
-type FileResult struct {
-	Key string
-	URL string
-}
+type FileResult = filetypes.ProviderFileResultDTO
 
 // decodeFileContent mirrors decodeFileContent.
 func decodeFileContent(content, mimeType string) []byte {
@@ -122,7 +119,7 @@ func (s *LocalFileService) newKey(filename, access string) (string, string) {
 }
 
 // Upload mirrors upload.
-func (s *LocalFileService) Upload(file *UploadFile) (FileResult, error) {
+func (s *LocalFileService) Upload(ctx context.Context, file *UploadFile) (FileResult, error) {
 	if file == nil {
 		return FileResult{}, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "No file provided")
 	}
@@ -145,7 +142,7 @@ func (s *LocalFileService) Upload(file *UploadFile) (FileResult, error) {
 }
 
 // Delete mirrors delete (missing files are ignored).
-func (s *LocalFileService) Delete(fileKeys []string) error {
+func (s *LocalFileService) Delete(ctx context.Context, fileKeys []string) error {
 	for _, key := range fileKeys {
 		p, err := filePath(s.keyDir(key), key)
 		if err != nil {
@@ -159,7 +156,7 @@ func (s *LocalFileService) Delete(fileKeys []string) error {
 }
 
 // GetAsBuffer mirrors getAsBuffer.
-func (s *LocalFileService) GetAsBuffer(fileKey string) ([]byte, error) {
+func (s *LocalFileService) GetAsBuffer(ctx context.Context, fileKey string) ([]byte, error) {
 	p, err := filePath(s.keyDir(fileKey), fileKey)
 	if err != nil {
 		return nil, err
@@ -167,8 +164,17 @@ func (s *LocalFileService) GetAsBuffer(fileKey string) ([]byte, error) {
 	return os.ReadFile(p)
 }
 
+// GetDownloadStream mirrors getDownloadStream.
+func (s *LocalFileService) GetDownloadStream(ctx context.Context, fileKey string) (io.ReadCloser, error) {
+	p, err := filePath(s.keyDir(fileKey), fileKey)
+	if err != nil {
+		return nil, err
+	}
+	return os.Open(p)
+}
+
 // GetPresignedDownloadURL mirrors getPresignedDownloadUrl.
-func (s *LocalFileService) GetPresignedDownloadURL(fileKey string) (string, error) {
+func (s *LocalFileService) GetPresignedDownloadURL(ctx context.Context, fileKey string) (string, error) {
 	p, err := filePath(s.keyDir(fileKey), fileKey)
 	if err != nil {
 		return "", err
@@ -180,32 +186,28 @@ func (s *LocalFileService) GetPresignedDownloadURL(fileKey string) (string, erro
 }
 
 // GetPresignedUploadURL mirrors getPresignedUploadUrl.
-func (s *LocalFileService) GetPresignedUploadURL(filename string) (FileResult, error) {
-	if filename == "" {
+func (s *LocalFileService) GetPresignedUploadURL(ctx context.Context, data filetypes.ProviderGetPresignedUploadUrlDTO) (FileResult, error) {
+	if data.Filename == "" {
 		return FileResult{}, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "No filename provided")
 	}
-	return FileResult{URL: "/admin/uploads", Key: filename}, nil
+	return FileResult{URL: "/admin/uploads", Key: data.Filename}, nil
 }
 
 // UploadDir is the public upload directory (served under /static).
 func (s *LocalFileService) UploadDir() string { return s.uploadDir }
 
-// UploadStream mirrors getUploadStream: the file is created at once and
+// UploadStream mirrors the result of getUploadStream.
+type UploadStream = filetypes.ProviderUploadStream
+
+// GetUploadStream mirrors getUploadStream: the file is created at once and
 // written through the returned writer; Close finishes it (the stream's
 // promise).
-type UploadStream struct {
-	File    *os.File
-	FileKey string
-	URL     string
-}
-
-// GetUploadStream mirrors getUploadStream.
-func (s *LocalFileService) GetUploadStream(filename, access string) (*UploadStream, error) {
-	if filename == "" {
+func (s *LocalFileService) GetUploadStream(ctx context.Context, data filetypes.ProviderUploadStreamDTO) (*UploadStream, error) {
+	if data.Filename == "" {
 		return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "No filename provided")
 	}
-	baseDir := s.baseDir(access)
-	key, dir := s.newKey(filename, access)
+	baseDir := s.baseDir(data.Access)
+	key, dir := s.newKey(data.Filename, data.Access)
 	if err := os.MkdirAll(filepath.Join(baseDir, dir), 0o755); err != nil {
 		return nil, err
 	}

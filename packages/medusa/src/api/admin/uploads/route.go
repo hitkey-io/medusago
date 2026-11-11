@@ -8,10 +8,10 @@ import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
+	filetypes "github.com/hitkey-io/medusago/packages/core/types/src/file"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/utils"
-	localfile "github.com/hitkey-io/medusago/packages/modules/providers/file-local/src/services"
 )
 
 // RetrieveUploadConfig mirrors retrieveUploadConfig.
@@ -47,9 +47,9 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	if len(req.Files) == 0 {
 		return common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "No files were uploaded")
 	}
-	files := make([]*localfile.UploadFile, len(req.Files))
+	files := make([]*filetypes.ProviderUploadFileDTO, len(req.Files))
 	for i, f := range req.Files {
-		files[i] = &localfile.UploadFile{Filename: f.OriginalName, MimeType: f.MimeType, Content: base64.StdEncoding.EncodeToString(f.Buffer), Access: "public"}
+		files[i] = &filetypes.ProviderUploadFileDTO{Filename: f.OriginalName, MimeType: f.MimeType, Content: base64.StdEncoding.EncodeToString(f.Buffer), Access: "public"}
 	}
 	result, err := workflows.UploadFilesWorkflow.Run(req.Ctx(), req.Scope, files)
 	if err != nil {

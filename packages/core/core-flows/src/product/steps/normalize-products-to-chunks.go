@@ -8,13 +8,13 @@ import (
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	filetypes "github.com/hitkey-io/medusago/packages/core/types/src/file"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/csv"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	utilsproduct "github.com/hitkey-io/medusago/packages/core/utils/src/product"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
-	localfile "github.com/hitkey-io/medusago/packages/modules/providers/file-local/src/services"
 )
 
 // ImportChunk mirrors Chunk ({ id, toCreate, toUpdate }).
@@ -39,7 +39,7 @@ type NormalizeCsvToChunksOutput struct {
 // ImportFileService is the part of the file module the import uses.
 type ImportFileService interface {
 	GetAsBuffer(ctx context.Context, id string) ([]byte, error)
-	CreateFiles(ctx context.Context, files []*localfile.UploadFile) ([]*dal.Record, error)
+	CreateFiles(ctx context.Context, files []*filetypes.ProviderUploadFileDTO) ([]*dal.Record, error)
 	DeleteFiles(ctx context.Context, ids []string) error
 }
 
@@ -79,7 +79,7 @@ func processChunk(ctx context.Context, files ImportFileService, fileKey string, 
 	if err != nil {
 		return ImportChunk{}, err
 	}
-	created, err := files.CreateFiles(ctx, []*localfile.UploadFile{{Filename: fileKey + ".json", Content: string(content), MimeType: "application/json"}})
+	created, err := files.CreateFiles(ctx, []*filetypes.ProviderUploadFileDTO{{Filename: fileKey + ".json", Content: string(content), MimeType: "application/json"}})
 	if err != nil {
 		return ImportChunk{}, err
 	}

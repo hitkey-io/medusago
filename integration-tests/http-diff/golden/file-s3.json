@@ -1,0 +1,564 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzgxNzgsImV4cCI6MTc5NDQ2NDU3OH0.-CfKjsFf-V3dbkvugElCdVmhT8-3405m93BZYyoqk8I"
+    }
+  },
+  "clear": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "requests": []
+    }
+  },
+  "upload": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "http-diff/hÃ©llo wÃ¶rld+(1)-01M74MC847BQE3WQGTYTQBV9XY.txt",
+          "url": "http://localhost:12451/medusa-test/http-diff/h%C3%83%C2%A9llo%20w%C3%83%C2%B6rld%2B(1)-01M74MC847BQE3WQGTYTQBV9XY.txt"
+        }
+      ]
+    }
+  },
+  "upload_json": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "http-diff/data-01M74MC8NW2TFRBD7AZAV9SNPG.json",
+          "url": "http://localhost:12451/medusa-test/http-diff/data-01M74MC8NW2TFRBD7AZAV9SNPG.json"
+        }
+      ]
+    }
+  },
+  "upload_requests": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "requests": [
+        {
+          "method": "PUT",
+          "path": "/medusa-test/http-diff/h%C3%83%C2%A9llo%20w%C3%83%C2%B6rld%2B%281%29-01M74MC847BQE3WQGTYTQBV9XY.txt",
+          "query": "x-id=PutObject",
+          "headers": {
+            "content-type": "text/plain",
+            "cache-control": "public, max-age=31536000",
+            "x-amz-acl": "public-read",
+            "x-amz-meta-original-filename": "h%C3%83%C2%A9llo%20w%C3%83%C2%B6rld%2B(1).txt",
+            "x-amz-checksum-crc32": "<crc32 of the body>",
+            "x-amz-sdk-checksum-algorithm": "CRC32",
+            "x-amz-content-sha256": "<sha256 of the body>"
+          },
+          "body": "hello ünïcode world"
+        },
+        {
+          "method": "PUT",
+          "path": "/medusa-test/http-diff/data-01M74MC8NW2TFRBD7AZAV9SNPG.json",
+          "query": "x-id=PutObject",
+          "headers": {
+            "content-type": "application/json",
+            "cache-control": "public, max-age=31536000",
+            "x-amz-acl": "public-read",
+            "x-amz-meta-original-filename": "data.json",
+            "x-amz-checksum-crc32": "<crc32 of the body>",
+            "x-amz-sdk-checksum-algorithm": "CRC32",
+            "x-amz-content-sha256": "<sha256 of the body>"
+          },
+          "body": {
+            "a": 1
+          }
+        }
+      ]
+    }
+  },
+  "public_file": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/plain",
+      "Vary": "Origin, Accept-Encoding"
+    },
+    "body": "hello ünïcode world"
+  },
+  "get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "file": {
+        "id": "http-diff/data-01M74MC8NW2TFRBD7AZAV9SNPG.json",
+        "url": "http://localhost:12451/medusa-test/http-diff/data-01M74MC8NW2TFRBD7AZAV9SNPG.json?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=medusatest%2F20261111%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261111T062259Z&X-Amz-Expires=3600&X-Amz-Signature=e7947c92b4d66dc317b53959aeae611c753506c5ff5f4fb695328e00e771b188&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      }
+    }
+  },
+  "get_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "file": {
+        "id": "missing.txt",
+        "url": "http://localhost:12451/medusa-test/missing.txt?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=medusatest%2F20261111%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261111T062259Z&X-Amz-Expires=3600&X-Amz-Signature=c5e37ca2943866149fe26c14417c8df558335f4050f77362054b92a0221066c8&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+      }
+    }
+  },
+  "presigned_download": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "Vary": "Origin, Accept-Encoding"
+    },
+    "body": {
+      "a": 1
+    }
+  },
+  "presigned_public": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "url": "http://localhost:12451/medusa-test/http-diff/01M74MC8PKWGR1EXV9R2EV7YG8.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=medusatest%2F20261111%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261111T062259Z&X-Amz-Expires=3600&X-Amz-Signature=003afc48e444a9688c7994f1929090a743f7fa1839f3e958cc65c711bd847b05&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+      "filename": "http-diff/01M74MC8PKWGR1EXV9R2EV7YG8.png",
+      "mime_type": "image/png",
+      "size": 10,
+      "extension": "png",
+      "originalname": "photo.png"
+    }
+  },
+  "presigned_private": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "url": "http://localhost:12451/medusa-test/http-diff/01M74MC8PPM30Q42W5K7E2YCH3.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=medusatest%2F20261111%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261111T062259Z&X-Amz-Expires=3600&X-Amz-Signature=45657dd45d31928d8488b00d5e9bd0e699b2a2ca0e1dd06b508c0950dcc7e665&X-Amz-SignedHeaders=host&x-amz-acl=private&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+      "filename": "http-diff/01M74MC8PPM30Q42W5K7E2YCH3.pdf",
+      "mime_type": "application/pdf;charset=binary",
+      "size": 10,
+      "extension": "pdf",
+      "originalname": "doc.pdf"
+    }
+  },
+  "presigned_put": {
+    "status": 200,
+    "headers": {
+      "Vary": "Origin, Accept-Encoding"
+    },
+    "body": null
+  },
+  "presigned_requests": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/medusa-test/http-diff/data-01M74MC8NW2TFRBD7AZAV9SNPG.json",
+          "query": "X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=medusatest%2F20261111%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261111T062259Z&X-Amz-Expires=3600&X-Amz-Signature=e7947c92b4d66dc317b53959aeae611c753506c5ff5f4fb695328e00e771b188&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+          "headers": {}
+        },
+        {
+          "method": "PUT",
+          "path": "/medusa-test/http-diff/01M74MC8PKWGR1EXV9R2EV7YG8.png",
+          "query": "X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=medusatest%2F20261111%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261111T062259Z&X-Amz-Expires=3600&X-Amz-Signature=003afc48e444a9688c7994f1929090a743f7fa1839f3e958cc65c711bd847b05&X-Amz-SignedHeaders=host&x-amz-acl=public-read&x-amz-checksum-crc32=AAAAAA%3D%3D&x-amz-sdk-checksum-algorithm=CRC32&x-id=PutObject",
+          "headers": {}
+        }
+      ]
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "http-diff/data-01M74MC8NW2TFRBD7AZAV9SNPG.json",
+      "object": "file",
+      "deleted": true
+    }
+  },
+  "delete_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "missing.txt",
+      "object": "file",
+      "deleted": true
+    }
+  },
+  "delete_requests": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "requests": [
+        {
+          "method": "POST",
+          "path": "/medusa-test/",
+          "query": "delete=",
+          "headers": {
+            "content-type": "application/xml",
+            "x-amz-checksum-crc32": "<crc32 of the body>",
+            "x-amz-sdk-checksum-algorithm": "CRC32",
+            "x-amz-content-sha256": "<sha256 of the body>"
+          },
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Delete xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Object><Key>http-diff/data-01M74MC8NW2TFRBD7AZAV9SNPG.json</Key></Object><Quiet>true</Quiet></Delete>"
+        },
+        {
+          "method": "POST",
+          "path": "/medusa-test/",
+          "query": "delete=",
+          "headers": {
+            "content-type": "application/xml",
+            "x-amz-checksum-crc32": "<crc32 of the body>",
+            "x-amz-sdk-checksum-algorithm": "CRC32",
+            "x-amz-content-sha256": "<sha256 of the body>"
+          },
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Delete xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Object><Key>missing.txt</Key></Object><Quiet>true</Quiet></Delete>"
+        }
+      ]
+    }
+  },
+  "export": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "transaction_id": "auto-01M74MC8R356AYKW3QQ3A3MGVF"
+    }
+  },
+  "export_notification": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "notifications": [
+        {
+          "id": "noti_01M74MC8YH5JC6PZANCDXT7KCV",
+          "to": "",
+          "channel": "feed",
+          "template": "admin-ui",
+          "data": {
+            "file": {
+              "url": "http://localhost:12451/medusa-test/http-diff/1794378179368-product-exports-01M74MC8S8EBHH7ZRM0ZH1ZPK0.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=medusatest%2F20261111%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261111T062259Z&X-Amz-Expires=3600&X-Amz-Signature=71606198661c952e312e6d471dba573c12b3232fa7daa5ca1705fecfa7ecbe6d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+              "filename": "1794378179368-product-exports.csv",
+              "mimeType": "text/csv"
+            },
+            "title": "Product export",
+            "description": "Product export completed successfully!"
+          },
+          "provider_id": "local"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "export_requests": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "requests": [
+        {
+          "method": "PUT",
+          "path": "/medusa-test/http-diff/1794378179368-product-exports-01M74MC8S8EBHH7ZRM0ZH1ZPK0.csv",
+          "query": "x-id=PutObject",
+          "headers": {
+            "content-type": "text/csv",
+            "cache-control": "public, max-age=31536000",
+            "x-amz-acl": "private",
+            "x-amz-meta-original-filename": "1794378179368-product-exports.csv",
+            "x-amz-checksum-crc32": "<crc32 of the body>",
+            "x-amz-sdk-checksum-algorithm": "CRC32",
+            "x-amz-content-sha256": "<sha256 of the body>"
+          },
+          "body": "Product Id,Product Handle,Product Title,Product Subtitle,Product Status,Product External Id,Product Description,Product Is Giftcard,Product Discountable,Product Thumbnail,Product Collection Id,Product Type Id,Product Weight,Product Length,Product Height,Product Width,Product Hs Code,Product Origin Country,Product Mid Code,Product Material,Product Created At,Product Updated At,Product Deleted At,Variant Id,Variant Title,Variant Sku,Variant Barcode,Variant Ean,Variant Upc,Variant Allow Backorder,Variant Manage Inventory,Variant Hs Code,Variant Origin Country,Variant Mid Code,Variant Material,Variant Weight,Variant Length,Variant Height,Variant Width,Variant Metadata,Variant Variant Rank,Variant Thumbnail,Variant Product Id,Variant Created At,Variant Updated At,Variant Deleted At,Variant Price USD,Variant Option 1 Id,Variant Option 1 Name,Variant Option 1 Value,Product Image 1,Product Image 2,Product Tag 1,Product Tag 2,Product Sales Channel 1,Product Sales Channel 2,Variant Price EUR,Variant Price Europe [EUR],Variant Option 2 Id,Variant Option 2 Name,Variant Option 2 Value,Variant Image 1,Variant Image 2\nprod_01M70XZZZ49MK9W0NV0YSF74CE,hoodie,Draft Hoodie,,draft,,,false,false,,,,,,,,,,,,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),,variant_01M70Y000G904MD1KJ0SDSRS44,Default,,,,,false,true,,,,,,,,,,0,,prod_01M70XZZZ49MK9W0NV0YSF74CE,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),,50,opt_01M70XZZZ4ZNV4JQPKY3CQ1DSC,Default option,Default option value,,,,,,,,,,,,,\nprod_01M70XZZZ4FBS8GYD7B7RQYZPR,t-shirt,Medusa T-Shirt,,published,,A comfortable cotton t-shirt,false,true,https://example.com/shirt-front.png,pcol_01M70XZZYG2EDQEDPZXZAWBP3Q,ptyp_01M70XZZYC1YA9MY5K0S9BK6T7,400,,,,,,,,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),,variant_01M70Y000GD1GFQ2A5BCFM4S8Q,S / Black,SHIRT-S-BLACK,,,,false,true,,,,,,,,,,0,,prod_01M70XZZZ4FBS8GYD7B7RQYZPR,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),,15,opt_01M70XZZZ41VTMWENQ2694WEQY,Size,S,https://example.com/shirt-front.png,https://example.com/shirt-back.png,cotton,sale,sc_01M70XZZVJETKWXXT8RHV5DWRZ,sc_01M70XZZXA6H8R3VPGTTWJMHK3,10,9.5,opt_01M70XZZZ4S5Y9QDKWGS85RWED,Color,Black,https://example.com/shirt-front.png,https://example.com/shirt-back.png\nprod_01M70XZZZ4FBS8GYD7B7RQYZPR,t-shirt,Medusa T-Shirt,,published,,A comfortable cotton t-shirt,false,true,https://example.com/shirt-front.png,pcol_01M70XZZYG2EDQEDPZXZAWBP3Q,ptyp_01M70XZZYC1YA9MY5K0S9BK6T7,400,,,,,,,,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),,variant_01M70Y000GR2HDG6AHJXMDD8MS,M / White,SHIRT-M-WHITE,,,,false,true,,,,,,,,,,0,,prod_01M70XZZZ4FBS8GYD7B7RQYZPR,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),,17,opt_01M70XZZZ41VTMWENQ2694WEQY,Size,M,https://example.com/shirt-front.png,https://example.com/shirt-back.png,cotton,sale,sc_01M70XZZVJETKWXXT8RHV5DWRZ,sc_01M70XZZXA6H8R3VPGTTWJMHK3,12,,opt_01M70XZZZ4S5Y9QDKWGS85RWED,Color,White,https://example.com/shirt-front.png,https://example.com/shirt-back.png\nprod_01M70XZZZ4QCEP179PD336GCSV,sweatpants,Medusa Sweatpants,,published,,,false,true,,pcol_01M70XZZYG2EDQEDPZXZAWBP3Q,,,,,,,,,,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),,variant_01M70Y000GM1QZKX7G9P8G7G1S,L,PANTS-L,,,,true,true,,,,,,,,,,0,,prod_01M70XZZZ4QCEP179PD336GCSV,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),,,opt_01M70XZZZ4P213SS2CKR7R5HC3,Size,L,,,,,sc_01M70XZZVJETKWXXT8RHV5DWRZ,,32.99,,,,,,\nprod_01M70XZZZ4QCEP179PD336GCSV,sweatpants,Medusa Sweatpants,,published,,,false,true,,pcol_01M70XZZYG2EDQEDPZXZAWBP3Q,,,,,,,,,,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),,variant_01M70Y000GVS02WWBRV8TTXVZ4,M,PANTS-M,,,,false,false,,,,,,,,,,0,,prod_01M70XZZZ4QCEP179PD336GCSV,Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),Tue Nov 10 2026 00:54:05 GMT+0500 (Таджикистан),,,opt_01M70XZZZ4P213SS2CKR7R5HC3,Size,M,,,,,sc_01M70XZZVJETKWXXT8RHV5DWRZ,,30,,,,,,"
+        }
+      ]
+    }
+  },
+  "import_upload": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "http-diff/import-01M74MC903Y1F2PKWYP272K3MM.csv",
+          "url": "http://localhost:12451/medusa-test/http-diff/import-01M74MC903Y1F2PKWYP272K3MM.csv"
+        }
+      ]
+    }
+  },
+  "import": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "transaction_id": "auto-01M74MC90E03A79FR2S87E2MSM",
+      "summary": {
+        "toCreate": 1,
+        "toUpdate": 0
+      }
+    }
+  },
+  "import_missing": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "code": "unknown_error",
+      "type": "unknown_error",
+      "message": "An unknown error occurred."
+    }
+  },
+  "confirm": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "import_notification": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "notifications": [
+        {
+          "id": "noti_01M74MC8YH5JC6PZANCDXT7KCV",
+          "to": "",
+          "channel": "feed",
+          "template": "admin-ui",
+          "data": {
+            "file": {
+              "url": "http://localhost:12451/medusa-test/http-diff/1794378179368-product-exports-01M74MC8S8EBHH7ZRM0ZH1ZPK0.csv?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=medusatest%2F20261111%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261111T062259Z&X-Amz-Expires=3600&X-Amz-Signature=71606198661c952e312e6d471dba573c12b3232fa7daa5ca1705fecfa7ecbe6d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+              "filename": "1794378179368-product-exports.csv",
+              "mimeType": "text/csv"
+            },
+            "title": "Product export",
+            "description": "Product export completed successfully!"
+          }
+        },
+        {
+          "id": "noti_01M74MC9ENS2RAE7P07XDEFXGG",
+          "to": "",
+          "channel": "feed",
+          "template": "admin-ui",
+          "data": {
+            "title": "Product import",
+            "description": "Product import of file import.csv completed successfully!"
+          }
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "cap": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M74MC99H5FQ5H99QCA6GDRVX",
+          "title": "S3 Cap",
+          "status": "published",
+          "variants": [
+            {
+              "sku": "S3-CAP-1",
+              "id": "variant_01M74MC9C81D13PS9PGGZYV30D"
+            }
+          ]
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "import_requests": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "requests": [
+        {
+          "method": "PUT",
+          "path": "/medusa-test/http-diff/import-01M74MC903Y1F2PKWYP272K3MM.csv",
+          "query": "x-id=PutObject",
+          "headers": {
+            "content-type": "text/csv",
+            "cache-control": "public, max-age=31536000",
+            "x-amz-acl": "public-read",
+            "x-amz-meta-original-filename": "import.csv",
+            "x-amz-checksum-crc32": "<crc32 of the body>",
+            "x-amz-sdk-checksum-algorithm": "CRC32",
+            "x-amz-content-sha256": "<sha256 of the body>"
+          },
+          "body": "Product Handle,Product Title,Product Status,Variant Title,Variant Sku,Variant Manage Inventory,Variant Price EUR,Variant Option 1 Name,Variant Option 1 Value\ns3-cap,S3 Cap,published,One Size,S3-CAP-1,false,15,Size,One\n"
+        },
+        {
+          "method": "GET",
+          "path": "/medusa-test/http-diff/import-01M74MC903Y1F2PKWYP272K3MM.csv",
+          "query": "x-id=GetObject",
+          "headers": {
+            "x-amz-checksum-mode": "ENABLED",
+            "x-amz-content-sha256": "<sha256 of the body>"
+          }
+        },
+        {
+          "method": "PUT",
+          "path": "/medusa-test/http-diff/http-diff/import-01M74MC903Y1F2PKWYP272K3MM.csv-1-01M74MC91EH14BB1SJ0QT9ZG9T.json",
+          "query": "x-id=PutObject",
+          "headers": {
+            "content-type": "application/json",
+            "cache-control": "public, max-age=31536000",
+            "x-amz-acl": "private",
+            "x-amz-meta-original-filename": "http-diff%2Fimport-01M74MC903Y1F2PKWYP272K3MM.csv-1.json",
+            "x-amz-checksum-crc32": "<crc32 of the body>",
+            "x-amz-sdk-checksum-algorithm": "CRC32",
+            "x-amz-content-sha256": "<sha256 of the body>"
+          },
+          "body": {
+            "create": [
+              {
+                "title": "S3 Cap",
+                "is_giftcard": false,
+                "discountable": true,
+                "handle": "s3-cap",
+                "status": "published",
+                "options": [
+                  {
+                    "title": "Size",
+                    "values": [
+                      "One"
+                    ]
+                  }
+                ],
+                "variants": [
+                  {
+                    "title": "One Size",
+                    "sku": "S3-CAP-1",
+                    "allow_backorder": false,
+                    "manage_inventory": false,
+                    "prices": [
+                      {
+                        "currency_code": "eur",
+                        "amount": 15
+                      }
+                    ],
+                    "options": {
+                      "Size": "One"
+                    }
+                  }
+                ]
+              }
+            ],
+            "update": []
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/medusa-test/http-diff/missing.csv",
+          "query": "x-id=GetObject",
+          "headers": {
+            "x-amz-checksum-mode": "ENABLED",
+            "x-amz-content-sha256": "<sha256 of the body>"
+          }
+        },
+        {
+          "method": "GET",
+          "path": "/medusa-test/http-diff/http-diff/import-01M74MC903Y1F2PKWYP272K3MM.csv-1-01M74MC91EH14BB1SJ0QT9ZG9T.json",
+          "query": "x-id=GetObject",
+          "headers": {
+            "x-amz-checksum-mode": "ENABLED",
+            "x-amz-content-sha256": "<sha256 of the body>"
+          }
+        },
+        {
+          "method": "POST",
+          "path": "/medusa-test/",
+          "query": "delete=",
+          "headers": {
+            "content-type": "application/xml",
+            "x-amz-checksum-crc32": "<crc32 of the body>",
+            "x-amz-sdk-checksum-algorithm": "CRC32",
+            "x-amz-content-sha256": "<sha256 of the body>"
+          },
+          "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Delete xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Object><Key>http-diff/http-diff/import-01M74MC903Y1F2PKWYP272K3MM.csv-1-01M74MC91EH14BB1SJ0QT9ZG9T.json</Key></Object><Quiet>true</Quiet></Delete>"
+        }
+      ]
+    }
+  }
+}
