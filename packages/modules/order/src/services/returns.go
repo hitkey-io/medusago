@@ -132,6 +132,10 @@ func (s *OrderModuleService) CancelReturn(ctx context.Context, data *dal.Record)
 		if err != nil {
 			return err
 		}
+		// the order was referenced by the loaded entity before
+		// createOrderChange_ loaded it: the new change does not mark it
+		// changed
+		dal.Untouch(t.DB(), "Order")
 		u := dal.NewRecord()
 		u.Set("canceled_at", dal.Now())
 		u.Set("status", "canceled")
@@ -194,6 +198,10 @@ func (s *OrderModuleService) cancelRelated(ctx context.Context, data *dal.Record
 		if err != nil {
 			return err
 		}
+		// the order was referenced by the loaded entity before
+		// createOrderChange_ loaded it: the new change does not mark it
+		// changed
+		dal.Untouch(t.DB(), "Order")
 		u := dal.NewRecord()
 		u.Set("canceled_at", dal.Now())
 		selector := dal.NewRecord()

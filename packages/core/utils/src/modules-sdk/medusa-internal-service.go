@@ -191,6 +191,10 @@ func (s *InternalService) Update(ctx context.Context, input any) (any, error) {
 		keyed := dal.NewRecord()
 		var or []any
 		var keys []string
+		// upstream lists the entities of every selector before it updates
+		// them: the updates are not in the unit of work while loading
+		release := dal.HoldPending(repo.DB)
+		defer release()
 		for _, item := range items {
 			rec, _ := item.(*dal.Record)
 			if rec == nil {

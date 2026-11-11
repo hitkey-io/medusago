@@ -760,7 +760,10 @@ var MarkOrderFulfillmentAsDeliveredWorkflow = composer.CreateWorkflow("mark-orde
 		}
 		ev := dal.NewRecord()
 		ev.Set("id", g(delivered, "id"))
-		ev.Set("no_notification", in.NoNotification)
+		// an undefined no_notification is left out of the event data
+		if in.NoNotification != nil {
+			ev.Set("no_notification", in.NoNotification)
+		}
 		_, err = commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "delivery.created", Data: ev})
 		return nil, err
 	})

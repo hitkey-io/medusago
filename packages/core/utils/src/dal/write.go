@@ -983,6 +983,11 @@ func (r *Repository) Restore(ctx context.Context, where *Record) (*CascadeResult
 	return r.updateDeletedAt(ctx, where, true, time.Time{})
 }
 
+type softDeletedInst struct {
+	inst   *instance
+	before any
+}
+
 func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDeleted bool, value time.Time) (*CascadeResult, error) {
 	roots, idm, err := r.find(ctx, FindOptions{Where: where, WithDeleted: withDeleted})
 	if err != nil {
@@ -999,11 +1004,7 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 		insts  []*instance
 	}
 	level := []pending{{r.Entity, roots}}
-	type softDeleted struct {
-		inst   *instance
-		before any
-	}
-	var changedInsts []softDeleted
+	var changedInsts []softDeletedInst
 	touched := map[*dml.Entity][]*instance{}
 	var order []*dml.Entity
 	for len(level) > 0 {
@@ -1021,7 +1022,7 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 				result.add(group.entity.Meta.ClassName, inst.data)
 				touched[group.entity] = append(touched[group.entity], inst)
 				if !sameValue(before, deletedAt) {
-					changedInsts = append(changedInsts, softDeleted{inst, before})
+					changedInsts = append(changedInsts, softDeletedInst{inst, before})
 				}
 			}
 			for _, relation := range r.softRemoveCascades(group.entity) {
@@ -1058,10 +1059,66 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 			return nil, err
 		}
 	}
-	for _, c := range changedInsts {
-		r.recordUpdate(c.inst.entity, c.inst.data, true, c.before, c.inst.data["deleted_at"])
-	}
+	r.recordSoftDeletions(roots, changedInsts)
 	return result, nil
+}
+
+// recordSoftDeletions records the soft deletions (restorations) like
+// mikroOrmUpdateDeletedAtRecursively: the roots are processed one after the
+// other; a root with soft-remove cascades is reloaded by a query of its own
+// class, which auto flushes the unit of work (the root and whatever else is
+// pending) before its descendants are marked. The descendants are recorded
+// level by level (the cascades run concurrently upstream).
+func (r *Repository) recordSoftDeletions(roots []*instance, changed []softDeletedInst) {
+	before := map[*instance]any{}
+	for _, c := range changed {
+		before[c.inst] = c.before
+	}
+	record := func(inst *instance) {
+		if b, ok := before[inst]; ok {
+			r.recordUpdate(inst.entity, inst.data, true, b, inst.data["deleted_at"])
+			delete(before, inst)
+		}
+	}
+	for _, root := range roots {
+		if !hasDeletedAt(root.entity) {
+			continue
+		}
+		record(root)
+		if len(r.softRemoveCascades(root.entity)) == 0 {
+			continue
+		}
+		FlushEvents(r.DB)
+		subtree := map[*instance]bool{}
+		var collect func(inst *instance)
+		collect = func(inst *instance) {
+			for _, relation := range r.softRemoveCascades(inst.entity) {
+				var children []*instance
+				switch v := inst.relations[relation].(type) {
+				case *instance:
+					children = []*instance{v}
+				case []*instance:
+					children = v
+				}
+				for _, child := range children {
+					if !subtree[child] {
+						subtree[child] = true
+						collect(child)
+					}
+				}
+			}
+		}
+		collect(root)
+		for _, c := range changed {
+			if subtree[c.inst] {
+				record(c.inst)
+			}
+		}
+	}
+	// whatever no root reaches, in the order it was marked
+	for _, c := range changed {
+		record(c.inst)
+	}
 }
 
 // ReplaceManyToMany mirrors assigning a new array to an owning-side m:n

@@ -174,9 +174,19 @@ var CancelOrderWorkflow = composer.CreateWorkflow("cancel-order",
 		}
 		var refundedPayments []*dal.Record
 		var deletedReservationIDs []any
+		// parallelize(refundCapturedPayments, deleteReservations,
+		// cancelPayment, emitEvent): the branches run in the order upstream
+		// completes them (the event step, the payment cancellation, the
+		// reservations, then the refund workflow)
 		err = composer.Parallelize(
 			func() error {
 				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.canceled", Data: idEvent(g(order, "id"))})
+				return err
+			},
+			func() error { _, err := paymentsteps.CancelPaymentStep.Run(e, uncaptured); return err },
+			func() error {
+				var err error
+				deletedReservationIDs, err = reservationsteps.DeleteReservationsByLineItemsStep.Run(e, lineItemIDs)
 				return err
 			},
 			func() error {
@@ -188,12 +198,6 @@ var CancelOrderWorkflow = composer.CreateWorkflow("cancel-order",
 				}{OrderID: g(order, "id"), CreatedBy: in.CanceledBy})
 				return err
 			},
-			func() error {
-				var err error
-				deletedReservationIDs, err = reservationsteps.DeleteReservationsByLineItemsStep.Run(e, lineItemIDs)
-				return err
-			},
-			func() error { _, err := paymentsteps.CancelPaymentStep.Run(e, uncaptured); return err },
 		)
 		if err != nil {
 			return nil, err

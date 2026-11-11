@@ -66,6 +66,107 @@ type Recorder struct {
 	// persisted is the order entity classes were persisted in the unit of
 	// work when a service inserts them in another order (see PersistOrder).
 	persisted []string
+	// sink receives what an @EmitEvents boundary inside the transaction
+	// emits (see EmitPoint).
+	sink EventSink
+	// touched lists the classes with a loaded entity modified in memory
+	// (see Touch).
+	touched map[string]bool
+	// while holding, the mutations recorded from index hidden on are not
+	// persisted in the unit of work yet (see HoldPending).
+	hidden  int
+	holding bool
+	// rawSynced lists the entities whose raw big number columns a partial
+	// selection already marked changed (see markPartialBigNumbers).
+	rawSynced map[string]bool
+	// discard: the transaction's mutations reach no aggregator (see
+	// DiscardEvents).
+	discard bool
+}
+
+// DiscardEvents mirrors a transaction whose entity subscriber was
+// registered by a write without a message aggregator in its context (a
+// module method without @EmitEvents writing first): the subscriber keeps
+// that context, so none of the transaction's mutation events is saved.
+func DiscardEvents(db Querier) {
+	if rec := recorderOf(db); rec != nil {
+		rec.mu.Lock()
+		rec.discard = true
+		rec.pending = nil
+		rec.ready = nil
+		rec.mu.Unlock()
+	}
+}
+
+// HoldPending mirrors an internal service method that loads every entity
+// it updates before it persists the changes (update with selectors): the
+// mutations recorded until release are invisible to the flushes the loads
+// trigger. release makes them pending.
+func HoldPending(db Querier) (release func()) {
+	rec := recorderOf(db)
+	if rec == nil {
+		return func() {}
+	}
+	rec.mu.Lock()
+	defer rec.mu.Unlock()
+	if rec.holding {
+		return func() {}
+	}
+	rec.holding = true
+	rec.hidden = len(rec.pending)
+	return func() {
+		rec.mu.Lock()
+		rec.holding = false
+		rec.mu.Unlock()
+	}
+}
+
+// visiblePending returns the mutations a flush persists now.
+func (r *Recorder) visiblePending() []mutation {
+	if r.holding && r.hidden <= len(r.pending) {
+		return r.pending[:r.hidden]
+	}
+	return r.pending
+}
+
+// Touched reports whether Touch marked the class and no query on it has
+// flushed since.
+func Touched(db Querier, className string) bool {
+	rec := recorderOf(db)
+	if rec == nil {
+		return false
+	}
+	rec.mu.Lock()
+	defer rec.mu.Unlock()
+	return rec.touched[className]
+}
+
+// Untouch clears what Touch marked.
+func Untouch(db Querier, classNames ...string) {
+	if rec := recorderOf(db); rec != nil {
+		rec.mu.Lock()
+		for _, c := range classNames {
+			delete(rec.touched, c)
+		}
+		rec.mu.Unlock()
+	}
+}
+
+// Touch marks an entity class of the transaction db belongs to as touched:
+// upstream modified a loaded entity of the class in memory (e.g. a new
+// child added to one of its collections), so the next query on the class
+// auto flushes the unit of work (UnitOfWork.shouldAutoFlush).
+func Touch(db Querier, classNames ...string) {
+	if rec := recorderOf(db); rec != nil {
+		rec.mu.Lock()
+		if rec.touched == nil {
+			rec.touched = map[string]bool{}
+		}
+		for _, c := range classNames {
+			rec.touched[c] = true
+		}
+		rec.mu.Unlock()
+	}
 }
 
 // PersistOrder records the order in which upstream persists entity classes
@@ -213,20 +314,57 @@ func Transaction(ctx context.Context, db Querier, schema *Schema, fn func(tx Que
 		return fn(db)
 	}
 	rec := &Recorder{}
+	if schema != nil {
+		rec.sink = schema.Sink
+	}
+	mode := EventsModeOf(ctx)
 	err := pgx.BeginFunc(ctx, starter, func(tx pgx.Tx) error {
-		return fn(&EventTx{Tx: tx, rec: rec})
+		etx := &EventTx{Tx: tx, rec: rec}
+		if err := fn(etx); err != nil {
+			return err
+		}
+		if mode == DeferEventsMode {
+			// @EmitEvents inside @InjectTransactionManager: the method
+			// emits what earlier (auto) flushes saved before the
+			// transaction commits
+			EmitPoint(ctx, etx)
+		}
+		return nil
 	})
 	if err != nil {
 		return err
 	}
 	events := rec.Flush()
-	if schema == nil || schema.Sink == nil || EventsDisabled(ctx) {
+	if schema == nil || schema.Sink == nil || EventsDisabled(ctx) || mode == DeferEventsMode {
+		// the commit flush of a deferred call saves into an aggregator
+		// that was already emitted: those events are lost
 		return nil
 	}
 	// an @EmitEvents call ends: it also emits what earlier calls left in
 	// a shared aggregator
 	schema.Sink.EmitModuleEvents(ctx, events)
 	return nil
+}
+
+// EmitPoint mirrors an @EmitEvents boundary reached while the transaction
+// db belongs to is still open (a nested @EmitEvents method or a generated
+// MedusaService method called from inside a transaction): what the flushes
+// so far saved into the aggregator is emitted now; the pending mutations
+// stay pending.
+func EmitPoint(ctx context.Context, db Querier) {
+	rec := recorderOf(db)
+	if rec == nil || EventsDisabled(ctx) {
+		return
+	}
+	rec.mu.Lock()
+	events := rec.ready
+	rec.ready = nil
+	sink := rec.sink
+	rec.mu.Unlock()
+	if sink == nil || len(events) == 0 {
+		return
+	}
+	sink.EmitModuleEvents(WithEmit(ctx), events)
 }
 
 // RecordEvent saves an explicitly built event (moduleEventBuilderFactory)
@@ -277,7 +415,9 @@ func (r *Repository) recordMutation(change int, action string, e *dml.Entity, da
 		id = data["id"]
 	}
 	rec.mu.Lock()
-	rec.pending = append(rec.pending, mutation{change: change, action: action, entity: e, source: r.Schema.Source, id: id})
+	if !rec.discard {
+		rec.pending = append(rec.pending, mutation{change: change, action: action, entity: e, source: r.Schema.Source, id: id})
+	}
 	rec.mu.Unlock()
 }
 
@@ -305,7 +445,12 @@ func (r *Repository) autoFlush(e *dml.Entity) {
 	}
 	rec.mu.Lock()
 	defer rec.mu.Unlock()
-	for _, m := range rec.pending {
+	if rec.touched[e.Meta.ClassName] {
+		delete(rec.touched, e.Meta.ClassName)
+		rec.flushLocked()
+		return
+	}
+	for _, m := range rec.visiblePending() {
 		if m.entity.Meta.ClassName == e.Meta.ClassName {
 			rec.flushLocked()
 			return
@@ -317,17 +462,28 @@ func (r *Repository) autoFlush(e *dml.Entity) {
 // (creates and updates in commit order, deletes in reverse commit order)
 // and turns them into events.
 func (r *Recorder) flushLocked() {
-	if len(r.pending) == 0 {
+	visible := r.visiblePending()
+	if len(visible) == 0 {
 		return
 	}
-	order := commitOrder(r.pending, r.persisted)
+	var held []mutation
+	if len(visible) < len(r.pending) {
+		held = append(held, r.pending[len(visible):]...)
+	}
+	r.flushMutations(visible)
+	r.pending = held
+	r.hidden = 0
+}
+
+func (r *Recorder) flushMutations(pending []mutation) {
+	order := commitOrder(pending, r.persisted)
 	emit := func(change int, reverse bool) {
 		for i := range order {
 			c := order[i]
 			if reverse {
 				c = order[len(order)-1-i]
 			}
-			for _, m := range r.pending {
+			for _, m := range pending {
 				if m.change == change && m.entity.Meta.ClassName == c {
 					r.ready = append(r.ready, mutationEvent(m))
 				}
@@ -337,7 +493,6 @@ func (r *Recorder) flushLocked() {
 	emit(changeCreate, false)
 	emit(changeUpdate, false)
 	emit(changeDelete, true)
-	r.pending = nil
 	r.persisted = nil
 }
 
@@ -500,7 +655,9 @@ func (r *Repository) recordDispatched(action string, e *dml.Entity, id any) {
 		return
 	}
 	rec.mu.Lock()
-	rec.ready = append(rec.ready, mutationEvent(mutation{action: action, entity: e, source: r.Schema.Source, id: id}))
+	if !rec.discard {
+		rec.ready = append(rec.ready, mutationEvent(mutation{action: action, entity: e, source: r.Schema.Source, id: id}))
+	}
 	rec.mu.Unlock()
 }
 

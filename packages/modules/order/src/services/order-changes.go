@@ -26,6 +26,10 @@ func asRecord(v any) *dal.Record {
 	return r
 }
 
+// orderLoadedMarker marks a transaction where createOrderChange_ loaded the
+// orders (dal.Touch with a name no entity class has).
+const orderLoadedMarker = "Order@loaded"
+
 // createOrderChange mirrors createOrderChange_.
 func (s *OrderModuleService) createOrderChange(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
 	var orderIDs []any
@@ -84,7 +88,21 @@ func (s *OrderModuleService) createOrderChange(ctx context.Context, data []*dal.
 		}
 		input = append(input, c)
 	}
-	return s.Internal("OrderChange").Create(ctx, input)
+	created, err := s.Internal("OrderChange").Create(ctx, input)
+	if err == nil {
+		// persisting the changes cascades to their order (return, claim,
+		// exchange) references: the next query on these classes in this
+		// transaction auto flushes
+		dal.Touch(s.DB(), "Order", orderLoadedMarker)
+		for _, c := range input {
+			for k, class := range map[string]string{"return_id": "Return", "claim_id": "OrderClaim", "exchange_id": "OrderExchange"} {
+				if get(c, k) != nil {
+					dal.Touch(s.DB(), class)
+				}
+			}
+		}
+	}
+	return created, err
 }
 
 func versionOf(v any) int {
@@ -298,13 +316,20 @@ func (s *OrderModuleService) applyOrderChanges(ctx context.Context, changeAction
 	}
 	f := dal.NewRecord()
 	f.Set("id", dedupeAny(orderIDs))
-	orders, _, err := s.listOrders(dal.WithSharedIdentityMap(ctx), f, utilsmodulessdk.FindConfig{
+	// an order change created in this transaction touched the orders: the
+	// orders query flushes. The orders loaded earlier in the transaction
+	// (by createOrderChange_) are not marked changed by formatOrder, so the
+	// queries of the promiseAll below do not flush.
+	orderFlushed := dal.Touched(s.DB(), orderLoadedMarker)
+	orders, summaryUpdates, err := s.listOrdersInTransaction(dal.WithSharedIdentityMap(ctx), f, utilsmodulessdk.FindConfig{
 		Select:    []string{"id", "version", "items.detail", "summary", "total", "email"},
 		Relations: []string{"transactions", "credit_lines"},
-	}, false)
+	})
 	if err != nil {
 		return nil, err
 	}
+	// listOrders_ calls the generated listOrders (@EmitEvents)
+	dal.EmitPoint(ctx, s.DB())
 	res, err := utils.ApplyChangesToOrder(orders, actionsMap, utils.ProcessOptions{AddActionReferenceToObject: true},
 		func(order *dal.Record, items, sms, ladj, sadj []*dal.Record) error {
 			return s.includeTaxLinesAndAdjustmentsToPreview(ctx, order, items, sms, ladj, sadj)
@@ -312,44 +337,61 @@ func (s *OrderModuleService) applyOrderChanges(ctx context.Context, changeAction
 	if err != nil {
 		return nil, err
 	}
+	// promiseAll([order update, actions update, upserts, creates]): the
+	// upserts and creates persist their entities while the order and the
+	// actions are still being loaded; the order query auto flushes them
+	// (the orders were modified in memory by applyChangesToOrder). The
+	// actions update loads every action with its own query, each one auto
+	// flushing: the order update, persisted once its query returned, is
+	// flushed by the third one; the actions updates wait for the next
+	// flush.
 	out := &OrderChangeReturn{}
-	if len(res.OrderToUpdate) > 0 {
-		if _, err := s.Internal("Order").Update(ctx, toAny(res.OrderToUpdate)); err != nil {
+	if err := s.applyOrderChangesUpserts(ctx, res, out); err != nil {
+		return nil, err
+	}
+	if len(summaryUpdates) > 0 {
+		// the loaded summaries whose totals formatOrder changed (compared
+		// with the stored rows, not the decorated in-memory ones); upstream
+		// changed the entities in memory, no query flushes
+		if _, err := s.Internal("OrderSummary").Update(dal.WithoutAutoFlush(dal.WithFreshIdentityMap(ctx)), toAny(summaryUpdates)); err != nil {
 			return nil, err
 		}
 	}
-	if len(usedActions) > 0 {
-		if _, err := s.Internal("OrderChangeAction").Update(ctx, usedActions); err != nil {
+	updateOrders := func() error {
+		if len(res.OrderToUpdate) == 0 {
+			return nil
+		}
+		_, err := s.Internal("Order").Update(ctx, toAny(res.OrderToUpdate))
+		return err
+	}
+	updateActions := func() error {
+		if len(usedActions) == 0 {
+			return nil
+		}
+		_, err := s.Internal("OrderChangeAction").Update(ctx, usedActions)
+		return err
+	}
+	if !orderFlushed && (len(res.OrderToUpdate) > 0 || len(usedActions) > 0) {
+		dal.FlushEvents(s.DB())
+	}
+	switch {
+	case !orderFlushed && len(usedActions) == 1:
+		// one action query: the actions update is persisted before the
+		// order update
+		if err := updateActions(); err != nil {
 			return nil, err
 		}
-	}
-	if len(res.ItemsToUpsert) > 0 {
-		if out.Items, err = s.Internal("OrderItem").Upsert(ctx, res.ItemsToUpsert); err != nil {
+		if err := updateOrders(); err != nil {
 			return nil, err
 		}
-	}
-	if len(res.SummariesToUpsert) > 0 {
-		if _, err := s.Internal("OrderSummary").Upsert(ctx, res.SummariesToUpsert); err != nil {
+	default:
+		if err := updateOrders(); err != nil {
 			return nil, err
 		}
-	}
-	if len(res.ShippingMethodsToUpsert) > 0 {
-		if out.ShippingMethods, err = s.Internal("OrderShipping").Upsert(ctx, res.ShippingMethodsToUpsert); err != nil {
-			return nil, err
+		if !orderFlushed && len(usedActions) >= 3 {
+			dal.FlushEvents(s.DB())
 		}
-	}
-	if len(res.CreditLinesToUpsert) > 0 {
-		if out.CreditLines, err = s.Internal("OrderCreditLine").Upsert(ctx, res.CreditLinesToUpsert); err != nil {
-			return nil, err
-		}
-	}
-	if len(res.LineItemAdjustmentsToCreate) > 0 {
-		if _, err := s.Internal("OrderLineItemAdjustment").Create(ctx, res.LineItemAdjustmentsToCreate); err != nil {
-			return nil, err
-		}
-	}
-	if len(res.ShippingMethodAdjustmentsToCreate) > 0 {
-		if _, err := s.Internal("OrderShippingMethodAdjustment").Create(ctx, res.ShippingMethodAdjustmentsToCreate); err != nil {
+		if err := updateActions(); err != nil {
 			return nil, err
 		}
 	}
@@ -363,6 +405,42 @@ func (s *OrderModuleService) applyOrderChanges(ctx context.Context, changeAction
 		out.CreditLines = []*dal.Record{}
 	}
 	return out, nil
+}
+
+// applyOrderChangesUpserts runs the upserts and creates of applyOrderChanges_.
+func (s *OrderModuleService) applyOrderChangesUpserts(ctx context.Context, res *utils.ApplyChangesResult, out *OrderChangeReturn) error {
+	var err error
+	if len(res.ItemsToUpsert) > 0 {
+		if out.Items, err = s.Internal("OrderItem").Upsert(ctx, res.ItemsToUpsert); err != nil {
+			return err
+		}
+	}
+	if len(res.SummariesToUpsert) > 0 {
+		if _, err := s.Internal("OrderSummary").Upsert(ctx, res.SummariesToUpsert); err != nil {
+			return err
+		}
+	}
+	if len(res.ShippingMethodsToUpsert) > 0 {
+		if out.ShippingMethods, err = s.Internal("OrderShipping").Upsert(ctx, res.ShippingMethodsToUpsert); err != nil {
+			return err
+		}
+	}
+	if len(res.CreditLinesToUpsert) > 0 {
+		if out.CreditLines, err = s.Internal("OrderCreditLine").Upsert(ctx, res.CreditLinesToUpsert); err != nil {
+			return err
+		}
+	}
+	if len(res.LineItemAdjustmentsToCreate) > 0 {
+		if _, err := s.Internal("OrderLineItemAdjustment").Create(ctx, res.LineItemAdjustmentsToCreate); err != nil {
+			return err
+		}
+	}
+	if len(res.ShippingMethodAdjustmentsToCreate) > 0 {
+		if _, err := s.Internal("OrderShippingMethodAdjustment").Create(ctx, res.ShippingMethodAdjustmentsToCreate); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // includeTaxLinesAndAdjustmentsToPreview mirrors
