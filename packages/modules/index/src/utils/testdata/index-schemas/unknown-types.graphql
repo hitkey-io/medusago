@@ -1,0 +1,9 @@
+
+type Product @Listeners(values: ["product.product.created", "product.product.updated", "product.product.deleted", "product.product.restored"]) {
+  id: ID
+  title: String
+  missing: MissingType
+  others: [AlsoMissing]
+  created_at: DateTime
+  meta: JSON
+}

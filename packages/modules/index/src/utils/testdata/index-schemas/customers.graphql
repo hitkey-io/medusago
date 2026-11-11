@@ -1,0 +1,28 @@
+
+type Customer @Listeners(values: ["customer.customer.created", "customer.customer.updated", "customer.customer.deleted", "customer.customer.restored"]) {
+  id: ID
+  email: String
+  first_name: String
+  has_account: Boolean
+  groups: [CustomerGroup]
+  addresses: [CustomerAddress]
+}
+type CustomerGroup @Listeners(values: ["customer.customer-group.created", "customer.customer-group.updated", "customer.customer-group.deleted", "customer.customer-group.restored"]) {
+  id: ID
+  name: String
+}
+type CustomerAddress @Listeners(values: ["customer.customer-address.created", "customer.customer-address.updated", "customer.customer-address.deleted", "customer.customer-address.restored"]) {
+  id: ID
+  city: String
+  country_code: String
+}
+type Region @Listeners(values: ["region.region.created", "region.region.updated", "region.region.deleted", "region.region.restored"]) {
+  id: ID
+  name: String
+  currency_code: String
+  countries: [Country]
+}
+type Country {
+  iso_2: String
+  name: String
+}

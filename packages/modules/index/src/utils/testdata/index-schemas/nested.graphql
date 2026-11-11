@@ -1,0 +1,54 @@
+
+type Product @Listeners(values: ["product.product.created", "product.product.updated", "product.product.deleted", "product.product.restored"]) {
+  id: ID
+  title: String
+  options: [ProductOption]
+  images: [ProductImage]
+  categories: [ProductCategory]
+  type: ProductType
+  variants: [ProductVariant]
+}
+type ProductOption @Listeners(values: ["product.product-option.created", "product.product-option.updated", "product.product-option.deleted", "product.product-option.restored"]) {
+  id: ID
+  title: String
+  values: [ProductOptionValue]
+}
+type ProductOptionValue @Listeners(values: ["product.product-option-value.created", "product.product-option-value.updated", "product.product-option-value.deleted", "product.product-option-value.restored"]) {
+  id: ID
+  value: String
+}
+type ProductImage @Listeners(values: ["product.product-image.created", "product.product-image.updated", "product.product-image.deleted", "product.product-image.restored"]) {
+  id: ID
+  url: String
+  rank: Int
+}
+type ProductCategory @Listeners(values: ["product.product-category.created", "product.product-category.updated", "product.product-category.deleted", "product.product-category.restored"]) {
+  id: ID
+  name: String
+  handle: String
+}
+type ProductType @Listeners(values: ["product.product-type.created", "product.product-type.updated", "product.product-type.deleted", "product.product-type.restored"]) {
+  id: ID
+  value: String
+}
+type ProductVariant @Listeners(values: ["product.product-variant.created", "product.product-variant.updated", "product.product-variant.deleted", "product.product-variant.restored"]) {
+  id: ID
+  sku: String
+  inventory_items: [InventoryItem]
+  prices: [Price]
+}
+type InventoryItem @Listeners(values: ["inventory.inventory-item.created", "inventory.inventory-item.updated", "inventory.inventory-item.deleted", "inventory.inventory-item.restored"]) {
+  id: ID
+  sku: String
+  location_levels: [InventoryLevel]
+}
+type InventoryLevel @Listeners(values: ["inventory.inventory-level.created", "inventory.inventory-level.updated", "inventory.inventory-level.deleted", "inventory.inventory-level.restored"]) {
+  id: ID
+  location_id: String
+  stocked_quantity: Float
+}
+type Price @Listeners(values: ["pricing.price.created", "pricing.price.updated", "pricing.price.deleted", "pricing.price.restored"]) {
+  id: ID
+  amount: Float
+  currency_code: String
+}

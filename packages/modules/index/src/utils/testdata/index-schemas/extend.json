@@ -1,0 +1,134 @@
+{
+  "entities": [
+    {
+      "key": "Product",
+      "entity": "Product",
+      "alias": "product",
+      "fields": [
+        "id",
+        "title",
+        "handle",
+        "variants.id"
+      ],
+      "listeners": [
+        "product.product.created",
+        "product.product.updated",
+        "product.product.deleted",
+        "product.product.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "ProductVariant",
+          "inSchemaRef": null,
+          "targetProp": "product",
+          "inverseSideProp": "variants",
+          "isList": false,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "ProductVariant",
+      "entity": "ProductVariant",
+      "alias": "product_variant",
+      "fields": [
+        "id",
+        "sku",
+        "ean",
+        "product.id"
+      ],
+      "listeners": [
+        "product.product-variant.created",
+        "product.product-variant.updated",
+        "product.product-variant.deleted",
+        "product.product-variant.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Product",
+          "inSchemaRef": null,
+          "targetProp": "variants",
+          "inverseSideProp": "product",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    }
+  ],
+  "propertiesMap": [
+    {
+      "path": "product_variant.product",
+      "ref": "Product",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product",
+      "ref": "Product",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants",
+      "ref": "ProductVariant",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant",
+      "ref": "ProductVariant",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    }
+  ],
+  "linkableKeys": {
+    "product": {
+      "product_id": "Product",
+      "product_variant_id": "ProductVariant",
+      "product_option_id": "ProductOption",
+      "product_option_value_id": "ProductOptionValue",
+      "product_type_id": "ProductType",
+      "product_tag_id": "ProductTag",
+      "product_collection_id": "ProductCollection",
+      "product_category_id": "ProductCategory",
+      "product_image_id": "ProductImage",
+      "variant_id": "ProductVariant"
+    }
+  },
+  "types": {
+    "Product": {
+      "id": "ID",
+      "title": "String!",
+      "handle": "String",
+      "variants": "[ProductVariant]"
+    },
+    "ProductVariant": {
+      "id": "ID",
+      "sku": "String",
+      "ean": "String",
+      "product": "Product"
+    }
+  }
+}

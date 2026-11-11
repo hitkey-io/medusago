@@ -74,6 +74,42 @@ type Definition struct {
 	Types  []string
 	// Interfaces are the implemented interfaces.
 	Interfaces []string
+	// Directives are the directives applied to the type (object types,
+	// interfaces and input types).
+	Directives []*Directive
+}
+
+// Directive is an applied directive: @name(arg: value, ...).
+type Directive struct {
+	Name      string
+	Arguments []*Argument
+}
+
+// Argument is an argument of an applied directive.
+type Argument struct {
+	Name  string
+	Value *Value
+}
+
+// Value kinds.
+const (
+	ValueVariable = "Variable"
+	ValueInt      = "IntValue"
+	ValueFloat    = "FloatValue"
+	ValueString   = "StringValue"
+	ValueBoolean  = "BooleanValue"
+	ValueNull     = "NullValue"
+	ValueEnum     = "EnumValue"
+	ValueList     = "ListValue"
+	ValueObject   = "ObjectValue"
+)
+
+// Value is a constant value of the language. Value holds the scalar value
+// (as written, a string's content), Values the items of a list.
+type Value struct {
+	Kind   string
+	Value  string
+	Values []*Value
 }
 
 // Document is a parsed schema.
@@ -273,18 +309,97 @@ func (p *parser) skipValue() error {
 }
 
 func (p *parser) directives() error {
+	_, err := p.parseDirectives()
+	return err
+}
+
+// parseDirectives parses the applied directives at the current position.
+func (p *parser) parseDirectives() ([]*Directive, error) {
+	var out []*Directive
 	for p.is('p', "@") {
 		p.take()
-		if _, err := p.name(); err != nil {
-			return err
+		n, err := p.name()
+		if err != nil {
+			return nil, err
 		}
+		d := &Directive{Name: n}
 		if p.is('p', "(") {
-			if err := p.skipValue(); err != nil {
-				return err
+			p.take()
+			for !p.is('p', ")") {
+				if p.peek().kind == 0 {
+					return nil, fmt.Errorf("Syntax Error: Expected Name, found <EOF>.")
+				}
+				an, err := p.name()
+				if err != nil {
+					return nil, err
+				}
+				if err := p.expect('p', ":"); err != nil {
+					return nil, err
+				}
+				v, err := p.value()
+				if err != nil {
+					return nil, err
+				}
+				d.Arguments = append(d.Arguments, &Argument{Name: an, Value: v})
 			}
+			p.take()
 		}
+		out = append(out, d)
 	}
-	return nil
+	return out, nil
+}
+
+// value parses a value.
+func (p *parser) value() (*Value, error) {
+	t := p.take()
+	switch t.kind {
+	case 's':
+		return &Value{Kind: ValueString, Value: t.value}, nil
+	case 'v':
+		if strings.ContainsAny(t.value, ".eE") {
+			return &Value{Kind: ValueFloat, Value: t.value}, nil
+		}
+		return &Value{Kind: ValueInt, Value: t.value}, nil
+	case 'n':
+		switch t.value {
+		case "true", "false":
+			return &Value{Kind: ValueBoolean, Value: t.value}, nil
+		case "null":
+			return &Value{Kind: ValueNull}, nil
+		}
+		return &Value{Kind: ValueEnum, Value: t.value}, nil
+	case 'p':
+		switch t.value {
+		case "$":
+			n, err := p.name()
+			return &Value{Kind: ValueVariable, Value: n}, err
+		case "[":
+			v := &Value{Kind: ValueList}
+			for !p.is('p', "]") {
+				if p.peek().kind == 0 {
+					return nil, fmt.Errorf("Syntax Error: Expected \"]\".")
+				}
+				item, err := p.value()
+				if err != nil {
+					return nil, err
+				}
+				v.Values = append(v.Values, item)
+			}
+			p.take()
+			return v, nil
+		case "{":
+			// object values are kept as a whole (their fields are not
+			// needed)
+			p.i--
+			if err := p.skipValue(); err != nil {
+				return nil, err
+			}
+			return &Value{Kind: ValueObject}, nil
+		}
+	case 0:
+		return nil, fmt.Errorf("Syntax Error: Unexpected <EOF>.")
+	}
+	return nil, fmt.Errorf("Syntax Error: Unexpected %q.", t.value)
 }
 
 func (p *parser) typeRef() (*TypeRef, error) {
@@ -403,7 +518,7 @@ func (p *parser) definition() (*Definition, error) {
 				p.take()
 			}
 		}
-		if err := p.directives(); err != nil {
+		if def.Directives, err = p.parseDirectives(); err != nil {
 			return nil, err
 		}
 		def.Fields, err = p.fields(kw == "input")

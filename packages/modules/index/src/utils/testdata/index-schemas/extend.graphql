@@ -1,0 +1,18 @@
+
+type Product {
+  id: ID
+  title: String
+}
+extend type Product @Listeners(values: ["product.product.created", "product.product.updated", "product.product.deleted", "product.product.restored"]) {
+  handle: String
+  title: String!
+  variants: [ProductVariant]
+}
+type ProductVariant @Listeners(values: ["product.product-variant.created", "product.product-variant.updated", "product.product-variant.deleted", "product.product-variant.restored"]) {
+  id: ID
+  sku: String
+}
+extend type ProductVariant {
+  ean: String
+  product: Product
+}

@@ -1,0 +1,9 @@
+
+type Product @Listeners(values: ["product.product.created", "product.product.updated", "product.product.deleted", "product.product.restored"]) {
+  id: ID
+  widgets: [Widget]
+}
+type Widget @Listeners(values: ["widget.widget.created", "widget.widget.updated", "widget.widget.deleted", "widget.widget.restored"]) {
+  id: ID
+  name: String
+}

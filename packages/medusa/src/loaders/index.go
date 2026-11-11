@@ -152,7 +152,7 @@ func runStartHooks(ctx context.Context, c *container.MedusaContainer, pool *pgxp
 			}
 		}
 		for _, load := range exp.Loaders {
-			if err := load(ctx, modulessdk.LoaderOptions{DB: pool, Providers: providers, Logger: logger}); err != nil {
+			if err := load(ctx, modulessdk.LoaderOptions{DB: pool, Providers: providers, Options: mc.Options, Logger: logger}); err != nil {
 				return fmt.Errorf("%s loader: %w", mc.Key, err)
 			}
 		}

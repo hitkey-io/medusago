@@ -12,6 +12,9 @@ type Type struct {
 	Fields []*FieldDefinition
 	Values []string
 	Types  []string
+	// Directives are the directives of the definition and its extensions
+	// (same-name directives merged).
+	Directives []*Directive
 }
 
 // Field returns the field with the given name.
@@ -57,10 +60,20 @@ func MergeTypeDefs(docs ...*Document) *Schema {
 			}
 			for _, f := range d.Fields {
 				if existing := t.Field(f.Name); existing != nil {
+					// preventConflicts: a non-null redefinition makes the
+					// field non-null
+					if f.Type.NonNull && !existing.Type.NonNull {
+						for i, x := range t.Fields {
+							if x == existing {
+								t.Fields[i] = &FieldDefinition{Name: existing.Name, Type: f.Type}
+							}
+						}
+					}
 					continue
 				}
 				t.Fields = append(t.Fields, f)
 			}
+			t.Directives = mergeDirectives(t.Directives, d.Directives)
 			for _, v := range d.Values {
 				if !containsString(t.Values, v) {
 					t.Values = append(t.Values, v)
@@ -74,6 +87,62 @@ func MergeTypeDefs(docs ...*Document) *Schema {
 		}
 	}
 	return s
+}
+
+// mergeDirectives mirrors mergeDirectives for non repeatable directives:
+// the existing directives first, a directive already present gets the
+// arguments it lacks and the list items its list arguments lack.
+func mergeDirectives(existing, next []*Directive) []*Directive {
+	out := existing
+	for _, d := range next {
+		var found *Directive
+		for _, e := range out {
+			if e.Name == d.Name {
+				found = e
+				break
+			}
+		}
+		if found == nil {
+			out = append(out, d)
+			continue
+		}
+		merged := &Directive{Name: found.Name, Arguments: append([]*Argument(nil), found.Arguments...)}
+		for _, a := range d.Arguments {
+			idx := -1
+			for i, b := range merged.Arguments {
+				if b.Name == a.Name {
+					idx = i
+				}
+			}
+			if idx < 0 {
+				merged.Arguments = append(merged.Arguments, a)
+				continue
+			}
+			b := merged.Arguments[idx]
+			if b.Value != nil && a.Value != nil && b.Value.Kind == ValueList && a.Value.Kind == ValueList {
+				values := append([]*Value(nil), b.Value.Values...)
+				for _, v := range a.Value.Values {
+					dup := false
+					for _, w := range values {
+						if w.Kind == v.Kind && w.Value == v.Value {
+							dup = true
+						}
+					}
+					if !dup {
+						values = append(values, v)
+					}
+				}
+				merged.Arguments[idx] = &Argument{Name: b.Name, Value: &Value{Kind: ValueList, Values: values}}
+			}
+		}
+		for i, e := range out {
+			if e == found {
+				out = append(append([]*Directive(nil), out[:i]...), append([]*Directive{merged}, out[i+1:]...)...)
+				break
+			}
+		}
+	}
+	return out
 }
 
 func containsString(list []string, s string) bool {
