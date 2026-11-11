@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -114,7 +115,10 @@ var facts = []string{
 
 // box draws a boxen-like frame.
 func box(text, title string) string {
-	lines := strings.Split(text, "\n")
+	var lines []string
+	for _, l := range strings.Split(text, "\n") {
+		lines = append(lines, wrapLine(l, boxContentWidth())...)
+	}
 	width := 0
 	for _, l := range lines {
 		if n := utf8.RuneCountInString(l); n > width {
@@ -227,4 +231,54 @@ func (s *spinner) stop() {
 func (s *spinner) succeed(message string) {
 	s.stop()
 	fmt.Println(colorGreen + "✔ " + message + colorReset)
+}
+
+// boxContentWidth is the widest line a box can hold in the terminal: like
+// boxen, text is wrapped so the frame never exceeds the terminal width.
+func boxContentWidth() int {
+	columns := 80
+	if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil && w > 0 {
+		columns = w
+	} else if c, err := strconv.Atoi(os.Getenv("COLUMNS")); err == nil && c > 0 {
+		columns = c
+	}
+	// borders, inner padding and a margin on each side
+	if w := columns - 6; w > 20 {
+		return w
+	}
+	return 20
+}
+
+// wrapLine word-wraps a line to width runes; words longer than the width
+// (such as URLs) are broken, like wrap-ansi with hard: true.
+func wrapLine(line string, width int) []string {
+	if utf8.RuneCountInString(line) <= width {
+		return []string{line}
+	}
+	var out []string
+	cur := []rune{}
+	flush := func() {
+		out = append(out, strings.TrimRight(string(cur), " "))
+		cur = cur[:0]
+	}
+	for _, word := range strings.Split(line, " ") {
+		w := []rune(word)
+		if len(cur) > 0 && len(cur)+1+len(w) > width {
+			flush()
+		}
+		if len(cur) > 0 {
+			cur = append(cur, ' ')
+		}
+		for len(cur)+len(w) > width {
+			n := width - len(cur)
+			cur = append(cur, w[:n]...)
+			w = w[n:]
+			flush()
+		}
+		cur = append(cur, w...)
+	}
+	if len(cur) > 0 {
+		flush()
+	}
+	return out
 }
