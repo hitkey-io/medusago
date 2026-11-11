@@ -166,13 +166,13 @@ var CreateCartWorkflow = composer.CreateWorkflow("create-cart",
 		}
 		err = composer.Parallelize(
 			func() error {
-				_, err := RefreshPaymentCollectionForCartWorkflow.RunAsStep(e, RefreshPaymentCollectionInput{Cart: cart})
-				return err
-			},
-			func() error {
 				ev := dal.NewRecord()
 				ev.Set("id", Get(cart, "id"))
 				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "cart.created", Data: ev})
+				return err
+			},
+			func() error {
+				_, err := RefreshPaymentCollectionForCartWorkflow.RunAsStep(e, RefreshPaymentCollectionInput{Cart: cart})
 				return err
 			},
 		)

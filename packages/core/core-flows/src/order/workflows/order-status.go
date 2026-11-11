@@ -176,6 +176,10 @@ var CancelOrderWorkflow = composer.CreateWorkflow("cancel-order",
 		var deletedReservationIDs []any
 		err = composer.Parallelize(
 			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.canceled", Data: idEvent(g(order, "id"))})
+				return err
+			},
+			func() error {
 				var err error
 				refundedPayments, err = RefundCapturedPaymentsWorkflow.RunAsStep(e, struct {
 					OrderID   any
@@ -190,10 +194,6 @@ var CancelOrderWorkflow = composer.CreateWorkflow("cancel-order",
 				return err
 			},
 			func() error { _, err := paymentsteps.CancelPaymentStep.Run(e, uncaptured); return err },
-			func() error {
-				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.canceled", Data: idEvent(g(order, "id"))})
-				return err
-			},
 		)
 		if err != nil {
 			return nil, err

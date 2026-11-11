@@ -32,11 +32,11 @@ var DeleteProductOptionsWorkflow = composer.CreateWorkflow("delete-product-optio
 		}
 		err := composer.Parallelize(
 			func() error {
-				_, err := commonsteps.RemoveRemoteLinkStep.Run(e, []*dal.Record{deleteInput(utilsmodulessdk.PRODUCT, "product_option_id", input.IDs)})
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "product-option.deleted", Data: events})
 				return err
 			},
 			func() error {
-				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "product-option.deleted", Data: events})
+				_, err := commonsteps.RemoveRemoteLinkStep.Run(e, []*dal.Record{deleteInput(utilsmodulessdk.PRODUCT, "product_option_id", input.IDs)})
 				return err
 			},
 		)

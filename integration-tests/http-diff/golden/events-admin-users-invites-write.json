@@ -1,0 +1,1103 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzkzNjgsImV4cCI6MTc5NDQ2NTc2OH0.JsSE3-Js2d3bf-3hBXa5QMX-rHxQdl_VNWPLXlbjs30"
+    }
+  },
+  "me": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "user": {
+        "id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
+        "email": "admin@medusa-test.com"
+      }
+    }
+  },
+  "events_start": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invite": {
+        "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R",
+        "email": "new.admin@example.test",
+        "accepted": false,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Imludml0ZV8wMU03NE5HSjE5TTNTQTdLM1FNTkhIRDIwUiIsImVtYWlsIjoibmV3LmFkbWluQGV4YW1wbGUudGVzdCIsImlhdCI6MTc5NDM3OTM2OCwiZXhwIjoxNzk0NDY1NzY4LCJqdGkiOiI4MThhZGVhNC0xODA4LTQ0YTItOTJmMy0wMmQ5ODA5Yjg5MzIifQ.DhamMqVIVSxYZbdilUZ1V-cse-5DmUikkXDHGQaAAWM",
+        "expires_at": "2026-11-12T06:42:48.489Z",
+        "metadata": {
+          "team": "ops"
+        },
+        "created_at": "2026-11-11T06:42:48.490Z",
+        "updated_at": "2026-11-11T06:42:48.490Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "events__create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "user.invite.created",
+          "data": {
+            "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R"
+          },
+          "metadata": {
+            "source": "user",
+            "object": "invite",
+            "action": "created",
+            "eventGroupId": "01M74NGJ0JGP1J1W1E4QXQVCBQ"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "user.user.invite.token_generated",
+          "data": {
+            "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R"
+          },
+          "metadata": {
+            "source": "user",
+            "object": "invite",
+            "action": "token_generated",
+            "eventGroupId": "01M74NGJ0JGP1J1W1E4QXQVCBQ"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "invite.created",
+          "data": {
+            "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R"
+          },
+          "metadata": {
+            "eventGroupId": "01M74NGJ0JGP1J1W1E4QXQVCBQ"
+          },
+          "options": {}
+        }
+      ]
+    }
+  },
+  "events_reset__create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "create_existing_user": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "User account for following email(s) already exist: admin@medusa-test.com"
+    }
+  },
+  "events__create_existing_user": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__create_existing_user": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "create_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'name'"
+    }
+  },
+  "events__create_invalid": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__create_invalid": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "create_second": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invite": {
+        "id": "invite_01M74NGJ2QGAPMMH535RM3G4Q4",
+        "email": "second@example.test"
+      }
+    }
+  },
+  "events__create_second": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "user.invite.created",
+          "data": {
+            "id": "invite_01M74NGJ2QGAPMMH535RM3G4Q4"
+          },
+          "metadata": {
+            "source": "user",
+            "object": "invite",
+            "action": "created",
+            "eventGroupId": "01M74NGJ2MNZYCWHHCQ3M8YNGP"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "user.user.invite.token_generated",
+          "data": {
+            "id": "invite_01M74NGJ2QGAPMMH535RM3G4Q4"
+          },
+          "metadata": {
+            "source": "user",
+            "object": "invite",
+            "action": "token_generated",
+            "eventGroupId": "01M74NGJ2MNZYCWHHCQ3M8YNGP"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "invite.created",
+          "data": {
+            "id": "invite_01M74NGJ2QGAPMMH535RM3G4Q4"
+          },
+          "metadata": {
+            "eventGroupId": "01M74NGJ2MNZYCWHHCQ3M8YNGP"
+          },
+          "options": {}
+        }
+      ]
+    }
+  },
+  "events_reset__create_second": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invites": [
+        {
+          "email": "new.admin@example.test",
+          "accepted": false,
+          "metadata": {
+            "team": "ops"
+          },
+          "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R"
+        },
+        {
+          "email": "second@example.test",
+          "accepted": false,
+          "metadata": null,
+          "id": "invite_01M74NGJ2QGAPMMH535RM3G4Q4"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "list_filtered": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invites": [
+        {
+          "email": "second@example.test",
+          "id": "invite_01M74NGJ2QGAPMMH535RM3G4Q4"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "get": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invite": {
+        "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R",
+        "email": "new.admin@example.test",
+        "accepted": false,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Imludml0ZV8wMU03NE5HSjE5TTNTQTdLM1FNTkhIRDIwUiIsImVtYWlsIjoibmV3LmFkbWluQGV4YW1wbGUudGVzdCIsImlhdCI6MTc5NDM3OTM2OCwiZXhwIjoxNzk0NDY1NzY4LCJqdGkiOiI4MThhZGVhNC0xODA4LTQ0YTItOTJmMy0wMmQ5ODA5Yjg5MzIifQ.DhamMqVIVSxYZbdilUZ1V-cse-5DmUikkXDHGQaAAWM",
+        "expires_at": "2026-11-12T06:42:48.489Z",
+        "metadata": {
+          "team": "ops"
+        },
+        "created_at": "2026-11-11T06:42:48.490Z",
+        "updated_at": "2026-11-11T06:42:48.490Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "get_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Invite with id: invite_missing was not found"
+    }
+  },
+  "resend": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invite": {
+        "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R",
+        "email": "new.admin@example.test",
+        "accepted": false,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Imludml0ZV8wMU03NE5HSjE5TTNTQTdLM1FNTkhIRDIwUiIsImVtYWlsIjoibmV3LmFkbWluQGV4YW1wbGUudGVzdCIsImlhdCI6MTc5NDM3OTM2OCwiZXhwIjoxNzk0NDY1NzY4LCJqdGkiOiJhMDk1YjUyNi00YmRhLTRlNjUtODdkNy1mY2E4MDZmMzA4ODMifQ.PAj2oDuMYYsZvM-0BNiQv8BDiO7c_lKjLUiPnXbp9Ts",
+        "expires_at": "2026-11-12T06:42:48.567Z",
+        "metadata": {
+          "team": "ops"
+        },
+        "created_at": "2026-11-11T06:42:48.490Z",
+        "updated_at": "2026-11-11T06:42:48.568Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "events__resend": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "user.invite.updated",
+          "data": {
+            "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R"
+          },
+          "metadata": {
+            "source": "user",
+            "object": "invite",
+            "action": "updated",
+            "eventGroupId": "01M74NGJ3KFBYG7KM8F639XWJ6"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "user.user.invite.token_generated",
+          "data": {
+            "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R"
+          },
+          "metadata": {
+            "source": "user",
+            "object": "invite",
+            "action": "created",
+            "eventGroupId": "01M74NGJ3KFBYG7KM8F639XWJ6"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "invite.resent",
+          "data": {
+            "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R"
+          },
+          "metadata": {
+            "eventGroupId": "01M74NGJ3KFBYG7KM8F639XWJ6"
+          },
+          "options": {}
+        }
+      ]
+    }
+  },
+  "events_reset__resend": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "resend_missing": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "The following invites do not exist: invite_missing"
+    }
+  },
+  "events__resend_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__resend_missing": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "register": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6IiIsImFjdG9yX3R5cGUiOiJ1c2VyIiwiYXV0aF9pZGVudGl0eV9pZCI6ImF1dGhpZF8wMU03NE5HSjYwR0cxMkdRWjA4NFJEWVIyWiIsImF1dGhfcHJvdmlkZXIiOiJlbWFpbHBhc3MiLCJtZmFfZW5hYmxlZCI6ZmFsc2UsIm1mYV9jaGFsbGVuZ2VfY29tcGxldGVkX2F0IjpudWxsLCJhcHBfbWV0YWRhdGEiOnt9LCJ1c2VyX21ldGFkYXRhIjp7fSwiaWF0IjoxNzk0Mzc5MzY4LCJleHAiOjE3OTQ0NjU3Njh9.9ir9reYOG0ZQ2sd_YYvfH7fND_6HdhtBxQZjCeFnRis"
+    }
+  },
+  "accept_authenticated": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "The user is already authenticated and cannot accept an invite."
+    }
+  },
+  "events__accept_authenticated": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__accept_authenticated": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "accept_old_token": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "message": "Unauthorized"
+    }
+  },
+  "events__accept_old_token": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__accept_old_token": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "accept_no_token": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Field 'token' is required"
+    }
+  },
+  "events__accept_no_token": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__accept_no_token": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "accept_invalid_body": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'foo'"
+    }
+  },
+  "events__accept_invalid_body": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__accept_invalid_body": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "accept": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "user": {
+        "id": "user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ",
+        "first_name": "New",
+        "last_name": "Admin",
+        "email": "new.admin@example.test",
+        "avatar_url": null,
+        "metadata": null,
+        "created_at": "2026-11-11T06:42:48.684Z",
+        "updated_at": "2026-11-11T06:42:48.684Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "events__accept": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "user.user.created",
+          "data": {
+            "id": "user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ"
+          },
+          "metadata": {
+            "source": "user",
+            "object": "user",
+            "action": "created",
+            "eventGroupId": "01M74NGJ76BPHBYADS9WWAZQKC"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "user.created",
+          "data": {
+            "id": "user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ"
+          },
+          "metadata": {
+            "eventGroupId": "01M74NGJ76BPHBYADS9WWAZQKC"
+          },
+          "options": {}
+        },
+        {
+          "name": "invite.accepted",
+          "data": {
+            "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R"
+          },
+          "metadata": {
+            "eventGroupId": "01M74NGJ76BPHBYADS9WWAZQKC"
+          },
+          "options": {}
+        },
+        {
+          "name": "user.invite.deleted",
+          "data": {
+            "id": "invite_01M74NGJ19M3SA7K3QMNHHD20R"
+          },
+          "metadata": {
+            "source": "user",
+            "object": "invite",
+            "action": "deleted",
+            "eventGroupId": "01M74NGJ76BPHBYADS9WWAZQKC"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__accept": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "accept_again": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "message": "Unauthorized"
+    }
+  },
+  "events__accept_again": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__accept_again": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "list_after_accept": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invites": [
+        {
+          "email": "second@example.test",
+          "id": "invite_01M74NGJ2QGAPMMH535RM3G4Q4"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "new_login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzROR0o3QzNRN1c1UTNWM1E5Q1hBTkoiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzROR0o2MEdHMTJHUVowODRSRFlSMloiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTc0TkdKN0MzUTdXNVEzVjNROUNYQU5KIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzNzkzNjgsImV4cCI6MTc5NDQ2NTc2OH0.XoTjSuVwtwg81yij8ahujvyOOYBq61gTrAtfLV0pIAA"
+    }
+  },
+  "new_me": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "user": {
+        "id": "user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ",
+        "first_name": "New",
+        "last_name": "Admin",
+        "email": "new.admin@example.test",
+        "avatar_url": null,
+        "metadata": null,
+        "created_at": "2026-11-11T06:42:48.684Z",
+        "updated_at": "2026-11-11T06:42:48.684Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "users": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "users": [
+        {
+          "email": "admin@medusa-test.com",
+          "first_name": null,
+          "last_name": null,
+          "id": "user_01M70Y01SPRY6AWYTJKZK9YEES"
+        },
+        {
+          "email": "new.admin@example.test",
+          "first_name": "New",
+          "last_name": "Admin",
+          "id": "user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "providers": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "providers": [
+        "emailpass"
+      ]
+    }
+  },
+  "update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "user": {
+        "id": "user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ",
+        "first_name": "Renamed",
+        "last_name": "Admin",
+        "email": "new.admin@example.test",
+        "avatar_url": null,
+        "metadata": {
+          "a": 1
+        },
+        "created_at": "2026-11-11T06:42:48.684Z",
+        "updated_at": "2026-11-11T06:42:48.773Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "events__update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "user.user.updated",
+          "data": {
+            "id": "user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ"
+          },
+          "metadata": {
+            "source": "user",
+            "object": "user",
+            "action": "updated",
+            "eventGroupId": "01M74NGJA2TJM2JX92SENSVZF1"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "user.updated",
+          "data": {
+            "id": "user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ"
+          },
+          "metadata": {
+            "eventGroupId": "01M74NGJA2TJM2JX92SENSVZF1"
+          },
+          "options": {}
+        }
+      ]
+    }
+  },
+  "events_reset__update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "update_invalid": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Invalid request: Unrecognized fields: 'email'"
+    }
+  },
+  "events__update_invalid": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__update_invalid": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "delete_self": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "A user cannot delete itself"
+    }
+  },
+  "events__delete_self": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "events_reset__delete_self": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ",
+      "object": "user",
+      "deleted": true
+    }
+  },
+  "events__delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "user.user.deleted",
+          "data": {
+            "id": "user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ"
+          },
+          "metadata": {
+            "source": "user",
+            "object": "user",
+            "action": "deleted",
+            "eventGroupId": "01M74NGJAF7AC4JRBY69R460HK"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "user.deleted",
+          "data": {
+            "id": "user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ"
+          },
+          "metadata": {
+            "eventGroupId": "01M74NGJAF7AC4JRBY69R460HK"
+          },
+          "options": {}
+        },
+        {
+          "name": "auth.auth-identity.deleted",
+          "data": {
+            "id": "authid_01M74NGJ60GG12GQZ084RDYR2Z"
+          },
+          "metadata": {
+            "source": "auth",
+            "object": "auth_identity",
+            "action": "deleted",
+            "eventGroupId": "01M74NGJAF7AC4JRBY69R460HK"
+          },
+          "options": {
+            "internal": true
+          }
+        }
+      ]
+    }
+  },
+  "events_reset__delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "User with id: user_01M74NGJ7C3Q7W5Q3V3Q9CXANJ was not found"
+    }
+  },
+  "providers_after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "providers": []
+    }
+  },
+  "deleted_login": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "unauthorized",
+      "message": "Invalid email or password"
+    }
+  },
+  "delete_invite": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "invite_01M74NGJ2QGAPMMH535RM3G4Q4",
+      "object": "invite",
+      "deleted": true
+    }
+  },
+  "events__delete_invite": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": [
+        {
+          "name": "user.invite.deleted",
+          "data": {
+            "id": "invite_01M74NGJ2QGAPMMH535RM3G4Q4"
+          },
+          "metadata": {
+            "source": "user",
+            "object": "invite",
+            "action": "deleted",
+            "eventGroupId": "01M74NGJBMC7ZDFA2YS65SQM5Z"
+          },
+          "options": {
+            "internal": true
+          }
+        },
+        {
+          "name": "invite.deleted",
+          "data": {
+            "id": "invite_01M74NGJ2QGAPMMH535RM3G4Q4"
+          },
+          "metadata": {
+            "eventGroupId": "01M74NGJBMC7ZDFA2YS65SQM5Z"
+          },
+          "options": {}
+        }
+      ]
+    }
+  },
+  "events_reset__delete_invite": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "events": []
+    }
+  },
+  "get_deleted_invite": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Invite with id: invite_01M74NGJ2QGAPMMH535RM3G4Q4 was not found"
+    }
+  },
+  "list_final": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "invites": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}

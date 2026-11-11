@@ -70,19 +70,55 @@ type EventSink interface {
 	EmitModuleEvents(ctx context.Context, events []ReadyEvent)
 }
 
-type eventsDisabledKey struct{}
+type eventsModeKey struct{}
 
-// WithoutEvents marks a call whose module transactions emit no events:
-// upstream methods without @EmitEvents (no message aggregator in the
-// context, so interceptEntityMutationEvents drops the mutations).
-func WithoutEvents(ctx context.Context) context.Context {
-	return context.WithValue(ctx, eventsDisabledKey{}, true)
+// EventsMode says what a module call does with its events.
+type EventsMode int
+
+const (
+	// EmitEventsMode mirrors a call through an @EmitEvents method: the
+	// events are aggregated and emitted when the call ends.
+	EmitEventsMode EventsMode = iota
+	// DropEventsMode drops the events (a call without any message
+	// aggregator: e.g. an internal service called with a new context).
+	DropEventsMode
+	// SaveEventsMode mirrors a method without @EmitEvents: the events only
+	// reach the message aggregator the shared context may already hold (a
+	// workflow's medusaContext), emitted by a later @EmitEvents call.
+	SaveEventsMode
+	// DeferEventsMode mirrors @EmitEvents inside @InjectTransactionManager:
+	// the aggregator is created (in the shared context) and emitted before
+	// the transaction flushes, so the mutations wait in it for the next
+	// @EmitEvents call.
+	DeferEventsMode
+)
+
+func withMode(ctx context.Context, m EventsMode) context.Context {
+	return context.WithValue(ctx, eventsModeKey{}, m)
+}
+
+// WithoutEvents marks a call whose module mutations emit no events.
+func WithoutEvents(ctx context.Context) context.Context { return withMode(ctx, DropEventsMode) }
+
+// WithoutEmit marks a call of a module method without @EmitEvents.
+func WithoutEmit(ctx context.Context) context.Context { return withMode(ctx, SaveEventsMode) }
+
+// WithDeferredEmit marks a call of a module method whose @EmitEvents runs
+// inside its transaction.
+func WithDeferredEmit(ctx context.Context) context.Context { return withMode(ctx, DeferEventsMode) }
+
+// WithEmit marks a call of an @EmitEvents method (the default).
+func WithEmit(ctx context.Context) context.Context { return withMode(ctx, EmitEventsMode) }
+
+// EventsModeOf returns the events mode of the context.
+func EventsModeOf(ctx context.Context) EventsMode {
+	v, _ := ctx.Value(eventsModeKey{}).(EventsMode)
+	return v
 }
 
 // EventsDisabled reports whether WithoutEvents marked the context.
 func EventsDisabled(ctx context.Context) bool {
-	v, _ := ctx.Value(eventsDisabledKey{}).(bool)
-	return v
+	return EventsModeOf(ctx) == DropEventsMode
 }
 
 // EventTx is a transaction recording the entity mutation events.
@@ -169,9 +205,11 @@ func Transaction(ctx context.Context, db Querier, schema *Schema, fn func(tx Que
 		return err
 	}
 	events := rec.Flush()
-	if len(events) == 0 || schema == nil || schema.Sink == nil || EventsDisabled(ctx) {
+	if schema == nil || schema.Sink == nil || EventsDisabled(ctx) {
 		return nil
 	}
+	// an @EmitEvents call ends: it also emits what earlier calls left in
+	// a shared aggregator
 	schema.Sink.EmitModuleEvents(ctx, events)
 	return nil
 }

@@ -26,6 +26,17 @@ func g(r *dal.Record, k string) any {
 	return v
 }
 
+// setDefined copies key from src when it is given: grouped events are
+// released through a JSON round trip upstream, undefined keys are dropped.
+func setDefined(dst *dal.Record, key string, src *dal.Record) {
+	if src == nil {
+		return
+	}
+	if v, ok := src.Get(key); ok {
+		dst.Set(key, v)
+	}
+}
+
 func rec(v any) *dal.Record {
 	r, _ := v.(*dal.Record)
 	return r
@@ -318,16 +329,16 @@ var CreateOrderFulfillmentWorkflow = composer.CreateWorkflow("create-order-fulfi
 		created := dal.NewRecord()
 		created.Set("order_id", in.OrderID)
 		created.Set("fulfillment_id", g(fulfillment, "id"))
-		created.Set("no_notification", g(input, "no_notification"))
+		setDefined(created, "no_notification", input)
 		err = composer.Parallelize(
-			func() error { _, err := ordersteps.RegisterOrderFulfillmentStep.Run(e, register); return err },
-			func() error { _, err := commonsteps.CreateRemoteLinkStep.Run(e, []*dal.Record{link}); return err },
-			func() error { _, err := reservationsteps.UpdateReservationsStep.Run(e, toUpdate); return err },
-			func() error { _, err := reservationsteps.DeleteReservationsStep.Run(e, toDelete); return err },
 			func() error {
 				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.fulfillment_created", Data: created})
 				return err
 			},
+			func() error { _, err := ordersteps.RegisterOrderFulfillmentStep.Run(e, register); return err },
+			func() error { _, err := commonsteps.CreateRemoteLinkStep.Run(e, []*dal.Record{link}); return err },
+			func() error { _, err := reservationsteps.UpdateReservationsStep.Run(e, toUpdate); return err },
+			func() error { _, err := reservationsteps.DeleteReservationsStep.Run(e, toDelete); return err },
 		)
 		if err != nil {
 			return nil, err
@@ -676,7 +687,7 @@ var CreateOrderShipmentWorkflow = composer.CreateWorkflow("create-order-shipment
 		}
 		ev := dal.NewRecord()
 		ev.Set("id", g(created, "id"))
-		ev.Set("no_notification", g(in.Input, "no_notification"))
+		setDefined(ev, "no_notification", in.Input)
 		if _, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "shipment.created", Data: ev}); err != nil {
 			return nil, err
 		}
@@ -865,9 +876,13 @@ var CancelOrderFulfillmentWorkflow = composer.CreateWorkflow("cancel-order-fulfi
 		ev := dal.NewRecord()
 		ev.Set("order_id", g(order, "id"))
 		ev.Set("fulfillment_id", g(fulfillment, "id"))
-		ev.Set("no_notification", g(in.Input, "no_notification"))
+		setDefined(ev, "no_notification", in.Input)
 		var createdReservations []*dal.Record
 		err = composer.Parallelize(
+			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.fulfillment_canceled", Data: ev})
+				return err
+			},
 			func() error { _, err := ordersteps.CancelOrderFulfillmentStep.Run(e, cancelData); return err },
 			func() error {
 				var err error
@@ -875,10 +890,6 @@ var CancelOrderFulfillmentWorkflow = composer.CreateWorkflow("cancel-order-fulfi
 				return err
 			},
 			func() error { _, err := reservationsteps.UpdateReservationsStep.Run(e, toUpdate); return err },
-			func() error {
-				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.fulfillment_canceled", Data: ev})
-				return err
-			},
 		)
 		if err != nil {
 			return nil, err

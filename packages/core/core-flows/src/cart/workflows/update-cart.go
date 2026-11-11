@@ -251,13 +251,13 @@ var UpdateCartWorkflow = composer.CreateWorkflow("update-cart",
 			newLocale = l
 		}
 		err = composer.Parallelize(
-			func() error { _, err := UpdateCartsStep.Run(e, []*dal.Record{cartInput}); return err },
 			func() error {
 				ev := dal.NewRecord()
 				ev.Set("id", id)
 				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "cart.updated", Data: ev})
 				return err
 			},
+			func() error { _, err := UpdateCartsStep.Run(e, []*dal.Record{cartInput}); return err },
 		)
 		if err != nil {
 			return nil, err

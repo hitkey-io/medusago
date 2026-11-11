@@ -73,8 +73,8 @@ func (s *ProductModuleService) UpdateProductOptions(ctx context.Context, idOrSel
 // UpsertProductOptions mirrors upsertProductOptions.
 func (s *ProductModuleService) UpsertProductOptions(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
 	// @EmitEvents runs inside the transaction upstream (before the flush):
-	// the entity mutations emit no events
-	ctx = dal.WithoutEvents(ctx)
+	// the mutations wait in the shared aggregator for the next @EmitEvents
+	ctx = dal.WithDeferredEmit(ctx)
 	var out []*dal.Record
 	err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
 		t := &ProductModuleService{MedusaService: tx, db: tx.DB()}
@@ -386,8 +386,9 @@ func (s *ProductModuleService) removeProductOptionFromProduct(ctx context.Contex
 			r.Set("product_product_option_id", id)
 			sels = append(sels, r)
 		}
-		if _, err := dal.QueryRows(ctx, s.db, `delete from "product_product_option_value" where "product_product_option_id" = any($1) returning "id"`, toStrings(ppoIDs)); err != nil {
-			return nil, dal.MapDBError(err)
+		// productProductOptionValueService_.delete (afterDelete dispatched)
+		if _, err := s.Internal("ProductProductOptionValue").Delete(ctx, sels); err != nil {
+			return nil, err
 		}
 		if _, err := s.Internal("ProductProductOption").Delete(ctx, ppoIDs); err != nil {
 			return nil, err
@@ -672,10 +673,9 @@ func (s *ProductModuleService) UpdateProductOptionValuesOnProduct(ctx context.Co
 				toDelete = append(toDelete, sel)
 			}
 		}
-		for _, sel := range toDelete {
-			r := sel.(*dal.Record)
-			if _, err := dal.QueryRows(ctx, t.db, `delete from "product_product_option_value" where "product_product_option_id" = $1 and "product_option_value_id" = $2 returning "id"`, strOf(r, "product_product_option_id"), strOf(r, "product_option_value_id")); err != nil {
-				return dal.MapDBError(err)
+		if len(toDelete) > 0 {
+			if _, err := t.Internal("ProductProductOptionValue").Delete(ctx, toDelete); err != nil {
+				return err
 			}
 		}
 		if len(toCreate) > 0 {
@@ -814,7 +814,7 @@ func (s *ProductModuleService) UpdateProductOptionValues(ctx context.Context, id
 // SoftDeleteProductOptionValues mirrors softDeleteProductOptionValues.
 func (s *ProductModuleService) SoftDeleteProductOptionValues(ctx context.Context, ids []any) error {
 	// no @EmitEvents upstream: the mutations emit no events
-	ctx = dal.WithoutEvents(ctx)
+	ctx = dal.WithoutEmit(ctx)
 	return s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
 		t := &ProductModuleService{MedusaService: tx, db: tx.DB()}
 		if err := t.validateOptionValuesNotAssociatedWithProducts(ctx, ids); err != nil {

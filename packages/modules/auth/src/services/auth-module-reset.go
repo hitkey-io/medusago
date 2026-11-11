@@ -45,7 +45,7 @@ type PasswordResetToken struct {
 // jti) is stored.
 func (s *AuthModuleService) CreatePasswordResetToken(ctx context.Context, provider, entityID string, ttlSeconds int) (PasswordResetToken, error) {
 	// no @EmitEvents upstream: the auth module writes emit no events
-	ctx = dal.WithoutEvents(ctx)
+	ctx = dal.WithoutEmit(ctx)
 	var out PasswordResetToken
 	err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
 		f := dal.NewRecord()
@@ -99,7 +99,7 @@ func (s *AuthModuleService) CreatePasswordResetToken(ctx context.Context, provid
 // deleted.
 func (s *AuthModuleService) ConsumePasswordResetToken(ctx context.Context, jti, provider, entityID string) (*dal.Record, error) {
 	// no @EmitEvents upstream: the auth module writes emit no events
-	ctx = dal.WithoutEvents(ctx)
+	ctx = dal.WithoutEmit(ctx)
 	invalid := func() error { return common.NewMedusaError(common.MedusaErrorTypes.UNAUTHORIZED, "Invalid token") }
 	var out *dal.Record
 	err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {

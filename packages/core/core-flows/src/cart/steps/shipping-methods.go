@@ -126,7 +126,7 @@ var UpdateShippingMethodsStep = composer.CreateStep("update-shipping-methods-ste
 			return composer.StepResponse[any]{}, err
 		}
 		// updateShippingMethods has no @EmitEvents upstream
-		if _, err := svc.Internal("ShippingMethod").Update(dal.WithoutEvents(ctx.Context), updates); err != nil {
+		if _, err := svc.Internal("ShippingMethod").Update(dal.WithoutEmit(ctx.Context), updates); err != nil {
 			return composer.StepResponse[any]{}, err
 		}
 		return composer.NewStepResponse[any](nil, any(before)), nil
@@ -140,6 +140,6 @@ var UpdateShippingMethodsStep = composer.CreateStep("update-shipping-methods-ste
 		for _, b := range before {
 			updates = append(updates, b)
 		}
-		_, err := CartOf(ctx.Container).Internal("ShippingMethod").Update(dal.WithoutEvents(ctx.Context), updates)
+		_, err := CartOf(ctx.Container).Internal("ShippingMethod").Update(dal.WithoutEmit(ctx.Context), updates)
 		return err
 	})

@@ -47,7 +47,7 @@ func saveAppMetadata(ctx composer.StepExecutionContext, id any, m *dal.Record) e
 	u.Set("id", id)
 	u.Set("app_metadata", m)
 	// updateAuthIdentities has no @EmitEvents upstream
-	_, err := commonsteps.UpdateRecords(dal.WithoutEvents(ctx.Context), authService(ctx.Container), "AuthIdentity", []any{u})
+	_, err := commonsteps.UpdateRecords(dal.WithoutEmit(ctx.Context), authService(ctx.Container), "AuthIdentity", []any{u})
 	return err
 }
 
@@ -110,6 +110,6 @@ var DeleteAuthIdentityStep = composer.CreateStep("delete-auth-identity",
 			return nil
 		}
 		// createAuthIdentities has no @EmitEvents upstream
-		_, err := authService(ctx.Container).Internal("AuthIdentity").Create(dal.WithoutEvents(ctx.Context), prev)
+		_, err := authService(ctx.Container).Internal("AuthIdentity").Create(dal.WithoutEmit(ctx.Context), prev)
 		return err
 	})

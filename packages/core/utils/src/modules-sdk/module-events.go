@@ -32,22 +32,33 @@ func (s *ModuleEventSink) EmitModuleEvents(ctx context.Context, events []dal.Rea
 	s.mu.RLock()
 	bus := s.bus
 	s.mu.RUnlock()
-	if bus == nil || len(events) == 0 || dal.EventsDisabled(ctx) {
+	mode := dal.EventsModeOf(ctx)
+	if bus == nil || mode == dal.DropEventsMode {
 		return
 	}
-	aggregator := eventbus.NewMessageAggregator()
 	groupID := eventbus.EventGroupID(ctx)
-	for _, ev := range events {
-		aggregator.SaveRawMessageData(eventbus.RawMessage{
+	raw := make([]eventbus.RawMessage, len(events))
+	for i, ev := range events {
+		raw[i] = eventbus.RawMessage{
 			EventName:    ev.EventName,
 			Source:       ev.Source,
 			Object:       ev.Object,
 			Action:       ev.Action,
 			Data:         ev.Data,
 			EventGroupID: groupID,
-		})
+		}
 	}
-	messages := aggregator.GetMessages()
+	var messages []eventbus.Message
+	if shared := eventbus.SharedAggregatorOf(ctx); shared != nil {
+		messages = shared.Save(raw, mode != dal.SaveEventsMode, mode == dal.EmitEventsMode)
+	} else if mode == dal.EmitEventsMode {
+		aggregator := eventbus.NewMessageAggregator()
+		aggregator.SaveRawMessageData(raw...)
+		messages = aggregator.GetMessages()
+	}
+	if len(messages) == 0 {
+		return
+	}
 	for i := range messages {
 		options := dal.NewRecord()
 		options.Set("internal", true)

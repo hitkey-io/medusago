@@ -135,10 +135,10 @@ var DeleteShippingOptionTypesWorkflow = composer.CreateWorkflow("delete-shipping
 		entry := dal.NewRecord()
 		entry.Set(utilsmodulessdk.FULFILLMENT, keys)
 		return nil, composer.Parallelize(
-			func() error { _, err := commonsteps.RemoveRemoteLinkStep.Run(e, []*dal.Record{entry}); return err },
 			func() error {
 				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "shipping-option-type.deleted", Data: idEvents(ids)})
 				return err
 			},
+			func() error { _, err := commonsteps.RemoveRemoteLinkStep.Run(e, []*dal.Record{entry}); return err },
 		)
 	})

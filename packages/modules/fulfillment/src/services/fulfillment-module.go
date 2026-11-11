@@ -769,8 +769,8 @@ func (s *FulfillmentModuleService) ValidateShippingProfileDeletion(ctx context.C
 // SoftDeleteShippingProfiles mirrors softDeleteShippingProfiles.
 func (s *FulfillmentModuleService) SoftDeleteShippingProfiles(ctx context.Context, profileIDs []any) (*dal.CascadeResult, error) {
 	// @EmitEvents runs inside the transaction upstream (before the flush):
-	// the entity mutations emit no events
-	ctx = dal.WithoutEvents(ctx)
+	// the mutations wait in the shared aggregator for the next @EmitEvents
+	ctx = dal.WithDeferredEmit(ctx)
 	if err := s.ValidateShippingProfileDeletion(ctx, profileIDs); err != nil {
 		return nil, err
 	}

@@ -198,6 +198,10 @@ func completeCartCreateOrder(e *composer.Execution, cart *dal.Record, paymentSes
 	placed := dal.NewRecord()
 	placed.Set("id", orderIDValue)
 	err = composer.Parallelize(
+		func() error {
+			_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.placed", Data: placed})
+			return err
+		},
 		func() error { _, err := commonsteps.CreateRemoteLinkStep.Run(e, links); return err },
 		func() error { _, err := UpdateCartsStep.Run(e, []*dal.Record{updateCompletedAt}); return err },
 		func() error {
@@ -207,10 +211,6 @@ func completeCartCreateOrder(e *composer.Execution, cart *dal.Record, paymentSes
 		},
 		func() error {
 			_, err := promotionsteps.RegisterUsageStep.Run(e, promotionsteps.RegisterUsageStepInput{ComputedActions: usage, RegistrationContext: registration})
-			return err
-		},
-		func() error {
-			_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.placed", Data: placed})
 			return err
 		},
 	)
@@ -228,7 +228,7 @@ func completeCartCreateOrder(e *composer.Execution, cart *dal.Record, paymentSes
 	if reservationEvents == nil {
 		reservationEvents = []any{}
 	}
-	if _, err := commonsteps.EmitEventStep.Config("emit-reservation-item-created", composer.StepOptions{}).Run(e, commonsteps.EmitEventStepInput{EventName: "reservation_item.created", Data: reservationEvents}); err != nil {
+	if _, err := commonsteps.EmitEventStep.Config("emit-reservation-item-created", composer.StepOptions{}).Run(e, commonsteps.EmitEventStepInput{EventName: "reservation-item.created", Data: reservationEvents}); err != nil {
 		return nil, err
 	}
 	hookIn := dal.NewRecord()

@@ -925,13 +925,7 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 					changedInsts = append(changedInsts, softDeleted{inst, before})
 				}
 			}
-			for _, relation := range group.entity.Cascades.Delete {
-				// performCascadingSoftDeletion skips the inverse side of a
-				// one-to-one: the populated relation is a Reference wrapper
-				// (no deleted_at), so the child is left as it is
-				if p, ok := group.entity.MetaProperty(relation); ok && p.Kind == "1:1" && !p.Owner {
-					continue
-				}
+			for _, relation := range r.softRemoveCascades(group.entity) {
 				children, err := r.loadRelation(ctx, group.insts, relation, idm, true, nil)
 				if err != nil {
 					return nil, err
@@ -1173,4 +1167,37 @@ func setChildFK(target *dml.Entity, input *Record, column string, value any) {
 		}
 	}
 	input.Set(column, value)
+}
+
+// softRemoveCascades lists the relations with the "soft-remove" cascade of
+// the MikroORM entity built from the DML (define-relationship.ts): the
+// relations of cascades.delete, except a one-to-one whose other side owns
+// the foreign key (belongsTo): there the cascade is put on the owning side
+// instead, so a belongsTo one-to-one cascades when its target lists the
+// inverse relation in cascades.delete.
+func (r *Repository) softRemoveCascades(e *dml.Entity) []string {
+	var out []string
+	for _, relation := range e.Cascades.Delete {
+		if p, ok := e.MetaProperty(relation); ok && p.Kind == "1:1" && !p.Owner {
+			continue
+		}
+		out = append(out, relation)
+	}
+	for _, p := range e.Meta.Properties {
+		if p.Kind != "1:1" || !p.Owner || slices.Contains(out, p.Name) {
+			continue
+		}
+		inverse := p.InversedBy
+		if inverse == "" {
+			inverse = p.MappedBy
+		}
+		target, err := r.Schema.Entity(p.Entity)
+		if err != nil || inverse == "" {
+			continue
+		}
+		if slices.Contains(target.Cascades.Delete, inverse) {
+			out = append(out, p.Name)
+		}
+	}
+	return out
 }

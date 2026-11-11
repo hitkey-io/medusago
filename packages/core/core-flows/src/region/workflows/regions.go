@@ -98,15 +98,17 @@ var CreateRegionsWorkflow = composer.CreateWorkflow("create-regions",
 		}
 		err = composer.Parallelize(
 			func() error {
-				_, err := steps.SetRegionsPaymentProvidersStep.Run(e, providerData)
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "region.created", Data: idEvents(regions)})
 				return err
 			},
+			// the price preferences (one insert) complete before the payment
+			// provider links (a lookup, then the links) upstream
 			func() error {
 				_, err := pricingworkflows.CreatePricePreferencesWorkflow.RunAsStep(e, prefs)
 				return err
 			},
 			func() error {
-				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "region.created", Data: idEvents(regions)})
+				_, err := steps.SetRegionsPaymentProvidersStep.Run(e, providerData)
 				return err
 			},
 		)
@@ -156,11 +158,11 @@ var UpdateRegionsWorkflow = composer.CreateWorkflow("update-regions",
 		}
 		err = composer.Parallelize(
 			func() error {
-				_, err := steps.SetRegionsPaymentProvidersStep.Run(e, providerData)
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "region.updated", Data: idEvents(regions)})
 				return err
 			},
 			func() error {
-				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "region.updated", Data: idEvents(regions)})
+				_, err := steps.SetRegionsPaymentProvidersStep.Run(e, providerData)
 				return err
 			},
 		)

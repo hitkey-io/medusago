@@ -251,13 +251,13 @@ var DeleteLineItemsWorkflow = composer.CreateWorkflow("delete-line-items",
 		}
 		err := composer.Parallelize(
 			func() error {
-				_, err := RefreshCartItemsWorkflow.RunAsStep(e, RefreshCartItemsInput{CartID: in.CartID, AdditionalData: in.AdditionalData})
-				return err
-			},
-			func() error {
 				ev := dal.NewRecord()
 				ev.Set("id", in.CartID)
 				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "cart.updated", Data: ev})
+				return err
+			},
+			func() error {
+				_, err := RefreshCartItemsWorkflow.RunAsStep(e, RefreshCartItemsInput{CartID: in.CartID, AdditionalData: in.AdditionalData})
 				return err
 			},
 		)

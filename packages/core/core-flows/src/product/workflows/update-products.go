@@ -265,15 +265,15 @@ var UpdateProductsWorkflow = composer.CreateWorkflow("update-products",
 
 		err = composer.Parallelize(
 			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "product.updated", Data: idEvents(updated)})
+				return err
+			},
+			func() error {
 				_, err := commonsteps.CreateRemoteLinkStep.Config("create-sales-channel-links-step", composer.StepOptions{}).Run(e, salesChannelLinks)
 				return err
 			},
 			func() error {
 				_, err := commonsteps.CreateRemoteLinkStep.Config("create-shipping-profile-links-step", composer.StepOptions{}).Run(e, shippingProfileLinks)
-				return err
-			},
-			func() error {
-				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "product.updated", Data: idEvents(updated)})
 				return err
 			},
 		)
