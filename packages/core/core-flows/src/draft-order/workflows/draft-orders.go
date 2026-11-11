@@ -112,9 +112,7 @@ func graphList(e *composer.Execution, name, entity string, filters *dal.Record, 
 	return recs(res.Data), nil
 }
 
-func notAllowedCalculated() error {
-	return common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "Calculated shipping option prices are not supported yet")
-}
+
 
 var shippingOptionFieldsForPriceCalculation = []string{"id", "name", "price_type", "service_zone_id", "service_zone.fulfillment_set_id",
 	"service_zone.fulfillment_set.type", "service_zone.fulfillment_set.location.*", "service_zone.fulfillment_set.location.address.*",
