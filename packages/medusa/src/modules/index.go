@@ -23,6 +23,7 @@ var Registry = map[string]*modulessdk.ModuleExports{
 	"@medusajs/medusa/notification":             &Notification,
 	"@medusajs/medusa/order":                    &Order,
 	"@medusajs/medusa/payment":                  &Payment,
+	"@medusajs/medusa/payment-stripe":           &PaymentStripe,
 	"@medusajs/medusa/pricing":                  &Pricing,
 	"@medusajs/medusa/product":                  &Product,
 	"@medusajs/medusa/promotion":                &Promotion,
