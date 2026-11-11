@@ -11,6 +11,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
+	computeactions "github.com/hitkey-io/medusago/packages/modules/promotion/src/utils/compute-actions"
 )
 
 // ComputeActionOptions mirrors ComputeActionOptions.
@@ -656,21 +657,48 @@ func (s *PromotionModuleService) ComputeActions(ctx context.Context, promotionCo
 	codeFilter.Set("code", codes)
 	filter := codeFilter
 	if !options.PreventAutoPromotions {
+		// the automatic promotions whose rules the context can satisfy
+		// (prefiltered in SQL)
+		rulePrefilter, ok, err := computeactions.BuildPromotionRuleQueryFilterFromContext(ctx, s.DB(), applicationContext)
+		if err != nil {
+			return nil, err
+		}
 		auto := dal.NewRecord()
-		auto.Set("is_automatic", true)
+		if ok {
+			automatic := dal.NewRecord()
+			automatic.Set("is_automatic", true)
+			raw := dal.NewRecord()
+			raw.Set("__rule_prefilter", rulePrefilter)
+			pf := dal.NewRecord()
+			pf.Set("$and", []any{automatic, raw})
+			rows, err := s.Internal("Promotion").List(ctx, pf, utilsmodulessdk.FindConfig{Select: []string{"id"}})
+			if err != nil {
+				return nil, err
+			}
+			ids := []any{}
+			for _, r := range rows {
+				ids = append(ids, cget(r, "id"))
+			}
+			in := dal.NewRecord()
+			in.Set("$in", ids)
+			auto.Set("id", in)
+		} else {
+			auto.Set("is_automatic", true)
+		}
 		filter = dal.NewRecord()
 		filter.Set("$or", []any{codeFilter, auto})
 	}
-	promotions, err := s.listActivePromotions(ctx, filter, utilsmodulessdk.FindConfig{Relations: []string{
-		"application_method", "application_method.target_rules", "application_method.target_rules.values",
-		"application_method.buy_rules", "application_method.buy_rules.values", "rules", "rules.values", "campaign", "campaign.budget",
-	}})
+	// ordered by the application method value in SQL: promotions with equal
+	// values keep the order of the query plan, like upstream
+	promotions, err := s.listActivePromotions(ctx, filter, utilsmodulessdk.FindConfig{
+		Order: []dal.OrderBy{{Field: "application_method.value", Direction: "DESC"}},
+		Relations: []string{
+			"application_method", "application_method.target_rules", "application_method.target_rules.values",
+			"application_method.buy_rules", "application_method.buy_rules.values", "rules", "rules.values", "campaign", "campaign.budget",
+		}})
 	if err != nil {
 		return nil, err
 	}
-	sort.SliceStable(promotions, func(i, j int) bool {
-		return totals.Gt(cget(crec(promotions[i], "application_method"), "value"), cget(crec(promotions[j], "application_method"), "value"))
-	})
 	byPromoCode := map[string]*dal.Record{}
 	automatic := map[string]bool{}
 	for _, p := range promotions {
@@ -680,11 +708,20 @@ func (s *PromotionModuleService) ComputeActions(ctx context.Context, promotionCo
 		}
 	}
 	for _, code := range order {
+		// undefined line ids are dropped (JSON)
 		for _, a := range byCode[code].items {
-			actions = append(actions, action("action", "removeItemAdjustment", "adjustment_id", cget(a, "id"), "code", code, "item_id", cget(a, "item_id")))
+			r := action("action", "removeItemAdjustment", "adjustment_id", cget(a, "id"), "code", code)
+			if a.Has("item_id") {
+				r.Set("item_id", cget(a, "item_id"))
+			}
+			actions = append(actions, r)
 		}
 		for _, a := range byCode[code].shipping {
-			actions = append(actions, action("action", "removeShippingMethodAdjustment", "adjustment_id", cget(a, "id"), "code", code, "shipping_method_id", cget(a, "shipping_method_id")))
+			r := action("action", "removeShippingMethodAdjustment", "adjustment_id", cget(a, "id"), "code", code)
+			if a.Has("shipping_method_id") {
+				r.Set("shipping_method_id", cget(a, "shipping_method_id"))
+			}
+			actions = append(actions, r)
 		}
 	}
 	requested := map[string]bool{}

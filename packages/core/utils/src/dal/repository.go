@@ -244,8 +244,18 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 	// fields.
 	relationOrder := map[string][]OrderBy{}
 	var rootOrder []OrderBy
+	populated := map[string]bool{}
+	for _, p := range r.relationPaths(opts) {
+		populated[p] = true
+	}
 	for _, o := range opts.Order {
 		if i := strings.LastIndex(o.Field, "."); i > 0 && o.Raw == nil {
+			// a field of a populated to-one relation orders the root query
+			// through its join (MikroORM orders by the joined alias)
+			if populated[o.Field[:i]] && r.isToOnePath(o.Field[:i]) {
+				rootOrder = append(rootOrder, o)
+				continue
+			}
 			relationOrder[o.Field[:i]] = append(relationOrder[o.Field[:i]], OrderBy{Field: o.Field[i+1:], Direction: o.Direction})
 			continue
 		}
@@ -257,10 +267,6 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 	if err != nil {
 		return nil, nil, err
 	}
-	order, err := r.orderSQL(opts.Order, "e0")
-	if err != nil {
-		return nil, nil, err
-	}
 
 	// Like the BALANCED load strategy, populated to-one relations are LEFT
 	// JOINed in the root query (with the soft delete condition in the join).
@@ -268,9 +274,28 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 	// the root query (and so the order of rows with equal sort keys) the same
 	// as upstream.
 	tree := buildFieldTree(opts, r.relationPaths(opts))
-	toOneJoins, joinedColumns := r.toOneJoins(r.relationPaths(opts), tree, opts.WithDeleted)
+	toOneJoins, joinedColumns, joinAliases := r.toOneJoins(r.relationPaths(opts), tree, opts.WithDeleted)
 	if toOneJoins != "" {
 		qb.joins = append([]string{toOneJoins}, qb.joins...)
+	}
+	for i, o := range opts.Order {
+		if j := strings.LastIndex(o.Field, "."); j > 0 && o.Raw == nil {
+			path, field := o.Field[:j], o.Field[j+1:]
+			alias, entity := joinAliases[path].alias, joinAliases[path].entity
+			if entity == nil {
+				return nil, nil, fmt.Errorf("cannot order %s by %s", r.Entity.Meta.ClassName, o.Field)
+			}
+			prop, ok := entity.MetaProperty(field)
+			if !ok || len(prop.FieldNames) == 0 {
+				return nil, nil, fmt.Errorf("cannot order %s by %s", r.Entity.Meta.ClassName, o.Field)
+			}
+			column := col(alias, prop.FieldNames[0])
+			opts.Order[i] = OrderBy{Direction: o.Direction, Raw: func(string) string { return column }}
+		}
+	}
+	order, err := r.orderSQL(opts.Order, "e0")
+	if err != nil {
+		return nil, nil, err
 	}
 	rootColumns := `"e0".*`
 	if !tree.all {
@@ -346,8 +371,29 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 
 // toOneJoins builds the LEFT JOINs of the populated to-one relation chains
 // starting at the root.
-func (r *Repository) toOneJoins(paths []string, tree *fieldTree, withDeleted bool) (string, []string) {
+// joinAlias is the alias and entity of a joined to-one relation path.
+type joinAlias struct {
+	alias  string
+	entity *dml.Entity
+}
+
+// isToOnePath reports whether a relation path of the root entity only goes
+// through to-one relations.
+func (r *Repository) isToOnePath(path string) bool {
+	e := r.Entity
+	for _, rel := range strings.Split(path, ".") {
+		j, err := r.Schema.ResolveJoin(e, rel)
+		if err != nil || j.Many || j.PivotTable != "" || (j.Relation.Kind == "1:1" && !j.Relation.Owner) {
+			return false
+		}
+		e = j.Target
+	}
+	return true
+}
+
+func (r *Repository) toOneJoins(paths []string, tree *fieldTree, withDeleted bool) (string, []string, map[string]joinAlias) {
 	var joins, columns []string
+	joined := map[string]joinAlias{}
 	aliases := map[string]string{"": "e0"}
 	entities := map[string]*dml.Entity{"": r.Entity}
 	trees := map[string]*fieldTree{"": tree}
@@ -377,6 +423,7 @@ func (r *Repository) toOneJoins(paths []string, tree *fieldTree, withDeleted boo
 		joins = append(joins, fmt.Sprintf("left join %s as %s on %s", quote(j.Target.Meta.Collection), quote(alias), cond))
 		aliases[path] = alias
 		entities[path] = j.Target
+		joined[path] = joinAlias{alias: alias, entity: j.Target}
 		sub := trees[parent].children[rel]
 		if sub == nil {
 			sub = allFields
@@ -388,7 +435,7 @@ func (r *Repository) toOneJoins(paths []string, tree *fieldTree, withDeleted boo
 			columns = append(columns, fmt.Sprintf("%s as %s", col(alias, c), quote(alias+"__"+c)))
 		}
 	}
-	return strings.Join(joins, " "), columns
+	return strings.Join(joins, " "), columns, joined
 }
 
 // selectedColumns lists the columns MikroORM selects for an entity: every

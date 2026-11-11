@@ -89,6 +89,32 @@ func callService(ctx context.Context, svc any, method string, args []any) (any, 
 		case pt == reflect.TypeOf([]any(nil)):
 			a, _ := arg.([]any)
 			in = append(in, reflect.ValueOf(a))
+		case pt == reflect.TypeOf([]string(nil)):
+			list := []string{}
+			a, _ := arg.([]any)
+			for _, x := range a {
+				list = append(list, fmt.Sprint(x))
+			}
+			in = append(in, reflect.ValueOf(list))
+		case pt.Kind() == reflect.Struct:
+			// options objects: snake_case keys -> exported fields
+			v := reflect.New(pt).Elem()
+			if r, ok := arg.(*dal.Record); ok {
+				for _, k := range r.Keys() {
+					x, _ := r.Get(k)
+					name := ""
+					for _, part := range strings.Split(k, "_") {
+						if part != "" {
+							name += strings.ToUpper(part[:1]) + part[1:]
+						}
+					}
+					f := v.FieldByName(name)
+					if f.IsValid() && f.CanSet() && x != nil && reflect.TypeOf(x).AssignableTo(f.Type()) {
+						f.Set(reflect.ValueOf(x))
+					}
+				}
+			}
+			in = append(in, v)
 		default:
 			return nil, fmt.Errorf("%s: unsupported parameter %s", name, pt)
 		}
