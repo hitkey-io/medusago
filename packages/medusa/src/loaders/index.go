@@ -278,7 +278,7 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 			moduleServices[mc.Key] = v
 		}
 	}
-	q, link, err := NewDefaultQueryAndLink(pool, moduleServices)
+	q, link, _, err := NewQueryAndLink(pool, cfg, moduleServices)
 	if err != nil {
 		pool.Close()
 		return nil, err

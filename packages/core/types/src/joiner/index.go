@@ -18,6 +18,8 @@ type JoinerRelationship struct {
 	IsList        bool           `json:"isList,omitempty"`
 	HasMany       bool           `json:"hasMany,omitempty"`
 	DeleteCascade bool           `json:"deleteCascade,omitempty"`
+	// Filterable lists the fields the index module may filter on (defineLink).
+	Filterable []string `json:"filterable,omitempty"`
 	Args          map[string]any `json:"args,omitempty"`
 }
 
@@ -77,6 +79,59 @@ func (m *OrderedStringMap) UnmarshalJSON(data []byte) error {
 }
 
 // StringOrStrings holds a value typed `string | string[]` upstream.
+// MarshalJSON writes the map as an object in its order.
+func (m OrderedStringMap) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, kv := range m {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		k, _ := json.Marshal(kv.Key)
+		v, _ := json.Marshal(kv.Value)
+		buf.Write(k)
+		buf.WriteByte(':')
+		buf.Write(v)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
+}
+
+// MarshalJSON writes the fields as an object in their order.
+func (e ExtraFields) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, f := range e {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		k, _ := json.Marshal(f.Name)
+		v, err := json.Marshal(f.ExtraField)
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(k)
+		buf.WriteByte(':')
+		buf.Write(v)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
+}
+
+// Clone returns a deep copy of the config (JSON round trip, like
+// JSON.parse(JSON.stringify(config))).
+func (c *ModuleJoinerConfig) Clone() *ModuleJoinerConfig {
+	b, err := json.Marshal(c)
+	if err != nil {
+		panic(err)
+	}
+	var out ModuleJoinerConfig
+	if err := json.Unmarshal(b, &out); err != nil {
+		panic(err)
+	}
+	return &out
+}
+
 type StringOrStrings []string
 
 // UnmarshalJSON accepts both a string and an array of strings.

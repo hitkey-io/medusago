@@ -331,6 +331,10 @@ type Linkable struct {
 	ServiceName string `json:"serviceName"`
 	Field       string `json:"field"`
 	Entity      string `json:"entity"`
+	// Alias and Filterable are the optional alias and filterable fields of
+	// an InputSource given to defineLink.
+	Alias      string   `json:"alias,omitempty"`
+	Filterable []string `json:"filterable,omitempty"`
 }
 
 // ModelLinkConfig is the linkable config of one model: its linkable keys by
