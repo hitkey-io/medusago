@@ -96,7 +96,13 @@ func paymentModule() (config.ModuleConfig, bool) {
 // fulfillmentModule mirrors the fulfillment module entry of the reference
 // application's medusa-config.js.
 func fulfillmentModule() (config.ModuleConfig, bool) {
-	return config.ModuleConfig{}, false
+	if os.Getenv("MEDUSA_TEST_CALCULATED_FULFILLMENT") != "true" {
+		return config.ModuleConfig{}, false
+	}
+	return config.ModuleConfig{Key: "fulfillment", Resolve: "@medusajs/medusa/fulfillment", Providers: []config.ModuleProviderConfig{
+		{Resolve: "@medusajs/medusa/fulfillment-manual", ID: "manual"},
+		{Resolve: testCalculatedResolve, ID: "calc"},
+	}}, true
 }
 
 // signBody signs a webhook body for a provider: it returns the body to send

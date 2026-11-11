@@ -3,6 +3,7 @@ package workflows
 import (
 	. "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/utils"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
+	fulfillmentsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/fulfillment/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
@@ -24,6 +25,13 @@ type PricedOptionsInput struct {
 	AdditionalData *dal.Record
 }
 
+func getOK(r *dal.Record, k string) (any, bool) {
+	if r == nil {
+		return nil, false
+	}
+	return r.Get(k)
+}
+
 func shippingAddressFilter(cart *dal.Record) *dal.Record {
 	addr := dal.NewRecord()
 	sa := Rec(cart, "shipping_address")
@@ -35,7 +43,7 @@ func shippingAddressFilter(cart *dal.Record) *dal.Record {
 }
 
 // ListShippingOptionsForCartWithPricingWorkflow mirrors listShippingOptionsForCartWithPricingWorkflow
-// (calculated price types are not supported yet).
+// (the setShippingOptionsContext and setCalculatedShippingPricingContext hooks have no handlers).
 var ListShippingOptionsForCartWithPricingWorkflow = composer.CreateWorkflow("list-shipping-options-for-cart-with-pricing",
 	func(e *composer.Execution, in PricedOptionsInput) ([]*dal.Record, error) {
 		var optionIDs []any
@@ -116,9 +124,6 @@ var ListShippingOptionsForCartWithPricingWorkflow = composer.CreateWorkflow("lis
 				calcIDs = append(calcIDs, Get(o, "id"))
 			}
 		}
-		if len(calcIDs) > 0 {
-			return nil, errNotSupported("calculated shipping option prices")
-		}
 		if flatIDs == nil {
 			flatIDs = []any{}
 		}
@@ -132,6 +137,50 @@ var ListShippingOptionsForCartWithPricingWorkflow = composer.CreateWorkflow("lis
 		flat, err := commonsteps.UseRemoteQueryStep.Config("shipping-options-query-flat-rate", composer.StepOptions{}).Run(e, commonsteps.RemoteStepInput{EntryPoint: "shipping_options", Fields: flatRateFields, Variables: vars})
 		if err != nil {
 			return nil, err
+		}
+		var calculated []*dal.Record
+		var prices []*dal.Record
+		if len(calcIDs) > 0 {
+			cvars := dal.NewRecord()
+			cvars.Set("context", ctxRec)
+			cvars.Set("filters", filters)
+			cvars.Set("id", calcIDs)
+			calc, err := commonsteps.UseRemoteQueryStep.Config("shipping-options-query-calculated", composer.StepOptions{}).Run(e, commonsteps.RemoteStepInput{EntryPoint: "shipping_options", Fields: commonOptionsFields, Variables: cvars})
+			if err != nil {
+				return nil, err
+			}
+			calculated = Records(calc.Data)
+			dataOf := map[any]any{}
+			for _, o := range in.Options {
+				dataOf[Get(o, "id")] = Get(o, "data")
+			}
+			var input []*dal.Record
+			for _, so := range calculated {
+				c := dal.NewRecord()
+				for _, k := range cart.Keys() {
+					c.Set(k, Get(cart, k))
+				}
+				c.Set("items", FilterCartItemsByShippingProfile(Records(Get(cart, "items")), Get(so, "shipping_profile_id")))
+				if loc, ok := locationOf[Get(Rec(so, "service_zone"), "fulfillment_set_id")]; ok {
+					c.Set("from_location", loc)
+				}
+				d := dal.NewRecord()
+				d.Set("id", Get(so, "id"))
+				d.Set("optionData", Get(so, "data"))
+				d.Set("context", c)
+				if v := dataOf[Get(so, "id")]; v != nil {
+					d.Set("data", v)
+				}
+				d.Set("provider_id", Get(so, "provider_id"))
+				input = append(input, d)
+			}
+			if input == nil {
+				input = []*dal.Record{}
+			}
+			prices, err = fulfillmentsteps.CalculateShippingOptionsPricesStep.Run(e, input)
+			if err != nil {
+				return nil, err
+			}
 		}
 		var out []*dal.Record
 		for _, o := range Records(flat.Data) {
@@ -148,6 +197,30 @@ var ListShippingOptionsForCartWithPricingWorkflow = composer.CreateWorkflow("lis
 				r.Delete("amount")
 			}
 			r.Set("is_tax_inclusive", Truthy(Get(price, "is_calculated_price_tax_inclusive")))
+			r.Set("stock_location", locationOf[Get(Rec(o, "service_zone"), "fulfillment_set_id")])
+			out = append(out, r)
+		}
+		for i, o := range calculated {
+			var price *dal.Record
+			if i < len(prices) {
+				price = prices[i]
+			}
+			r := Copy(o)
+			if v, ok := getOK(price, "calculated_amount"); ok {
+				r.Set("amount", v)
+			} else {
+				r.Delete("amount")
+			}
+			if v, ok := getOK(price, "is_calculated_price_tax_inclusive"); ok {
+				r.Set("is_tax_inclusive", v)
+			} else {
+				r.Delete("is_tax_inclusive")
+			}
+			if price != nil {
+				r.Set("calculated_price", price)
+			} else {
+				r.Delete("calculated_price")
+			}
 			r.Set("stock_location", locationOf[Get(Rec(o, "service_zone"), "fulfillment_set_id")])
 			out = append(out, r)
 		}

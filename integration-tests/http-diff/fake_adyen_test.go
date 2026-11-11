@@ -62,7 +62,7 @@ func rget(r *dal.Record, path ...string) any {
 	var cur any = r
 	for _, p := range path {
 		rec, ok := cur.(*dal.Record)
-		if !ok {
+		if !ok || rec == nil {
 			return nil
 		}
 		cur, _ = rec.Get(p)
