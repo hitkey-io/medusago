@@ -89,6 +89,9 @@ func coalesce(a, b any) any {
 // ComputeDraftOrderAdjustmentsWorkflow mirrors computeDraftOrderAdjustmentsWorkflow.
 var ComputeDraftOrderAdjustmentsWorkflow = composer.CreateWorkflow("compute-draft-order-adjustments",
 	func(e *composer.Execution, orderID any) (any, error) {
+		if err := acquireLock(e, orderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", orderID, DraftOrderFieldsForRefreshSteps)
 		if err != nil {
 			return nil, err
@@ -170,13 +173,15 @@ var ComputeDraftOrderAdjustmentsWorkflow = composer.CreateWorkflow("compute-draf
 				return nil, err
 			}
 		}
-		return nil, nil
+		return nil, releaseLock(e, orderID)
 	})
 
-// BeginDraftOrderEditWorkflow mirrors beginDraftOrderEditWorkflow (locks are
-// not ported).
+// BeginDraftOrderEditWorkflow mirrors beginDraftOrderEditWorkflow.
 var BeginDraftOrderEditWorkflow = composer.CreateWorkflow("begin-draft-order-edit",
 	func(e *composer.Execution, in *dal.Record) (*dal.Record, error) {
+		if err := acquireLock(e, g(in, "order_id")); err != nil {
+			return nil, err
+		}
 		orderID := g(in, "order_id")
 		order, err := remoteOne(e, "order-query", "orders", orderID, []string{"id", "status", "is_draft_order"})
 		if err != nil {
@@ -192,6 +197,9 @@ var BeginDraftOrderEditWorkflow = composer.CreateWorkflow("begin-draft-order-edi
 		if _, err := ordersteps.CreateOrderChangeStep.Run(e, c); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, g(in, "order_id")); err != nil {
+			return nil, err
+		}
 		return preview(e, orderID)
 	})
 
@@ -205,6 +213,9 @@ type DraftOrderItemsInput struct {
 // AddDraftOrderItemsWorkflow mirrors addDraftOrderItemsWorkflow.
 var AddDraftOrderItemsWorkflow = composer.CreateWorkflow("add-draft-order-items",
 	func(e *composer.Execution, in DraftOrderItemsInput) (*dal.Record, error) {
+		if err := acquireLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", in.OrderID, DraftOrderFieldsForRefreshSteps)
 		if err != nil {
 			return nil, err
@@ -253,6 +264,9 @@ var AddDraftOrderItemsWorkflow = composer.CreateWorkflow("add-draft-order-items"
 		if err := computeIfPromotions(e, order, in.OrderID); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		return preview(e, in.OrderID)
 	})
 
@@ -266,6 +280,9 @@ type DraftOrderActionInput struct {
 // UpdateDraftOrderActionItemWorkflow mirrors updateDraftOrderActionItemWorkflow.
 var UpdateDraftOrderActionItemWorkflow = composer.CreateWorkflow("update-draft-order-action-item",
 	func(e *composer.Execution, in DraftOrderActionInput) (*dal.Record, error) {
+		if err := acquireLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", in.OrderID, DraftOrderFieldsForRefreshSteps)
 		if err != nil {
 			return nil, err
@@ -300,12 +317,18 @@ var UpdateDraftOrderActionItemWorkflow = composer.CreateWorkflow("update-draft-o
 		if err := computeIfPromotions(e, order, in.OrderID); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		return preview(e, in.OrderID)
 	})
 
 // RemoveDraftOrderActionItemWorkflow mirrors removeDraftOrderActionItemWorkflow.
 var RemoveDraftOrderActionItemWorkflow = composer.CreateWorkflow("remove-draft-order-action-item",
 	func(e *composer.Execution, in DraftOrderActionInput) (*dal.Record, error) {
+		if err := acquireLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", in.OrderID, []string{"id", "status", "is_draft_order", "canceled_at", "items.*"})
 		if err != nil {
 			return nil, err
@@ -333,12 +356,18 @@ var RemoveDraftOrderActionItemWorkflow = composer.CreateWorkflow("remove-draft-o
 		if err := computeIfPromotions(e, refetched, in.OrderID); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		return preview(e, in.OrderID)
 	})
 
 // UpdateDraftOrderItemWorkflow mirrors updateDraftOrderItemWorkflow.
 var UpdateDraftOrderItemWorkflow = composer.CreateWorkflow("update-draft-order-item",
 	func(e *composer.Execution, in DraftOrderItemsInput) (*dal.Record, error) {
+		if err := acquireLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", in.OrderID, DraftOrderFieldsForRefreshSteps)
 		if err != nil {
 			return nil, err
@@ -383,6 +412,9 @@ var UpdateDraftOrderItemWorkflow = composer.CreateWorkflow("update-draft-order-i
 		if err := computeIfPromotions(e, order, in.OrderID); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		return preview(e, in.OrderID)
 	})
 
@@ -395,6 +427,9 @@ type DraftOrderPromotionsInput struct {
 func draftPromotionsWorkflow(name, action, changeAction, detailKey string, validate *composer.Step[draftordersteps.PromoCodesValidationInput, any]) *composer.Workflow[DraftOrderPromotionsInput, *dal.Record] {
 	return composer.CreateWorkflow(name,
 		func(e *composer.Execution, in DraftOrderPromotionsInput) (*dal.Record, error) {
+			if err := acquireLock(e, in.OrderID); err != nil {
+				return nil, err
+			}
 			order, err := remoteOne(e, "order-query", "orders", in.OrderID, DraftOrderFieldsForRefreshSteps)
 			if err != nil {
 				return nil, err
@@ -444,6 +479,9 @@ func draftPromotionsWorkflow(name, action, changeAction, detailKey string, valid
 				return nil, err
 			}
 			if _, err := ComputeDraftOrderAdjustmentsWorkflow.RunAsStep(e, in.OrderID); err != nil {
+				return nil, err
+			}
+			if err := releaseLock(e, in.OrderID); err != nil {
 				return nil, err
 			}
 			return preview(e, in.OrderID)
@@ -504,6 +542,9 @@ var FetchShippingOptionForDraftOrderWorkflow = composer.CreateWorkflow("fetch-sh
 // AddDraftOrderShippingMethodsWorkflow mirrors addDraftOrderShippingMethodsWorkflow.
 var AddDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow("add-draft-order-shipping-methods",
 	func(e *composer.Execution, in *dal.Record) (*dal.Record, error) {
+		if err := acquireLock(e, g(in, "order_id")); err != nil {
+			return nil, err
+		}
 		orderID := g(in, "order_id")
 		order, err := remoteOne(e, "order-query", "orders", orderID, DraftOrderFieldsForRefreshSteps)
 		if err != nil {
@@ -553,12 +594,18 @@ var AddDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow("add-draft-or
 		if err := computeIfPromotions(e, order, orderID); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, g(in, "order_id")); err != nil {
+			return nil, err
+		}
 		return preview(e, g(order, "id"))
 	})
 
 // UpdateDraftOrderActionShippingMethodWorkflow mirrors updateDraftOrderActionShippingMethodWorkflow.
 var UpdateDraftOrderActionShippingMethodWorkflow = composer.CreateWorkflow("update-draft-order-action-shipping-method",
 	func(e *composer.Execution, in DraftOrderActionInput) (*dal.Record, error) {
+		if err := acquireLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", in.OrderID, DraftOrderFieldsForRefreshSteps)
 		if err != nil {
 			return nil, err
@@ -621,12 +668,18 @@ var UpdateDraftOrderActionShippingMethodWorkflow = composer.CreateWorkflow("upda
 		if err := computeIfPromotions(e, order, in.OrderID); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		return preview(e, in.OrderID)
 	})
 
 // RemoveDraftOrderActionShippingMethodWorkflow mirrors removeDraftOrderActionShippingMethodWorkflow.
 var RemoveDraftOrderActionShippingMethodWorkflow = composer.CreateWorkflow("remove-draft-order-action-shipping-method",
 	func(e *composer.Execution, in DraftOrderActionInput) (*dal.Record, error) {
+		if err := acquireLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", in.OrderID, DraftOrderFieldsForRefreshSteps)
 		if err != nil {
 			return nil, err
@@ -658,12 +711,18 @@ var RemoveDraftOrderActionShippingMethodWorkflow = composer.CreateWorkflow("remo
 		if err := computeIfPromotions(e, order, in.OrderID); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		return preview(e, in.OrderID)
 	})
 
 // UpdateDraftOrderShippingMethodWorkflow mirrors updateDraftOrderShippingMethodWorkflow.
 var UpdateDraftOrderShippingMethodWorkflow = composer.CreateWorkflow("update-draft-order-shipping-method",
 	func(e *composer.Execution, in DraftOrderActionInput) (*dal.Record, error) {
+		if err := acquireLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", in.OrderID, []string{"id", "status", "is_draft_order"})
 		if err != nil {
 			return nil, err
@@ -709,12 +768,18 @@ var UpdateDraftOrderShippingMethodWorkflow = composer.CreateWorkflow("update-dra
 		if err := computeIfPromotions(e, refetched, in.OrderID); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		return preview(e, in.OrderID)
 	})
 
 // RemoveDraftOrderShippingMethodWorkflow mirrors removeDraftOrderShippingMethodWorkflow.
 var RemoveDraftOrderShippingMethodWorkflow = composer.CreateWorkflow("remove-draft-order-shipping-method",
 	func(e *composer.Execution, in DraftOrderActionInput) (*dal.Record, error) {
+		if err := acquireLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", in.OrderID, DraftOrderFieldsForRefreshSteps)
 		if err != nil {
 			return nil, err
@@ -738,6 +803,9 @@ var RemoveDraftOrderShippingMethodWorkflow = composer.CreateWorkflow("remove-dra
 		if err := computeIfPromotions(e, order, in.OrderID); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		return preview(e, g(order, "id"))
 	})
 
@@ -750,6 +818,9 @@ type DraftOrderEditUserInput struct {
 // RequestDraftOrderEditWorkflow mirrors requestDraftOrderEditWorkflow.
 var RequestDraftOrderEditWorkflow = composer.CreateWorkflow("request-draft-order-edit",
 	func(e *composer.Execution, in DraftOrderEditUserInput) (*dal.Record, error) {
+		if err := acquireLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", in.OrderID, []string{"id", "version", "status", "is_draft_order", "canceled_at"})
 		if err != nil {
 			return nil, err
@@ -776,12 +847,18 @@ var RequestDraftOrderEditWorkflow = composer.CreateWorkflow("request-draft-order
 		if _, err := orderworkflows.CreateOrUpdateOrderPaymentCollectionWorkflow.RunAsStep(e, pc); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		return preview(e, g(order, "id"))
 	})
 
 // ConfirmDraftOrderEditWorkflow mirrors confirmDraftOrderEditWorkflow.
 var ConfirmDraftOrderEditWorkflow = composer.CreateWorkflow("confirm-draft-order-edit",
 	func(e *composer.Execution, in DraftOrderEditUserInput) (*dal.Record, error) {
+		if err := acquireLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", in.OrderID, []string{"id", "status", "is_draft_order", "version", "canceled_at",
 			"items.id", "items.title", "items.variant_title", "items.variant_sku", "items.variant_barcode", "shipping_address.*"})
 		if err != nil {
@@ -815,12 +892,22 @@ var ConfirmDraftOrderEditWorkflow = composer.CreateWorkflow("confirm-draft-order
 		if _, err := orderworkflows.CreateOrUpdateOrderPaymentCollectionWorkflow.RunAsStep(e, pc); err != nil {
 			return nil, err
 		}
-		return preview(e, g(order, "id"))
+		orderPreview, err := preview(e, g(order, "id"))
+		if err != nil {
+			return nil, err
+		}
+		if err := releaseLock(e, in.OrderID); err != nil {
+			return nil, err
+		}
+		return orderPreview, nil
 	})
 
 // CancelDraftOrderEditWorkflow mirrors cancelDraftOrderEditWorkflow.
 var CancelDraftOrderEditWorkflow = composer.CreateWorkflow("cancel-draft-order-edit",
 	func(e *composer.Execution, orderID any) (any, error) {
+		if err := acquireLock(e, orderID); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", orderID, append([]string{"version"}, DraftOrderFieldsForRefreshSteps...))
 		if err != nil {
 			return nil, err
@@ -913,5 +1000,5 @@ var CancelDraftOrderEditWorkflow = composer.CreateWorkflow("cancel-draft-order-e
 				return nil, err
 			}
 		}
-		return nil, nil
+		return nil, releaseLock(e, orderID)
 	})

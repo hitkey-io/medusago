@@ -92,9 +92,8 @@ var beginOrderEditValidationStep = composer.CreateStep("begin-order-edit-validat
 		return composer.NewStepResponse[any](nil), nil
 	}, nil)
 
-// BeginOrderEditOrderWorkflow mirrors beginOrderEditOrderWorkflow (locks are
-// not ported).
-var BeginOrderEditOrderWorkflow = composer.CreateWorkflow("begin-order-edit-order",
+// BeginOrderEditOrderWorkflow mirrors beginOrderEditOrderWorkflow.
+var BeginOrderEditOrderWorkflow = composer.CreateWorkflow("begin-order-edit-order", withOrderLock(func(in *dal.Record) any { return g(in, "order_id") },
 	func(e *composer.Execution, in *dal.Record) (*dal.Record, error) {
 		order, err := queryOrderForEdit(e, "", g(in, "order_id"))
 		if err != nil {
@@ -108,7 +107,7 @@ var BeginOrderEditOrderWorkflow = composer.CreateWorkflow("begin-order-edit-orde
 		c.Set("order_id", g(in, "order_id"))
 		setIfPresent(c, in, "created_by", "description", "internal_note")
 		return ordersteps.CreateOrderChangeStep.Run(e, c)
-	})
+	}))
 
 var orderEditAddNewItemValidationStep = editValidationStep("order-edit-add-new-item-validation")
 
@@ -119,7 +118,7 @@ type OrderEditItemsInput struct {
 }
 
 // OrderEditAddNewItemWorkflow mirrors orderEditAddNewItemWorkflow.
-var OrderEditAddNewItemWorkflow = composer.CreateWorkflow("order-edit-add-new-item",
+var OrderEditAddNewItemWorkflow = composer.CreateWorkflow("order-edit-add-new-item", withOrderLock(func(in OrderEditItemsInput) any { return in.OrderID },
 	func(e *composer.Execution, in OrderEditItemsInput) (*dal.Record, error) {
 		order, err := queryOrderForEdit(e, "order-query", in.OrderID)
 		if err != nil {
@@ -175,12 +174,12 @@ var OrderEditAddNewItemWorkflow = composer.CreateWorkflow("order-edit-add-new-it
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(in.OrderID))
-	})
+	}))
 
 var orderEditUpdateItemQuantityValidationStep = editValidationStep("order-edit-update-item-quantity-validation")
 
 // OrderEditUpdateItemQuantityWorkflow mirrors orderEditUpdateItemQuantityWorkflow.
-var OrderEditUpdateItemQuantityWorkflow = composer.CreateWorkflow("order-edit-update-item-quantity",
+var OrderEditUpdateItemQuantityWorkflow = composer.CreateWorkflow("order-edit-update-item-quantity", withOrderLock(func(in OrderEditItemsInput) any { return in.OrderID },
 	func(e *composer.Execution, in OrderEditItemsInput) (*dal.Record, error) {
 		order, err := queryOrderForEdit(e, "order-query", in.OrderID)
 		if err != nil {
@@ -224,10 +223,10 @@ var OrderEditUpdateItemQuantityWorkflow = composer.CreateWorkflow("order-edit-up
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(in.OrderID))
-	})
+	}))
 
 // CreateOrderEditShippingMethodWorkflow mirrors createOrderEditShippingMethodWorkflow.
-var CreateOrderEditShippingMethodWorkflow = composer.CreateWorkflow("create-order-edit-shipping-method",
+var CreateOrderEditShippingMethodWorkflow = composer.CreateWorkflow("create-order-edit-shipping-method", withOrderLock(func(in *dal.Record) any { return g(in, "order_id") },
 	func(e *composer.Execution, in *dal.Record) (*dal.Record, error) {
 		order, err := queryOrderOne(e, g(in, "order_id"), []string{"id", "status", "currency_code", "canceled_at", "locale"})
 		if err != nil {
@@ -301,7 +300,7 @@ var CreateOrderEditShippingMethodWorkflow = composer.CreateWorkflow("create-orde
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(g(order, "id")))
-	})
+	}))
 
 var requestOrderEditRequestValidationStep = editValidationStep("validate-order-edit-request")
 
@@ -313,7 +312,7 @@ type OrderEditRequestInput struct {
 }
 
 // RequestOrderEditRequestWorkflow mirrors requestOrderEditRequestWorkflow.
-var RequestOrderEditRequestWorkflow = composer.CreateWorkflow("order-edit-request",
+var RequestOrderEditRequestWorkflow = composer.CreateWorkflow("order-edit-request", withOrderLock(func(in OrderEditRequestInput) any { return in.OrderID },
 	func(e *composer.Execution, in OrderEditRequestInput) (*dal.Record, error) {
 		order, err := queryOrderForEdit(e, "order-query", in.OrderID)
 		if err != nil {
@@ -349,7 +348,7 @@ var RequestOrderEditRequestWorkflow = composer.CreateWorkflow("order-edit-reques
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(g(order, "id")))
-	})
+	}))
 
 var confirmOrderEditRequestValidationStep = editValidationStep("confirm-order-edit-request-validation")
 
@@ -360,7 +359,7 @@ type ConfirmOrderEditRequestInput struct {
 }
 
 // ConfirmOrderEditRequestWorkflow mirrors confirmOrderEditRequestWorkflow.
-var ConfirmOrderEditRequestWorkflow = composer.CreateWorkflow("confirm-order-edit-request",
+var ConfirmOrderEditRequestWorkflow = composer.CreateWorkflow("confirm-order-edit-request", withOrderLock(func(in ConfirmOrderEditRequestInput) any { return in.OrderID },
 	func(e *composer.Execution, in ConfirmOrderEditRequestInput) (*dal.Record, error) {
 		order, err := queryOrderForEdit(e, "order-query", in.OrderID)
 		if err != nil {
@@ -503,12 +502,12 @@ var ConfirmOrderEditRequestWorkflow = composer.CreateWorkflow("confirm-order-edi
 			return nil, err
 		}
 		return preview, nil
-	})
+	}))
 
 var cancelBeginOrderEditValidationStep = editValidationStep("validate-cancel-begin-order-edit")
 
 // CancelBeginOrderEditWorkflow mirrors cancelBeginOrderEditWorkflow.
-var CancelBeginOrderEditWorkflow = composer.CreateWorkflow("cancel-begin-order-edit",
+var CancelBeginOrderEditWorkflow = composer.CreateWorkflow("cancel-begin-order-edit", withOrderLock(func(orderID any) any { return orderID },
 	func(e *composer.Execution, orderID any) (any, error) {
 		order, err := queryOrderForEdit(e, "order-query", orderID)
 		if err != nil {
@@ -541,4 +540,4 @@ var CancelBeginOrderEditWorkflow = composer.CreateWorkflow("cancel-begin-order-e
 				return err
 			},
 		)
-	})
+	}))

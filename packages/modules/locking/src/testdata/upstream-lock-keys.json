@@ -1,0 +1,96 @@
+{
+  "keys": [
+    {
+      "key": "",
+      "advisory_lock_key": 5381,
+      "redis_key": "medusa_lock:",
+      "redis_key_custom_prefix": "custom:"
+    },
+    {
+      "key": "a",
+      "advisory_lock_key": 177604,
+      "redis_key": "medusa_lock:a",
+      "redis_key_custom_prefix": "custom:a"
+    },
+    {
+      "key": "cart_01JABCDEF0123456789ABCDEFG",
+      "advisory_lock_key": 2647901747,
+      "redis_key": "medusa_lock:cart_01JABCDEF0123456789ABCDEFG",
+      "redis_key_custom_prefix": "custom:cart_01JABCDEF0123456789ABCDEFG"
+    },
+    {
+      "key": "order_01K0000000000000000000000Z",
+      "advisory_lock_key": 855698820,
+      "redis_key": "medusa_lock:order_01K0000000000000000000000Z",
+      "redis_key_custom_prefix": "custom:order_01K0000000000000000000000Z"
+    },
+    {
+      "key": "iitem_01HZZZZZZZZZZZZZZZZZZZZZZZ",
+      "advisory_lock_key": 2471201973,
+      "redis_key": "medusa_lock:iitem_01HZZZZZZZZZZZZZZZZZZZZZZZ",
+      "redis_key_custom_prefix": "custom:iitem_01HZZZZZZZZZZZZZZZZZZZZZZZ"
+    },
+    {
+      "key": "index-module:create-partitions",
+      "advisory_lock_key": 997004846,
+      "redis_key": "medusa_lock:index-module:create-partitions",
+      "redis_key_custom_prefix": "custom:index-module:create-partitions"
+    },
+    {
+      "key": "migration-scripts-running",
+      "advisory_lock_key": 1916773746,
+      "redis_key": "medusa_lock:migration-scripts-running",
+      "redis_key_custom_prefix": "custom:migration-scripts-running"
+    },
+    {
+      "key": "product",
+      "advisory_lock_key": 1582298350,
+      "redis_key": "medusa_lock:product",
+      "redis_key_custom_prefix": "custom:product"
+    },
+    {
+      "key": "search:seed:products",
+      "advisory_lock_key": 3814747172,
+      "redis_key": "medusa_lock:search:seed:products",
+      "redis_key_custom_prefix": "custom:search:seed:products"
+    },
+    {
+      "key": "äöü ñ",
+      "advisory_lock_key": 39264218,
+      "redis_key": "medusa_lock:äöü ñ",
+      "redis_key_custom_prefix": "custom:äöü ñ"
+    },
+    {
+      "key": "ключ-блокировки",
+      "advisory_lock_key": 1212706776,
+      "redis_key": "medusa_lock:ключ-блокировки",
+      "redis_key_custom_prefix": "custom:ключ-блокировки"
+    },
+    {
+      "key": "emoji-😀-key",
+      "advisory_lock_key": 1514228267,
+      "redis_key": "medusa_lock:emoji-😀-key",
+      "redis_key_custom_prefix": "custom:emoji-😀-key"
+    },
+    {
+      "key": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "advisory_lock_key": 2267872517,
+      "redis_key": "medusa_lock:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "redis_key_custom_prefix": "custom:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+  ],
+  "scripts": {
+    "acquireLock": {
+      "numberOfKeys": 1,
+      "lua": "\n        local key = KEYS[1]\n        local ownerId = ARGV[1]\n        local ttl = tonumber(ARGV[2])\n        local awaitQueue = ARGV[3] == 'true'\n\n        local setArgs = {key, ownerId, 'NX'}\n        if ttl > 0 then\n            table.insert(setArgs, 'EX')\n            table.insert(setArgs, ttl)\n        end\n\n        local setResult = redis.call('SET', unpack(setArgs))\n\n        if setResult then\n            return 1\n        elseif not awaitQueue then\n            -- Key already exists; retrieve the current ownerId\n            local currentOwnerId = redis.call('GET', key)\n            if currentOwnerId == '*' then\n              return 0\n            elseif currentOwnerId == ownerId then\n                setArgs = {key, ownerId, 'XX'}\n                if ttl > 0 then\n                    table.insert(setArgs, 'EX')\n                    table.insert(setArgs, ttl)\n                end\n                redis.call('SET', unpack(setArgs))\n                return 1\n            else\n                return 0\n            end\n        else\n            return 0\n        end\n\n      "
+    },
+    "extendLock": {
+      "numberOfKeys": 1,
+      "lua": "\n        local key = KEYS[1]\n        local ownerId = ARGV[1]\n        local ttl = tonumber(ARGV[2])\n\n        if redis.call('GET', key) == ownerId then\n          return redis.call('EXPIRE', key, ttl)\n        else\n          return 0\n        end\n      "
+    },
+    "releaseLock": {
+      "numberOfKeys": 1,
+      "lua": "\n        local key = KEYS[1]\n        local ownerId = ARGV[1]\n\n        if redis.call('GET', key) == ownerId then\n          return redis.call('DEL', key)\n        else\n          return 0\n        end\n      "
+    }
+  }
+}

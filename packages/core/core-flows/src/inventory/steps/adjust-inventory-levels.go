@@ -3,6 +3,7 @@ package steps
 import (
 	"context"
 
+	lockingsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/locking/steps"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
@@ -37,15 +38,28 @@ func get(r *dal.Record, k string) any {
 	return v
 }
 
-// AdjustInventoryLevelsStep mirrors adjustInventoryLevelsStep (locks not
-// ported).
+func lockingKeys(list []*dal.Record) []string {
+	ids := make([]any, len(list))
+	for i, item := range list {
+		ids[i] = get(item, "inventory_item_id")
+	}
+	return lockingsteps.UniqueKeys(ids)
+}
+
+// AdjustInventoryLevelsStep mirrors adjustInventoryLevelsStep: the levels are
+// adjusted while their inventory items are locked.
 var AdjustInventoryLevelsStep = composer.CreateStep("adjust-inventory-levels-step",
 	func(ctx composer.StepExecutionContext, input []*dal.Record) (composer.StepResponse[[]*dal.Record], error) {
 		if len(input) == 0 {
 			return composer.NewStepResponse([]*dal.Record{}, any([]*dal.Record{})), nil
 		}
 		svc := ctx.Container.Resolve(utilsmodulessdk.INVENTORY).(adjuster)
-		levels, err := svc.AdjustInventory(ctx.Context, adjustInput(input, false))
+		var levels []*dal.Record
+		err := lockingsteps.Execute(ctx.Context, ctx.Container, lockingKeys(input), func(lctx context.Context) error {
+			var err error
+			levels, err = svc.AdjustInventory(lctx, adjustInput(input, false))
+			return err
+		})
 		if err != nil {
 			return composer.StepResponse[[]*dal.Record]{}, err
 		}
@@ -56,6 +70,8 @@ var AdjustInventoryLevelsStep = composer.CreateStep("adjust-inventory-levels-ste
 		if len(input) == 0 {
 			return nil
 		}
-		_, err := ctx.Container.Resolve(utilsmodulessdk.INVENTORY).(adjuster).AdjustInventory(ctx.Context, adjustInput(input, true))
-		return err
+		return lockingsteps.Execute(ctx.Context, ctx.Container, lockingKeys(input), func(lctx context.Context) error {
+			_, err := ctx.Container.Resolve(utilsmodulessdk.INVENTORY).(adjuster).AdjustInventory(lctx, adjustInput(input, true))
+			return err
+		})
 	})

@@ -95,7 +95,7 @@ var updateOrderEditAddItemValidationStep = composer.CreateStep("update-order-edi
 	}, nil)
 
 // UpdateOrderEditAddItemWorkflow mirrors updateOrderEditAddItemWorkflow.
-var UpdateOrderEditAddItemWorkflow = composer.CreateWorkflow("update-order-edit-add-item",
+var UpdateOrderEditAddItemWorkflow = composer.CreateWorkflow("update-order-edit-add-item", withOrderLock(func(in OrderChangeActionInput) any { return in.OrderID },
 	func(e *composer.Execution, in OrderChangeActionInput) (*dal.Record, error) {
 		order, err := queryOrderForEdit(e, "order-query", in.OrderID)
 		if err != nil {
@@ -130,7 +130,7 @@ var UpdateOrderEditAddItemWorkflow = composer.CreateWorkflow("update-order-edit-
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(g(order, "id")))
-	})
+	}))
 
 var removeOrderEditItemActionValidationStep = composer.CreateStep("remove-item-order-edit-action-validation",
 	func(ctx composer.StepExecutionContext, in editActionValidation) (composer.StepResponse[any], error) {
@@ -147,7 +147,7 @@ var removeOrderEditItemActionValidationStep = composer.CreateStep("remove-item-o
 	}, nil)
 
 // RemoveItemOrderEditActionWorkflow mirrors removeItemOrderEditActionWorkflow.
-var RemoveItemOrderEditActionWorkflow = composer.CreateWorkflow("remove-item-order edit-action",
+var RemoveItemOrderEditActionWorkflow = composer.CreateWorkflow("remove-item-order edit-action", withOrderLock(func(in OrderChangeActionInput) any { return in.OrderID },
 	func(e *composer.Execution, in OrderChangeActionInput) (*dal.Record, error) {
 		order, err := queryOrderForEdit(e, "order-query", in.OrderID)
 		if err != nil {
@@ -167,7 +167,7 @@ var RemoveItemOrderEditActionWorkflow = composer.CreateWorkflow("remove-item-ord
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(g(order, "id")))
-	})
+	}))
 
 func shippingActionValidationStep(name string) *composer.Step[editActionValidation, any] {
 	return composer.CreateStep(name,
@@ -252,7 +252,7 @@ func customAmountNull(data *dal.Record) bool {
 }
 
 // UpdateOrderEditShippingMethodWorkflow mirrors updateOrderEditShippingMethodWorkflow.
-var UpdateOrderEditShippingMethodWorkflow = composer.CreateWorkflow("update-order-edit-shipping-method",
+var UpdateOrderEditShippingMethodWorkflow = composer.CreateWorkflow("update-order-edit-shipping-method", withOrderLock(func(in OrderChangeActionInput) any { return in.OrderID },
 	func(e *composer.Execution, in OrderChangeActionInput) (*dal.Record, error) {
 		order, err := queryOrderForEdit(e, "order-query", in.OrderID)
 		if err != nil {
@@ -283,12 +283,12 @@ var UpdateOrderEditShippingMethodWorkflow = composer.CreateWorkflow("update-orde
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(in.OrderID))
-	})
+	}))
 
 var removeOrderEditShippingMethodValidationStep = shippingActionValidationStep("validate-remove-order-edit-shipping-method")
 
 // RemoveOrderEditShippingMethodWorkflow mirrors removeOrderEditShippingMethodWorkflow.
-var RemoveOrderEditShippingMethodWorkflow = composer.CreateWorkflow("remove-order-edit-shipping-method",
+var RemoveOrderEditShippingMethodWorkflow = composer.CreateWorkflow("remove-order-edit-shipping-method", withOrderLock(func(in OrderChangeActionInput) any { return in.OrderID },
 	func(e *composer.Execution, in OrderChangeActionInput) (*dal.Record, error) {
 		orderChange, err := editActiveChange(e, in.OrderID, []string{"id", "status", "version", "actions.*"})
 		if err != nil {
@@ -301,4 +301,4 @@ var RemoveOrderEditShippingMethodWorkflow = composer.CreateWorkflow("remove-orde
 			return nil, err
 		}
 		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(in.OrderID))
-	})
+	}))

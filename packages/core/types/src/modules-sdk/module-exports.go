@@ -65,6 +65,8 @@ type ProviderInstance struct {
 	Identifier string
 	ID         string
 	Options    map[string]any
+	// IsDefault mirrors the provider's is_default option.
+	IsDefault bool
 	// Instance is the provider built by its NewProvider (nil when the
 	// provider package has none).
 	Instance any

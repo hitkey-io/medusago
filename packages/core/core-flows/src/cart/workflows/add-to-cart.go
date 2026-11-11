@@ -24,6 +24,9 @@ type AddToCartInput struct {
 // AddToCartWorkflow mirrors addToCartWorkflow.
 var AddToCartWorkflow = composer.CreateWorkflow("add-to-cart",
 	func(e *composer.Execution, in AddToCartInput) (any, error) {
+		if err := acquireLock(e, in.CartID, 2, 10); err != nil {
+			return nil, err
+		}
 		cart, err := fetchCart(e, "get-cart", in.CartID, addToCartCartFields, true)
 		if err != nil {
 			return nil, err
@@ -155,7 +158,13 @@ var AddToCartWorkflow = composer.CreateWorkflow("add-to-cart",
 		}
 		ev := dal.NewRecord()
 		ev.Set("id", Get(cart, "id"))
-		if _, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "cart.updated", Data: ev}); err != nil {
+		if err := composer.Parallelize(
+			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "cart.updated", Data: ev})
+				return err
+			},
+			func() error { return releaseLock(e, Str(cart, "id")) },
+		); err != nil {
 			return nil, err
 		}
 		return nil, nil
@@ -177,6 +186,9 @@ type RefreshCartItemsInput struct {
 // RefreshCartItemsWorkflow mirrors refreshCartItemsWorkflow.
 var RefreshCartItemsWorkflow = composer.CreateWorkflow("refresh-cart-items",
 	func(e *composer.Execution, in RefreshCartItemsInput) (*dal.Record, error) {
+		if err := acquireLock(e, in.CartID, 2, 10); err != nil {
+			return nil, err
+		}
 		if in.ForceRefresh {
 			cart, err := fetchCart(e, "use-query-graph-step", in.CartID, CartFieldsForRefreshSteps, false)
 			if err != nil {
@@ -230,6 +242,9 @@ var RefreshCartItemsWorkflow = composer.CreateWorkflow("refresh-cart-items",
 		if _, err := RefreshPaymentCollectionForCartWorkflow.RunAsStep(e, RefreshPaymentCollectionInput{Cart: refetched}); err != nil {
 			return nil, err
 		}
+		if err := releaseLock(e, in.CartID); err != nil {
+			return nil, err
+		}
 		return refetched, nil
 	})
 
@@ -262,6 +277,9 @@ var RefreshCartShippingMethodsWorkflow = composer.CreateWorkflow("refresh-cart-s
 			}
 		}
 		if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
+			return nil, err
+		}
+		if err := acquireLock(e, Str(cart, "id"), 2, 10); err != nil {
 			return nil, err
 		}
 		var input []*dal.Record
@@ -317,7 +335,12 @@ var RefreshCartShippingMethodsWorkflow = composer.CreateWorkflow("refresh-cart-s
 			func() error { _, err := steps.RemoveShippingMethodFromCartStep.Run(e, toRemove); return err },
 			func() error { _, err := steps.UpdateShippingMethodsStep.Run(e, toUpdate); return err },
 		)
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
+		// released only when the shipping methods were refreshed (inside the
+		// when() block upstream)
+		return nil, releaseLock(e, Str(cart, "id"))
 	})
 
 // UpsertTaxLinesInput mirrors UpsertTaxLinesWorkflowInput.

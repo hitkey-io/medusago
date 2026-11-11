@@ -24,6 +24,9 @@ var validateExistingPaymentCollectionStep = composer.CreateStep("validate-existi
 // CreatePaymentCollectionForCartWorkflow mirrors createPaymentCollectionForCartWorkflow.
 var CreatePaymentCollectionForCartWorkflow = composer.CreateWorkflow("create-payment-collection-for-cart",
 	func(e *composer.Execution, cartID string) (*dal.Record, error) {
+		if err := acquireLock(e, cartID, 2, 10); err != nil {
+			return nil, err
+		}
 		cart, err := fetchCart(e, "use-remote-query", cartID, []string{"id", "completed_at", "currency_code", "total", "raw_total", "payment_collection.id"}, true)
 		if err != nil {
 			return nil, err
@@ -50,6 +53,9 @@ var CreatePaymentCollectionForCartWorkflow = composer.CreateWorkflow("create-pay
 		link.Set(utilsmodulessdk.CART, c)
 		link.Set(utilsmodulessdk.PAYMENT, p)
 		if _, err := commonsteps.CreateRemoteLinkStep.Config("cart-payment-collection-link", composer.StepOptions{}).Run(e, []*dal.Record{link}); err != nil {
+			return nil, err
+		}
+		if err := releaseLock(e, cartID); err != nil {
 			return nil, err
 		}
 		return created[0], nil

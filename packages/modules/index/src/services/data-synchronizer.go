@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	lockingtypes "github.com/hitkey-io/medusago/packages/core/types/src/locking"
 	"log/slog"
 	"time"
 
@@ -21,6 +22,7 @@ import (
 type DataSynchronizer struct {
 	db            dal.Querier
 	query         func() *query.Query
+	locking       func() lockingtypes.ILockingModule
 	logger        *slog.Logger
 	indexMetadata *modulessdk.InternalService
 	indexSync     *modulessdk.InternalService
@@ -55,7 +57,7 @@ func (d *DataSynchronizer) SyncEntities(ctx context.Context, entities []*dal.Rec
 		v, _ := e.Get("entity")
 		names = append(names, fmt.Sprint(v))
 	}
-	d.orchestrator = indexsync.NewOrchestrator(names, 60*time.Second, d.logger)
+	d.orchestrator = indexsync.NewOrchestrator(d.locking(), names, 60, d.logger)
 	return d.orchestrator.Process(ctx, d.taskRunner)
 }
 
@@ -143,7 +145,7 @@ func (d *DataSynchronizer) taskRunner(ctx context.Context, entity string) error 
 				return err
 			}
 			if !ack.done && ack.err == nil {
-				d.orchestrator.RenewLock(entity)
+				d.orchestrator.RenewLock(ctx, entity)
 			}
 		}
 		if ack.err != nil {

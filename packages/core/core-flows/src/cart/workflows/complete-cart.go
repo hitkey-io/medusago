@@ -4,6 +4,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/steps"
 	. "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/utils"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
+	lockingsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/locking/steps"
 	ordersteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/order/steps"
 	paymentsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/payment/steps"
 	promotionsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/promotion/steps"
@@ -19,11 +20,13 @@ const CompleteCartWorkflowID = "complete-cart"
 
 func boolPtr(b bool) *bool { return &b }
 
-// CompleteCartWorkflow mirrors completeCartWorkflow. The locking module is
-// not ported (acquire/release lock steps are no-ops) and the workflow
-// execution is not stored.
+// CompleteCartWorkflow mirrors completeCartWorkflow: the cart is locked
+// (30s timeout, 2 minutes ttl) for the whole completion.
 var CompleteCartWorkflow = composer.CreateWorkflowWithOptions(CompleteCartWorkflowID, composer.WorkflowOptions{Store: true, RetentionTime: 60 * 60 * 24 * 3},
 	func(e *composer.Execution, cartID string) (*dal.Record, error) {
+		if _, err := lockingsteps.AcquireLockStep.Run(e, lockingsteps.AcquireLockStepInput{Key: lockingsteps.Key(cartID), Timeout: 30, TTL: 120}); err != nil {
+			return nil, err
+		}
 		var orderCart, cartData commonsteps.QueryGraphResult
 		err := composer.Parallelize(
 			func() error {
@@ -80,6 +83,10 @@ var CompleteCartWorkflow = composer.CreateWorkflowWithOptions(CompleteCartWorkfl
 			if err != nil {
 				return nil, err
 			}
+		}
+
+		if _, err := lockingsteps.ReleaseLockStep.Run(e, lockingsteps.ReleaseLockStepInput{Key: lockingsteps.Key(cartID)}); err != nil {
+			return nil, err
 		}
 
 		out := dal.NewRecord()

@@ -66,6 +66,12 @@ type StepExecutionContext struct {
 // Execution returns the running execution (for nested workflows).
 func (c StepExecutionContext) Execution() *Execution { return c.exec }
 
+// IsSubWorkflow reports whether the step runs in a workflow executed as a
+// step of another one (parentStepIdempotencyKey is set upstream).
+func (c StepExecutionContext) IsSubWorkflow() bool {
+	return c.exec != nil && c.exec.subWorkflow
+}
+
 // StepResponse mirrors StepResponse: the step output and the input given to
 // its compensation (the output itself when not set).
 type StepResponse[O any] struct {
@@ -73,6 +79,13 @@ type StepResponse[O any] struct {
 	CompensateInput any
 	hasCompensate   bool
 	permanentFail   error
+	skip            bool
+}
+
+// SkipStep mirrors StepResponse.skip(): the step is marked skipped, its
+// output is undefined and it is not compensated.
+func SkipStep[O any]() StepResponse[O] {
+	return StepResponse[O]{skip: true}
 }
 
 // NewStepResponse mirrors new StepResponse(output, compensateInput?).
@@ -167,6 +180,8 @@ type Execution struct {
 	partial        any
 	rootWorkflowID string
 	rootOptions    WorkflowOptions
+	// subWorkflow: the workflow runs as a step of another one
+	subWorkflow bool
 }
 
 // Context returns the run context.
@@ -323,6 +338,10 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 			}})
 		}
 		return zero, &stepFailed{err: err}
+	}
+	if res.skip {
+		e.journal.skip(rec, !e.subWorkflow)
+		return zero, nil
 	}
 	var compInput any = res.Output
 	if res.hasCompensate {
@@ -509,7 +528,7 @@ func (w *Workflow[I, O]) execute(e *Execution, input I) (O, error) {
 // compensated as a unit when the parent fails.
 func (w *Workflow[I, O]) RunAsStep(parent *Execution, input I) (O, error) {
 	e := &Execution{ctx: parent.ctx, container: parent.container, workflowID: w.ID, transactionID: parent.transactionID, eventGroupID: parent.eventGroupID, hooks: w.hooks,
-		journal: parent.journal, detacher: parent.detacher, rootWorkflowID: parent.rootWorkflowID, rootOptions: parent.rootOptions}
+		journal: parent.journal, detacher: parent.detacher, rootWorkflowID: parent.rootWorkflowID, rootOptions: parent.rootOptions, subWorkflow: true}
 	out, err := w.execute(e, input)
 	if err != nil {
 		parent.mu.Lock()

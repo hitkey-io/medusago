@@ -217,11 +217,14 @@ var RefreshConfirmedDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow(
 		return nil, nil
 	})
 
-// UpdateDraftOrderWorkflow mirrors updateDraftOrderWorkflow (locks and
-// translations are not ported).
+// UpdateDraftOrderWorkflow mirrors updateDraftOrderWorkflow (translations
+// are not ported).
 var UpdateDraftOrderWorkflow = composer.CreateWorkflow("update-draft-order",
 	func(e *composer.Execution, in *dal.Record) (*dal.Record, error) {
 		id := g(in, "id")
+		if err := acquireLock(e, id); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", id, []string{"id", "customer_id", "status", "is_draft_order", "sales_channel_id", "email",
 			"customer_id", "locale", "shipping_address.*", "billing_address.*", "shipping_methods.id", "shipping_methods.name",
 			"shipping_methods.shipping_option_id", "metadata"})
@@ -307,7 +310,14 @@ var UpdateDraftOrderWorkflow = composer.CreateWorkflow("update-draft-order",
 		if _, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.updated", Data: ev}); err != nil {
 			return nil, err
 		}
-		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(id))
+		preview, err := ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(id))
+		if err != nil {
+			return nil, err
+		}
+		if err := releaseLock(e, id); err != nil {
+			return nil, err
+		}
+		return preview, nil
 	})
 
 var validateDraftOrdersStep = composer.CreateStep("validate-draft-orders",
@@ -351,10 +361,12 @@ var DeleteDraftOrdersWorkflow = composer.CreateWorkflow("delete-draft-order",
 		return nil, err
 	})
 
-// ConvertDraftOrderWorkflow mirrors convertDraftOrderWorkflow (locks are not
-// ported).
+// ConvertDraftOrderWorkflow mirrors convertDraftOrderWorkflow.
 var ConvertDraftOrderWorkflow = composer.CreateWorkflow("convert-draft-order",
 	func(e *composer.Execution, id any) (*dal.Record, error) {
+		if err := acquireLock(e, id); err != nil {
+			return nil, err
+		}
 		order, err := remoteOne(e, "order-query", "orders", id, []string{"id", "status", "is_draft_order"})
 		if err != nil {
 			return nil, err
@@ -425,7 +437,13 @@ var ConvertDraftOrderWorkflow = composer.CreateWorkflow("convert-draft-order",
 		}
 		placed := dal.NewRecord()
 		placed.Set("id", g(updated, "id"))
-		if _, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.placed", Data: placed}); err != nil {
+		if err := composer.Parallelize(
+			func() error { return releaseLock(e, id) },
+			func() error {
+				_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.placed", Data: placed})
+				return err
+			},
+		); err != nil {
 			return nil, err
 		}
 		return updated, nil

@@ -14,8 +14,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/container"
 	frameworkmigrations "github.com/hitkey-io/medusago/packages/core/framework/src/migrations"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/migrations"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	migrationscripts "github.com/hitkey-io/medusago/packages/medusa/src/migration-scripts"
@@ -226,7 +228,12 @@ func runMigrationScripts(ctx context.Context, pool *pgxpool.Pool, cfg config.Con
 
 	terminalSeparator()
 	logger.Info("Running migration scripts...")
-	if err := frameworkmigrations.RunScripts(ctx, pool, scripts); err != nil {
+	lock, shutdown, err := lockingModule(pool, cfg, logger)
+	if err != nil {
+		return err
+	}
+	defer shutdown()
+	if err := frameworkmigrations.RunScriptsWithLock(ctx, pool, scripts, lock); err != nil {
 		return err
 	}
 	terminalSeparator()
@@ -261,4 +268,51 @@ func RunModuleLoaders(ctx context.Context, pool *pgxpool.Pool, cfg config.Config
 		}
 	}
 	return nil
+}
+
+// lockingModule builds the configured locking module (with its providers)
+// the migration scripts run under, like the container of the loaded
+// application upstream. It returns nil when the module is disabled.
+func lockingModule(pool *pgxpool.Pool, cfg config.ConfigModule, logger *slog.Logger) (frameworkmigrations.ScriptsLock, func(), error) {
+	noop := func() {}
+	for _, mc := range cfg.Modules {
+		if mc.Key != utilsmodulessdk.LOCKING || mc.Disable {
+			continue
+		}
+		exp, ok := modules.Registry[mc.Resolve]
+		if !ok || exp.Service == nil {
+			return nil, noop, nil
+		}
+		c := container.New()
+		c.Register(common.ContainerRegistrationKeys.PG_CONNECTION, pool)
+		c.Register(common.ContainerRegistrationKeys.LOGGER, logger)
+		var providers []modulessdk.ProviderInstance
+		for _, p := range mc.Providers {
+			pi := modulessdk.ProviderInstance{ID: p.ID, Options: p.Options, IsDefault: p.IsDefault}
+			if pexp, ok := modules.Registry[p.Resolve]; ok {
+				pi.Identifier = pexp.ProviderIdentifier
+				if pexp.NewProvider != nil {
+					inst, err := pexp.NewProvider(modulessdk.ProviderOptions{ID: p.ID, Options: p.Options, Logger: logger, Container: c})
+					if err != nil {
+						return nil, noop, fmt.Errorf("%s provider %s: %w", mc.Key, p.ID, err)
+					}
+					pi.Instance = inst
+				}
+			}
+			providers = append(providers, pi)
+		}
+		svc, err := exp.Service(modulessdk.ServiceOptions{DB: pool, Providers: providers, Options: mc.Options, Logger: logger, Container: c})
+		if err != nil {
+			return nil, noop, err
+		}
+		lock, _ := svc.(frameworkmigrations.ScriptsLock)
+		shutdown := noop
+		if s, ok := svc.(interface {
+			OnApplicationShutdown(ctx context.Context) error
+		}); ok {
+			shutdown = func() { _ = s.OnApplicationShutdown(context.Background()) }
+		}
+		return lock, shutdown, nil
+	}
+	return nil, noop, nil
 }
