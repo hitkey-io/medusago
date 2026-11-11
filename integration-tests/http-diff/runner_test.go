@@ -636,13 +636,18 @@ func pretty(v any) string {
 	return b.String()
 }
 
-// scenarioFiles lists the scenarios, filtered by MEDUSA_HTTP_SCENARIO.
+// scenarioFiles lists the scenarios, filtered by MEDUSA_HTTP_SCENARIO (a
+// comma separated list of names).
 func scenarioFiles() []string {
 	files, _ := filepath.Glob("scenarios/*.json")
 	if only := os.Getenv("MEDUSA_HTTP_SCENARIO"); only != "" {
+		names := map[string]bool{}
+		for _, n := range strings.Split(only, ",") {
+			names[strings.TrimSpace(n)] = true
+		}
 		var out []string
 		for _, f := range files {
-			if strings.TrimSuffix(filepath.Base(f), ".json") == only {
+			if names[strings.TrimSuffix(filepath.Base(f), ".json")] {
 				out = append(out, f)
 			}
 		}

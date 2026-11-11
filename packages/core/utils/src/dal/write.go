@@ -628,14 +628,42 @@ func (r *Repository) attachChild(ctx context.Context, parent *instance, join *Jo
 
 // serializeCreated serializes a newly created entity: every field, foreign
 // keys and the initialized collections, without unloaded references.
+// Nested entities created with it are new entities too: their collections
+// are initialized (empty unless given).
 func (r *Repository) serializeCreated(inst *instance, idm identityMap) (*Record, error) {
+	return r.serializeInstance(inst, createdTree(inst, map[*instance]bool{}), nil, nil, idm)
+}
+
+func createdTree(inst *instance, seen map[*instance]bool) *fieldTree {
 	tree := &fieldTree{all: true, fields: map[string]bool{}, children: map[string]*fieldTree{}}
-	for name, v := range inst.relations {
-		if _, ok := v.([]*instance); ok {
-			tree.children[name] = allFields
-		}
+	if seen[inst] {
+		return tree
 	}
-	return r.serializeInstance(inst, tree, nil, nil, idm)
+	seen[inst] = true
+	for name, v := range inst.relations {
+		kids, ok := v.([]*instance)
+		if !ok {
+			continue
+		}
+		sub := &fieldTree{all: true, fields: map[string]bool{}, children: map[string]*fieldTree{}}
+		for _, k := range kids {
+			if k.created {
+				mergeFieldTree(sub, createdTree(k, seen))
+			}
+		}
+		tree.children[name] = sub
+	}
+	return tree
+}
+
+func mergeFieldTree(dst, src *fieldTree) {
+	for name, child := range src.children {
+		if cur, ok := dst.children[name]; ok {
+			mergeFieldTree(cur, child)
+			continue
+		}
+		dst.children[name] = child
+	}
 }
 
 // UpdateInput is one entity and the data assigned to it.

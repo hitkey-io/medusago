@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
@@ -72,14 +73,11 @@ var productRelationKeys = map[string]bool{
 // updateProducts mirrors updateProducts_ and ProductRepository.deepUpdate:
 // option links (option_ids), scalar fields, variants (updated, created, and
 // the loaded ones missing from the input deleted: orphanRemoval), tags,
-// categories and images. Assigning product.options directly is not
-// supported.
+// categories and images. Assigning product.options mirrors MikroORM's
+// assign on the fixed-order m:n collection (assignProductOptions).
 func (s *ProductModuleService) updateProducts(ctx context.Context, input []*dal.Record) ([]*dal.Record, error) {
 	data := make([]*dal.Record, len(input))
 	for i, p := range input {
-		if p.Has("options") {
-			return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "Updating product options through the product is not supported yet")
-		}
 		data[i] = clone(p)
 	}
 	var allOptionIDs []string
@@ -93,10 +91,21 @@ func (s *ProductModuleService) updateProducts(ctx context.Context, input []*dal.
 	}
 	var expected map[string]map[string]bool
 	var unlinkPairs []ProductOptionProductPair
+	var originals []*dal.Record
+	if anyHas(data, "options") && !anyHas(data, "option_ids") {
+		f := dal.NewRecord()
+		f.Set("id", productIDsOfRecords(data))
+		var err error
+		originals, err = s.Internal("Product").List(ctx, f, utilsmodulessdk.FindConfig{Relations: []string{"options", "options.values", "tags"}})
+		if err != nil {
+			return nil, err
+		}
+	}
 	if len(allOptionIDs) > 0 || anyHas(data, "option_ids") {
 		f := dal.NewRecord()
 		f.Set("id", productIDsOfRecords(data))
-		originals, err := s.Internal("Product").List(ctx, f, utilsmodulessdk.FindConfig{Relations: []string{"options", "options.values", "tags"}})
+		var err error
+		originals, err = s.Internal("Product").List(ctx, f, utilsmodulessdk.FindConfig{Relations: []string{"options", "options.values", "tags"}})
 		if err != nil {
 			return nil, err
 		}
@@ -146,6 +155,10 @@ func (s *ProductModuleService) updateProducts(ctx context.Context, input []*dal.
 	for i, p := range normalized {
 		idList[i] = strOf(p, "id")
 	}
+	originalByID := map[string]*dal.Record{}
+	for _, o := range originals {
+		originalByID[strOf(o, "id")] = o
+	}
 	relations := map[string]bool{}
 	for _, p := range normalized {
 		for _, k := range []string{"tags", "categories", "images", "collection", "type"} {
@@ -192,6 +205,11 @@ func (s *ProductModuleService) updateProducts(ctx context.Context, input []*dal.
 		}
 		scalarUpdates = append(scalarUpdates, row)
 
+		if opts, ok := p.Get("options"); ok && opts != nil {
+			if err := s.assignProductOptions(ctx, fmt.Sprint(id), list(opts), originalByID[fmt.Sprint(id)]); err != nil {
+				return nil, err
+			}
+		}
 		if tags, ok := p.Get("tags"); ok {
 			if err := s.Internal("Product").ReplaceManyToMany(ctx, id, "tags", productIDsOf(tags)); err != nil {
 				return nil, err
@@ -238,9 +256,43 @@ func (s *ProductModuleService) updateProducts(ctx context.Context, input []*dal.
 			return nil, err
 		}
 	}
-	out, err := s.findByIDsWithSplitPopulate(ctx, idList, append([]string{"options", "options.values", "variants", "images", "tags"}, relList...))
+	// The updated products carry the relations loaded while updating them
+	// (updateProducts_ always loads options, options.values and tags;
+	// deepUpdate the relations of the given keys).
+	loaded := map[string]bool{"options": true, "options.values": true, "tags": true}
+	for _, k := range relList {
+		loaded[k] = true
+	}
+	if anyHas(normalized, "variants") {
+		loaded["variants"] = true
+		loaded["variants.options"] = true
+		loaded["variants.options.option"] = true
+	}
+	var outRelations []string
+	for _, k := range []string{"variants", "variants.options", "variants.options.option", "tags", "options", "options.values", "images", "collection", "categories", "type"} {
+		if loaded[k] {
+			outRelations = append(outRelations, k)
+		}
+	}
+	out, err := s.findByIDsWithSplitPopulate(ctx, idList, outRelations)
 	if err != nil {
 		return nil, err
+	}
+	// Options are refreshed only when options or variants are assigned: the
+	// links made or removed through option_ids leave the loaded collection
+	// as it was before the update.
+	inputByID := map[string]*dal.Record{}
+	for _, p := range normalized {
+		inputByID[strOf(p, "id")] = p
+	}
+	for _, p := range out {
+		id := strOf(p, "id")
+		in, orig := inputByID[id], originalByID[id]
+		if in == nil || orig == nil || in.Has("options") || in.Has("variants") {
+			continue
+		}
+		opts, _ := orig.Get("options")
+		p.Set("options", opts)
 	}
 	// the assigned variants collection keeps the input order
 	for _, p := range out {
@@ -262,6 +314,193 @@ func (s *ProductModuleService) updateProducts(ctx context.Context, input []*dal.
 		p.Set("variants", ordered)
 	}
 	return out, nil
+}
+
+// assignProductOptions mirrors wrap(product).assign({ options }) in
+// ProductRepository.deepUpdate. product.options is an owning m:n collection
+// with a single-PK pivot entity (MikroORM fixedOrder): entries of loaded
+// options keep (and update) them, the other loaded options are unlinked
+// (pivot rows deleted). Any entry needing a pivot insert fails like upstream,
+// where the pivot row is inserted without its id: a new option (no id or not
+// linked to the product), or a changed order (fixed order collections are
+// deleted and reinserted).
+func (s *ProductModuleService) assignProductOptions(ctx context.Context, productID string, items []any, original *dal.Record) error {
+	var snapshot []string
+	loaded := map[string]*dal.Record{}
+	if original != nil {
+		cur, _ := original.Get("options")
+		for _, o := range records(cur) {
+			id := strOf(o, "id")
+			snapshot = append(snapshot, id)
+			loaded[id] = o
+		}
+	}
+	var current []string
+	seen := map[string]bool{}
+	var newItems []*dal.Record
+	for _, it := range items {
+		rec := recordOf(it)
+		if rec == nil {
+			// a primary key: a reference to the option
+			rec = dal.NewRecord()
+			rec.Set("id", it)
+		}
+		id := strOf(rec, "id")
+		if id == "" || loaded[id] == nil {
+			newItems = append(newItems, rec)
+			continue
+		}
+		if !seen[id] {
+			seen[id] = true
+			current = append(current, id)
+		}
+	}
+	// EntityValidator runs on the new entities before the flush.
+	for _, rec := range newItems {
+		if t, ok := rec.Get("title"); !ok || t == nil {
+			return fmt.Errorf("Value for ProductOption.title is required, 'undefined' found")
+		}
+	}
+	if len(newItems) > 0 {
+		var creates []*dal.Record
+		for _, rec := range newItems {
+			c := clone(rec)
+			c.Delete("values")
+			c.Delete("products")
+			if strOf(c, "id") == "" {
+				c.Delete("id")
+			}
+			creates = append(creates, c)
+		}
+		if _, err := s.Internal("ProductOption").Create(ctx, creates); err != nil {
+			return err
+		}
+		return pivotIDNullError()
+	}
+	var target []string
+	for _, id := range snapshot {
+		if seen[id] {
+			target = append(target, id)
+		}
+	}
+	if !slices.Equal(current, target) {
+		return pivotIDNullError()
+	}
+	// nested updates of the kept options
+	for _, it := range items {
+		rec := recordOf(it)
+		if rec == nil {
+			continue
+		}
+		id := strOf(rec, "id")
+		opt := loaded[id]
+		if opt == nil {
+			continue
+		}
+		u := dal.NewRecord()
+		u.Set("id", id)
+		for _, k := range rec.Keys() {
+			switch k {
+			case "id", "products", "product_options":
+				continue
+			case "values":
+				vals, _ := rec.Get("values")
+				if err := s.assignOptionValues(ctx, id, list(vals), opt); err != nil {
+					return err
+				}
+				continue
+			}
+			v, _ := rec.Get(k)
+			u.Set(k, v)
+		}
+		if u.Len() > 1 {
+			if _, err := s.Internal("ProductOption").Update(ctx, []any{u}); err != nil {
+				return err
+			}
+		}
+	}
+	var conds []string
+	var args []any
+	for _, id := range snapshot {
+		if seen[id] {
+			continue
+		}
+		args = append(args, id, productID)
+		conds = append(conds, fmt.Sprintf(`("product_option_id" = $%d and "product_id" = $%d)`, len(args)-1, len(args)))
+	}
+	if len(conds) > 0 {
+		if _, err := s.db.Exec(ctx, `delete from "product_product_option" where `+strings.Join(conds, " or "), args...); err != nil {
+			return dal.MapDBError(err)
+		}
+	}
+	return nil
+}
+
+// assignOptionValues mirrors assigning the values (1:m, orphanRemoval) of a
+// kept option: strings and objects with an id reference values by primary
+// key, objects without one are created, the loaded values left out are
+// deleted.
+func (s *ProductModuleService) assignOptionValues(ctx context.Context, optionID string, items []any, option *dal.Record) error {
+	existing := map[string]bool{}
+	var existingOrder []string
+	cur, _ := option.Get("values")
+	for _, v := range records(cur) {
+		existing[strOf(v, "id")] = true
+		existingOrder = append(existingOrder, strOf(v, "id"))
+	}
+	kept := map[string]bool{}
+	var refs []any
+	var creates []*dal.Record
+	for _, it := range items {
+		rec := recordOf(it)
+		if rec == nil {
+			id := fmt.Sprint(it)
+			kept[id] = true
+			if !existing[id] {
+				refs = append(refs, id)
+			}
+			continue
+		}
+		if id := strOf(rec, "id"); id != "" {
+			kept[id] = true
+			if !existing[id] {
+				refs = append(refs, id)
+			}
+			continue
+		}
+		c := clone(rec)
+		c.Set("option_id", optionID)
+		creates = append(creates, c)
+	}
+	if len(creates) > 0 {
+		if _, err := s.Internal("ProductOptionValue").Create(ctx, creates); err != nil {
+			return err
+		}
+	}
+	if len(refs) > 0 {
+		if _, err := s.db.Exec(ctx, `update "product_option_value" set "option_id" = $1 where "id" = any($2)`, optionID, toStrings(refs)); err != nil {
+			return dal.MapDBError(err)
+		}
+	}
+	var removed []any
+	for _, id := range existingOrder {
+		if !kept[id] {
+			removed = append(removed, id)
+		}
+	}
+	if len(removed) > 0 {
+		if _, err := s.Internal("ProductOptionValue").Delete(ctx, removed); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// pivotIDNullError is the error of a product_product_option insert without
+// its id (MikroORM inserts the pivot rows of the collection with their FKs
+// only).
+func pivotIDNullError() error {
+	return common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "Cannot set field 'id' of Product product option to null")
 }
 
 // replaceImages mirrors assigning images (with rank = index) to the
