@@ -810,6 +810,8 @@ func (s *ProductModuleService) UpdateProductOptionValues(ctx context.Context, id
 
 // SoftDeleteProductOptionValues mirrors softDeleteProductOptionValues.
 func (s *ProductModuleService) SoftDeleteProductOptionValues(ctx context.Context, ids []any) error {
+	// no @EmitEvents upstream: the mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	return s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
 		t := &ProductModuleService{MedusaService: tx, db: tx.DB()}
 		if err := t.validateOptionValuesNotAssociatedWithProducts(ctx, ids); err != nil {

@@ -357,6 +357,8 @@ func (s *ProductModuleService) updateCollections(ctx context.Context, data []*da
 // associated with live products cannot be deleted; their product pivot rows
 // are soft deleted first.
 func (s *ProductModuleService) SoftDeleteProductOptions(ctx context.Context, ids []any) (*dal.Record, error) {
+	// no @EmitEvents upstream: the mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	if len(ids) == 0 {
 		return dal.NewRecord(), nil
 	}

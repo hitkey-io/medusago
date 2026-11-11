@@ -133,6 +133,7 @@ func (s *ProductModuleService) updateProducts(ctx context.Context, input []*dal.
 				return nil, err
 			}
 		}
+		dal.FlushEvents(s.db)
 	}
 	normalized := make([]*dal.Record, len(data))
 	for i, p := range data {

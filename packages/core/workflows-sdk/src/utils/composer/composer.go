@@ -40,6 +40,7 @@ import (
 
 	"github.com/oklog/ulid/v2"
 
+	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 )
 
@@ -192,7 +193,9 @@ func (e *Execution) pushCompensation(c compensation) {
 
 func (e *Execution) stepContext(name, action string, attempt int) StepExecutionContext {
 	return StepExecutionContext{
-		Context: e.ctx, Container: e.container, WorkflowID: e.workflowID, StepName: name,
+		// the module services called from a step get the run's event group
+		// (the workflow medusaContext)
+		Context: eventbus.WithEventGroupID(e.ctx, e.eventGroupID), Container: e.container, WorkflowID: e.workflowID, StepName: name,
 		TransactionID: e.transactionID, Action: action, EventGroupID: e.eventGroupID, Attempt: attempt, exec: e,
 	}
 }

@@ -696,7 +696,7 @@ func goServer(t *testing.T, scenario string) string {
 		DatabaseURL: dbURL,
 		HTTP:        config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
 	}, Modules: scenarioModules()})
-	app, err := loaders.Initialize(context.Background(), cfg)
+	app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{OnLoad: []func(context.Context, *loaders.MedusaApp) error{registerEventsCapture}})
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -514,6 +514,7 @@ func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, i
 	if err := r.insertRow(ctx, e, data); err != nil {
 		return nil, err
 	}
+	r.recordMutation(changeCreate, ActionCreated, e, data)
 	inserted := maps.Clone(data)
 	inst := idm.get(e, data)
 	// @BeforeCreate ran before the insert upstream; hooks changing columns
@@ -730,6 +731,8 @@ func (r *Repository) applyScalarUpdate(ctx context.Context, inst *instance, data
 		columns = append(columns, c)
 	}
 	slices.Sort(columns)
+	beforeDeletedAt := inst.data["deleted_at"]
+	_, deletedAtChanged := changed["deleted_at"]
 	var sets []string
 	var args []any
 	for _, c := range columns {
@@ -741,6 +744,7 @@ func (r *Repository) applyScalarUpdate(ctx context.Context, inst *instance, data
 		sets = append(sets, fmt.Sprintf("%s = $%d", quote(c), len(args)))
 		inst.data[c] = changed[c]
 	}
+	defer r.recordUpdate(e, inst.data, deletedAtChanged, beforeDeletedAt, inst.data["deleted_at"])
 	var where []string
 	for _, pk := range e.Meta.PrimaryKey {
 		args = append(args, inst.data[pk])
@@ -845,6 +849,7 @@ func (r *Repository) Delete(ctx context.Context, where *Record) ([]any, error) {
 	ids := make([]any, len(rows))
 	for i, row := range rows {
 		ids[i] = row[fieldColumn(r.Entity, pk)]
+		r.recordDispatched(ActionDeleted, r.Entity, ids[i])
 	}
 	return ids, nil
 }
@@ -895,6 +900,11 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 		insts  []*instance
 	}
 	level := []pending{{r.Entity, roots}}
+	type softDeleted struct {
+		inst   *instance
+		before any
+	}
+	var changedInsts []softDeleted
 	touched := map[*dml.Entity][]*instance{}
 	var order []*dml.Entity
 	for len(level) > 0 {
@@ -907,9 +917,13 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 				order = append(order, group.entity)
 			}
 			for _, inst := range group.insts {
+				before := inst.data["deleted_at"]
 				inst.data["deleted_at"] = deletedAt
 				result.add(group.entity.Meta.ClassName, inst.data)
 				touched[group.entity] = append(touched[group.entity], inst)
+				if !sameValue(before, deletedAt) {
+					changedInsts = append(changedInsts, softDeleted{inst, before})
+				}
 			}
 			for _, relation := range group.entity.Cascades.Delete {
 				children, err := r.loadRelation(ctx, group.insts, relation, idm, true, nil)
@@ -945,6 +959,9 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 			return nil, err
 		}
 	}
+	for _, c := range changedInsts {
+		r.recordUpdate(c.inst.entity, c.inst.data, true, c.before, c.inst.data["deleted_at"])
+	}
 	return result, nil
 }
 
@@ -952,6 +969,12 @@ func (r *Repository) updateDeletedAt(ctx context.Context, where *Record, withDel
 // collection and flushing: pivot rows of targets no longer present are
 // deleted, then the missing ones inserted in the given order.
 func (r *Repository) ReplaceManyToMany(ctx context.Context, ownerID any, relation string, targetIDs []any) error {
+	return r.replaceManyToMany(ctx, ownerID, relation, targetIDs, nil)
+}
+
+// replaceManyToMany is ReplaceManyToMany; with pa (upsertWithReplace), the
+// rows of a pivot entity with its own id are reported as performed actions.
+func (r *Repository) replaceManyToMany(ctx context.Context, ownerID any, relation string, targetIDs []any, pa *performedActions) error {
 	join, err := r.Schema.ResolveJoin(r.Entity, relation)
 	if err != nil {
 		return err
@@ -980,9 +1003,17 @@ func (r *Repository) ReplaceManyToMany(ctx context.Context, ownerID any, relatio
 			removed = append(removed, k)
 		}
 	}
+	pivotEntity, _ := r.Schema.Entity(join.Relation.PivotEntity)
+	pivotOwnID := pivotEntity != nil && len(pivotEntity.Meta.PrimaryKey) == 1 && pivotEntity.Meta.PrimaryKey[0] == "id"
 	if len(removed) > 0 {
-		if err := r.exec(ctx, fmt.Sprintf("delete from %s where %s = $1 and %s = any($2)", quote(join.PivotTable), src, dst), ownerID, removed); err != nil {
-			return err
+		deleted, err := QueryRows(ctx, r.DB, fmt.Sprintf("delete from %s where %s = $1 and %s = any($2) returning *", quote(join.PivotTable), src, dst), ownerID, removed)
+		if err != nil {
+			return MapDBError(err)
+		}
+		if pa != nil && pivotOwnID {
+			for _, row := range deleted {
+				pa.deleted.add(pivotEntity, row["id"])
+			}
 		}
 	}
 	_ = keep
@@ -1005,6 +1036,9 @@ func (r *Repository) ReplaceManyToMany(ctx context.Context, ownerID any, relatio
 			data[join.PivotTargetColumns[0]] = id
 			if err := r.insertRow(ctx, pivot, data); err != nil {
 				return err
+			}
+			if pa != nil && pivotOwnID {
+				pa.created.add(pivot, data["id"])
 			}
 			continue
 		}
@@ -1080,6 +1114,9 @@ func (r *Repository) assignOneToManyCollections(ctx context.Context, inst *insta
 		if len(orphans) > 0 {
 			if err := r.exec(ctx, fmt.Sprintf("delete from %s where \"id\" = any($1)", quote(target.Meta.Collection)), orphans); err != nil {
 				return err
+			}
+			for _, id := range orphans {
+				r.recordMutation(changeDelete, ActionDeleted, target, Row{"id": id})
 			}
 		}
 		// MikroORM flushes the inserts before the updates (physical order).

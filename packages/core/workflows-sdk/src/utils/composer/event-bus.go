@@ -3,16 +3,11 @@ package composer
 import (
 	"context"
 
-	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 )
 
 // Message mirrors EventBusTypes.Message.
-type Message struct {
-	Name     string
-	Data     any
-	Options  *dal.Record
-	Metadata *dal.Record
-}
+type Message = eventbus.Message
 
 // EventBus is the part of IEventBusModuleService the workflows use.
 type EventBus interface {

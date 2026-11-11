@@ -238,6 +238,7 @@ func (r *Repository) count(ctx context.Context, opts FindOptions) (int, error) {
 }
 
 func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, identityMap, error) {
+	r.autoFlush(r.Entity)
 	opts = r.pruneFindOptions(opts)
 	// Orders on relation fields ("images.rank") order the select-in query
 	// loading that relation; the root query keeps the orders of its own

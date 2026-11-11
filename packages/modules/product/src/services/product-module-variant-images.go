@@ -10,6 +10,8 @@ import (
 // AddImageToVariant mirrors addImageToVariant: pairs { image_id,
 // variant_id } become variant images; their ids are returned.
 func (s *ProductModuleService) AddImageToVariant(ctx context.Context, pairs []*dal.Record) ([]*dal.Record, error) {
+	// no @EmitEvents upstream: the mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	created, err := s.Internal("ProductVariantProductImage").Create(ctx, pairs)
 	if err != nil {
 		return nil, err
@@ -26,6 +28,8 @@ func (s *ProductModuleService) AddImageToVariant(ctx context.Context, pairs []*d
 
 // RemoveImageFromVariant mirrors removeImageFromVariant.
 func (s *ProductModuleService) RemoveImageFromVariant(ctx context.Context, pairs []*dal.Record) error {
+	// no @EmitEvents upstream: the mutations emit no events
+	ctx = dal.WithoutEvents(ctx)
 	return s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
 		or := make([]any, len(pairs))
 		for i, p := range pairs {

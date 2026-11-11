@@ -8,6 +8,7 @@ import (
 	typesjoiner "github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	typesmodulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/medusa/src/modules"
 	"github.com/hitkey-io/medusago/packages/modules/link-modules/src/definitions"
@@ -55,6 +56,9 @@ func NewDefaultQueryAndLink(db dal.Querier, registered map[string]any) (*query.Q
 			link, err := services.NewLinkModuleService(db, linkCfg)
 			if err != nil {
 				return nil, nil, err
+			}
+			if bus, ok := registered[utilsmodulessdk.EVENT_BUS].(eventbus.Emitter); ok {
+				link.SetEventBus(bus)
 			}
 			linkServices[cfg.ServiceName] = link
 			svcs[cfg.ServiceName] = query.LinkServiceAdapter{Service: link}

@@ -25,10 +25,11 @@ type Subscriber func(ctx context.Context, e Event) error
 // LocalEventBusService mirrors LocalEventBusService: in-process
 // subscribers, grouped (staged) events per event group id.
 type LocalEventBusService struct {
-	mu          sync.Mutex
-	subscribers map[string][]Subscriber
-	grouped     map[string][]composer.Message
-	logger      *slog.Logger
+	mu           sync.Mutex
+	subscribers  map[string][]Subscriber
+	interceptors []*Interceptor
+	grouped      map[string][]composer.Message
+	logger       *slog.Logger
 	// wg tracks the asynchronous deliveries (tests wait on it).
 	wg sync.WaitGroup
 }
@@ -51,6 +52,48 @@ func withMeta(m *dal.Record, key string) *dal.Record {
 	}
 	out.Set(key, time.Now())
 	return out
+}
+
+// Interceptor mirrors InterceptorSubscriber: it receives every message
+// before it is published.
+type Interceptor func(m composer.Message, isGrouped bool, eventGroupID string)
+
+// AddInterceptor mirrors addInterceptor.
+func (s *LocalEventBusService) AddInterceptor(fn Interceptor) *Interceptor {
+	p := &fn
+	s.mu.Lock()
+	s.interceptors = append(s.interceptors, p)
+	s.mu.Unlock()
+	return p
+}
+
+// RemoveInterceptor mirrors removeInterceptor.
+func (s *LocalEventBusService) RemoveInterceptor(p *Interceptor) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for i, x := range s.interceptors {
+		if x == p {
+			s.interceptors = append(s.interceptors[:i], s.interceptors[i+1:]...)
+			return
+		}
+	}
+}
+
+// callInterceptors mirrors callInterceptors (errors are logged).
+func (s *LocalEventBusService) callInterceptors(m composer.Message, isGrouped bool, eventGroupID string) {
+	s.mu.Lock()
+	interceptors := append([]*Interceptor{}, s.interceptors...)
+	s.mu.Unlock()
+	for _, p := range interceptors {
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					s.logger.Error(fmt.Sprintf("Error in event bus interceptor: %v", r))
+				}
+			}()
+			(*p)(m, isGrouped, eventGroupID)
+		}()
+	}
 }
 
 // Subscribe mirrors subscribe(event, subscriber).
@@ -77,12 +120,13 @@ func (s *LocalEventBusService) Emit(ctx context.Context, messages []composer.Mes
 			s.mu.Unlock()
 			continue
 		}
-		s.publish(m)
+		s.publish(m, false, "")
 	}
 	return nil
 }
 
-func (s *LocalEventBusService) publish(m composer.Message) {
+func (s *LocalEventBusService) publish(m composer.Message, isGrouped bool, eventGroupID string) {
+	s.callInterceptors(m, isGrouped, eventGroupID)
 	s.mu.Lock()
 	subs := append(append([]Subscriber{}, s.subscribers[m.Name]...), s.subscribers["*"]...)
 	s.mu.Unlock()
@@ -117,7 +161,7 @@ func (s *LocalEventBusService) ReleaseGroupedEvents(_ context.Context, id string
 	delete(s.grouped, id)
 	s.mu.Unlock()
 	for _, m := range events {
-		s.publish(m)
+		s.publish(m, true, id)
 	}
 	return nil
 }

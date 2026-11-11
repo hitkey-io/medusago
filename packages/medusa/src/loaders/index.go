@@ -20,6 +20,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/framework/src/http/middlewares"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
+	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 	ff "github.com/hitkey-io/medusago/packages/core/utils/src/feature-flags"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/ioredis"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -34,8 +35,8 @@ type MedusaApp struct {
 	Handler   nethttp.Handler
 	// App is the router behind Handler (routes and middlewares can be
 	// added to it by Options.OnLoad hooks).
-	App *medusahttp.App
-	Pool      *pgxpool.Pool
+	App  *medusahttp.App
+	Pool *pgxpool.Pool
 	// shutdown mirrors the shutdown returned by the express loader.
 	shutdown []func()
 }
@@ -90,6 +91,15 @@ func LoadModules(ctx context.Context, c *container.MedusaContainer, pool *pgxpoo
 			continue
 		}
 		c.Register(mc.Key, svc)
+	}
+	// module services emit their events to the event bus module
+	// (eventBusModuleService_, resolved from the module container)
+	if bus, ok := c.Resolve(utilsmodulessdk.EVENT_BUS).(eventbus.Emitter); ok {
+		for _, mc := range cfg.Modules {
+			if s, ok := c.Resolve(mc.Key).(interface{ SetEventBus(eventbus.Emitter) }); ok {
+				s.SetEventBus(bus)
+			}
+		}
 	}
 	return nil
 }
