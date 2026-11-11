@@ -1,0 +1,98 @@
+column brand.1 id text notnull=t default=
+column brand.10 tags text[] notnull=t default='{new}'::text[]
+column brand.11 tagline text notnull=f default=
+column brand.12 metadata jsonb notnull=f default=
+column brand.13 launched_at timestamp with time zone notnull=f default=
+column brand.14 raw_revenue jsonb notnull=f default=
+column brand.15 created_at timestamp with time zone notnull=t default=now()
+column brand.16 updated_at timestamp with time zone notnull=t default=now()
+column brand.17 deleted_at timestamp with time zone notnull=f default=
+column brand.18 budget numeric notnull=t default=100
+column brand.19 country text notnull=t default='us'::text
+column brand.2 name text notnull=t default=
+column brand.20 settings jsonb notnull=t default='{"theme": "dark"}'::jsonb
+column brand.21 founded_year text notnull=f default=
+column brand.22 sequence integer notnull=t default=nextval('brand_sequence_seq'::regclass)
+column brand.23 raw_budget jsonb notnull=t default='{"value": "100", "precision": 20}'::jsonb
+column brand.24 code text notnull=f default=
+column brand.25 featured_logo_id text notnull=f default=
+column brand.3 handle text notnull=t default=
+column brand.4 description text notnull=t default=
+column brand.5 is_active boolean notnull=t default=true
+column brand.6 rank integer notnull=t default=10
+column brand.7 rating real notnull=t default=0
+column brand.8 revenue numeric notnull=f default=
+column brand.9 status text notnull=t default='draft'::text
+column brand_logo.1 id text notnull=t default=
+column brand_logo.2 url text notnull=t default=
+column brand_logo.3 position real notnull=t default=0
+column brand_logo.4 brand_id text notnull=t default=
+column brand_logo.5 created_at timestamp with time zone notnull=t default=now()
+column brand_logo.6 updated_at timestamp with time zone notnull=t default=now()
+column brand_logo.7 deleted_at timestamp with time zone notnull=f default=
+column brand_logo.8 alt text notnull=f default=
+column brand_note.1 id integer notnull=t default=nextval('brand_note_id_seq'::regclass)
+column brand_note.2 body text notnull=t default=
+column brand_note.3 brand_id text notnull=t default=
+column brand_note.4 created_at timestamp with time zone notnull=t default=now()
+column brand_note.5 updated_at timestamp with time zone notnull=t default=now()
+column brand_note.6 deleted_at timestamp with time zone notnull=f default=
+column brand_profile.1 id text notnull=t default=
+column brand_profile.2 website text notnull=f default=
+column brand_profile.3 brand_id text notnull=t default=
+column brand_profile.4 created_at timestamp with time zone notnull=t default=now()
+column brand_profile.5 updated_at timestamp with time zone notnull=t default=now()
+column brand_profile.6 deleted_at timestamp with time zone notnull=f default=
+column brand_region.1 id text notnull=t default=
+column brand_region.2 code text notnull=t default=
+column brand_region.3 brand_id text notnull=t default=
+column brand_region.4 created_at timestamp with time zone notnull=t default=now()
+column brand_region.5 updated_at timestamp with time zone notnull=t default=now()
+column brand_region.6 deleted_at timestamp with time zone notnull=f default=
+column brand_stat.1 brand_id text notnull=t default=
+column brand_stat.2 period text notnull=t default=
+column brand_stat.3 views integer notnull=t default=0
+column brand_stat.4 score integer notnull=f default=
+column brand_stat.5 created_at timestamp with time zone notnull=t default=now()
+column brand_stat.6 updated_at timestamp with time zone notnull=t default=now()
+column brand_stat.7 deleted_at timestamp with time zone notnull=f default=
+column brand_stat.8 notes text notnull=f default=
+column brand_stat.9 region text notnull=t default=
+constraint brand.brand_check CHECK ((rating >= (0)::double precision))
+constraint brand.brand_country_check CHECK ((country = ANY (ARRAY['us'::text, 'de'::text])))
+constraint brand.brand_featured_logo_id_foreign FOREIGN KEY (featured_logo_id) REFERENCES brand_logo(id) ON UPDATE CASCADE ON DELETE SET NULL
+constraint brand.brand_pkey PRIMARY KEY (id)
+constraint brand.brand_rank_check CHECK ((rank >= 1))
+constraint brand.brand_status_check CHECK ((status = ANY (ARRAY['draft'::text, 'published'::text, 'retired'::text])))
+constraint brand_logo.brand_logo_brand_id_foreign FOREIGN KEY (brand_id) REFERENCES brand(id) ON UPDATE CASCADE
+constraint brand_logo.brand_logo_pkey PRIMARY KEY (id)
+constraint brand_note.brand_note_brand_id_foreign FOREIGN KEY (brand_id) REFERENCES brand(id) ON UPDATE CASCADE
+constraint brand_note.brand_note_pkey PRIMARY KEY (id)
+constraint brand_profile.brand_profile_brand_id_foreign FOREIGN KEY (brand_id) REFERENCES brand(id) ON UPDATE CASCADE ON DELETE CASCADE
+constraint brand_profile.brand_profile_pkey PRIMARY KEY (id)
+constraint brand_region.brand_region_brand_id_foreign FOREIGN KEY (brand_id) REFERENCES brand(id) ON UPDATE CASCADE
+constraint brand_region.brand_region_pkey PRIMARY KEY (id)
+constraint brand_stat.brand_stat_pkey PRIMARY KEY (brand_id, period, region)
+index brand.IDX_brand_code_custom CREATE UNIQUE INDEX "IDX_brand_code_custom" ON public.brand USING btree (code) WHERE (deleted_at IS NULL)
+index brand.IDX_brand_deleted_at CREATE INDEX "IDX_brand_deleted_at" ON public.brand USING btree (deleted_at) WHERE (deleted_at IS NULL)
+index brand.IDX_brand_handle_unique CREATE UNIQUE INDEX "IDX_brand_handle_unique" ON public.brand USING btree (handle) WHERE (deleted_at IS NULL)
+index brand.IDX_brand_name_status CREATE INDEX "IDX_brand_name_status" ON public.brand USING btree (name, status) WHERE (deleted_at IS NULL)
+index brand.IDX_brand_rank_rating CREATE INDEX "IDX_brand_rank_rating" ON public.brand USING btree (rank, rating) WHERE ((rank > 0) AND (deleted_at IS NULL))
+index brand.IDX_brand_tagline CREATE INDEX "IDX_brand_tagline" ON public.brand USING btree (tagline) WHERE (deleted_at IS NULL)
+index brand.brand_pkey CREATE UNIQUE INDEX brand_pkey ON public.brand USING btree (id)
+index brand_logo.IDX_brand_logo_brand_id CREATE INDEX "IDX_brand_logo_brand_id" ON public.brand_logo USING btree (brand_id) WHERE (deleted_at IS NULL)
+index brand_logo.IDX_brand_logo_deleted_at CREATE INDEX "IDX_brand_logo_deleted_at" ON public.brand_logo USING btree (deleted_at) WHERE (deleted_at IS NULL)
+index brand_logo.brand_logo_pkey CREATE UNIQUE INDEX brand_logo_pkey ON public.brand_logo USING btree (id)
+index brand_note.IDX_brand_note_brand_id CREATE INDEX "IDX_brand_note_brand_id" ON public.brand_note USING btree (brand_id) WHERE (deleted_at IS NULL)
+index brand_note.IDX_brand_note_deleted_at CREATE INDEX "IDX_brand_note_deleted_at" ON public.brand_note USING btree (deleted_at) WHERE (deleted_at IS NULL)
+index brand_note.brand_note_pkey CREATE UNIQUE INDEX brand_note_pkey ON public.brand_note USING btree (id)
+index brand_profile.IDX_brand_profile_brand_id_unique CREATE UNIQUE INDEX "IDX_brand_profile_brand_id_unique" ON public.brand_profile USING btree (brand_id) WHERE (deleted_at IS NULL)
+index brand_profile.IDX_brand_profile_deleted_at CREATE INDEX "IDX_brand_profile_deleted_at" ON public.brand_profile USING btree (deleted_at) WHERE (deleted_at IS NULL)
+index brand_profile.brand_profile_pkey CREATE UNIQUE INDEX brand_profile_pkey ON public.brand_profile USING btree (id)
+index brand_region.IDX_brand_region_brand_id CREATE INDEX "IDX_brand_region_brand_id" ON public.brand_region USING btree (brand_id) WHERE (deleted_at IS NULL)
+index brand_region.IDX_brand_region_deleted_at CREATE INDEX "IDX_brand_region_deleted_at" ON public.brand_region USING btree (deleted_at) WHERE (deleted_at IS NULL)
+index brand_region.brand_region_pkey CREATE UNIQUE INDEX brand_region_pkey ON public.brand_region USING btree (id)
+index brand_stat.IDX_brand_stat_deleted_at CREATE INDEX "IDX_brand_stat_deleted_at" ON public.brand_stat USING btree (deleted_at) WHERE (deleted_at IS NULL)
+index brand_stat.brand_stat_pkey CREATE UNIQUE INDEX brand_stat_pkey ON public.brand_stat USING btree (brand_id, period, region)
+sequence brand_note_id_seq
+sequence brand_sequence_seq

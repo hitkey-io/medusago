@@ -77,13 +77,18 @@ type Property struct {
 	Relation *Relation `json:"relation,omitempty"`
 }
 
-// Index is an entity level index.
+// Index is an entity level index. Where is the SQL condition of the index
+// once transformed by .indexes() (transformIndexWhere): an empty Where is an
+// index without condition.
 type Index struct {
 	Name   string   `json:"name,omitempty"`
 	On     []string `json:"on"`
 	Unique bool     `json:"unique,omitempty"`
 	Where  string   `json:"where,omitempty"`
 	Type   string   `json:"type,omitempty"`
+	// WhereNull mirrors `where: null` given to WithIndexes: the index is not
+	// scoped to the rows that are not soft deleted.
+	WhereNull bool `json:"-"`
 }
 
 // Check is a check constraint.

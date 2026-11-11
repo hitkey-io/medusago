@@ -367,10 +367,34 @@ func (e *Entity) WithCascades(c Cascades) *Entity {
 }
 
 // WithIndexes mirrors .indexes(indexes) for indexes whose where condition is
-// given as SQL.
+// given as SQL: the condition gets the soft delete scope
+// (transformIndexWhere) unless WhereNull is set.
 func (e *Entity) WithIndexes(indexes []Index) *Entity {
-	e.Indexes = indexes
+	out := make([]Index, len(indexes))
+	for i, idx := range indexes {
+		if idx.WhereNull {
+			idx.Where = ""
+		} else {
+			idx.Where = transformWhere(idx.Where)
+		}
+		idx.WhereNull = false
+		out[i] = idx
+	}
+	e.Indexes = out
 	return e
+}
+
+// transformWhere mirrors transformWhere (build-indexes.ts).
+func transformWhere(where string) string {
+	lower := strings.ToLower(where)
+	includesDeletable := strings.Contains(lower, "deleted_at is null") || strings.Contains(lower, "deleted_at is not null")
+	if where != "" && !includesDeletable {
+		where += " AND deleted_at IS NULL"
+	}
+	if where == "" {
+		where = "deleted_at IS NULL"
+	}
+	return where
 }
 
 // WithChecks mirrors .checks(checks) for checks given as SQL expressions.
