@@ -25,11 +25,8 @@ func wrapIdentifier(value string) string {
 func wrap(value string) string {
 	segments := strings.Split(value, ".")
 	for i, s := range segments {
-		if i == 0 && len(segments) > 1 {
-			segments[i] = wrapIdentifier(strings.TrimSpace(s))
-		} else {
-			segments[i] = wrapIdentifier(strings.TrimSpace(s))
-		}
+		// wrapString / wrapAsIdentifier trim every segment
+		segments[i] = wrapIdentifier(strings.TrimSpace(s))
 	}
 	return strings.Join(segments, ".")
 }
