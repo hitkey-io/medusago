@@ -220,7 +220,25 @@ func (w *Worker) waitForJob(ctx context.Context, blockUntil int64) (int64, error
 		sleep(ctx, time.Duration(timeout*float64(time.Second)))
 		return 0, ctx.Err()
 	}
-	res, err := w.queue.client.BZPopMin(ctx, time.Duration(timeout*float64(time.Second)), w.queue.keys["marker"]).Result()
+	// the blocking call does not observe the context: closing the worker
+	// does not wait for it
+	type popped struct {
+		res *redis.ZWithKey
+		err error
+	}
+	ch := make(chan popped, 1)
+	go func() {
+		res, err := w.queue.client.BZPopMin(context.WithoutCancel(ctx), time.Duration(timeout*float64(time.Second)), w.queue.keys["marker"]).Result()
+		ch <- popped{res, err}
+	}()
+	var res *redis.ZWithKey
+	var err error
+	select {
+	case p := <-ch:
+		res, err = p.res, p.err
+	case <-ctx.Done():
+		return 0, ctx.Err()
+	}
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
 			return 0, nil

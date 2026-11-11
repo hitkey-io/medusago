@@ -690,13 +690,14 @@ func goServer(t *testing.T, scenario string) string {
 	if base := os.Getenv("MEDUSA_HTTP_TARGET_URL"); base != "" {
 		return base
 	}
+	prepareRedis(t)
 	dbURL := setupDatabase(t, "medusa_http_go_"+strings.ReplaceAll(scenario, "-", "_"))
 	// Same CORS settings as record.sh passes to upstream.
 	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{
 		DatabaseURL: dbURL,
 		HTTP:        config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
 	}, Modules: scenarioModules()})
-	app, err := loaders.Initialize(context.Background(), cfg)
+	app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{OnLoad: scenarioHooks(t)})
 	if err != nil {
 		t.Fatal(err)
 	}

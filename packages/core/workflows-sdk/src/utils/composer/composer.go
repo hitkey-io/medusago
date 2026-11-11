@@ -278,25 +278,27 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 	if err == nil && s.Options.Async && !background && isNilOutput(any(res.Output)) {
 		// waits for setStepSuccess / setStepFailure; the run returns to its
 		// caller meanwhile
-		ch := registerWaiter(waiterKey(e.rootWorkflowID, e.transactionID, action))
+		coord := stepCoordinator(e.container)
+		key := IdempotencyKey{Action: "invoke", TransactionID: e.transactionID, StepID: action, WorkflowID: e.rootWorkflowID}
+		ch := coord.Wait(key)
 		e.journal.wait(rec)
 		e.persist(TransactionStateInvoking)
 		e.detacher.detach()
-		var r stepResult
+		var r StepResult
 		if s.Options.Timeout > 0 {
 			select {
 			case r = <-ch:
 			case <-time.After(time.Duration(s.Options.Timeout) * time.Second):
-				takeWaiter(waiterKey(e.rootWorkflowID, e.transactionID, action))
-				r = stepResult{err: &TransactionStepTimeoutError{}}
+				coord.Cancel(key)
+				r = StepResult{Err: &TransactionStepTimeoutError{}}
 			}
 		} else {
 			r = <-ch
 		}
-		if r.err != nil {
-			err = r.err
+		if r.Err != nil {
+			err = r.Err
 		} else {
-			out, cerr := convertOutput[O](r.output)
+			out, cerr := convertOutput[O](r.Output)
 			if cerr != nil {
 				err = cerr
 			} else {
@@ -363,6 +365,9 @@ func CreateWorkflowWithOptions[I, O any](id string, opts WorkflowOptions, body f
 	registerWorkflow(id)
 	w := &Workflow[I, O]{ID: id, Options: opts, body: body, hooks: newHookRegistry()}
 	registerRunner(w)
+	if opts.Schedule != nil {
+		registerScheduled(id, *opts.Schedule)
+	}
 	return w
 }
 
@@ -404,9 +409,18 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 		journal: newJournal(input), detacher: newDetacher(), rootWorkflowID: w.ID, rootOptions: w.Options}
 	if o.Notify {
 		workflowID, transactionID := w.ID, o.TransactionID
+		publisher := eventPublisher(c)
 		e.journal.events = func(ev WorkflowEvent) {
 			ev.WorkflowID, ev.TransactionID = workflowID, transactionID
+			// called with the journal locked
+			ev.IsFlowAsync = e.journal.hasAsync
+			if ev.EventType == "onFinish" {
+				ev.State = e.journal.state
+			}
 			notifyEvent(ev)
+			if publisher != nil {
+				publisher.PublishWorkflowEvent(ev)
+			}
 		}
 		e.journal.emitRun("onBegin", nil)
 	}

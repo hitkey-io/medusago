@@ -1,0 +1,157 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "create_product",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products?fields=id,title,handle",
+    "body": {
+      "title": "Redis Events",
+      "options": [
+        {
+          "title": "Size",
+          "values": [
+            "M"
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "title": "M",
+          "options": {
+            "Size": "M"
+          },
+          "prices": [
+            {
+              "currency_code": "eur",
+              "amount": 10
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "event_tags",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/product-tags?q=event-product.created&order=value&fields=value,metadata",
+    "until": "product_tags.1"
+  },
+  {
+    "name": "run_create",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/workflows-executions/create-product-types/run",
+    "body": {
+      "transaction_id": "tx-redis-run",
+      "input": {
+        "product_types": [
+          {
+            "value": "redis-run-type"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "run_dup",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/workflows-executions/create-product-types/run",
+    "body": {
+      "input": {
+        "product_types": [
+          {
+            "value": "redis-run-type"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "types",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/product-types?q=redis-run&fields=value"
+  },
+  {
+    "name": "up",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/uploads",
+    "files": [
+      {
+        "field": "files",
+        "name": "redis.csv",
+        "type": "text/csv",
+        "content": "Product Handle,Product Title,Product Status,Variant Title,Variant Sku,Variant Price EUR,Variant Option 1 Name,Variant Option 1 Value\nredis-mug,Redis Mug,published,Standard,REDIS-MUG-1,9,Size,Standard\n"
+      }
+    ]
+  },
+  {
+    "name": "import",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports",
+    "body": {
+      "file_key": "{{up.files.0.id}}",
+      "originalname": "redis.csv",
+      "extension": "csv",
+      "size": 100,
+      "mime_type": "text/csv"
+    }
+  },
+  {
+    "name": "execution_waiting",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/workflows-executions?workflow_id=import-products-as-chunks&fields=workflow_id,transaction_id,state"
+  },
+  {
+    "name": "step_success_unknown",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/workflows-executions/import-products-as-chunks/steps/success",
+    "body": {
+      "transaction_id": "auto-unknown",
+      "step_id": "wait-confirmation-product-import",
+      "response": true
+    }
+  },
+  {
+    "name": "confirm",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products/imports/{{import.transaction_id}}/confirm",
+    "body": {}
+  },
+  {
+    "name": "notifications",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/notifications?fields=id,to,channel,template,data,status",
+    "until": "notifications.0"
+  },
+  {
+    "name": "mug",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/products?handle=redis-mug&fields=id,title,status,*variants,variants.prices.amount,variants.prices.currency_code"
+  },
+  {
+    "name": "mug_tags",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/product-tags?q=event-product.created&order=value&fields=value",
+    "until": "product_tags.2"
+  }
+]

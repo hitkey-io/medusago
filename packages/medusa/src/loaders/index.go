@@ -6,7 +6,6 @@ import (
 	defaultsworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/defaults/workflows"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/medusa/src/subscribers"
-	eventbuslocal "github.com/hitkey-io/medusago/packages/modules/event-bus-local/src/services"
 	"log/slog"
 	nethttp "net/http"
 	"os"
@@ -20,6 +19,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/framework/src/http/middlewares"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
+	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 	ff "github.com/hitkey-io/medusago/packages/core/utils/src/feature-flags"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/ioredis"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
@@ -34,8 +34,8 @@ type MedusaApp struct {
 	Handler   nethttp.Handler
 	// App is the router behind Handler (routes and middlewares can be
 	// added to it by Options.OnLoad hooks).
-	App *medusahttp.App
-	Pool      *pgxpool.Pool
+	App  *medusahttp.App
+	Pool *pgxpool.Pool
 	// shutdown mirrors the shutdown returned by the express loader.
 	shutdown []func()
 }
@@ -79,7 +79,7 @@ func LoadModules(ctx context.Context, c *container.MedusaContainer, pool *pgxpoo
 		var svc any
 		switch {
 		case exp.Service != nil:
-			s, err := exp.Service(modulessdk.ServiceOptions{DB: pool, Providers: providers, Logger: logger, Container: c})
+			s, err := exp.Service(modulessdk.ServiceOptions{DB: pool, Providers: providers, Options: mc.Options, Logger: logger, Container: c})
 			if err != nil {
 				return fmt.Errorf("%s: %w", mc.Key, err)
 			}
@@ -225,6 +225,12 @@ type applicationStarter interface {
 	OnApplicationStart(ctx context.Context) error
 }
 
+// applicationShutdowner is a module service with an onApplicationShutdown
+// hook.
+type applicationShutdowner interface {
+	OnApplicationShutdown(ctx context.Context) error
+}
+
 // Options are the options of InitializeWithOptions.
 type Options struct {
 	// Directory is the project root (static files, admin build); defaults
@@ -293,8 +299,8 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 	}
 
 	// subscribers loader (packages/medusa/src/subscribers)
-	if bus, ok := c.Resolve(utilsmodulessdk.EVENT_BUS).(*eventbuslocal.LocalEventBusService); ok {
-		bus.Subscribe("payment.webhook_received", func(ctx context.Context, ev eventbuslocal.Event) error {
+	if bus, ok := c.Resolve(utilsmodulessdk.EVENT_BUS).(eventbus.Subscribable); ok {
+		bus.Subscribe("payment.webhook_received", func(ctx context.Context, ev eventbus.Event) error {
 			return subscribers.PaymentWebhookHandler(ctx, c, ev.Data)
 		})
 	}
@@ -360,6 +366,15 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 		return nil
 	})
 	medusaApp := &MedusaApp{Container: c, Handler: app, App: app, Pool: pool, shutdown: []func(){closeStore}}
+	// the modules' onApplicationShutdown hooks (workers, Redis clients)
+	for _, mc := range cfg.Modules {
+		if mc.Disable {
+			continue
+		}
+		if s, ok := c.Resolve(mc.Key).(applicationShutdowner); ok {
+			medusaApp.shutdown = append(medusaApp.shutdown, func() { _ = s.OnApplicationShutdown(context.Background()) })
+		}
+	}
 	// admin loader (upstream registers it once the bundler is imported, after
 	// the synchronous registrations).
 	if !opts.SkipAdmin {

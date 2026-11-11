@@ -12,7 +12,7 @@ import (
 // POST mirrors POST: completes the confirmation step.
 func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	key := composer.IdempotencyKey{Action: "invoke", TransactionID: req.Params["transaction_id"], StepID: steps.WaitConfirmationProductImportStepID, WorkflowID: workflows.ImportProductsAsChunksWorkflowID}
-	if err := composer.SetStepSuccess(key, true); err != nil {
+	if err := composer.SetStepSuccess(req.Ctx(), req.Scope, key, true); err != nil {
 		return err
 	}
 	return res.Status(202).JSON(dal.NewRecord())

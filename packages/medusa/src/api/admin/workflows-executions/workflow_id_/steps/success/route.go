@@ -21,7 +21,7 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 		action = a
 	}
 	key := composer.IdempotencyKey{Action: action, TransactionID: fmt.Sprint(get("transaction_id")), StepID: fmt.Sprint(get("step_id")), WorkflowID: req.Params["workflow_id"]}
-	if err := composer.SetStepSuccess(key, get("response")); err != nil {
+	if err := composer.SetStepSuccess(req.Ctx(), req.Scope, key, get("response"), composer.StepResponseOptions{WithContainer: true}); err != nil {
 		return err
 	}
 	out := dal.NewRecord()

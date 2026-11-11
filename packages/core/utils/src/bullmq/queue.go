@@ -94,6 +94,9 @@ func (q *Queue) QualifiedName() string { return q.prefix + ":" + q.Name }
 // ToKey mirrors toKey(type).
 func (q *Queue) ToKey(t string) string { return q.QualifiedName() + ":" + t }
 
+// Prefix returns the key prefix ("bull").
+func (q *Queue) Prefix() string { return q.prefix }
+
 // Client returns the Redis client.
 func (q *Queue) Client() redis.UniversalClient { return q.client }
 

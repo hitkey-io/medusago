@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"reflect"
 	"sort"
 	"strconv"
+	"time"
 )
 
 // Obj is a JavaScript-like object: string keys in insertion order. Job
@@ -29,6 +31,12 @@ func NewObj(kv ...any) *Obj {
 // ObjFromMap builds an Obj from a map (keys sorted) or returns an Obj
 // unchanged; nested maps are converted too.
 func ObjFromMap(v any) *Obj {
+	if v == nil {
+		return nil
+	}
+	if rv := reflect.ValueOf(v); rv.Kind() == reflect.Pointer && rv.IsNil() {
+		return nil
+	}
 	switch m := v.(type) {
 	case *Obj:
 		return m
@@ -189,8 +197,12 @@ func (o *Obj) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// jsonStringify mirrors JSON.stringify (no HTML escaping).
+// jsonStringify mirrors JSON.stringify (no HTML escaping, dates as
+// toISOString()).
 func jsonStringify(v any) ([]byte, error) {
+	if t, ok := v.(time.Time); ok {
+		return []byte(`"` + t.UTC().Format("2006-01-02T15:04:05.000Z") + `"`), nil
+	}
 	var b bytes.Buffer
 	enc := json.NewEncoder(&b)
 	enc.SetEscapeHTML(false)
@@ -200,7 +212,13 @@ func jsonStringify(v any) ([]byte, error) {
 	return bytes.TrimRight(b.Bytes(), "\n"), nil
 }
 
-// parseJSON mirrors JSON.parse: objects as *Obj, numbers as float64.
+// ParseJSON mirrors JSON.parse: objects as *Obj (key order kept), numbers
+// as float64.
+func ParseJSON(data []byte) (any, error) { return parseJSON(data) }
+
+// Stringify mirrors JSON.stringify.
+func Stringify(v any) ([]byte, error) { return jsonStringify(v) }
+
 func parseJSON(data []byte) (any, error) {
 	dec := json.NewDecoder(bytes.NewReader(data))
 	dec.UseNumber()

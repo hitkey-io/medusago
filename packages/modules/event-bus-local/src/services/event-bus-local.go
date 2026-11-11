@@ -9,18 +9,15 @@ import (
 	"time"
 
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 )
 
 // Event mirrors the published event body: { name, data, metadata }.
-type Event struct {
-	Name     string
-	Data     any
-	Metadata *dal.Record
-}
+type Event = eventbus.Event
 
 // Subscriber handles a published event.
-type Subscriber func(ctx context.Context, e Event) error
+type Subscriber = eventbus.Subscriber
 
 // LocalEventBusService mirrors LocalEventBusService: in-process
 // subscribers, grouped (staged) events per event group id.

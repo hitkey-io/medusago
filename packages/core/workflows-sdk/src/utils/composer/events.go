@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 )
 
 // WorkflowEvent mirrors the NotifyOptions delivered to workflow engine
@@ -25,6 +26,94 @@ type WorkflowEvent struct {
 	HasResult   bool
 	Errors      []any
 	HasErrors   bool
+	// IsFlowAsync and State mirror NotifyOptions.isFlowAsync / state.
+	IsFlowAsync bool
+	State       string
+}
+
+// WorkflowEventPublisher is implemented by a workflow engine module that
+// shares the notifications with other instances (the Redis engine
+// publishes those of runs with async steps).
+type WorkflowEventPublisher interface {
+	PublishWorkflowEvent(ev WorkflowEvent)
+}
+
+func eventPublisher(c Container) WorkflowEventPublisher {
+	if c == nil {
+		return nil
+	}
+	p, _ := c.Resolve(utilsmodulessdk.WORKFLOW_ENGINE).(WorkflowEventPublisher)
+	return p
+}
+
+// DeliverWorkflowEvent delivers a notification received from another
+// instance to the subscribers of this one.
+func DeliverWorkflowEvent(ev WorkflowEvent) { notifyEvent(ev) }
+
+// HasSubscribers reports whether this process has subscribers of the
+// workflow.
+func HasSubscribers(workflowID string) bool {
+	subsMu.Lock()
+	defer subsMu.Unlock()
+	return len(subs[workflowID]) > 0
+}
+
+// NotifyOptions mirrors the NotifyOptions published by the Redis engine:
+// { eventType, isFlowAsync, workflowId, transactionId, step, response,
+// result, errors, state }.
+func (ev WorkflowEvent) NotifyOptions() *dal.Record {
+	r := dal.NewRecord()
+	r.Set("eventType", ev.EventType)
+	r.Set("isFlowAsync", ev.IsFlowAsync)
+	r.Set("workflowId", ev.WorkflowID)
+	r.Set("transactionId", ev.TransactionID)
+	if ev.Step != nil {
+		r.Set("step", ev.Step)
+	}
+	if ev.HasResponse {
+		r.Set("response", ev.Response)
+	}
+	if ev.HasResult {
+		r.Set("result", ev.Result)
+	}
+	if ev.HasErrors {
+		r.Set("errors", ev.Errors)
+	}
+	if ev.State != "" {
+		r.Set("state", ev.State)
+	}
+	return r
+}
+
+// WorkflowEventFromNotifyOptions reads NotifyOptions (JSON decoded).
+func WorkflowEventFromNotifyOptions(r *dal.Record) WorkflowEvent {
+	var ev WorkflowEvent
+	str := func(k string) string {
+		v, _ := r.Get(k)
+		s, _ := v.(string)
+		return s
+	}
+	ev.EventType = str("eventType")
+	ev.WorkflowID = str("workflowId")
+	ev.TransactionID = str("transactionId")
+	ev.State = str("state")
+	if v, ok := r.Get("isFlowAsync"); ok {
+		ev.IsFlowAsync, _ = v.(bool)
+	}
+	if v, ok := r.Get("step"); ok {
+		ev.Step, _ = v.(*dal.Record)
+	}
+	if v, ok := r.Get("response"); ok {
+		ev.Response, ev.HasResponse = v, true
+	}
+	if v, ok := r.Get("result"); ok {
+		ev.Result, ev.HasResult = v, true
+	}
+	if v, ok := r.Get("errors"); ok {
+		ev.Errors, _ = v.([]any)
+		ev.HasErrors = true
+	}
+	return ev
 }
 
 // Subscriber receives workflow events.
