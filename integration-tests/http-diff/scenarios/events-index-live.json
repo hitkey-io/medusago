@@ -17,7 +17,7 @@
   },
   { "name": "admin_after_create", "method": "GET", "bearer": "login", "until": "products.0", "path": "/admin/products?fields=id,title,handle,status,variants.sku&handle=live-index-shirt" },
   { "name": "admin_list_after_create", "method": "GET", "bearer": "login", "path": "/admin/products?fields=id,title&status[]=published&order=title" },
-  { "name": "admin_channel_after_create", "method": "GET", "bearer": "login", "path": "/admin/products?fields=id,title&sales_channel_id[]=sc_01M70XZZVJETKWXXT8RHV5DWRZ&order=title" },
+  { "name": "admin_channel_after_create", "method": "GET", "bearer": "login", "until": "products.0.title=Live Index Shirt", "path": "/admin/products?fields=id,title&sales_channel_id[]=sc_01M70XZZVJETKWXXT8RHV5DWRZ&order=title" },
   { "name": "store_after_create", "method": "GET", "until": "products.0", "path": "/store/products?fields=id,title,handle&handle=live-index-shirt", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
   { "name": "store_q_after_create", "method": "GET", "path": "/store/products?fields=id,title,variants.sku&q=live", "headers": { "x-publishable-api-key": "pk_aff03007a345e2eb8cf851db3ca769917beb2a82c07c614d37717fe81d34f29a" } },
   { "name": "events_create", "method": "GET", "path": "/events-capture" },
