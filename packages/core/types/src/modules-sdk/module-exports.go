@@ -98,7 +98,9 @@ type ProviderInstance struct {
 type LoaderOptions struct {
 	DB        dal.Querier
 	Providers []ProviderInstance
-	Logger    *slog.Logger
+	// Options are the module options.
+	Options map[string]any
+	Logger  *slog.Logger
 }
 
 // Loader mirrors a module loader.

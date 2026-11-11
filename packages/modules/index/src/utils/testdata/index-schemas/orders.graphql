@@ -1,0 +1,23 @@
+
+type Order @Listeners(values: ["order.order.created", "order.order.updated", "order.order.deleted", "order.order.restored"]) {
+  id: ID
+  status: String
+  email: String
+  currency_code: String
+  items: [OrderLineItem]
+  shipping_address: OrderAddress
+  promotions: [Promotion]
+}
+type OrderLineItem @Listeners(values: ["order.order-line-item.created", "order.order-line-item.updated", "order.order-line-item.deleted", "order.order-line-item.restored"]) {
+  id: ID
+  title: String
+  quantity: Float
+}
+type OrderAddress @Listeners(values: ["order.order-address.created", "order.order-address.updated", "order.order-address.deleted", "order.order-address.restored"]) {
+  id: ID
+  city: String
+}
+type Promotion @Listeners(values: ["promotion.promotion.created", "promotion.promotion.updated", "promotion.promotion.deleted", "promotion.promotion.restored"]) {
+  id: ID
+  code: String
+}

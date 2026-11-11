@@ -10,7 +10,8 @@ import (
 // TestQueryBuilderVectors compares the SQL built for query.index() inputs
 // with the SQL upstream's QueryBuilder (knex, pg) built for the same
 // inputs (testdata/query-builder-vectors.json, generated in the reference
-// application over the default schema).
+// application over the default schema, whose representation is
+// testdata/index-schemas/default.json).
 func TestQueryBuilderVectors(t *testing.T) {
 	raw, err := os.ReadFile("testdata/query-builder-vectors.json")
 	if err != nil {
@@ -24,7 +25,7 @@ func TestQueryBuilderVectors(t *testing.T) {
 		vec := v.(*dal.Record)
 		name := get(vec, "name").(string)
 		t.Run(name, func(t *testing.T) {
-			schema, err := BuildSchemaObjectRepresentation()
+			schema, err := loadSchemaObjectRepresentation("testdata/index-schemas/default.json")
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -1,13 +1,4 @@
-// Code generated from the schema object representation @medusajs/index
-// builds for its default schema (buildSchemaObjectRepresentation over the
-// joiner configs of the default modules and links), dumped from the
-// reference application. DO NOT EDIT.
-
-package utils
-
-// defaultSchemaObjectRepresentationJSON is the extracted representation of
-// defaultSchema (default-schema.ts).
-const defaultSchemaObjectRepresentationJSON = `{
+{
   "entities": [
     {
       "key": "Product",
@@ -18,10 +9,9 @@ const defaultSchemaObjectRepresentationJSON = `{
         "title",
         "handle",
         "status",
+        "material",
         "type_id",
         "collection_id",
-        "is_giftcard",
-        "external_id",
         "created_at",
         "updated_at"
       ],
@@ -50,6 +40,7 @@ const defaultSchemaObjectRepresentationJSON = `{
         "id",
         "product_id",
         "sku",
+        "title",
         "product.id"
       ],
       "listeners": [
@@ -195,6 +186,7 @@ const defaultSchemaObjectRepresentationJSON = `{
       "alias": "sales_channel",
       "fields": [
         "id",
+        "name",
         "is_disabled"
       ],
       "listeners": [
@@ -260,6 +252,153 @@ const defaultSchemaObjectRepresentationJSON = `{
           "inSchemaRef": null,
           "targetProp": "product_sales_channel",
           "inverseSideProp": "product",
+          "isList": false,
+          "isInverse": false
+        }
+      ]
+    },
+    {
+      "key": "ProductCollection",
+      "entity": "ProductCollection",
+      "alias": "product_collection",
+      "fields": [
+        "id",
+        "title",
+        "products.id"
+      ],
+      "listeners": [
+        "product.product-collection.created",
+        "product.product-collection.updated",
+        "product.product-collection.deleted",
+        "product.product-collection.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Product",
+          "inSchemaRef": null,
+          "targetProp": "collection",
+          "inverseSideProp": "products",
+          "isList": false,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "ProductType",
+      "entity": "ProductType",
+      "alias": "product_type",
+      "fields": [
+        "id",
+        "value",
+        "products.id"
+      ],
+      "listeners": [
+        "product.product-type.created",
+        "product.product-type.updated",
+        "product.product-type.deleted",
+        "product.product-type.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Product",
+          "inSchemaRef": null,
+          "targetProp": "type",
+          "inverseSideProp": "products",
+          "isList": false,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "InventoryItem",
+      "entity": "InventoryItem",
+      "alias": "inventory_items",
+      "fields": [
+        "id",
+        "sku",
+        "title"
+      ],
+      "listeners": [
+        "inventory.inventory-item.created",
+        "inventory.inventory-item.updated",
+        "inventory.inventory-item.deleted",
+        "inventory.inventory-item.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "inventory",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "LinkProductVariantInventoryItem",
+          "inSchemaRef": "ProductVariant",
+          "targetProp": "inventory_items",
+          "inverseSideProp": "variant_link",
+          "isList": false,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "LinkProductVariantInventoryItem",
+      "entity": "LinkProductVariantInventoryItem",
+      "alias": "product_variant_inventory_item",
+      "fields": [
+        "id",
+        "variant_id",
+        "inventory_item_id"
+      ],
+      "listeners": [
+        "LinkProductVariantInventoryItem.attached",
+        "LinkProductVariantInventoryItem.detached"
+      ],
+      "moduleConfig": {
+        "serviceName": "ProductVariantInventoryInventoryItemLink",
+        "isLink": true,
+        "primaryKeys": [
+          "id",
+          "variant_id",
+          "inventory_item_id"
+        ],
+        "relationships": [
+          {
+            "serviceName": "product",
+            "foreignKey": "variant_id"
+          },
+          {
+            "serviceName": "inventory",
+            "foreignKey": "inventory_item_id"
+          }
+        ]
+      },
+      "parents": [
+        {
+          "ref": "ProductVariant",
+          "inSchemaRef": null,
+          "targetProp": "product_variant_inventory_item",
+          "inverseSideProp": "variant",
           "isList": false,
           "isInverse": false
         }
@@ -427,6 +566,97 @@ const defaultSchemaObjectRepresentationJSON = `{
       "shortCutOf": null,
       "isInverse": false,
       "isList": null
+    },
+    {
+      "path": "product.collection",
+      "ref": "ProductCollection",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_collection",
+      "ref": "ProductCollection",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.type",
+      "ref": "ProductType",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_type",
+      "ref": "ProductType",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants.product_variant_inventory_item.inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_variant.product_variant_inventory_item.inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_variant_inventory_item.inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product.variants.inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": "product.variants.product_variant_inventory_item.inventory_items",
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_variant.inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": "product_variant.product_variant_inventory_item.inventory_items",
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants.product_variant_inventory_item",
+      "ref": "LinkProductVariantInventoryItem",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "product_variant.product_variant_inventory_item",
+      "ref": "LinkProductVariantInventoryItem",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "product_variant_inventory_item",
+      "ref": "LinkProductVariantInventoryItem",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
     }
   ],
   "linkableKeys": {
@@ -452,7 +682,13 @@ const defaultSchemaObjectRepresentationJSON = `{
     "sales_channel": {
       "sales_channel_id": "SalesChannel"
     },
-    "ProductProductSalesChannelSalesChannelLink": {}
+    "ProductProductSalesChannelSalesChannelLink": {},
+    "inventory": {
+      "inventory_item_id": "InventoryItem",
+      "inventory_level_id": "InventoryLevel",
+      "reservation_item_id": "ReservationItem"
+    },
+    "ProductVariantInventoryInventoryItemLink": {}
   },
   "types": {
     "Product": {
@@ -460,20 +696,23 @@ const defaultSchemaObjectRepresentationJSON = `{
       "title": "String",
       "handle": "String",
       "status": "String",
+      "material": "String",
       "type_id": "String",
       "collection_id": "String",
-      "is_giftcard": "Boolean",
-      "external_id": "String",
       "created_at": "DateTime",
       "updated_at": "DateTime",
       "variants": "[ProductVariant]",
-      "sales_channels": "[SalesChannel]"
+      "sales_channels": "[SalesChannel]",
+      "collection": "ProductCollection",
+      "type": "ProductType"
     },
     "ProductVariant": {
       "id": "ID",
       "product_id": "String",
       "sku": "String",
-      "prices": "[Price]"
+      "title": "String",
+      "prices": "[Price]",
+      "inventory_items": "[InventoryItem]"
     },
     "Price": {
       "id": "ID",
@@ -483,7 +722,21 @@ const defaultSchemaObjectRepresentationJSON = `{
     },
     "SalesChannel": {
       "id": "ID",
+      "name": "String",
       "is_disabled": "Boolean"
+    },
+    "ProductCollection": {
+      "id": "ID",
+      "title": "String"
+    },
+    "ProductType": {
+      "id": "ID",
+      "value": "String"
+    },
+    "InventoryItem": {
+      "id": "ID",
+      "sku": "String",
+      "title": "String"
     }
   }
-}`
+}

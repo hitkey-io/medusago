@@ -16,10 +16,12 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/container"
 	frameworkmigrations "github.com/hitkey-io/medusago/packages/core/framework/src/migrations"
+	coremodulessdk "github.com/hitkey-io/medusago/packages/core/modules-sdk/src"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/migrations"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
+	"github.com/hitkey-io/medusago/packages/medusa/src/loaders"
 	migrationscripts "github.com/hitkey-io/medusago/packages/medusa/src/migration-scripts"
 	"github.com/hitkey-io/medusago/packages/medusa/src/modules"
 )
@@ -235,6 +237,14 @@ func runMigrationScripts(ctx context.Context, pool *pgxpool.Pool, cfg config.Con
 // order, with their configured providers.
 func RunModuleLoaders(ctx context.Context, pool *pgxpool.Pool, cfg config.ConfigModule) error {
 	logger := slog.Default()
+	// The application is loaded: the joiner configs of the modules and
+	// links are known (MedusaModule.getAllJoinerConfigs(), the index module
+	// builds its schema over them).
+	qc, err := loaders.BuildQueryConfig(cfg)
+	if err != nil {
+		return err
+	}
+	coremodulessdk.SetAllJoinerConfigs(qc.JoinerConfigs)
 	for _, mc := range cfg.Modules {
 		if mc.Disable {
 			continue
@@ -255,7 +265,7 @@ func RunModuleLoaders(ctx context.Context, pool *pgxpool.Pool, cfg config.Config
 			}
 		}
 		for _, load := range exp.Loaders {
-			if err := load(ctx, modulessdk.LoaderOptions{DB: pool, Providers: providers, Logger: logger}); err != nil {
+			if err := load(ctx, modulessdk.LoaderOptions{DB: pool, Providers: providers, Options: mc.Options, Logger: logger}); err != nil {
 				return fmt.Errorf("%s loader: %w", mc.Key, err)
 			}
 		}

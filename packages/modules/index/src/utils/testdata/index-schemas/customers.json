@@ -1,0 +1,254 @@
+{
+  "entities": [
+    {
+      "key": "Customer",
+      "entity": "Customer",
+      "alias": "customer",
+      "fields": [
+        "id",
+        "email",
+        "first_name",
+        "has_account"
+      ],
+      "listeners": [
+        "customer.customer.created",
+        "customer.customer.updated",
+        "customer.customer.deleted",
+        "customer.customer.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "customer",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": []
+    },
+    {
+      "key": "CustomerGroup",
+      "entity": "CustomerGroup",
+      "alias": "customer_group",
+      "fields": [
+        "id",
+        "name",
+        "customers.id"
+      ],
+      "listeners": [
+        "customer.customer-group.created",
+        "customer.customer-group.updated",
+        "customer.customer-group.deleted",
+        "customer.customer-group.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "customer",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Customer",
+          "inSchemaRef": null,
+          "targetProp": "groups",
+          "inverseSideProp": "customers",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "CustomerAddress",
+      "entity": "CustomerAddress",
+      "alias": "customer_address",
+      "fields": [
+        "id",
+        "city",
+        "country_code",
+        "customer.id"
+      ],
+      "listeners": [
+        "customer.customer-address.created",
+        "customer.customer-address.updated",
+        "customer.customer-address.deleted",
+        "customer.customer-address.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "customer",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Customer",
+          "inSchemaRef": null,
+          "targetProp": "addresses",
+          "inverseSideProp": "customer",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "Region",
+      "entity": "Region",
+      "alias": "region",
+      "fields": [
+        "id",
+        "name",
+        "currency_code"
+      ],
+      "listeners": [
+        "region.region.created",
+        "region.region.updated",
+        "region.region.deleted",
+        "region.region.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "region",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "iso_2"
+        ],
+        "relationships": []
+      },
+      "parents": []
+    },
+    {
+      "key": "Country",
+      "entity": "Country",
+      "alias": "country",
+      "fields": [
+        "iso_2",
+        "name",
+        "region.id"
+      ],
+      "listeners": [],
+      "moduleConfig": {
+        "serviceName": "region",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "iso_2"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Region",
+          "inSchemaRef": null,
+          "targetProp": "countries",
+          "inverseSideProp": "region",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    }
+  ],
+  "propertiesMap": [
+    {
+      "path": "customer",
+      "ref": "Customer",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "customer.groups",
+      "ref": "CustomerGroup",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "customer_group",
+      "ref": "CustomerGroup",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "customer.addresses",
+      "ref": "CustomerAddress",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "customer_address",
+      "ref": "CustomerAddress",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "region",
+      "ref": "Region",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "region.countries",
+      "ref": "Country",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "country",
+      "ref": "Country",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    }
+  ],
+  "linkableKeys": {
+    "customer": {
+      "customer_address_id": "CustomerAddress",
+      "customer_group_customer_id": "CustomerGroupCustomer",
+      "customer_group_id": "CustomerGroup",
+      "customer_id": "Customer"
+    },
+    "region": {
+      "region_id": "Region",
+      "country_iso_2": "Country"
+    }
+  },
+  "types": {
+    "Customer": {
+      "id": "ID",
+      "email": "String",
+      "first_name": "String",
+      "has_account": "Boolean",
+      "groups": "[CustomerGroup]",
+      "addresses": "[CustomerAddress]"
+    },
+    "CustomerGroup": {
+      "id": "ID",
+      "name": "String"
+    },
+    "CustomerAddress": {
+      "id": "ID",
+      "city": "String",
+      "country_code": "String"
+    },
+    "Region": {
+      "id": "ID",
+      "name": "String",
+      "currency_code": "String",
+      "countries": "[Country]"
+    },
+    "Country": {
+      "iso_2": "String",
+      "name": "String"
+    }
+  }
+}

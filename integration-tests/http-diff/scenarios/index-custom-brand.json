@@ -1,0 +1,42 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "details", "method": "GET", "bearer": "login", "path": "/admin/index/details", "sortby": { "metadata": "entity" } },
+  { "name": "module_brands_empty", "method": "POST", "path": "/index-query",
+    "body": { "mode": "module", "fields": ["brand.id", "brand.name"] } },
+
+  { "name": "create_a", "method": "POST", "bearer": "login", "path": "/admin/brands",
+    "body": { "name": "Acme", "handle": "acme", "rank": 2, "rating": 4.5, "status": "published", "logos": [{ "url": "https://cdn.example.test/acme.png", "position": 1 }, { "url": "https://cdn.example.test/acme-dark.png", "position": 2 }] } },
+  { "name": "create_b", "method": "POST", "bearer": "login", "path": "/admin/brands", "body": { "name": "Bolt", "handle": "bolt" } },
+  { "name": "live_brands_created", "method": "POST", "path": "/index-query", "until": "data.1", "sortby": { "data.*.logos": "position" },
+    "body": { "mode": "module", "fields": ["brand.id", "brand.name", "brand.handle", "brand.status", "brand.rank", "brand.rating", "brand.is_active", "brand.logos.url", "brand.logos.position"], "pagination": { "order": { "brand": { "name": "ASC" } } } } },
+
+  { "name": "link_product", "method": "POST", "bearer": "login", "path": "/admin/brands/{{create_a.brand.id}}/products", "body": { "add": ["prod_01M70XZZZ4FBS8GYD7B7RQYZPR"] } },
+  { "name": "live_product_brand", "method": "POST", "path": "/index-query", "until": "data.0",
+    "body": { "entity": "product", "fields": ["id", "title", "brand.name"], "filters": { "brand": { "name": "Acme" } } } },
+  { "name": "graph_brand_rank", "method": "POST", "path": "/index-query",
+    "body": { "entity": "product", "fields": ["id"], "filters": { "brand": { "rank": { "$gte": 2 }, "status": "published" } } } },
+
+  { "name": "update_a", "method": "POST", "bearer": "login", "path": "/admin/brands/{{create_a.brand.id}}", "body": { "name": "Acme Corp", "rank": 1 } },
+  { "name": "live_brand_updated", "method": "POST", "path": "/index-query", "until": "data.0",
+    "body": { "entity": "product", "fields": ["id", "title"], "filters": { "brand": { "name": "Acme Corp" } } } },
+
+  { "name": "link_sales_channel", "method": "POST", "bearer": "login", "path": "/admin/brands/{{create_a.brand.id}}/sales-channels",
+    "body": { "links": [{ "sales_channel_id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ" }] } },
+  { "name": "live_brand_sales_channel", "method": "POST", "path": "/index-query", "until": "data.0.sales_channels",
+    "body": { "mode": "module", "fields": ["brand.id", "brand.name", "brand.sales_channels.name"], "filters": { "brand": { "handle": "acme" } } } },
+  { "name": "graph_product_brand_sales_channel", "method": "POST", "path": "/index-query",
+    "body": { "entity": "product", "fields": ["id"], "filters": { "brand": { "sales_channels": { "id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ" } } } } },
+  { "name": "module_products_brand", "method": "POST", "path": "/index-query", "sortby": { "data.*.variants": "sku", "data.*.brand.logos": "url" },
+    "body": { "mode": "module", "fields": ["product.id", "product.title", "product.brand.name", "product.brand.rank", "product.brand.logos.url", "product.variants.sku"],
+      "filters": { "product": { "brand": { "handle": "acme" } } } } },
+
+  { "name": "unlink_product", "method": "POST", "bearer": "login", "path": "/admin/brands/{{create_a.brand.id}}/products", "body": { "remove": ["prod_01M70XZZZ4FBS8GYD7B7RQYZPR"] } },
+  { "name": "live_product_unlinked", "method": "POST", "path": "/index-query", "until_absent": "data.0",
+    "body": { "entity": "product", "fields": ["id"], "filters": { "brand": { "handle": "acme" } } } },
+  { "name": "delete_b", "method": "DELETE", "bearer": "login", "path": "/admin/brands/{{create_b.brand.id}}" },
+  { "name": "live_brand_deleted", "method": "POST", "path": "/index-query", "until_absent": "data.0",
+    "body": { "mode": "module", "fields": ["brand.id"], "filters": { "brand": { "handle": "bolt" } } } },
+  { "name": "module_brands_after", "method": "POST", "path": "/index-query", "sortby": { "data.*.logos": "url" },
+    "body": { "mode": "module", "fields": ["brand.id", "brand.name", "brand.logos.url", "brand.sales_channels.name"], "pagination": { "order": { "brand": { "name": "ASC" } } } } },
+  { "name": "details_after", "method": "GET", "bearer": "login", "path": "/admin/index/details", "sortby": { "metadata": "entity" } }
+]

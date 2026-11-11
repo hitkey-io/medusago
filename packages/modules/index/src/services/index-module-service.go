@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 
+	coremodulessdk "github.com/hitkey-io/medusago/packages/core/modules-sdk/src"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	modulessdktypes "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
@@ -41,6 +42,8 @@ type IndexModuleService struct {
 	container    modulessdktypes.Resolver
 	logger       *slog.Logger
 	isWorkerMode bool
+	// moduleOptions are the module options (IndexModuleOptions).
+	moduleOptions map[string]any
 
 	indexMetadata *modulessdk.InternalService
 	indexSync     *modulessdk.InternalService
@@ -66,11 +69,21 @@ func NewIndexModuleService(opts modulessdktypes.ServiceOptions) (*IndexModuleSer
 		container:     opts.Container,
 		logger:        logger,
 		isWorkerMode:  workerMode() != "server",
+		moduleOptions: opts.Options,
 		indexMetadata: base.Internal("IndexMetadata"),
 		indexSync:     base.Internal("IndexSync"),
 	}
 	s.synchronizer = &DataSynchronizer{db: opts.DB, query: s.query, locking: s.locking, logger: logger, indexMetadata: s.indexMetadata, indexSync: s.indexSync}
 	return s, nil
+}
+
+// SchemaOption returns the `schema` module option (moduleOptions.schema ??
+// defaultSchema).
+func SchemaOption(options map[string]any) string {
+	if s, ok := options["schema"].(string); ok {
+		return s
+	}
+	return utils.DefaultSchema
 }
 
 func workerMode() string {
@@ -117,8 +130,10 @@ func (s *IndexModuleService) OnApplicationStart(ctx context.Context) error {
 }
 
 func (s *IndexModuleService) onApplicationStart(ctx context.Context) error {
+	// buildSchemaObjectRepresentation_: the module option `schema` (or the
+	// default schema) over the joiner configs of the loaded modules
 	if s.schema == nil {
-		schema, err := utils.BuildSchemaObjectRepresentation()
+		schema, err := utils.BuildSchemaObjectRepresentation(utils.BaseGraphqlSchema+SchemaOption(s.moduleOptions), coremodulessdk.GetAllJoinerConfigs(), s.logger)
 		if err != nil {
 			return err
 		}

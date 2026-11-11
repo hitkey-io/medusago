@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
@@ -139,10 +140,29 @@ func isGenerated(s string) (bool, string) {
 // default of the locking module, MEDUSA_TEST_CACHE=redis selects
 // cache-redis; both use MEDUSA_TEST_REDIS_URL.
 // The brand test module (testapp) is added with MEDUSA_TEST_BRAND=true.
+// indexModuleOptions mirrors the index module options of the reference app
+// (testapp/medusa-config.js): MEDUSA_TEST_INDEX_SCHEMA names a GraphQL file
+// of testapp/index-schemas used as the `schema` option,
+// MEDUSA_TEST_INDEX_SCHEMA_RESTART replaces it.
+func indexModuleOptions() map[string]any {
+	name := os.Getenv("MEDUSA_TEST_INDEX_SCHEMA_RESTART")
+	if name == "" {
+		name = os.Getenv("MEDUSA_TEST_INDEX_SCHEMA")
+	}
+	if name == "" {
+		return nil
+	}
+	data, err := os.ReadFile(filepath.Join("testapp", "index-schemas", name))
+	if err != nil {
+		panic(err)
+	}
+	return map[string]any{"schema": string(data)}
+}
+
 func scenarioModules() []config.ModuleConfig {
 	var out []config.ModuleConfig
 	if os.Getenv("MEDUSA_FF_INDEX_ENGINE") == "true" {
-		out = append(out, config.ModuleConfig{Key: "index", Resolve: "@medusajs/medusa/index-module"})
+		out = append(out, config.ModuleConfig{Key: "index", Resolve: "@medusajs/medusa/index-module", Options: indexModuleOptions()})
 	}
 	switch os.Getenv("MEDUSA_TEST_LOCKING_PROVIDER") {
 	case "postgres":

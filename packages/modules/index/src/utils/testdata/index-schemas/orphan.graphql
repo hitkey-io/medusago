@@ -1,0 +1,25 @@
+
+type Product @Listeners(values: ["product.product.created", "product.product.updated", "product.product.deleted", "product.product.restored"]) {
+  id: ID
+  title: String
+  extra: Extra
+  sales_channels: [SalesChannel]
+}
+type Extra {
+  id: ID
+  note: String
+  deep: [Deep]
+}
+type Deep {
+  id: ID
+  level: Int
+}
+type SalesChannel @Listeners(values: ["sales_channel.sales-channel.created", "sales_channel.sales-channel.updated", "sales_channel.sales-channel.deleted", "sales_channel.sales-channel.restored"]) {
+  id: ID
+  name: String
+  stock_locations: [StockLocation]
+}
+type StockLocation @Listeners(values: ["stock_location.stock-location.created", "stock_location.stock-location.updated", "stock_location.stock-location.deleted", "stock_location.stock-location.restored"]) {
+  id: ID
+  name: String
+}

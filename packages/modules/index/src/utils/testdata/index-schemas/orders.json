@@ -1,0 +1,303 @@
+{
+  "entities": [
+    {
+      "key": "Order",
+      "entity": "Order",
+      "alias": "order",
+      "fields": [
+        "id",
+        "status",
+        "email",
+        "currency_code"
+      ],
+      "listeners": [
+        "order.order.created",
+        "order.order.updated",
+        "order.order.deleted",
+        "order.order.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "order",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": []
+    },
+    {
+      "key": "OrderLineItem",
+      "entity": "OrderLineItem",
+      "alias": "order_line_item",
+      "fields": [
+        "id",
+        "title",
+        "quantity"
+      ],
+      "listeners": [
+        "order.order-line-item.created",
+        "order.order-line-item.updated",
+        "order.order-line-item.deleted",
+        "order.order-line-item.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "order",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Order",
+          "inSchemaRef": null,
+          "targetProp": "items",
+          "inverseSideProp": null,
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "OrderAddress",
+      "entity": "OrderAddress",
+      "alias": "order_address",
+      "fields": [
+        "id",
+        "city"
+      ],
+      "listeners": [
+        "order.order-address.created",
+        "order.order-address.updated",
+        "order.order-address.deleted",
+        "order.order-address.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "order",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Order",
+          "inSchemaRef": null,
+          "targetProp": "shipping_address",
+          "inverseSideProp": null,
+          "isList": false,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "Promotion",
+      "entity": "Promotion",
+      "alias": "promotion",
+      "fields": [
+        "id",
+        "code"
+      ],
+      "listeners": [
+        "promotion.promotion.created",
+        "promotion.promotion.updated",
+        "promotion.promotion.deleted",
+        "promotion.promotion.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "promotion",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "LinkOrderPromotion",
+          "inSchemaRef": "Order",
+          "targetProp": "promotions",
+          "inverseSideProp": "order_link",
+          "isList": false,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "LinkOrderPromotion",
+      "entity": "LinkOrderPromotion",
+      "alias": "order_promotion",
+      "fields": [
+        "id",
+        "order_id",
+        "promotion_id"
+      ],
+      "listeners": [
+        "LinkOrderPromotion.attached",
+        "LinkOrderPromotion.detached"
+      ],
+      "moduleConfig": {
+        "serviceName": "OrderOrderPromotionPromotionLink",
+        "isLink": true,
+        "primaryKeys": [
+          "id",
+          "order_id",
+          "promotion_id"
+        ],
+        "relationships": [
+          {
+            "serviceName": "order",
+            "foreignKey": "order_id"
+          },
+          {
+            "serviceName": "promotion",
+            "foreignKey": "promotion_id"
+          }
+        ]
+      },
+      "parents": [
+        {
+          "ref": "Order",
+          "inSchemaRef": null,
+          "targetProp": "order_promotion",
+          "inverseSideProp": "order",
+          "isList": false,
+          "isInverse": false
+        }
+      ]
+    }
+  ],
+  "propertiesMap": [
+    {
+      "path": "order",
+      "ref": "Order",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "order.items",
+      "ref": "OrderLineItem",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "order_line_item",
+      "ref": "OrderLineItem",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "order.shipping_address",
+      "ref": "OrderAddress",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "order_address",
+      "ref": "OrderAddress",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "order.order_promotion.promotions",
+      "ref": "Promotion",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "order_promotion.promotions",
+      "ref": "Promotion",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "order.promotions",
+      "ref": "Promotion",
+      "shortCutOf": "order.order_promotion.promotions",
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "promotion",
+      "ref": "Promotion",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "order.order_promotion",
+      "ref": "LinkOrderPromotion",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "order_promotion",
+      "ref": "LinkOrderPromotion",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    }
+  ],
+  "linkableKeys": {
+    "order": {
+      "order_id": "Order",
+      "order_address_id": "OrderAddress",
+      "order_change_id": "OrderChange",
+      "order_claim_id": "OrderClaim",
+      "order_exchange_id": "OrderExchange",
+      "order_item_id": "OrderItem",
+      "order_line_item_id": "OrderLineItem",
+      "order_shipping_method_id": "OrderShippingMethod",
+      "order_transaction_id": "OrderTransaction",
+      "return_id": "Return",
+      "return_reason_id": "ReturnReason",
+      "claim_id": "OrderClaim",
+      "exchange_id": "OrderExchange"
+    },
+    "promotion": {
+      "promotion_id": "Promotion",
+      "application_method_id": "ApplicationMethod",
+      "campaign_id": "Campaign",
+      "campaign_budget_id": "CampaignBudget",
+      "campaign_budget_usage_id": "CampaignBudgetUsage",
+      "promotion_rule_id": "PromotionRule",
+      "promotion_rule_value_id": "PromotionRuleValue"
+    },
+    "OrderOrderPromotionPromotionLink": {}
+  },
+  "types": {
+    "Order": {
+      "id": "ID",
+      "status": "String",
+      "email": "String",
+      "currency_code": "String",
+      "items": "[OrderLineItem]",
+      "shipping_address": "OrderAddress",
+      "promotions": "[Promotion]"
+    },
+    "OrderLineItem": {
+      "id": "ID",
+      "title": "String",
+      "quantity": "Float"
+    },
+    "OrderAddress": {
+      "id": "ID",
+      "city": "String"
+    },
+    "Promotion": {
+      "id": "ID",
+      "code": "String"
+    }
+  }
+}

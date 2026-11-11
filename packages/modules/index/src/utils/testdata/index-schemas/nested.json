@@ -1,0 +1,854 @@
+{
+  "entities": [
+    {
+      "key": "Product",
+      "entity": "Product",
+      "alias": "product",
+      "fields": [
+        "id",
+        "title"
+      ],
+      "listeners": [
+        "product.product.created",
+        "product.product.updated",
+        "product.product.deleted",
+        "product.product.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": []
+    },
+    {
+      "key": "ProductOption",
+      "entity": "ProductOption",
+      "alias": "product_option",
+      "fields": [
+        "id",
+        "title",
+        "products.id"
+      ],
+      "listeners": [
+        "product.product-option.created",
+        "product.product-option.updated",
+        "product.product-option.deleted",
+        "product.product-option.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Product",
+          "inSchemaRef": null,
+          "targetProp": "options",
+          "inverseSideProp": "products",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "ProductOptionValue",
+      "entity": "ProductOptionValue",
+      "alias": "product_option_value",
+      "fields": [
+        "id",
+        "value",
+        "option.id"
+      ],
+      "listeners": [
+        "product.product-option-value.created",
+        "product.product-option-value.updated",
+        "product.product-option-value.deleted",
+        "product.product-option-value.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "ProductOption",
+          "inSchemaRef": null,
+          "targetProp": "values",
+          "inverseSideProp": "option",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "ProductImage",
+      "entity": "ProductImage",
+      "alias": "product_image",
+      "fields": [
+        "id",
+        "url",
+        "rank",
+        "product.id"
+      ],
+      "listeners": [
+        "product.product-image.created",
+        "product.product-image.updated",
+        "product.product-image.deleted",
+        "product.product-image.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Product",
+          "inSchemaRef": null,
+          "targetProp": "images",
+          "inverseSideProp": "product",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "ProductCategory",
+      "entity": "ProductCategory",
+      "alias": "product_category",
+      "fields": [
+        "id",
+        "name",
+        "handle",
+        "products.id"
+      ],
+      "listeners": [
+        "product.product-category.created",
+        "product.product-category.updated",
+        "product.product-category.deleted",
+        "product.product-category.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Product",
+          "inSchemaRef": null,
+          "targetProp": "categories",
+          "inverseSideProp": "products",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "ProductType",
+      "entity": "ProductType",
+      "alias": "product_type",
+      "fields": [
+        "id",
+        "value",
+        "products.id"
+      ],
+      "listeners": [
+        "product.product-type.created",
+        "product.product-type.updated",
+        "product.product-type.deleted",
+        "product.product-type.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Product",
+          "inSchemaRef": null,
+          "targetProp": "type",
+          "inverseSideProp": "products",
+          "isList": false,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "ProductVariant",
+      "entity": "ProductVariant",
+      "alias": "product_variant",
+      "fields": [
+        "id",
+        "sku",
+        "product.id"
+      ],
+      "listeners": [
+        "product.product-variant.created",
+        "product.product-variant.updated",
+        "product.product-variant.deleted",
+        "product.product-variant.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "product",
+        "isLink": false,
+        "primaryKeys": [
+          "id",
+          "handle"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "Product",
+          "inSchemaRef": null,
+          "targetProp": "variants",
+          "inverseSideProp": "product",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "InventoryItem",
+      "entity": "InventoryItem",
+      "alias": "inventory_items",
+      "fields": [
+        "id",
+        "sku"
+      ],
+      "listeners": [
+        "inventory.inventory-item.created",
+        "inventory.inventory-item.updated",
+        "inventory.inventory-item.deleted",
+        "inventory.inventory-item.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "inventory",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "LinkProductVariantInventoryItem",
+          "inSchemaRef": "ProductVariant",
+          "targetProp": "inventory_items",
+          "inverseSideProp": "variant_link",
+          "isList": false,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "LinkProductVariantInventoryItem",
+      "entity": "LinkProductVariantInventoryItem",
+      "alias": "product_variant_inventory_item",
+      "fields": [
+        "id",
+        "variant_id",
+        "inventory_item_id"
+      ],
+      "listeners": [
+        "LinkProductVariantInventoryItem.attached",
+        "LinkProductVariantInventoryItem.detached"
+      ],
+      "moduleConfig": {
+        "serviceName": "ProductVariantInventoryInventoryItemLink",
+        "isLink": true,
+        "primaryKeys": [
+          "id",
+          "variant_id",
+          "inventory_item_id"
+        ],
+        "relationships": [
+          {
+            "serviceName": "product",
+            "foreignKey": "variant_id"
+          },
+          {
+            "serviceName": "inventory",
+            "foreignKey": "inventory_item_id"
+          }
+        ]
+      },
+      "parents": [
+        {
+          "ref": "ProductVariant",
+          "inSchemaRef": null,
+          "targetProp": "product_variant_inventory_item",
+          "inverseSideProp": "variant",
+          "isList": false,
+          "isInverse": false
+        }
+      ]
+    },
+    {
+      "key": "InventoryLevel",
+      "entity": "InventoryLevel",
+      "alias": "inventory_level",
+      "fields": [
+        "id",
+        "location_id",
+        "stocked_quantity",
+        "inventory_item.id"
+      ],
+      "listeners": [
+        "inventory.inventory-level.created",
+        "inventory.inventory-level.updated",
+        "inventory.inventory-level.deleted",
+        "inventory.inventory-level.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "inventory",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "InventoryItem",
+          "inSchemaRef": null,
+          "targetProp": "location_levels",
+          "inverseSideProp": "inventory_item",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "Price",
+      "entity": "Price",
+      "alias": "price",
+      "fields": [
+        "id",
+        "amount",
+        "currency_code",
+        "price_set.id"
+      ],
+      "listeners": [
+        "pricing.price.created",
+        "pricing.price.updated",
+        "pricing.price.deleted",
+        "pricing.price.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "pricing",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "PriceSet",
+          "inSchemaRef": "ProductVariant",
+          "targetProp": "prices",
+          "inverseSideProp": "price_set",
+          "isList": true,
+          "isInverse": null
+        }
+      ]
+    },
+    {
+      "key": "LinkProductVariantPriceSet",
+      "entity": "LinkProductVariantPriceSet",
+      "alias": "product_variant_price_set",
+      "fields": [
+        "id",
+        "variant_id",
+        "price_set_id"
+      ],
+      "listeners": [
+        "LinkProductVariantPriceSet.attached",
+        "LinkProductVariantPriceSet.detached"
+      ],
+      "moduleConfig": {
+        "serviceName": "ProductVariantPricingPriceSetLink",
+        "isLink": true,
+        "primaryKeys": [
+          "id",
+          "variant_id",
+          "price_set_id"
+        ],
+        "relationships": [
+          {
+            "serviceName": "product",
+            "foreignKey": "variant_id"
+          },
+          {
+            "serviceName": "pricing",
+            "foreignKey": "price_set_id"
+          }
+        ]
+      },
+      "parents": [
+        {
+          "ref": "ProductVariant",
+          "inSchemaRef": null,
+          "targetProp": "product_variant_price_set",
+          "inverseSideProp": "variant",
+          "isList": false,
+          "isInverse": false
+        }
+      ]
+    },
+    {
+      "key": "PriceSet",
+      "entity": "PriceSet",
+      "alias": "price_set",
+      "fields": [
+        "id"
+      ],
+      "listeners": [
+        "pricing.price-set.created",
+        "pricing.price-set.updated",
+        "pricing.price-set.deleted",
+        "pricing.price-set.restored"
+      ],
+      "moduleConfig": {
+        "serviceName": "pricing",
+        "isLink": false,
+        "primaryKeys": [
+          "id"
+        ],
+        "relationships": []
+      },
+      "parents": [
+        {
+          "ref": "LinkProductVariantPriceSet",
+          "inSchemaRef": null,
+          "targetProp": "price_set",
+          "inverseSideProp": "variant_link",
+          "isList": false,
+          "isInverse": null
+        }
+      ]
+    }
+  ],
+  "propertiesMap": [
+    {
+      "path": "product",
+      "ref": "Product",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.options",
+      "ref": "ProductOption",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_option",
+      "ref": "ProductOption",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.options.values",
+      "ref": "ProductOptionValue",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_option.values",
+      "ref": "ProductOptionValue",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_option_value",
+      "ref": "ProductOptionValue",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.images",
+      "ref": "ProductImage",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_image",
+      "ref": "ProductImage",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.categories",
+      "ref": "ProductCategory",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_category",
+      "ref": "ProductCategory",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.type",
+      "ref": "ProductType",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_type",
+      "ref": "ProductType",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants",
+      "ref": "ProductVariant",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant",
+      "ref": "ProductVariant",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants.product_variant_inventory_item.inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_variant.product_variant_inventory_item.inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_variant_inventory_item.inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product.variants.inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": "product.variants.product_variant_inventory_item.inventory_items",
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_variant.inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": "product_variant.product_variant_inventory_item.inventory_items",
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "inventory_items",
+      "ref": "InventoryItem",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants.product_variant_inventory_item",
+      "ref": "LinkProductVariantInventoryItem",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "product_variant.product_variant_inventory_item",
+      "ref": "LinkProductVariantInventoryItem",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "product_variant_inventory_item",
+      "ref": "LinkProductVariantInventoryItem",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants.product_variant_inventory_item.inventory_items.location_levels",
+      "ref": "InventoryLevel",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant.product_variant_inventory_item.inventory_items.location_levels",
+      "ref": "InventoryLevel",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant_inventory_item.inventory_items.location_levels",
+      "ref": "InventoryLevel",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product.variants.inventory_items.location_levels",
+      "ref": "InventoryLevel",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant.inventory_items.location_levels",
+      "ref": "InventoryLevel",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "inventory_items.location_levels",
+      "ref": "InventoryLevel",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "inventory_level",
+      "ref": "InventoryLevel",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants.product_variant_price_set.price_set.prices",
+      "ref": "Price",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant.product_variant_price_set.price_set.prices",
+      "ref": "Price",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant_price_set.price_set.prices",
+      "ref": "Price",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "price_set.prices",
+      "ref": "Price",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product.variants.prices",
+      "ref": "Price",
+      "shortCutOf": "product.variants.product_variant_price_set.price_set.prices",
+      "isInverse": null,
+      "isList": true
+    },
+    {
+      "path": "product_variant.prices",
+      "ref": "Price",
+      "shortCutOf": "product_variant.product_variant_price_set.price_set.prices",
+      "isInverse": false,
+      "isList": true
+    },
+    {
+      "path": "price",
+      "ref": "Price",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants.product_variant_price_set",
+      "ref": "LinkProductVariantPriceSet",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "product_variant.product_variant_price_set",
+      "ref": "LinkProductVariantPriceSet",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": false
+    },
+    {
+      "path": "product_variant_price_set",
+      "ref": "LinkProductVariantPriceSet",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    },
+    {
+      "path": "product.variants.product_variant_price_set.price_set",
+      "ref": "PriceSet",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_variant.product_variant_price_set.price_set",
+      "ref": "PriceSet",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "product_variant_price_set.price_set",
+      "ref": "PriceSet",
+      "shortCutOf": null,
+      "isInverse": null,
+      "isList": false
+    },
+    {
+      "path": "price_set",
+      "ref": "PriceSet",
+      "shortCutOf": null,
+      "isInverse": false,
+      "isList": null
+    }
+  ],
+  "linkableKeys": {
+    "product": {
+      "product_id": "Product",
+      "product_variant_id": "ProductVariant",
+      "product_option_id": "ProductOption",
+      "product_option_value_id": "ProductOptionValue",
+      "product_type_id": "ProductType",
+      "product_tag_id": "ProductTag",
+      "product_collection_id": "ProductCollection",
+      "product_category_id": "ProductCategory",
+      "product_image_id": "ProductImage",
+      "variant_id": "ProductVariant"
+    },
+    "inventory": {
+      "inventory_item_id": "InventoryItem",
+      "inventory_level_id": "InventoryLevel",
+      "reservation_item_id": "ReservationItem"
+    },
+    "ProductVariantInventoryInventoryItemLink": {},
+    "pricing": {
+      "price_set_id": "PriceSet",
+      "price_list_id": "PriceList",
+      "price_id": "Price",
+      "price_preference_id": "PricePreference"
+    },
+    "ProductVariantPricingPriceSetLink": {}
+  },
+  "types": {
+    "Product": {
+      "id": "ID",
+      "title": "String",
+      "options": "[ProductOption]",
+      "images": "[ProductImage]",
+      "categories": "[ProductCategory]",
+      "type": "ProductType",
+      "variants": "[ProductVariant]"
+    },
+    "ProductOption": {
+      "id": "ID",
+      "title": "String",
+      "values": "[ProductOptionValue]"
+    },
+    "ProductOptionValue": {
+      "id": "ID",
+      "value": "String"
+    },
+    "ProductImage": {
+      "id": "ID",
+      "url": "String",
+      "rank": "Int"
+    },
+    "ProductCategory": {
+      "id": "ID",
+      "name": "String",
+      "handle": "String"
+    },
+    "ProductType": {
+      "id": "ID",
+      "value": "String"
+    },
+    "ProductVariant": {
+      "id": "ID",
+      "sku": "String",
+      "inventory_items": "[InventoryItem]",
+      "prices": "[Price]"
+    },
+    "InventoryItem": {
+      "id": "ID",
+      "sku": "String",
+      "location_levels": "[InventoryLevel]"
+    },
+    "InventoryLevel": {
+      "id": "ID",
+      "location_id": "String",
+      "stocked_quantity": "Float"
+    },
+    "Price": {
+      "id": "ID",
+      "amount": "Float",
+      "currency_code": "String"
+    }
+  }
+}
