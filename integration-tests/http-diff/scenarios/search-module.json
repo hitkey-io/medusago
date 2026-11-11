@@ -1,0 +1,548 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "seeded_collection",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search?entity=collection&q=summer",
+    "until": "results.0.data.0.id"
+  },
+  {
+    "name": "seeded_product",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search?entity=product&q=medusa",
+    "until": "results.0.data.0.id"
+  },
+  {
+    "name": "indexes",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search-indexes"
+  },
+  {
+    "name": "admin_all_indexes",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search"
+  },
+  {
+    "name": "admin_mixed",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search?q=shirt&entity=product,customer,collection"
+  },
+  {
+    "name": "admin_prefix",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search?q=swea&entity=product&limit=1&offset=0"
+  },
+  {
+    "name": "admin_sku",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search?q=pants-l&entity=product"
+  },
+  {
+    "name": "admin_page",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search?entity=product&limit=2&offset=1"
+  },
+  {
+    "name": "admin_unknown_entity",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search?entity=nope"
+  },
+  {
+    "name": "pk",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys",
+    "body": {
+      "title": "Search",
+      "type": "publishable"
+    }
+  },
+  {
+    "name": "pk_empty",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys",
+    "body": {
+      "title": "No channels",
+      "type": "publishable"
+    }
+  },
+  {
+    "name": "channels",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/sales-channels?order=name&fields=id,name"
+  },
+  {
+    "name": "link",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys/{{pk.api_key.id}}/sales-channels?fields=id",
+    "body": {
+      "add": [
+        "{{channels.sales_channels.0.id}}"
+      ]
+    }
+  },
+  {
+    "name": "store_default",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product"
+    },
+    "ignore": ["results.*.metadata.processing_time_ms"]
+  },
+  {
+    "name": "store_query_facets",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product",
+      "fields": ["id", "title", "handle", "variants.sku"],
+      "filters": {
+        "q": "medusa"
+      },
+      "pagination": {
+        "take": 5,
+        "order": {
+          "handle": "desc"
+        }
+      },
+      "search_options": {
+        "include_score": true,
+        "facets": [
+          "status",
+          "collection_title",
+          {
+            "field": "tags.value",
+            "limit": 5,
+            "sort": "alpha"
+          },
+          {
+            "field": "variant_count",
+            "type": "range",
+            "ranges": [
+              {
+                "to": 2
+              },
+              {
+                "from": 2,
+                "key": "many"
+              }
+            ]
+          },
+          {
+            "field": "variant_count",
+            "type": "stats"
+          },
+          {
+            "field": "created_at",
+            "type": "range",
+            "ranges": [
+              {
+                "from": 0
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "ignore": ["results.*.metadata.processing_time_ms"]
+  },
+  {
+    "name": "store_batch",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "queries": [
+        {
+          "entity": "product",
+          "filters": {
+            "q": "shrt",
+            "handle": {
+              "$in": ["t-shirt", "sweatpants"]
+            }
+          },
+          "search_options": {
+            "typo_tolerance": true,
+            "match_strategy": "any",
+            "count": "none"
+          }
+        },
+        {
+          "entity": "product",
+          "fields": ["id", "handle"],
+          "filters": {
+            "collection_title": "Summer",
+            "$or": [
+              {
+                "variant_count": {
+                  "$gte": 2
+                }
+              },
+              {
+                "is_giftcard": true
+              }
+            ]
+          },
+          "pagination": {
+            "skip": 0,
+            "take": 0
+          },
+          "search_options": {
+            "facets": ["status", "collection_title"],
+            "disjunctive_facets": true
+          }
+        },
+        {
+          "entity": "product",
+          "fields": ["handle"],
+          "filters": {
+            "handle": {
+              "$prefix": "t-"
+            },
+            "$not": {
+              "discountable": false
+            }
+          },
+          "search_options": {
+            "attributes_to_search_on": ["title"],
+            "distinct": "handle",
+            "min_score": 0
+          }
+        }
+      ]
+    },
+    "ignore": ["results.*.metadata.processing_time_ms"]
+  },
+  {
+    "name": "store_no_channels",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk_empty.api_key.token}}"
+    },
+    "body": {
+      "entity": "product"
+    }
+  },
+  {
+    "name": "store_not_exposed",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "collection"
+    }
+  },
+  {
+    "name": "store_unknown_fields",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product",
+      "fields": ["id", "description", "secret"]
+    }
+  },
+  {
+    "name": "store_not_filterable",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product",
+      "filters": {
+        "title": "x"
+      }
+    }
+  },
+  {
+    "name": "store_unknown_filter",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product",
+      "filters": {
+        "nope": "x"
+      }
+    }
+  },
+  {
+    "name": "store_not_sortable",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product",
+      "pagination": {
+        "order": {
+          "status": "asc"
+        }
+      }
+    }
+  },
+  {
+    "name": "store_bad_facet",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product",
+      "search_options": {
+        "facets": [
+          {
+            "field": "status",
+            "type": "stats"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "store_highlight",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product",
+      "filters": {
+        "q": "shirt"
+      },
+      "search_options": {
+        "highlight": true
+      }
+    }
+  },
+  {
+    "name": "store_cursor",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product",
+      "pagination": {
+        "cursor": "abc"
+      }
+    }
+  },
+  {
+    "name": "store_array_range",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product",
+      "filters": {
+        "sales_channel_ids": {
+          "$gt": "a"
+        }
+      }
+    }
+  },
+  {
+    "name": "store_invalid_body",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product",
+      "pagination": {
+        "order": {
+          "title": "up"
+        }
+      }
+    }
+  },
+  {
+    "name": "store_take_too_large",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "queries": [
+        {
+          "entity": "product",
+          "pagination": {
+            "take": 101
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "create_product",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products?fields=id,title",
+    "body": {
+      "title": "Zebra Jacket",
+      "status": "published",
+      "options": [
+        {
+          "title": "Size",
+          "values": ["One"]
+        }
+      ],
+      "sales_channels": [
+        {
+          "id": "{{channels.sales_channels.0.id}}"
+        }
+      ],
+      "variants": [
+        {
+          "title": "One",
+          "sku": "ZEBRA-1",
+          "options": {
+            "Size": "One"
+          },
+          "prices": [
+            {
+              "currency_code": "usd",
+              "amount": 10
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "ingested",
+    "method": "POST",
+    "path": "/store/search",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "entity": "product",
+      "filters": {
+        "q": "zebra"
+      }
+    },
+    "until": "results.0.hits.0.id",
+    "ignore": ["results.*.metadata.processing_time_ms"]
+  },
+  {
+    "name": "reindex_unknown",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/search-indexes/nope/reindex",
+    "body": {}
+  },
+  {
+    "name": "reindex_invalid",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/search-indexes/product/reindex",
+    "body": {
+      "since": "yesterday",
+      "strategy": "rebuild"
+    }
+  },
+  {
+    "name": "reindex",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/search-indexes/product/reindex",
+    "body": {}
+  },
+  {
+    "name": "reindex_scoped",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/search-indexes/collection/reindex",
+    "body": {
+      "filters": {
+        "handle": "summer"
+      },
+      "strategy": "in_place"
+    }
+  },
+  {
+    "name": "after_reindex",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search?q=zebra&entity=product",
+    "until": "results.0.data.0.id"
+  },
+  {
+    "name": "delete_unknown",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/search-indexes/nope"
+  },
+  {
+    "name": "delete_collection",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/search-indexes/collection"
+  },
+  {
+    "name": "indexes_after_delete",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search-indexes"
+  },
+  {
+    "name": "search_deleted",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/search?entity=collection"
+  },
+  {
+    "name": "delete_again",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/search-indexes/collection"
+  }
+]

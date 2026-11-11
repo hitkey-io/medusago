@@ -135,21 +135,31 @@ func dropIgnored(rec any, paths []string) any {
 		return rec
 	}
 	for _, path := range paths {
-		parts := strings.Split("body."+path, ".")
-		cur := r
-		for i, part := range parts {
-			if cur == nil {
-				break
-			}
-			if i == len(parts)-1 {
-				cur.Delete(part)
-				break
-			}
-			v, _ := cur.Get(part)
-			cur, _ = v.(*dal.Record)
-		}
+		dropPath(r, strings.Split("body."+path, "."))
 	}
 	return rec
+}
+
+// dropPath removes a dotted path; "*" (or an index) descends into every
+// (or one) element of an array.
+func dropPath(v any, parts []string) {
+	switch t := v.(type) {
+	case *dal.Record:
+		if len(parts) == 1 {
+			t.Delete(parts[0])
+			return
+		}
+		next, _ := t.Get(parts[0])
+		dropPath(next, parts[1:])
+	case []any:
+		for i, e := range t {
+			if parts[0] == "*" || parts[0] == strconv.Itoa(i) {
+				if len(parts) > 1 {
+					dropPath(e, parts[1:])
+				}
+			}
+		}
+	}
 }
 
 // sortUnordered sorts the listed body arrays by their JSON encoding.
@@ -690,13 +700,14 @@ func goServer(t *testing.T, scenario string) string {
 	if base := os.Getenv("MEDUSA_HTTP_TARGET_URL"); base != "" {
 		return base
 	}
+	projectMiddlewares := registerTestSearchIndexes()
 	dbURL := setupDatabase(t, "medusa_http_go_"+strings.ReplaceAll(scenario, "-", "_"))
 	// Same CORS settings as record.sh passes to upstream.
 	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{
 		DatabaseURL: dbURL,
 		HTTP:        config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
 	}, Modules: scenarioModules()})
-	app, err := loaders.Initialize(context.Background(), cfg)
+	app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares})
 	if err != nil {
 		t.Fatal(err)
 	}
