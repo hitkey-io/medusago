@@ -6,7 +6,6 @@ import (
 
 func equalBN(a, b any) bool { return totals.Eq(a, b) }
 
-
 type plainErr struct{ msg string }
 
 func (p plainErr) Error() string { return p.msg }

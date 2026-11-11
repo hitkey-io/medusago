@@ -11,8 +11,8 @@ import (
 	authtypes "github.com/hitkey-io/medusago/packages/core/types/src/auth"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
-	authservices "github.com/hitkey-io/medusago/packages/modules/auth/src/services"
 	"github.com/hitkey-io/medusago/packages/medusa/src/loaders"
+	authservices "github.com/hitkey-io/medusago/packages/modules/auth/src/services"
 )
 
 // UserOptions mirrors the options of `medusa user`.
