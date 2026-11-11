@@ -157,7 +157,8 @@ var Fulfillment = dml.MustParseEntity(`{
         "nullable": true,
         "searchable": false,
         "options": {
-          "foreignKey": true
+          "foreignKey": true,
+          "mappedByUndefined": true
         }
       }
     },
@@ -182,7 +183,8 @@ var Fulfillment = dml.MustParseEntity(`{
         "nullable": true,
         "searchable": false,
         "options": {
-          "foreignKey": true
+          "foreignKey": true,
+          "mappedByUndefined": true
         }
       }
     },

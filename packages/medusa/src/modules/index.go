@@ -2,7 +2,20 @@
 // providers shipped with Medusa, addressable by their package name.
 package modules
 
-import modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
+import (
+	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
+	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
+)
+
+// Lookup returns the exports of a configured module: its Module, or the
+// package its resolve names.
+func Lookup(mc config.ModuleConfig) (*modulessdk.ModuleExports, bool) {
+	if mc.Module != nil {
+		return mc.Module, true
+	}
+	exp, ok := Registry[mc.Resolve]
+	return exp, ok
+}
 
 // Registry maps "@medusajs/medusa/<name>" package names to their exports.
 var Registry = map[string]*modulessdk.ModuleExports{

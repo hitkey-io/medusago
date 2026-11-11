@@ -57,7 +57,7 @@ func LoadModules(ctx context.Context, c *container.MedusaContainer, pool *pgxpoo
 		if mc.Disable {
 			continue
 		}
-		exp, ok := modules.Registry[mc.Resolve]
+		exp, ok := modules.Lookup(mc)
 		if !ok {
 			continue
 		}
@@ -125,7 +125,7 @@ func runStartHooks(ctx context.Context, c *container.MedusaContainer, pool *pgxp
 		if mc.Disable {
 			continue
 		}
-		exp, ok := modules.Registry[mc.Resolve]
+		exp, ok := modules.Lookup(mc)
 		if !ok {
 			continue
 		}
@@ -292,8 +292,9 @@ type Options struct {
 	// requests: the hook of a project to register its own routes,
 	// subscribers or container entries.
 	OnLoad []func(ctx context.Context, app *MedusaApp) error
-	// Middlewares are the project's middlewares (src/api/middlewares.ts),
-	// applied after the core ones.
+	// Routes and Middlewares are the API routes and middlewares of the
+	// project (src/api), loaded after the core ones like upstream.
+	Routes      []medusahttp.RouteFile
 	Middlewares []medusahttp.MiddlewareRoute
 }
 
@@ -336,7 +337,7 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 			moduleServices[mc.Key] = v
 		}
 	}
-	q, link, err := NewDefaultQueryAndLink(pool, moduleServices)
+	q, link, _, err := NewQueryAndLink(pool, cfg, moduleServices)
 	if err != nil {
 		pool.Close()
 		return nil, err
@@ -410,7 +411,7 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 	// start.ts registers the health check after the loaders; it is matched
 	// by path only, so its position does not change the routing.
 	medusahttp.LoadAPI(app, medusahttp.ApiLoaderOptions{
-		Routes:               api.Routes(),
+		Routes:               append(api.Routes(), opts.Routes...),
 		Middlewares:          append(api.Middlewares(), opts.Middlewares...),
 		AdminCors:            cfg.ProjectConfig.HTTP.AdminCors,
 		StoreCors:            cfg.ProjectConfig.HTTP.StoreCors,

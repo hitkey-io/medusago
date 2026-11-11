@@ -2,6 +2,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -38,19 +39,89 @@ type LinkEntity struct {
 	Indexes   []Index
 }
 
-// mikroOrmColumnType maps a link column type to the Postgres type the
-// MikroORM schema generator emits. Only mappings verified against upstream
-// output are supported; an explicit options.columnType always wins.
+func intOption(options map[string]any, key string) (int, bool) {
+	switch v := options[key].(type) {
+	case float64:
+		return int(v), true
+	case int:
+		return v, true
+	case json.Number:
+		n, err := v.Int64()
+		return int(n), err == nil
+	}
+	return 0, false
+}
+
+// mikroOrmColumnType maps a link column type (LinkModulesExtraFields) to
+// the Postgres type the MikroORM schema generator emits for it (vectors in
+// testdata/upstream-link-extra-types.json); an explicit options.columnType
+// always wins. Types MikroORM does not map are written as given.
 func mikroOrmColumnType(fieldType string, options map[string]any) (string, error) {
 	if ct, ok := options["columnType"].(string); ok && ct != "" {
 		return ct, nil
 	}
 	switch fieldType {
 	case "string":
-		return "varchar(255)", nil
-	default:
-		return "", fmt.Errorf("link column type %q is not supported yet", fieldType)
+		length := 255
+		if l, ok := intOption(options, "length"); ok {
+			length = l
+		}
+		return fmt.Sprintf("varchar(%d)", length), nil
+	case "text":
+		return "text", nil
+	case "uuid":
+		return "uuid", nil
+	case "date":
+		return "date", nil
+	case "time":
+		length := 0
+		if l, ok := intOption(options, "length"); ok {
+			length = l
+		}
+		return fmt.Sprintf("time(%d)", length), nil
+	case "datetime":
+		if l, ok := intOption(options, "length"); ok {
+			return fmt.Sprintf("timestamptz(%d)", l), nil
+		}
+		return "timestamptz", nil
+	case "bigint":
+		return "bigint", nil
+	case "blob", "uint8array":
+		return "bytea", nil
+	case "array":
+		return "text[]", nil
+	case "enum":
+		if items, ok := options["items"].([]any); ok {
+			for _, it := range items {
+				if _, isString := it.(string); !isString {
+					return "smallint", nil
+				}
+			}
+		}
+		return "text", nil
+	case "json":
+		return "jsonb", nil
+	case "integer":
+		return "int", nil
+	case "smallint", "tinyint":
+		return "smallint", nil
+	case "float":
+		return "real", nil
+	case "double":
+		return "double precision", nil
+	case "boolean":
+		return "boolean", nil
+	case "decimal":
+		precision, scale := 10, 0
+		if p, ok := intOption(options, "precision"); ok {
+			precision = p
+		}
+		if s, ok := intOption(options, "scale"); ok {
+			scale = s
+		}
+		return fmt.Sprintf("numeric(%d,%d)", precision, scale), nil
 	}
+	return fieldType, nil
 }
 
 // GenerateEntity mirrors generateEntity from generate-entity.ts.

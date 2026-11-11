@@ -67,9 +67,13 @@ func (s *LinkModuleService) Create(ctx context.Context, links []LinkInput) ([]*d
 	}
 	fkA, fkB := s.keys()
 	var extraCols []string
+	jsonCols := map[string]bool{}
 	if s.Config.DatabaseConfig != nil {
 		for _, x := range s.Config.DatabaseConfig.ExtraFields {
 			extraCols = append(extraCols, x.Name)
+			if x.Type == "json" || x.Type == "jsonb" {
+				jsonCols[x.Name] = true
+			}
 		}
 	}
 	cols := append([]string{fkA, fkB, "id"}, extraCols...)
@@ -84,6 +88,13 @@ func (s *LinkModuleService) Create(ctx context.Context, links []LinkInput) ([]*d
 			if l.Extra != nil {
 				if x, ok := l.Extra.Get(c); ok {
 					v = x
+					if jsonCols[c] && x != nil {
+						raw, err := dal.MarshalValue(x)
+						if err != nil {
+							return nil, err
+						}
+						v = string(raw)
+					}
 				}
 			}
 			row = append(row, v)
@@ -119,6 +130,15 @@ func (s *LinkModuleService) Create(ctx context.Context, links []LinkInput) ([]*d
 	out := make([]*dal.Record, len(rows))
 	for i, r := range rows {
 		out[i] = s.serializeRow(r)
+		// The created entity keeps the extra values as given (MikroORM
+		// does not reload assigned properties).
+		if i < len(links) && links[i].Extra != nil {
+			for _, c := range extraCols {
+				if x, ok := links[i].Extra.Get(c); ok {
+					out[i].Set(c, x)
+				}
+			}
+		}
 	}
 	return out, nil
 }

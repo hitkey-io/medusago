@@ -122,7 +122,8 @@ var OrderClaim = dml.MustParseEntity(`{
         "nullable": false,
         "searchable": false,
         "options": {
-          "foreignKey": true
+          "foreignKey": true,
+          "mappedByUndefined": true
         }
       }
     },
@@ -134,7 +135,8 @@ var OrderClaim = dml.MustParseEntity(`{
         "nullable": true,
         "searchable": false,
         "options": {
-          "foreignKey": true
+          "foreignKey": true,
+          "mappedByUndefined": true
         }
       }
     },

@@ -53,6 +53,9 @@ type RelationOptions struct {
 	PivotEntity       string `json:"pivotEntity,omitempty"`
 	JoinColumn        string `json:"joinColumn,omitempty"`
 	InverseJoinColumn string `json:"inverseJoinColumn,omitempty"`
+	// MappedByUndefined is set when mappedBy is given as undefined (the key
+	// is present in the options): the relationship has no other side.
+	MappedByUndefined bool `json:"mappedByUndefined,omitempty"`
 }
 
 // Relation is a relationship property: belongsTo, hasMany, hasOne,

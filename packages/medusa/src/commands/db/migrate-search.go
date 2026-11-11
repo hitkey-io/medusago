@@ -72,7 +72,7 @@ func MigrateSearch(ctx context.Context, cfg config.ConfigModule, opts MigrateSea
 		logger.Info("Search Module is not configured. Skipping search indexes")
 		return nil
 	}
-	exp, ok := modules.Registry[mc.Resolve]
+	exp, ok := modules.Lookup(*mc)
 	if !ok || exp.Service == nil {
 		logger.Info("Search Module is not configured. Skipping search indexes")
 		return nil

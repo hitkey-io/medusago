@@ -11,6 +11,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/modules/settings/src/models"
+	"github.com/hitkey-io/medusago/packages/modules/settings/src/utils"
 )
 
 // SettingsModuleService mirrors SettingsModuleService (view configurations,
@@ -18,11 +19,12 @@ import (
 // discovery (listDiscoverableEntities, generateEntityColumns) is not ported.
 type SettingsModuleService struct {
 	*utilsmodulessdk.MedusaService
+	entityDiscovery *utils.EntityDiscoveryService
 }
 
 // NewSettingsModuleService builds the service.
 func NewSettingsModuleService(opts modulessdk.ServiceOptions, joinerConfig *joiner.ModuleJoinerConfig) (*SettingsModuleService, error) {
-	return &SettingsModuleService{MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig)}, nil
+	return &SettingsModuleService{MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig), entityDiscovery: &utils.EntityDiscoveryService{}}, nil
 }
 
 // Of returns the settings module service registered in a container (the
@@ -32,7 +34,7 @@ func Of(v any) *SettingsModuleService {
 	case *SettingsModuleService:
 		return t
 	case *utilsmodulessdk.MedusaService:
-		return &SettingsModuleService{MedusaService: t}
+		return &SettingsModuleService{MedusaService: t, entityDiscovery: &utils.EntityDiscoveryService{}}
 	}
 	return nil
 }
@@ -331,4 +333,47 @@ func (s *SettingsModuleService) DeletePropertyLabels(ctx context.Context, ids []
 // UpsertPropertyLabels mirrors upsertPropertyLabels.
 func (s *SettingsModuleService) UpsertPropertyLabels(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
 	return s.Internal("PropertyLabel").Upsert(ctx, data)
+}
+
+// InitializeEntityDiscovery mirrors the onApplicationStart hook: entity
+// discovery over the joiner configs of the loaded modules.
+func (s *SettingsModuleService) InitializeEntityDiscovery(configs []*joiner.ModuleJoinerConfig) {
+	s.entityDiscovery.Initialize(configs)
+}
+
+// IsEntityDiscoveryInitialized mirrors isEntityDiscoveryInitialized.
+func (s *SettingsModuleService) IsEntityDiscoveryInitialized() bool {
+	return s.entityDiscovery.IsInitialized()
+}
+
+// HasEntity mirrors hasEntity.
+func (s *SettingsModuleService) HasEntity(name string) bool {
+	return s.entityDiscovery.HasEntity(name)
+}
+
+// ListDiscoverableEntities mirrors listDiscoverableEntities: the entities
+// of the loaded modules' schemas with their property count and whether
+// property labels exist for them.
+func (s *SettingsModuleService) ListDiscoverableEntities(ctx context.Context) ([]utils.EntityInfo, error) {
+	if !s.entityDiscovery.IsInitialized() {
+		return []utils.EntityInfo{}, nil
+	}
+	entities := s.entityDiscovery.DiscoverEntities()
+	labels, err := s.Internal("PropertyLabel").List(ctx, dal.NewRecord(), utilsmodulessdk.FindConfig{Select: []string{"entity"}})
+	if err != nil {
+		return nil, err
+	}
+	withLabels := map[string]bool{}
+	for _, l := range labels {
+		if e, ok := l.Get("entity"); ok {
+			if name, ok := e.(string); ok {
+				withLabels[name] = true
+			}
+		}
+	}
+	out := make([]utils.EntityInfo, len(entities))
+	for i, e := range entities {
+		out[i] = s.entityDiscovery.GetEntityInfo(e, withLabels[e.Name])
+	}
+	return out, nil
 }

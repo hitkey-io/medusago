@@ -59,7 +59,7 @@ func Rollback(ctx context.Context, cfg config.ConfigModule, moduleNames []string
 		terminalSeparator()
 		logger.Info("")
 		logger.Info(fmt.Sprintf("MODULE: %s", name))
-		exp, ok := modules.Registry[mc.Resolve]
+		exp, ok := modules.Lookup(mc)
 		if !ok {
 			logger.Info("Skipped. Nothing to revert")
 			continue

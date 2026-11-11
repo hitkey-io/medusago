@@ -1,0 +1,1211 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQzODAwNzIsImV4cCI6MTc5NDQ2NjQ3Mn0.TEcuEEmSEzlTVRlGfntbW81Jpf9AXw-Qt5b-U6tTv5g"
+    }
+  },
+  "create_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brand": {
+        "id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+        "name": "Acme",
+        "handle": "acme",
+        "description": "Tools",
+        "is_active": true,
+        "rank": 2,
+        "rating": 4.5,
+        "status": "published",
+        "tags": [
+          "tools",
+          "garden"
+        ],
+        "currency_code": "usd",
+        "metadata": {
+          "a": 1,
+          "nested": {
+            "b": true
+          }
+        },
+        "launched_at": "2024-01-02T03:04:05.000Z",
+        "raw_revenue": {
+          "value": "1234.5",
+          "precision": 20
+        },
+        "created_at": "2026-11-11T06:54:32.912Z",
+        "updated_at": "2026-11-11T06:54:32.912Z",
+        "deleted_at": null,
+        "logos": [],
+        "revenue": 1234.5
+      }
+    }
+  },
+  "create_b": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brand": {
+        "id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+        "name": "Bolt",
+        "handle": "bolt",
+        "description": null,
+        "is_active": true,
+        "rank": 0,
+        "rating": null,
+        "status": "draft",
+        "tags": [],
+        "currency_code": null,
+        "metadata": null,
+        "launched_at": null,
+        "raw_revenue": null,
+        "created_at": "2026-11-11T06:54:32.988Z",
+        "updated_at": "2026-11-11T06:54:32.988Z",
+        "deleted_at": null,
+        "logos": [],
+        "revenue": null
+      }
+    }
+  },
+  "create_c": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brand": {
+        "id": "brand_01M74P623WFP6W59PZ218K9ESB",
+        "name": "Crest",
+        "handle": "crest",
+        "description": null,
+        "is_active": true,
+        "rank": 0,
+        "rating": null,
+        "status": "archived",
+        "tags": [],
+        "currency_code": "eur",
+        "metadata": null,
+        "launched_at": null,
+        "profile": {
+          "id": "bprof_01M74P623WRDNEQ638NBS5JHCH",
+          "website": "https://crest.example.test",
+          "created_at": "2026-11-11T06:54:33.084Z",
+          "updated_at": "2026-11-11T06:54:33.084Z",
+          "deleted_at": null,
+          "brand_id": "brand_01M74P623WFP6W59PZ218K9ESB"
+        },
+        "raw_revenue": null,
+        "created_at": "2026-11-11T06:54:33.084Z",
+        "updated_at": "2026-11-11T06:54:33.084Z",
+        "deleted_at": null,
+        "logos": [
+          {
+            "id": "blogo_01M74P623VPW1TZ7TMWNE87MZV",
+            "url": "https://cdn.example.test/crest.png",
+            "position": 1,
+            "brand_id": "brand_01M74P623WFP6W59PZ218K9ESB",
+            "created_at": "2026-11-11T06:54:33.084Z",
+            "updated_at": "2026-11-11T06:54:33.084Z",
+            "deleted_at": null
+          }
+        ],
+        "revenue": null
+      }
+    }
+  },
+  "create_duplicate": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Brand with handle: acme, already exists."
+    }
+  },
+  "create_invalid_status": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "code": "unknown_error",
+      "type": "unknown_error",
+      "message": "An unknown error occurred."
+    }
+  },
+  "get_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brand": {
+        "id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+        "name": "Acme",
+        "handle": "acme",
+        "description": "Tools",
+        "is_active": true,
+        "rank": 2,
+        "rating": 4.5,
+        "status": "published",
+        "tags": [
+          "tools",
+          "garden"
+        ],
+        "currency_code": "usd",
+        "metadata": {
+          "a": 1,
+          "nested": {
+            "b": true
+          }
+        },
+        "launched_at": "2024-01-02T03:04:05.000Z",
+        "profile": null,
+        "raw_revenue": {
+          "value": "1234.5",
+          "precision": 20
+        },
+        "created_at": "2026-11-11T06:54:32.912Z",
+        "updated_at": "2026-11-11T06:54:32.912Z",
+        "deleted_at": null,
+        "logos": [],
+        "revenue": 1234.5
+      }
+    }
+  },
+  "get_c": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brand": {
+        "id": "brand_01M74P623WFP6W59PZ218K9ESB",
+        "name": "Crest",
+        "handle": "crest",
+        "description": null,
+        "is_active": true,
+        "rank": 0,
+        "rating": null,
+        "status": "archived",
+        "tags": [],
+        "currency_code": "eur",
+        "metadata": null,
+        "launched_at": null,
+        "profile": {
+          "id": "bprof_01M74P623WRDNEQ638NBS5JHCH",
+          "website": "https://crest.example.test",
+          "created_at": "2026-11-11T06:54:33.084Z",
+          "updated_at": "2026-11-11T06:54:33.084Z",
+          "deleted_at": null,
+          "brand_id": "brand_01M74P623WFP6W59PZ218K9ESB"
+        },
+        "raw_revenue": null,
+        "created_at": "2026-11-11T06:54:33.084Z",
+        "updated_at": "2026-11-11T06:54:33.084Z",
+        "deleted_at": null,
+        "logos": [
+          {
+            "id": "blogo_01M74P623VPW1TZ7TMWNE87MZV",
+            "url": "https://cdn.example.test/crest.png",
+            "position": 1,
+            "brand_id": "brand_01M74P623WFP6W59PZ218K9ESB",
+            "created_at": "2026-11-11T06:54:33.084Z",
+            "updated_at": "2026-11-11T06:54:33.084Z",
+            "deleted_at": null
+          }
+        ],
+        "revenue": null
+      }
+    }
+  },
+  "get_missing": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Brand with id: brand_missing was not found"
+    }
+  },
+  "update_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brand": {
+        "id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+        "name": "Acme",
+        "handle": "acme",
+        "description": null,
+        "is_active": true,
+        "rank": 5,
+        "rating": 4.5,
+        "status": "published",
+        "tags": [
+          "tools",
+          "garden"
+        ],
+        "currency_code": "usd",
+        "metadata": {
+          "a": 1,
+          "nested": {
+            "b": true
+          },
+          "c": 3
+        },
+        "launched_at": "2024-01-02T03:04:05.000Z",
+        "profile": null,
+        "raw_revenue": {
+          "value": "1234.5",
+          "precision": 20
+        },
+        "created_at": "2026-11-11T06:54:32.912Z",
+        "updated_at": "2026-11-11T06:54:33.186Z",
+        "deleted_at": null,
+        "revenue": 1234.5
+      }
+    }
+  },
+  "list_all": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brands": [
+        {
+          "id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "name": "Acme",
+          "handle": "acme",
+          "description": null,
+          "is_active": true,
+          "rank": 5,
+          "rating": 4.5,
+          "status": "published",
+          "tags": [
+            "tools",
+            "garden"
+          ],
+          "currency_code": "usd",
+          "metadata": {
+            "a": 1,
+            "c": 3,
+            "nested": {
+              "b": true
+            }
+          },
+          "launched_at": "2024-01-02T03:04:05.000Z",
+          "profile": null,
+          "raw_revenue": {
+            "value": "1234.5",
+            "precision": 20
+          },
+          "created_at": "2026-11-11T06:54:32.912Z",
+          "updated_at": "2026-11-11T06:54:33.186Z",
+          "deleted_at": null,
+          "revenue": 1234.5
+        },
+        {
+          "id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+          "name": "Bolt",
+          "handle": "bolt",
+          "description": null,
+          "is_active": true,
+          "rank": 0,
+          "rating": null,
+          "status": "draft",
+          "tags": [],
+          "currency_code": null,
+          "metadata": null,
+          "launched_at": null,
+          "profile": null,
+          "raw_revenue": null,
+          "created_at": "2026-11-11T06:54:32.988Z",
+          "updated_at": "2026-11-11T06:54:32.988Z",
+          "deleted_at": null,
+          "revenue": null
+        },
+        {
+          "id": "brand_01M74P623WFP6W59PZ218K9ESB",
+          "name": "Crest",
+          "handle": "crest",
+          "description": null,
+          "is_active": true,
+          "rank": 0,
+          "rating": null,
+          "status": "archived",
+          "tags": [],
+          "currency_code": "eur",
+          "metadata": null,
+          "launched_at": null,
+          "profile": {
+            "id": "bprof_01M74P623WRDNEQ638NBS5JHCH"
+          },
+          "raw_revenue": null,
+          "created_at": "2026-11-11T06:54:33.084Z",
+          "updated_at": "2026-11-11T06:54:33.084Z",
+          "deleted_at": null,
+          "revenue": null
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "list_fields": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brands": [
+        {
+          "id": "brand_01M74P623WFP6W59PZ218K9ESB",
+          "name": "Crest",
+          "status": "archived",
+          "logos": [
+            {
+              "url": "https://cdn.example.test/crest.png"
+            }
+          ],
+          "profile": {
+            "website": "https://crest.example.test"
+          }
+        },
+        {
+          "id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+          "name": "Bolt",
+          "status": "draft",
+          "logos": [],
+          "profile": null
+        },
+        {
+          "id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "name": "Acme",
+          "status": "published",
+          "logos": [],
+          "profile": null
+        }
+      ],
+      "count": 3,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "list_paginated": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brands": [
+        {
+          "name": "Bolt"
+        }
+      ],
+      "count": 3,
+      "offset": 1,
+      "limit": 1
+    }
+  },
+  "list_filter_status": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brands": [
+        {
+          "name": "Acme",
+          "status": "published"
+        },
+        {
+          "name": "Crest",
+          "status": "archived"
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "list_filter_ops": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brands": [
+        {
+          "name": "Acme",
+          "rank": 5
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "list_q": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brands": [
+        {
+          "name": "Bolt"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "list_relation_filter": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brands": [
+        {
+          "name": "Crest"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "link_products_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "product_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
+          "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "id": "link_01M74P62AJPT7RK09HHSKK98BH",
+          "created_at": "2026-11-11T06:54:33.298Z",
+          "updated_at": "2026-11-11T06:54:33.298Z",
+          "deleted_at": null
+        }
+      ],
+      "dismissed": []
+    }
+  },
+  "link_products_a2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "product_id": "prod_01M70XZZZ4D9VXT17N0BRFMG00",
+          "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "id": "link_01M74P62CKNRSY896YX40AARJ8",
+          "created_at": "2026-11-11T06:54:33.363Z",
+          "updated_at": "2026-11-11T06:54:33.363Z",
+          "deleted_at": null
+        }
+      ],
+      "dismissed": []
+    }
+  },
+  "link_products_b": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "product_id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "brand_id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+          "id": "link_01M74P62EVHYTX5JXTCS3S1W6T",
+          "created_at": "2026-11-11T06:54:33.435Z",
+          "updated_at": "2026-11-11T06:54:33.435Z",
+          "deleted_at": null
+        }
+      ],
+      "dismissed": []
+    }
+  },
+  "graph_products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "data": [
+        {
+          "id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
+          "title": "Draft Hoodie",
+          "brand": {
+            "name": "Acme",
+            "handle": "acme",
+            "id": "brand_01M74P61YGWF9DYP25JNXM8YMN"
+          }
+        },
+        {
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "title": "Medusa T-Shirt",
+          "brand": {
+            "name": "Bolt",
+            "handle": "bolt",
+            "id": "brand_01M74P620W8PKPA0ZV1ETFV1F2"
+          }
+        }
+      ],
+      "metadata": null
+    }
+  },
+  "graph_brand_products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "data": [
+        {
+          "name": "Acme",
+          "id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "products": [
+            {
+              "title": "Draft Hoodie",
+              "handle": "hoodie",
+              "id": "prod_01M70XZZZ49MK9W0NV0YSF74CE"
+            },
+            null
+          ]
+        }
+      ],
+      "metadata": null
+    }
+  },
+  "graph_brand_link": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "data": [
+        {
+          "name": "Bolt",
+          "id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+          "product_link": [
+            {
+              "product_id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+              "brand_id": "brand_01M74P620W8PKPA0ZV1ETFV1F2"
+            }
+          ]
+        }
+      ],
+      "metadata": null
+    }
+  },
+  "graph_link_entity": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "data": [
+        {
+          "product_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
+          "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "product": {
+            "title": "Draft Hoodie",
+            "id": "prod_01M70XZZZ49MK9W0NV0YSF74CE"
+          },
+          "brand": {
+            "name": "Acme",
+            "id": "brand_01M74P61YGWF9DYP25JNXM8YMN"
+          }
+        },
+        {
+          "product_id": "prod_01M70XZZZ4D9VXT17N0BRFMG00",
+          "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "brand": {
+            "name": "Acme",
+            "id": "brand_01M74P61YGWF9DYP25JNXM8YMN"
+          }
+        },
+        {
+          "product_id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "brand_id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+          "product": {
+            "title": "Medusa T-Shirt",
+            "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+          },
+          "brand": {
+            "name": "Bolt",
+            "id": "brand_01M74P620W8PKPA0ZV1ETFV1F2"
+          }
+        }
+      ],
+      "metadata": null
+    }
+  },
+  "admin_product_brand": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product": {
+        "id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
+        "title": "Draft Hoodie",
+        "brand": {
+          "name": "Acme",
+          "status": "published",
+          "id": "brand_01M74P61YGWF9DYP25JNXM8YMN"
+        }
+      }
+    }
+  },
+  "admin_products_brand": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
+          "brand": {
+            "id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+            "name": "Acme",
+            "handle": "acme",
+            "description": null,
+            "is_active": true,
+            "rank": 5,
+            "rating": 4.5,
+            "status": "published",
+            "tags": [
+              "tools",
+              "garden"
+            ],
+            "currency_code": "usd",
+            "metadata": {
+              "a": 1,
+              "c": 3,
+              "nested": {
+                "b": true
+              }
+            },
+            "launched_at": "2024-01-02T03:04:05.000Z",
+            "profile": null,
+            "raw_revenue": {
+              "value": "1234.5",
+              "precision": 20
+            },
+            "created_at": "2026-11-11T06:54:32.912Z",
+            "updated_at": "2026-11-11T06:54:33.186Z",
+            "deleted_at": null,
+            "revenue": 1234.5
+          }
+        },
+        {
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "brand": {
+            "id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+            "name": "Bolt",
+            "handle": "bolt",
+            "description": null,
+            "is_active": true,
+            "rank": 0,
+            "rating": null,
+            "status": "draft",
+            "tags": [],
+            "currency_code": null,
+            "metadata": null,
+            "launched_at": null,
+            "profile": null,
+            "raw_revenue": null,
+            "created_at": "2026-11-11T06:54:32.988Z",
+            "updated_at": "2026-11-11T06:54:32.988Z",
+            "deleted_at": null,
+            "revenue": null
+          }
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "graph_currency": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "data": [
+        {
+          "name": "Acme",
+          "currency_code": "usd",
+          "currency": {
+            "code": "usd",
+            "name": "US Dollar"
+          }
+        },
+        {
+          "name": "Bolt",
+          "currency_code": null
+        },
+        {
+          "name": "Crest",
+          "currency_code": "eur",
+          "currency": {
+            "code": "eur",
+            "name": "Euro"
+          }
+        }
+      ],
+      "metadata": null
+    }
+  },
+  "link_sales_channels": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "sales_channel_id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+          "id": "link_01M74P62J451CHF68PZRA6XBWT",
+          "priority": 3,
+          "featured": true,
+          "note": "main",
+          "weight": 12,
+          "settings": {
+            "x": [
+              1,
+              2
+            ]
+          },
+          "starts_at": "2024-05-06T07:08:09.000Z",
+          "created_at": "2026-11-11T06:54:33.540Z",
+          "updated_at": "2026-11-11T06:54:33.540Z",
+          "deleted_at": null
+        }
+      ]
+    }
+  },
+  "link_sales_channels_default": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [
+        {
+          "brand_id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+          "sales_channel_id": "sc_01M70XZZWM17EBGW5AR60HW02Y",
+          "id": "link_01M74P62N8WH7KGDRFJJVJ7PMC",
+          "priority": 0,
+          "featured": false,
+          "note": null,
+          "weight": null,
+          "settings": null,
+          "starts_at": null,
+          "created_at": "2026-11-11T06:54:33.640Z",
+          "updated_at": "2026-11-11T06:54:33.640Z",
+          "deleted_at": null
+        }
+      ]
+    }
+  },
+  "graph_sales_channels": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "data": [
+        {
+          "name": "Acme",
+          "id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "sales_channel_link": [
+            {
+              "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+              "sales_channel_id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+              "id": "link_01M74P62J451CHF68PZRA6XBWT",
+              "priority": 3,
+              "featured": true,
+              "note": "main",
+              "weight": "12",
+              "settings": {
+                "x": [
+                  1,
+                  2
+                ]
+              },
+              "starts_at": "2024-05-06T07:08:09.000Z",
+              "created_at": "2026-11-11T06:54:33.540Z",
+              "updated_at": "2026-11-11T06:54:33.540Z",
+              "deleted_at": null
+            }
+          ],
+          "sales_channels": [
+            {
+              "name": "Default Sales Channel",
+              "id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ"
+            }
+          ]
+        },
+        {
+          "name": "Bolt",
+          "id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+          "sales_channel_link": [
+            {
+              "brand_id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+              "sales_channel_id": "sc_01M70XZZWM17EBGW5AR60HW02Y",
+              "id": "link_01M74P62N8WH7KGDRFJJVJ7PMC",
+              "priority": 0,
+              "featured": false,
+              "note": null,
+              "weight": null,
+              "settings": null,
+              "starts_at": null,
+              "created_at": "2026-11-11T06:54:33.640Z",
+              "updated_at": "2026-11-11T06:54:33.640Z",
+              "deleted_at": null
+            }
+          ],
+          "sales_channels": [
+            null
+          ]
+        }
+      ],
+      "metadata": null
+    }
+  },
+  "graph_channel_brand": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "data": [
+        {
+          "name": "Default Sales Channel",
+          "id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+          "brand_link": {
+            "priority": 3,
+            "sales_channel_id": "sc_01M70XZZVJETKWXXT8RHV5DWRZ",
+            "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN"
+          },
+          "brand": {
+            "name": "Acme",
+            "id": "brand_01M74P61YGWF9DYP25JNXM8YMN"
+          }
+        }
+      ],
+      "metadata": null
+    }
+  },
+  "stats_insert": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stats": [
+        {
+          "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "period": "2024-01",
+          "views": 10,
+          "score": 1.5,
+          "created_at": "2026-11-11T06:54:33.746Z",
+          "updated_at": "2026-11-11T06:54:33.746Z",
+          "deleted_at": null
+        },
+        {
+          "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "period": "2024-02",
+          "views": 20,
+          "score": null,
+          "created_at": "2026-11-11T06:54:33.746Z",
+          "updated_at": "2026-11-11T06:54:33.746Z",
+          "deleted_at": null
+        }
+      ]
+    }
+  },
+  "stats_upsert": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stats": [
+        {
+          "brand_id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+          "period": "2024-01",
+          "views": 1,
+          "score": null,
+          "created_at": "2026-11-11T06:54:33.963Z",
+          "updated_at": "2026-11-11T06:54:33.963Z",
+          "deleted_at": null
+        },
+        {
+          "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "period": "2024-02",
+          "views": 25,
+          "score": 2.5,
+          "created_at": "2026-11-11T06:54:33.746Z",
+          "updated_at": "2026-11-11T06:54:33.963Z",
+          "deleted_at": null
+        }
+      ]
+    }
+  },
+  "stats_list": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stats": [
+        {
+          "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "period": "2024-01",
+          "views": 10,
+          "score": 1.5,
+          "created_at": "2026-11-11T06:54:33.746Z",
+          "updated_at": "2026-11-11T06:54:33.746Z",
+          "deleted_at": null
+        },
+        {
+          "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "period": "2024-02",
+          "views": 25,
+          "score": 2.5,
+          "created_at": "2026-11-11T06:54:33.746Z",
+          "updated_at": "2026-11-11T06:54:33.963Z",
+          "deleted_at": null
+        },
+        {
+          "brand_id": "brand_01M74P620W8PKPA0ZV1ETFV1F2",
+          "period": "2024-01",
+          "views": 1,
+          "score": null,
+          "created_at": "2026-11-11T06:54:33.963Z",
+          "updated_at": "2026-11-11T06:54:33.963Z",
+          "deleted_at": null
+        }
+      ]
+    }
+  },
+  "unlink_product": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "created": [],
+      "dismissed": [
+        {
+          "product_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
+          "brand_id": "brand_01M74P61YGWF9DYP25JNXM8YMN",
+          "id": "link_01M74P62AJPT7RK09HHSKK98BH",
+          "created_at": "2026-11-11T06:54:33.298Z",
+          "updated_at": "2026-11-11T06:54:33.298Z",
+          "deleted_at": "2026-11-11T06:54:34.110Z"
+        }
+      ]
+    }
+  },
+  "graph_after_unlink": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "data": [
+        {
+          "id": "prod_01M70XZZZ49MK9W0NV0YSF74CE"
+        }
+      ],
+      "metadata": null
+    }
+  },
+  "delete_c": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "id": "brand_01M74P623WFP6W59PZ218K9ESB",
+      "deleted": true,
+      "cascaded": {
+        "brand_id": [
+          "brand_01M74P623WFP6W59PZ218K9ESB"
+        ],
+        "brand_logo_id": [
+          "blogo_01M74P623VPW1TZ7TMWNE87MZV"
+        ]
+      }
+    }
+  },
+  "get_deleted": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Brand with id: brand_01M74P623WFP6W59PZ218K9ESB was not found"
+    }
+  },
+  "list_after_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "brands": [
+        {
+          "name": "Acme",
+          "logos": []
+        },
+        {
+          "name": "Bolt",
+          "logos": []
+        }
+      ],
+      "count": 2,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "graph_unknown_field": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "data": [
+        {
+          "name": "Acme"
+        },
+        {
+          "name": "Bolt"
+        }
+      ],
+      "metadata": null
+    }
+  },
+  "unauthenticated": {
+    "status": 401,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "message": "Unauthorized"
+    }
+  }
+}

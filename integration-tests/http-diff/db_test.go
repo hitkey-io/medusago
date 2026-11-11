@@ -11,6 +11,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
+	"github.com/hitkey-io/medusago/integration-tests/http-diff/testapp/brand"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/config"
 	"github.com/hitkey-io/medusago/packages/medusa/src/commands/db"
 )
@@ -137,6 +138,7 @@ func isGenerated(s string) (bool, string) {
 // MEDUSA_TEST_LOCKING_PROVIDER (postgres or redis) makes the provider the
 // default of the locking module, MEDUSA_TEST_CACHE=redis selects
 // cache-redis; both use MEDUSA_TEST_REDIS_URL.
+// The brand test module (testapp) is added with MEDUSA_TEST_BRAND=true.
 func scenarioModules() []config.ModuleConfig {
 	var out []config.ModuleConfig
 	if os.Getenv("MEDUSA_FF_INDEX_ENGINE") == "true" {
@@ -160,6 +162,9 @@ func scenarioModules() []config.ModuleConfig {
 	}
 	if m, ok := fulfillmentModule(); ok {
 		out = append(out, m)
+	}
+	if os.Getenv("MEDUSA_TEST_BRAND") == "true" {
+		out = append(out, config.ModuleConfig{Resolve: "./src/modules/brand", Module: &brand.Module.ModuleExports})
 	}
 	out = append(out, envModules()...)
 	return append(out, redisScenarioModules()...)

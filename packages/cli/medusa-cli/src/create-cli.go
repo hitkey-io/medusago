@@ -24,6 +24,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"io"
 	"log/slog"
 	"os"
@@ -60,6 +61,10 @@ type Options struct {
 	// exec and user (for example to register routes on app.App or
 	// subscribers on the event bus).
 	OnLoad []func(ctx context.Context, app *loaders.MedusaApp) error
+	// Routes and Middlewares are the API routes and middlewares of the
+	// project (src/api), loaded after the core ones.
+	Routes      []medusahttp.RouteFile
+	Middlewares []medusahttp.MiddlewareRoute
 	// Stdout and Stderr receive the CLI help and errors (default os.Stdout
 	// and os.Stderr). Logs go through slog.
 	Stdout, Stderr io.Writer
@@ -174,11 +179,13 @@ func (r *runner) startOptions(a parsedArgs, cfg config.ConfigModule) (commands.S
 		return commands.StartOptions{}, false
 	}
 	return commands.StartOptions{
-		Host:      a.string("host"),
-		Port:      port,
-		Config:    cfg,
-		Directory: r.directory,
-		OnLoad:    r.opts.OnLoad,
+		Host:        a.string("host"),
+		Port:        port,
+		Config:      cfg,
+		Directory:   r.directory,
+		OnLoad:      r.opts.OnLoad,
+		Routes:      r.opts.Routes,
+		Middlewares: r.opts.Middlewares,
 	}, true
 }
 
@@ -416,7 +423,7 @@ func commandsList() []command {
 				}
 				return r.report(commands.User(commands.UserOptions{
 					Email: a.string("e"), Password: a.string("p"), ID: a.string("i"), Invite: a.bool("invite"),
-					Config: cfg, Directory: r.directory, OnLoad: r.opts.OnLoad,
+					Config: cfg, Directory: r.directory, OnLoad: r.opts.OnLoad, Routes: r.opts.Routes, Middlewares: r.opts.Middlewares,
 				}))
 			},
 		},
@@ -433,7 +440,7 @@ func commandsList() []command {
 				}
 				return exitCode(commands.Exec(commands.ExecOptions{
 					File: a.positional[0], Args: a.positional[1:], Scripts: r.opts.Scripts,
-					Config: cfg, Directory: r.directory, OnLoad: r.opts.OnLoad,
+					Config: cfg, Directory: r.directory, OnLoad: r.opts.OnLoad, Routes: r.opts.Routes, Middlewares: r.opts.Middlewares,
 				}) == nil)
 			},
 		},

@@ -1,0 +1,7 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "entities", "method": "GET", "bearer": "login", "path": "/admin/views/entities" },
+  { "name": "label", "method": "POST", "bearer": "login", "path": "/admin/property-labels", "body": { "entity": "Product", "property": "title", "label": "Name" } },
+  { "name": "entities_with_label", "method": "GET", "bearer": "login", "path": "/admin/views/entities" },
+  { "name": "unauthenticated", "method": "GET", "nocookies": true, "path": "/admin/views/entities" }
+]

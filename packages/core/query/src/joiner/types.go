@@ -127,15 +127,18 @@ type ServiceConfig struct {
 // ExpandProperty mirrors RemoteExpandProperty (and RemoteNestedExpands for
 // the expands merged into the same service).
 type ExpandProperty struct {
-	Property        string
-	Parent          string
-	ParentConfig    *ServiceConfig
-	ServiceConfig   *ServiceConfig
-	Entity          string
-	Fields          []string
-	Args            []Arg
-	Expands         *NestedExpands
-	IsAliasMapping  bool
+	Property       string
+	Parent         string
+	ParentConfig   *ServiceConfig
+	ServiceConfig  *ServiceConfig
+	Entity         string
+	Fields         []string
+	Args           []Arg
+	Expands        *NestedExpands
+	IsAliasMapping bool
+	// aliasMappingSet is false while isAliasMapping is undefined (expands
+	// created by a field alias rewrite).
+	aliasMappingSet bool
 	ExecutionStages [][]ExecutionStage
 }
 

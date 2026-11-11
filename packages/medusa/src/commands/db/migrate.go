@@ -87,7 +87,7 @@ func resolveMigrations(cfg config.ConfigModule) ([]moduleMigrations, error) {
 			continue
 		}
 		mm := moduleMigrations{key: mc.Key}
-		if exp, ok := modules.Registry[mc.Resolve]; ok {
+		if exp, ok := modules.Lookup(mc); ok {
 			mm.sets = append(mm.sets, exp.Migrations)
 		}
 		for _, p := range mc.Providers {
@@ -147,7 +147,7 @@ func Migrate(ctx context.Context, cfg config.ConfigModule, opts MigrateOptions) 
 
 	if !opts.SkipLinks {
 		terminalSeparator()
-		if err := SyncLinks(ctx, pool, SyncLinksOptions{ExecuteAll: opts.ExecuteAllLinks, ExecuteSafe: opts.ExecuteSafeLinks}); err != nil {
+		if err := SyncLinks(ctx, pool, SyncLinksOptions{ExecuteAll: opts.ExecuteAllLinks, ExecuteSafe: opts.ExecuteSafeLinks, Config: &cfg}); err != nil {
 			return err
 		}
 	}
@@ -239,7 +239,7 @@ func RunModuleLoaders(ctx context.Context, pool *pgxpool.Pool, cfg config.Config
 		if mc.Disable {
 			continue
 		}
-		exp, ok := modules.Registry[mc.Resolve]
+		exp, ok := modules.Lookup(mc)
 		if !ok {
 			continue
 		}
@@ -272,7 +272,7 @@ func lockingModule(pool *pgxpool.Pool, cfg config.ConfigModule, logger *slog.Log
 		if mc.Key != utilsmodulessdk.LOCKING || mc.Disable {
 			continue
 		}
-		exp, ok := modules.Registry[mc.Resolve]
+		exp, ok := modules.Lookup(mc)
 		if !ok || exp.Service == nil {
 			return nil, noop, nil
 		}
