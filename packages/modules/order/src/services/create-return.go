@@ -138,9 +138,164 @@ func (s *OrderModuleService) CreateReturn(ctx context.Context, data *dal.Record)
 		out, err = t.RetrieveRelated(ctx, "Return", returnID, utilsmodulessdk.FindConfig{
 			Relations: []string{"items", "shipping_methods", "shipping_methods.tax_lines", "shipping_methods.adjustments"},
 		})
-		return err
+		if err != nil {
+			return err
+		}
+		if err := initializeOrderShippingTaxLines(ctx, m, out); err != nil {
+			return err
+		}
+		return createdReturnShape(ctx, m, out)
 	})
 	return out, err
+}
+
+// createdReturnShape gives the retrieved return the shape of the returnRef
+// upstream serializes (the entity em.create'd in the shared entity manager):
+//   - order.transactions and order.credit_lines are initialized (loaded by
+//     confirmOrderChange at the version before the change);
+//   - the return shipping methods are the order_shipping rows created with
+//     the shipping method (version = order_version), not the ones of the
+//     confirmed version;
+//   - the created return has its transactions collection and null
+//     exchange_id / claim_id, and its created items no unit_price.
+func createdReturnShape(ctx context.Context, m *utilsmodulessdk.MedusaService, ret *dal.Record) error {
+	version := get(ret, "order_version")
+	if order := rec(get(ret, "order")); order != nil {
+		for _, rel := range []struct{ key, class string }{{"transactions", "OrderTransaction"}, {"credit_lines", "OrderCreditLine"}} {
+			if order.Has(rel.key) {
+				continue
+			}
+			f := dal.NewRecord()
+			f.Set("order_id", get(order, "id"))
+			f.Set("version", version)
+			rows, err := m.Internal(rel.class).List(ctx, f, utilsmodulessdk.FindConfig{})
+			if err != nil {
+				return err
+			}
+			list := make([]any, 0, len(rows))
+			for _, r := range rows {
+				r.Delete("order")
+				list = append(list, r)
+			}
+			order.Set(rel.key, list)
+		}
+	}
+	for _, sm := range records(get(ret, "shipping_methods")) {
+		detail := rec(get(sm, "detail"))
+		if detail == nil {
+			continue
+		}
+		f := dal.NewRecord()
+		f.Set("return_id", get(ret, "id"))
+		f.Set("shipping_method_id", get(sm, "id"))
+		f.Set("version", version)
+		rows, err := m.Internal("OrderShipping").List(ctx, f, utilsmodulessdk.FindConfig{})
+		if err != nil {
+			return err
+		}
+		if len(rows) > 0 {
+			for _, k := range []string{"id", "version", "created_at", "updated_at"} {
+				if detail.Has(k) {
+					v, _ := rows[0].Get(k)
+					detail.Set(k, v)
+				}
+			}
+		}
+	}
+	for _, item := range records(get(ret, "items")) {
+		if v, ok := item.Get("unit_price"); ok && v == nil {
+			item.Delete("unit_price")
+		}
+	}
+	if !ret.Has("transactions") {
+		keys := ret.Keys()
+		values := make([]any, len(keys))
+		for i, k := range keys {
+			values[i], _ = ret.Get(k)
+			ret.Delete(k)
+		}
+		for i, k := range keys {
+			ret.Set(k, values[i])
+			if k == "shipping_methods" {
+				ret.Set("transactions", []any{})
+				if !slicesContains(keys, "exchange_id") {
+					ret.Set("exchange_id", nil)
+				}
+				if !slicesContains(keys, "claim_id") {
+					ret.Set("claim_id", nil)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func slicesContains(list []string, s string) bool {
+	for _, x := range list {
+		if x == s {
+			return true
+		}
+	}
+	return false
+}
+
+// initializeOrderShippingTaxLines mirrors the serialization of the
+// initialized collections of the shared entity manager upstream:
+// confirmOrderChange loaded the tax lines of the order shipping methods
+// (the totals of the change), so return.order.shipping_methods[].
+// shipping_method carries them (before its adjustments).
+func initializeOrderShippingTaxLines(ctx context.Context, m *utilsmodulessdk.MedusaService, ret *dal.Record) error {
+	order := rec(get(ret, "order"))
+	var methods []*dal.Record
+	var ids []any
+	for _, os := range records(get(order, "shipping_methods")) {
+		sm := rec(get(os, "shipping_method"))
+		if sm == nil || sm.Has("tax_lines") {
+			continue
+		}
+		methods = append(methods, sm)
+		ids = append(ids, get(sm, "id"))
+	}
+	if len(methods) == 0 {
+		return nil
+	}
+	f := dal.NewRecord()
+	f.Set("shipping_method_id", ids)
+	lines, err := m.Internal("OrderShippingMethodTaxLine").List(ctx, f, utilsmodulessdk.FindConfig{})
+	if err != nil {
+		return err
+	}
+	byMethod := map[string][]any{}
+	for _, l := range lines {
+		// the parent shipping method is an ancestor (circular reference)
+		l.Delete("shipping_method")
+		k := fmt.Sprint(get(l, "shipping_method_id"))
+		byMethod[k] = append(byMethod[k], l)
+	}
+	for _, sm := range methods {
+		taxLines := byMethod[fmt.Sprint(get(sm, "id"))]
+		if taxLines == nil {
+			taxLines = []any{}
+		}
+		keys := sm.Keys()
+		values := make([]any, len(keys))
+		for i, k := range keys {
+			values[i], _ = sm.Get(k)
+			sm.Delete(k)
+		}
+		inserted := false
+		for i, k := range keys {
+			if k == "adjustments" && !inserted {
+				sm.Set("tax_lines", taxLines)
+				inserted = true
+			}
+			sm.Set(k, values[i])
+		}
+		if !inserted {
+			sm.Set("tax_lines", taxLines)
+		}
+	}
+	return nil
 }
 
 // ReceiveReturn mirrors receiveReturn (services/actions/receive-return.ts)
