@@ -7,6 +7,7 @@ import (
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 	storeutils "github.com/hitkey-io/medusago/packages/medusa/src/api/store/utils"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/utils"
 )
@@ -69,7 +70,7 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	}
 	if pc == nil {
 		id, _ := cartID.(string)
-		if _, err := cartworkflows.CreatePaymentCollectionForCartWorkflow.Run(req.Ctx(), req.Scope, id); err != nil {
+		if _, err := cartworkflows.CreatePaymentCollectionForCartWorkflow.Run(req.Ctx(), req.Scope, id, composer.RunOptions{Notify: true}); err != nil {
 			return err
 		}
 		if pc, err = collectionForCart(req, cartID); err != nil {

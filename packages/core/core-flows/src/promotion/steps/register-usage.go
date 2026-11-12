@@ -15,21 +15,21 @@ type usageService interface {
 
 // RegisterUsageStepInput mirrors RegisterUsageStepInput.
 type RegisterUsageStepInput struct {
-	ComputedActions     []*dal.Record
-	RegistrationContext *dal.Record
+	ComputedActions     []*dal.Record `json:"computedActions"`
+	RegistrationContext *dal.Record   `json:"registrationContext"`
 }
 
 // RegisterUsageStep mirrors registerUsageStep.
 var RegisterUsageStep = composer.CreateStep("register-usage",
 	func(ctx composer.StepExecutionContext, in RegisterUsageStepInput) (composer.StepResponse[any], error) {
 		if len(in.ComputedActions) == 0 {
-			return composer.NewStepResponse[any](nil, any(RegisterUsageStepInput{RegistrationContext: in.RegistrationContext})), nil
+			return composer.NewNullStepResponse[any](any(RegisterUsageStepInput{ComputedActions: []*dal.Record{}, RegistrationContext: in.RegistrationContext})), nil
 		}
 		svc := ctx.Container.Resolve(utilsmodulessdk.PROMOTION).(usageService)
 		if err := svc.RegisterUsage(ctx.Context, in.ComputedActions, in.RegistrationContext); err != nil {
 			return composer.StepResponse[any]{}, err
 		}
-		return composer.NewStepResponse[any](nil, any(in)), nil
+		return composer.NewNullStepResponse[any](any(in)), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		in, ok := data.(RegisterUsageStepInput)

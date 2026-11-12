@@ -136,12 +136,20 @@ func fetchCalculatedDraftOrderOption(e *composer.Execution, in FetchShippingOpti
 	return out, nil
 }
 
-// refreshPendingCalculated mirrors the calculated amounts plan of
+// calculatedAmountsPlan is the value of the
+// "should-create-calculated-amounts-plan" when.
+type calculatedAmountsPlan struct {
+	CalculateData []*dal.Record `json:"calculateData"`
+	MethodIDs     []any         `json:"methodIds"`
+	ActionIDs     []any         `json:"actionIds"`
+}
+
+// planPendingCalculated mirrors the calculated amounts plan of
 // refreshPendingDraftOrderShippingMethodsWorkflow.
-func refreshPendingCalculated(e *composer.Execution, orderID any, change *dal.Record, methods, options []*dal.Record) error {
+func planPendingCalculated(e *composer.Execution, orderID any, change *dal.Record, methods, options []*dal.Record) (*calculatedAmountsPlan, error) {
 	items, err := previewItems(e, orderID, "refresh-line-items-query")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	order := rec(g(change, "order"))
 	optionsByID := map[any]*dal.Record{}
@@ -154,8 +162,8 @@ func refreshPendingCalculated(e *composer.Execution, orderID any, change *dal.Re
 			actionByMethod[g(a, "reference_id")] = g(a, "id")
 		}
 	}
-	var data []*dal.Record
-	var methodIDs, actionIDs []any
+	data := []*dal.Record{}
+	methodIDs, actionIDs := []any{}, []any{}
 	for _, m := range methods {
 		actionID, ok := actionByMethod[g(m, "id")]
 		if !ok || actionID == nil {
@@ -169,9 +177,13 @@ func refreshPendingCalculated(e *composer.Execution, orderID any, change *dal.Re
 		methodIDs = append(methodIDs, g(m, "id"))
 		actionIDs = append(actionIDs, actionID)
 	}
-	if len(data) == 0 {
-		return nil
-	}
+	return &calculatedAmountsPlan{CalculateData: data, MethodIDs: methodIDs, ActionIDs: actionIDs}, nil
+}
+
+// executePendingCalculated mirrors the "should-execute-calculated-amounts-plan"
+// branch: the prices are calculated and set on the methods and actions.
+func executePendingCalculated(e *composer.Execution, orderID any, plan *calculatedAmountsPlan) error {
+	data, methodIDs, actionIDs := plan.CalculateData, plan.MethodIDs, plan.ActionIDs
 	prices, err := fulfillmentsteps.CalculateShippingOptionsPricesStep.Run(e, data)
 	if err != nil {
 		return err

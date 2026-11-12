@@ -9,13 +9,14 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts"
 )
 
 // POST mirrors POST /store/carts/:id/complete.
 func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	cartID := req.Params["id"]
-	result, err := cartworkflows.CompleteCartWorkflow.Run(req.Ctx(), req.Scope, cartID)
+	result, err := cartworkflows.CompleteCartWorkflow.Run(req.Ctx(), req.Scope, cartworkflows.CompleteCartWorkflowInput{ID: cartID}, composer.RunOptions{Notify: true})
 	if err != nil {
 		prepared, perr := httputils.PrepareRetrieveQuery(dal.NewRecord(), httputils.QueryConfig{Defaults: carts.DefaultStoreCartFields}, nil)
 		if perr != nil {

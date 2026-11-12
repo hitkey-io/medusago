@@ -142,25 +142,31 @@ var RefreshPendingDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow("r
 		}
 		hookIn := dal.NewRecord()
 		hookIn.Set("input", orderID)
-		if err := composer.CreateHook(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
 			return nil, err
 		}
-		if len(methods) == 0 {
-			return nil, nil
-		}
-		var optionIDs []any
-		for _, m := range methods {
-			if v := g(m, "shipping_option_id"); truthy(v) {
-				optionIDs = append(optionIDs, v)
+		plan, err := composer.When(e, "should-create-calculated-amounts-plan", len(methods) > 0, func() (*calculatedAmountsPlan, error) {
+			optionIDs := []any{}
+			for _, m := range methods {
+				if v := g(m, "shipping_option_id"); truthy(v) {
+					optionIDs = append(optionIDs, v)
+				}
 			}
-		}
-		of := dal.NewRecord()
-		of.Set("id", optionIDs)
-		options, err := graphList(e, "refresh-shipping-options-query", "shipping_option", of, shippingOptionFieldsForPriceCalculation)
+			of := dal.NewRecord()
+			of.Set("id", optionIDs)
+			options, err := graphList(e, "refresh-shipping-options-query", "shipping_option", of, shippingOptionFieldsForPriceCalculation)
+			if err != nil {
+				return nil, err
+			}
+			return planPendingCalculated(e, orderID, change, methods, options)
+		})
 		if err != nil {
 			return nil, err
 		}
-		return nil, refreshPendingCalculated(e, orderID, change, methods, options)
+		if plan != nil && len(plan.CalculateData) > 0 {
+			return nil, executePendingCalculated(e, orderID, plan)
+		}
+		return nil, nil
 	})
 
 // RefreshConfirmedDraftOrderShippingMethodsWorkflow mirrors
@@ -191,7 +197,7 @@ var RefreshConfirmedDraftOrderShippingMethodsWorkflow = composer.CreateWorkflow(
 		}
 		hookIn := dal.NewRecord()
 		hookIn.Set("input", orderID)
-		if err := composer.CreateHook(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
 			return nil, err
 		}
 		return nil, refreshConfirmedCalculated(e, orderID, order, options)

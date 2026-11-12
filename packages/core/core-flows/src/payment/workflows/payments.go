@@ -172,29 +172,38 @@ var RefundPaymentWorkflow = composer.CreateWorkflow("refund-payment-workflow",
 				return nil, err
 			}
 		}
-		isReplay := false
-		if key := g(input, "idempotency_key"); key != nil && key != "" {
+		// a replay of an already-succeeded refund moves no funds
+		key := g(input, "idempotency_key")
+		isList := false
+		existingRefund, err := composer.When(e, "fetch-refund-by-idempotency-key", key != nil && key != "", func() (*dal.Record, error) {
 			f := dal.NewRecord()
 			f.Set("payment_id", g(input, "payment_id"))
 			f.Set("idempotency_key", key)
-			isList := false
 			r, err := commonsteps.UseQueryGraphStep.Config("refund-by-idempotency-key", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
 				GraphInput: query.GraphInput{Entity: "refund", Fields: []string{"id"}, Filters: f}, IsList: &isList})
 			if err != nil {
 				return nil, err
 			}
-			if existing := asRec(r.Data); existing != nil && g(existing, "id") != nil {
-				tf := dal.NewRecord()
-				tf.Set("reference", "refund")
-				tf.Set("reference_id", g(existing, "id"))
-				t, err := commonsteps.UseQueryGraphStep.Config("order-transaction-by-refund", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
-					GraphInput: query.GraphInput{Entity: "order_transaction", Fields: []string{"id"}, Filters: tf}, IsList: &isList})
-				if err != nil {
-					return nil, err
-				}
-				isReplay = asRec(t.Data) != nil && g(asRec(t.Data), "id") != nil
-			}
+			return asRec(r.Data), nil
+		})
+		if err != nil {
+			return nil, err
 		}
+		refundTransaction, err := composer.When(e, "fetch-refund-order-transaction", existingRefund != nil && g(existingRefund, "id") != nil, func() (*dal.Record, error) {
+			tf := dal.NewRecord()
+			tf.Set("reference", "refund")
+			tf.Set("reference_id", g(existingRefund, "id"))
+			t, err := commonsteps.UseQueryGraphStep.Config("order-transaction-by-refund", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
+				GraphInput: query.GraphInput{Entity: "order_transaction", Fields: []string{"id"}, Filters: tf}, IsList: &isList})
+			if err != nil {
+				return nil, err
+			}
+			return asRec(t.Data), nil
+		})
+		if err != nil {
+			return nil, err
+		}
+		isReplay := refundTransaction != nil && g(refundTransaction, "id") != nil
 		refundPayment, err := paymentsteps.RefundPaymentStep.Run(e, input)
 		if err != nil {
 			return nil, err

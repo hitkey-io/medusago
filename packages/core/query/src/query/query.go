@@ -47,7 +47,7 @@ type GraphResult struct {
 }
 
 // MarshalJSON writes { data, metadata? } like the upstream result.
-func (r *GraphResult) MarshalJSON() ([]byte, error) {
+func (r GraphResult) MarshalJSON() ([]byte, error) {
 	out := dal.NewRecord()
 	out.Set("data", r.Data)
 	if r.Metadata != nil {

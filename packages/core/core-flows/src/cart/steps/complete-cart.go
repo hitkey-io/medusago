@@ -193,7 +193,11 @@ var ReserveInventoryStep = composer.CreateStep("reserve-inventory-step",
 		}
 		rawItems, _ := r.Get("inventoryItemIds")
 		itemIDs, _ := rawItems.([]any)
-		return lockingsteps.Execute(ctx.Context, ctx.Container, lockingsteps.UniqueKeys(itemIDs), func(lctx context.Context) error {
+		if err := lockingsteps.Execute(ctx.Context, ctx.Container, lockingsteps.UniqueKeys(itemIDs), func(lctx context.Context) error {
 			return ctx.Container.Resolve(utilsmodulessdk.INVENTORY).(reservationService).DeleteReservationItems(lctx, ids)
-		})
+		}); err != nil {
+			return err
+		}
+		ctx.ReturnStepResponse()
+		return nil
 	})

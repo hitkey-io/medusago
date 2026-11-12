@@ -25,8 +25,8 @@ type UpdateLineItemInCartInput struct {
 }
 
 type lineItemToUpdate struct {
-	Item       *dal.Record
-	VariantIDs []any
+	Item       *dal.Record `json:"item"`
+	VariantIDs []any       `json:"variantIds"`
 }
 
 var findLineItemToUpdateStep = composer.CreateStep("find-line-item-to-update",
@@ -126,10 +126,11 @@ var updateLineItemsStepWithSelector = composer.CreateStep("update-line-items-wit
 		if err != nil {
 			return composer.StepResponse[any]{}, err
 		}
-		if _, err := commonsteps.UpdateBySelector(ctx.Context, svc, "LineItem", sel, data); err != nil {
+		updated, err := commonsteps.UpdateBySelector(ctx.Context, svc, "LineItem", sel, data)
+		if err != nil {
 			return composer.StepResponse[any]{}, err
 		}
-		return composer.NewStepResponse[any](nil, any(itemsBefore(before))), nil
+		return composer.NewStepResponse[any](any(updated), any(itemsBefore(before))), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		before, _ := data.(itemsBefore)
@@ -169,7 +170,29 @@ var UpdateLineItemInCartWorkflow = composer.CreateWorkflow("update-line-item-in-
 		if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
 			return nil, err
 		}
+		validateIn := dal.NewRecord()
+		validateIn.Set("input", in)
+		validateIn.Set("cart", cart)
+		if err := composer.CreateHook(e, "validate", validateIn); err != nil {
+			return nil, err
+		}
+		pricingIn := dal.NewRecord()
+		pricingIn.Set("cart", cart)
+		pricingIn.Set("item", found.Item)
+		pricingIn.Set("variantIds", found.VariantIDs)
+		pricingIn.Set("additional_data", in.AdditionalData)
+		pricingResult, err := composer.CreateHookWithResult(e, "setPricingContext", pricingIn)
+		if err != nil {
+			return nil, err
+		}
+		// { ...cart pricing fields, ...setPricingContextResult, quantity, ... }
 		pricing := FilterObjectByKeys(cart, FieldsForPricingContext)
+		if r, ok := pricingResult.(*dal.Record); ok {
+			for _, k := range r.Keys() {
+				v, _ := r.Get(k)
+				pricing.Set(k, v)
+			}
+		}
 		pricing.Set("quantity", Coalesce(Get(in.Update, "quantity"), Get(found.Item, "quantity")))
 		pricing.Set("currency_code", Get(cart, "currency_code"))
 		pricing.Set("region_id", Get(cart, "region_id"))
@@ -182,8 +205,7 @@ var UpdateLineItemInCartWorkflow = composer.CreateWorkflow("update-line-item-in-
 				return nil, err
 			}
 		}
-		var variants []*dal.Record
-		if len(found.VariantIDs) > 0 && !remove {
+		variants, err := composer.When(e, "should-fetch-variants", len(found.VariantIDs) > 0 && !remove, func() ([]*dal.Record, error) {
 			f := dal.NewRecord()
 			f.Set("id", found.VariantIDs)
 			qc := dal.NewRecord()
@@ -192,10 +214,14 @@ var UpdateLineItemInCartWorkflow = composer.CreateWorkflow("update-line-item-in-
 			if err != nil {
 				return nil, err
 			}
-			variants = Records(res.Data)
+			variants := Records(res.Data)
 			if _, err := validateVariantPricesStep.Run(e, variants); err != nil {
 				return nil, err
 			}
+			return variants, nil
+		})
+		if err != nil {
+			return nil, err
 		}
 		if !remove {
 			found.Item.Set("quantity", Get(in.Update, "quantity"))

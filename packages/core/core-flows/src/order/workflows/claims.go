@@ -216,7 +216,7 @@ var AddOrderLineItemsWorkflow = composer.CreateWorkflow("order-add-line-items",
 		hookIn.Set("variantIds", variantIDs)
 		hookIn.Set("region", region)
 		hookIn.Set("customerData", customerData)
-		if err := composer.CreateHook(e, "setPricingContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setPricingContext", hookIn); err != nil {
 			return nil, err
 		}
 		vi, err := cartworkflows.GetVariantsAndItemsWithPrices.RunAsStep(e, cartworkflows.VariantsAndItemsInput{

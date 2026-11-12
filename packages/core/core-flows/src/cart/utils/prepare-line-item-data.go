@@ -63,7 +63,10 @@ func PrepareLineItemData(data PrepareLineItemDataInput) (*dal.Record, error) {
 	li.Set("variant_sku", pick("variant_sku", Get(variant, "sku")))
 	li.Set("variant_barcode", pick("variant_barcode", Get(variant, "barcode")))
 	li.Set("variant_title", pick("variant_title", Get(variant, "title")))
-	li.Set("variant_option_values", Get(item, "variant_option_values"))
+	// item?.variant_option_values: undefined (dropped) unless the item has it
+	if Has(item, "variant_option_values") {
+		li.Set("variant_option_values", Get(item, "variant_option_values"))
+	}
 	// undefined upstream (dropped by the JSON step boundary) -> the column default applies
 	if d := pick("is_discountable", Get(product, "discountable")); d != nil {
 		li.Set("is_discountable", d)
@@ -71,7 +74,9 @@ func PrepareLineItemData(data PrepareLineItemDataInput) (*dal.Record, error) {
 	li.Set("is_giftcard", Coalesce(Get(product, "is_giftcard"), false))
 	li.Set("requires_shipping", requiresShipping)
 	li.Set("unit_price", data.UnitPrice)
-	li.Set("compare_at_unit_price", compareAt)
+	if compareAt != nil || Has(item, "compare_at_unit_price") {
+		li.Set("compare_at_unit_price", compareAt)
+	}
 	li.Set("is_tax_inclusive", data.IsTaxInclusive)
 	li.Set("metadata", Coalesce(Get(item, "metadata"), dal.NewRecord()))
 	if data.IsCustomPrice {

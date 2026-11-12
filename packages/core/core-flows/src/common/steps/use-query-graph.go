@@ -20,8 +20,8 @@ type UseQueryGraphStepInput struct {
 // QueryGraphResult is the step output: data is a list, or one row when
 // IsList is false.
 type QueryGraphResult struct {
-	Data     any
-	Metadata *dal.Record
+	Data     any         `json:"data,omitempty"`
+	Metadata *dal.Record `json:"metadata,omitempty"`
 }
 
 // QueryOf resolves Query from a container.

@@ -6,6 +6,7 @@ import (
 	cartworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/workflows"
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts"
 )
 
@@ -30,7 +31,7 @@ func run(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, action s
 			action = steps.PromotionActionAdd
 		}
 	}
-	if _, err := cartworkflows.UpdateCartPromotionsWorkflow.Run(req.Ctx(), req.Scope, cartworkflows.UpdateCartPromotionsInput{CartID: req.Params["id"], PromoCodes: c, Action: action, ForceRefreshPaymentCollection: true}); err != nil {
+	if _, err := cartworkflows.UpdateCartPromotionsWorkflow.Run(req.Ctx(), req.Scope, cartworkflows.UpdateCartPromotionsInput{CartID: req.Params["id"], PromoCodes: c, Action: action, ForceRefreshPaymentCollection: true}, composer.RunOptions{Notify: true}); err != nil {
 		return err
 	}
 	return carts.RespondCart(req, res, req.Params["id"])

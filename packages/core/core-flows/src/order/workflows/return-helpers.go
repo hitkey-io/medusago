@@ -209,12 +209,13 @@ var FetchShippingOptionForOrderWorkflow = composer.CreateWorkflow("fetch-shippin
 			return nil, err
 		}
 		initial := rec(res.Data)
+		isCalculated := g(initial, "price_type") == "calculated"
 		hookIn := dal.NewRecord()
 		hookIn.Set("input", in)
-		if err := composer.CreateHook(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
 			return nil, err
 		}
-		if g(initial, "price_type") == "calculated" {
+		calculated, err := composer.When(e, "option-calculated", isCalculated, func() (*dal.Record, error) {
 			of := dal.NewRecord()
 			of.Set("id", in.ShippingOptionID)
 			ores, err := commonsteps.UseQueryGraphStep.Config("calculated-option", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
@@ -236,12 +237,28 @@ var FetchShippingOptionForOrderWorkflow = composer.CreateWorkflow("fetch-shippin
 				out.Set("calculated_price", prices[0])
 			}
 			return out, nil
-		}
-		if err := composer.CreateHook(e, "setPricingContext", in); err != nil {
+		})
+		if err != nil {
 			return nil, err
 		}
+		pricingResult, err := composer.CreateHookWithResult(e, "setPricingContext", in)
+		if err != nil {
+			return nil, err
+		}
+		// { ...setPricingContextResult, currency_code }
 		pc := dal.NewRecord()
+		if r, ok := pricingResult.(*dal.Record); ok {
+			for _, k := range r.Keys() {
+				v, _ := r.Get(k)
+				pc.Set(k, v)
+			}
+		}
 		pc.Set("currency_code", in.CurrencyCode)
+		if isCalculated {
+			return calculated, nil
+		}
+		// option-flat: its then returns the query step's output (no step of
+		// its own)
 		cp := dal.NewRecord()
 		cp.Set("context", pc)
 		v := dal.NewRecord()
@@ -285,7 +302,7 @@ var MaybeRefreshShippingMethodsWorkflow = composer.CreateWorkflow("maybe-refresh
 		}
 		hookIn := dal.NewRecord()
 		hookIn.Set("input", in)
-		if err := composer.CreateHook(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
 			return nil, err
 		}
 		if len(options) > 0 && g(options[0], "price_type") == "calculated" {

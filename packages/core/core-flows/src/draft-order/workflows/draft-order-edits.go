@@ -106,7 +106,7 @@ var ComputeDraftOrderAdjustmentsWorkflow = composer.CreateWorkflow("compute-draf
 		hookIn := dal.NewRecord()
 		hookIn.Set("order", order)
 		hookIn.Set("orderChange", orderChange)
-		if err := composer.CreateHook(e, "setPromotionContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setPromotionContext", hookIn); err != nil {
 			return nil, err
 		}
 		toDelete := []any{}
@@ -511,38 +511,52 @@ var FetchShippingOptionForDraftOrderWorkflow = composer.CreateWorkflow("fetch-sh
 		if err != nil {
 			return nil, err
 		}
+		isCalculated := g(initial, "price_type") == "calculated"
 		hookIn := dal.NewRecord()
 		hookIn.Set("input", in)
-		if err := composer.CreateHook(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setCalculatedShippingPricingContext", hookIn); err != nil {
 			return nil, err
 		}
-		if g(initial, "price_type") == "calculated" {
-			out, err := fetchCalculatedDraftOrderOption(e, in)
-			if err != nil {
-				return nil, err
-			}
-			if err := composer.CreateHook(e, "setPricingContext", in); err != nil {
-				return nil, err
-			}
-			return out, nil
-		}
-		if err := composer.CreateHook(e, "setPricingContext", in); err != nil {
-			return nil, err
-		}
-		pc := dal.NewRecord()
-		pc.Set("currency_code", in.CurrencyCode)
-		qc := dal.NewRecord()
-		qc.Set("calculated_price", query.QueryContext(pc))
-		isList := false
-		res, err := commonsteps.UseQueryGraphStep.Config("flat-rate-option", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
-			GraphInput: query.GraphInput{Entity: "shipping_option", Fields: []string{"id", "name", "calculated_price.calculated_amount",
-				"calculated_price.is_calculated_price_tax_inclusive"}, Filters: f, Context: qc},
-			IsList: &isList,
+		calculated, err := composer.When(e, "option-calculated", isCalculated, func() (*dal.Record, error) {
+			return fetchCalculatedDraftOrderOption(e, in)
 		})
 		if err != nil {
 			return nil, err
 		}
-		return rec(res.Data), nil
+		pricingResult, err := composer.CreateHookWithResult(e, "setPricingContext", in)
+		if err != nil {
+			return nil, err
+		}
+		// { ...setPricingContextResult, currency_code }
+		pc := dal.NewRecord()
+		if r, ok := pricingResult.(*dal.Record); ok {
+			for _, k := range r.Keys() {
+				v, _ := r.Get(k)
+				pc.Set(k, v)
+			}
+		}
+		pc.Set("currency_code", in.CurrencyCode)
+		flat, err := composer.When(e, "option-flat", !isCalculated, func() (*dal.Record, error) {
+			qc := dal.NewRecord()
+			qc.Set("calculated_price", query.QueryContext(pc))
+			isList := false
+			res, err := commonsteps.UseQueryGraphStep.Config("flat-rate-option", composer.StepOptions{}).Run(e, commonsteps.UseQueryGraphStepInput{
+				GraphInput: query.GraphInput{Entity: "shipping_option", Fields: []string{"id", "name", "calculated_price.calculated_amount",
+					"calculated_price.is_calculated_price_tax_inclusive"}, Filters: f, Context: qc},
+				IsList: &isList,
+			})
+			if err != nil {
+				return nil, err
+			}
+			return rec(res.Data), nil
+		})
+		if err != nil {
+			return nil, err
+		}
+		if calculated != nil {
+			return calculated, nil
+		}
+		return flat, nil
 	})
 
 // AddDraftOrderShippingMethodsWorkflow mirrors addDraftOrderShippingMethodsWorkflow.
@@ -623,21 +637,28 @@ var UpdateDraftOrderActionShippingMethodWorkflow = composer.CreateWorkflow("upda
 		if err := validateDraftChange(e, order, orderChange); err != nil {
 			return nil, err
 		}
-		var option *dal.Record
-		hasOptions := false
-		if v, ok := in.Data.Get("custom_amount"); ok && v == nil {
+		v, hasCustom := in.Data.Get("custom_amount")
+		hasOptions := hasCustom && v == nil
+		shippingOptions, err := composer.When(e, "get-shipping-options", hasOptions, func() ([]*dal.Record, error) {
 			original := draftordersteps.FindOrderChangeAction(orderChange, in.ActionID)
 			method, err := remoteOne(e, "fetch-shipping-method", "order_shipping_method", g(original, "reference_id"), []string{"id", "shipping_option_id"})
 			if err != nil {
 				return nil, err
 			}
-			option, err = FetchShippingOptionForDraftOrderWorkflow.RunAsStep(e, FetchShippingOptionForDraftOrderInput{
+			option, err := FetchShippingOptionForDraftOrderWorkflow.RunAsStep(e, FetchShippingOptionForDraftOrderInput{
 				OrderID: in.OrderID, ShippingOptionID: g(method, "shipping_option_id"), CurrencyCode: g(order, "currency_code"),
 			})
 			if err != nil {
 				return nil, err
 			}
-			hasOptions = true
+			return []*dal.Record{option}, nil
+		})
+		if err != nil {
+			return nil, err
+		}
+		var option *dal.Record
+		if len(shippingOptions) > 0 {
+			option = shippingOptions[0]
 		}
 		if _, err := draftordersteps.ValidateDraftOrderShippingMethodActionStep.Run(e, draftordersteps.ActionValidationInput{OrderID: in.OrderID, ActionID: in.ActionID, OrderChange: orderChange}); err != nil {
 			return nil, err
