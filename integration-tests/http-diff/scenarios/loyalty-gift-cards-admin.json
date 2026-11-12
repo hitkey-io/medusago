@@ -1,0 +1,218 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards",
+  "body": {
+   "currency_code": "USD",
+   "value": 1000,
+   "code": "TEST1",
+   "line_item_id": "lin_123"
+  }
+ },
+ {
+  "name": "list",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards"
+ },
+ {
+  "name": "retrieve",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{create.gift_card.id}}"
+ },
+ {
+  "name": "retrieve_missing",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards/does-not-exist"
+ },
+ {
+  "name": "create_with_account",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=*store_credit_account,*store_credit_account.transactions",
+  "body": {
+   "currency_code": "USD",
+   "value": 250.5,
+   "code": "TEST2",
+   "line_item_id": "lin_123",
+   "note": "A note",
+   "metadata": {
+    "source": "test"
+   },
+   "expires_at": "2099-01-01T00:00:00.000Z"
+  }
+ },
+ {
+  "name": "duplicate",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards",
+  "body": {
+   "currency_code": "USD",
+   "value": 1000,
+   "code": "TEST1",
+   "line_item_id": "lin_123"
+  }
+ },
+ {
+  "name": "invalid_value",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards",
+  "body": {
+   "currency_code": "USD",
+   "value": 0
+  }
+ },
+ {
+  "name": "invalid_status",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards",
+  "body": {
+   "currency_code": "USD",
+   "value": 10,
+   "status": "active"
+  }
+ },
+ {
+  "name": "unknown_field",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards",
+  "body": {
+   "currency_code": "USD",
+   "value": 10,
+   "customer_id": "cus_1"
+  }
+ },
+ {
+  "name": "missing_currency",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards",
+  "body": {
+   "value": 10
+  }
+ },
+ {
+  "name": "generated",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code,status,value",
+  "body": {
+   "currency_code": "eur",
+   "value": 500,
+   "status": "pending"
+  }
+ },
+ {
+  "name": "update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{create.gift_card.id}}",
+  "body": {
+   "status": "pending",
+   "note": "This is a test note",
+   "metadata": {
+    "a": 1
+   }
+  }
+ },
+ {
+  "name": "update_expiry",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{create.gift_card.id}}?fields=id,expires_at,note",
+  "body": {
+   "expires_at": "2030-05-01T10:00:00.000Z",
+   "note": null
+  }
+ },
+ {
+  "name": "update_missing",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards/does-not-exist",
+  "body": {
+   "status": "redeemed",
+   "note": "This is a test note"
+  }
+ },
+ {
+  "name": "update_invalid",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{create.gift_card.id}}",
+  "body": {
+   "value": 5
+  }
+ },
+ {
+  "name": "list_paged",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards?limit=1&offset=1&order=code&fields=id,code"
+ },
+ {
+  "name": "list_q",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards?q=TEST2&fields=id,code"
+ },
+ {
+  "name": "list_status",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards?status=redeemed&order=code&fields=id,code,status"
+ },
+ {
+  "name": "list_id",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards?id[]={{create.gift_card.id}}&fields=id,code"
+ },
+ {
+  "name": "list_unknown_param",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards?foo=bar"
+ },
+ {
+  "name": "list_relations",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards?order=code&fields=code,store_credit_account.currency_code,store_credit_account.balance,store_credit_account.credits,store_credit_account.debits,*line_item"
+ },
+ {
+  "name": "orders",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{create.gift_card.id}}/orders"
+ },
+ {
+  "name": "orders_fields",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{create.gift_card.id}}/orders?fields=id,email"
+ },
+ {
+  "name": "accounts",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/store-credit-accounts?order=created_at&fields=id,currency_code,balance,credits,debits,customer_id"
+ }
+]

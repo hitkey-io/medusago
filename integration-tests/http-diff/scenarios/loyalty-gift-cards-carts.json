@@ -1,0 +1,589 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "pk",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/api-keys",
+  "body": {
+   "title": "Store",
+   "type": "publishable"
+  }
+ },
+ {
+  "name": "channels",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/sales-channels?order=name&fields=id,name"
+ },
+ {
+  "name": "link",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/api-keys/{{pk.api_key.id}}/sales-channels?fields=id",
+  "body": {
+   "add": [
+    "{{channels.sales_channels.0.id}}"
+   ]
+  }
+ },
+ {
+  "name": "expensive",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/products?fields=id,variants.id",
+  "body": {
+   "title": "Expensive",
+   "status": "published",
+   "options": [
+    {
+     "title": "size",
+     "values": [
+      "large"
+     ]
+    }
+   ],
+   "sales_channels": [
+    {
+     "id": "{{channels.sales_channels.0.id}}"
+    }
+   ],
+   "variants": [
+    {
+     "title": "Expensive variant",
+     "manage_inventory": false,
+     "options": {
+      "size": "large"
+     },
+     "prices": [
+      {
+       "amount": 800,
+       "currency_code": "usd"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "name": "cheap",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/products?fields=id,variants.id",
+  "body": {
+   "title": "Cheap",
+   "status": "published",
+   "options": [
+    {
+     "title": "size",
+     "values": [
+      "large"
+     ]
+    }
+   ],
+   "sales_channels": [
+    {
+     "id": "{{channels.sales_channels.0.id}}"
+    }
+   ],
+   "variants": [
+    {
+     "title": "Cheap variant",
+     "manage_inventory": false,
+     "options": {
+      "size": "large"
+     },
+     "prices": [
+      {
+       "amount": 400,
+       "currency_code": "usd"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "name": "very_cheap",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/products?fields=id,variants.id",
+  "body": {
+   "title": "Very cheap",
+   "status": "published",
+   "options": [
+    {
+     "title": "size",
+     "values": [
+      "large"
+     ]
+    }
+   ],
+   "sales_channels": [
+    {
+     "id": "{{channels.sales_channels.0.id}}"
+    }
+   ],
+   "variants": [
+    {
+     "title": "Very cheap variant",
+     "manage_inventory": false,
+     "options": {
+      "size": "large"
+     },
+     "prices": [
+      {
+       "amount": 200,
+       "currency_code": "usd"
+      }
+     ]
+    }
+   ]
+  }
+ },
+ {
+  "name": "regions",
+  "method": "GET",
+  "path": "/store/regions?order=name&fields=id,name,currency_code",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "gc1",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code",
+  "body": {
+   "currency_code": "usd",
+   "value": 400,
+   "code": "TEST1",
+   "line_item_id": "lin_123"
+  }
+ },
+ {
+  "name": "gc2",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code",
+  "body": {
+   "currency_code": "usd",
+   "value": 400,
+   "code": "TEST-2",
+   "line_item_id": "lin_123"
+  }
+ },
+ {
+  "name": "gc3",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code",
+  "body": {
+   "currency_code": "usd",
+   "value": 400,
+   "code": "TEST-3",
+   "line_item_id": "lin_123"
+  }
+ },
+ {
+  "name": "gc_large",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code",
+  "body": {
+   "currency_code": "usd",
+   "value": 1000,
+   "code": "LARGE",
+   "line_item_id": "lin_123"
+  }
+ },
+ {
+  "name": "gc_eur",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code",
+  "body": {
+   "currency_code": "eur",
+   "value": 100,
+   "code": "EURO",
+   "line_item_id": "lin_123"
+  }
+ },
+ {
+  "name": "gc_expired",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code",
+  "body": {
+   "currency_code": "usd",
+   "value": 100,
+   "code": "EXPIRED",
+   "line_item_id": "lin_123",
+   "expires_at": "2020-01-01T00:00:00.000Z"
+  }
+ },
+ {
+  "name": "gc_upper",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code",
+  "body": {
+   "currency_code": "USD",
+   "value": 100,
+   "code": "UPPER",
+   "line_item_id": "lin_123"
+  }
+ },
+ {
+  "name": "cart",
+  "method": "POST",
+  "path": "/store/carts?fields=id",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "region_id": "{{regions.regions.1.id}}",
+   "sales_channel_id": "{{channels.sales_channels.0.id}}",
+   "items": [
+    {
+     "variant_id": "{{expensive.product.variants.0.id}}",
+     "quantity": 1
+    }
+   ]
+  }
+ },
+ {
+  "name": "add_gc1",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards?fields=+credit_line_total",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "TEST1"
+  }
+ },
+ {
+  "name": "add_gc2",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards?fields=+credit_line_total",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "TEST-2"
+  }
+ },
+ {
+  "name": "add_gc3_total_zero",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards?fields=+credit_line_total",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "TEST-3"
+  }
+ },
+ {
+  "name": "add_again",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards?fields=+credit_line_total",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "TEST1"
+  }
+ },
+ {
+  "name": "add_missing",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards?fields=+credit_line_total",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "does-not-exist"
+  }
+ },
+ {
+  "name": "add_currency",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "EURO"
+  }
+ },
+ {
+  "name": "add_expired",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "EXPIRED"
+  }
+ },
+ {
+  "name": "add_upper_currency",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "UPPER"
+  }
+ },
+ {
+  "name": "add_no_code",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {}
+ },
+ {
+  "name": "add_unknown",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "TEST1",
+   "amount": 5
+  }
+ },
+ {
+  "name": "add_cart_missing",
+  "method": "POST",
+  "path": "/store/carts/cart_missing/gift-cards",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "TEST1"
+  }
+ },
+ {
+  "name": "get_with_gift_cards",
+  "method": "GET",
+  "path": "/store/carts/{{cart.cart.id}}?fields=+credit_line_total,*gift_cards",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "get_nested",
+  "method": "GET",
+  "path": "/store/carts/{{cart.cart.id}}?fields=id,gift_cards.code,gift_cards.store_credit_account.balance,gift_cards.store_credit_account.code",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "get_not_allowed",
+  "method": "GET",
+  "path": "/store/carts/{{cart.cart.id}}?fields=id,gift_cards.store_credit_account.transactions",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "remove_gc1",
+  "method": "DELETE",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards?fields=+credit_line_total",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "TEST1"
+  }
+ },
+ {
+  "name": "remove_missing",
+  "method": "DELETE",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards?fields=+credit_line_total",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "does-not-exist"
+  }
+ },
+ {
+  "name": "remove_not_applied",
+  "method": "DELETE",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards?fields=+credit_line_total",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "LARGE"
+  }
+ },
+ {
+  "name": "remove_gc2",
+  "method": "DELETE",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards?fields=+credit_line_total",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "TEST-2"
+  }
+ },
+ {
+  "name": "remove_unknown",
+  "method": "DELETE",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "TEST1",
+   "x": 1
+  }
+ },
+ {
+  "name": "readd_gc1",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards?fields=id,total,credit_line_total",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "TEST1"
+  }
+ },
+ {
+  "name": "pc",
+  "method": "POST",
+  "path": "/store/payment-collections?fields=id,amount",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "cart_id": "{{cart.cart.id}}"
+  }
+ },
+ {
+  "name": "add_large",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/gift-cards?fields=+credit_line_total,+payment_collection.amount",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "code": "LARGE"
+  }
+ },
+ {
+  "name": "add_item",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/line-items?fields=+credit_line_total,+gift_cards.id,+gift_cards.code,+payment_collection.id,+payment_collection.amount",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "quantity": 1,
+   "variant_id": "{{cheap.product.variants.0.id}}"
+  }
+ },
+ {
+  "name": "cart_items",
+  "method": "GET",
+  "path": "/store/carts/{{cart.cart.id}}?fields=id,items.id,items.quantity",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "update_item",
+  "method": "POST",
+  "path": "/store/carts/{{cart.cart.id}}/line-items/{{cart_items.cart.items.0.id}}?fields=id,total,credit_line_total,credit_lines.amount,credit_lines.reference_id,gift_cards.code",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "body": {
+   "quantity": 3
+  }
+ },
+ {
+  "name": "delete_item",
+  "method": "DELETE",
+  "path": "/store/carts/{{cart.cart.id}}/line-items/{{cart_items.cart.items.0.id}}?fields=id,total,credit_line_total,credit_lines.amount,credit_lines.reference_id,gift_cards.code",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "store_gc",
+  "method": "GET",
+  "path": "/store/gift-cards/TEST1",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "store_gc_missing",
+  "method": "GET",
+  "path": "/store/gift-cards/INVALID-CODE",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "store_gc_account",
+  "method": "GET",
+  "path": "/store/gift-cards/LARGE?fields=*store_credit_account",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "store_gc_relations",
+  "method": "GET",
+  "path": "/store/gift-cards/TEST1?fields=code,line_item.title,store_credit_account.balance,metadata,reference",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "store_gc_not_allowed",
+  "method": "GET",
+  "path": "/store/gift-cards/TEST1?fields=store_credit_account.transactions",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "store_gc_id",
+  "method": "GET",
+  "path": "/store/gift-cards/{{gc1.gift_card.id}}",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  }
+ },
+ {
+  "name": "admin_gc_account",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{gc_large.gift_card.id}}?fields=code,store_credit_account.balance,store_credit_account.debits"
+ }
+]

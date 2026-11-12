@@ -1,0 +1,299 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "me",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/users/me?fields=id"
+  },
+  {
+    "name": "c1",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/customers?fields=id",
+    "body": {
+      "email": "loyal-one@example.test"
+    }
+  },
+  {
+    "name": "c2",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/customers?fields=id",
+    "body": {
+      "email": "loyal-two@example.test"
+    }
+  },
+  {
+    "name": "acc1",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts",
+    "body": {
+      "customer_id": "{{c1.customer.id}}",
+      "currency_code": "usd"
+    }
+  },
+  {
+    "name": "acc2",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts",
+    "body": {
+      "customer_id": "{{c2.customer.id}}",
+      "currency_code": "usd"
+    }
+  },
+  {
+    "name": "list",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts"
+  },
+  {
+    "name": "list_filtered",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?customer_id={{c1.customer.id}}&currency_code=usd"
+  },
+  {
+    "name": "list_paged",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?limit=1&offset=1&fields=id,customer_id"
+  },
+  {
+    "name": "list_q",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?q=usd&fields=id"
+  },
+  {
+    "name": "list_order",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?order=-created_at&fields=id,currency_code"
+  },
+  {
+    "name": "list_bad_param",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?foo=bar"
+  },
+  {
+    "name": "get",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{acc1.store_credit_account.id}}"
+  },
+  {
+    "name": "get_fields",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{acc1.store_credit_account.id}}?fields=id,code,balance"
+  },
+  {
+    "name": "get_missing",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/does-not-exist"
+  },
+  {
+    "name": "create_duplicate",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts",
+    "body": {
+      "customer_id": "{{c1.customer.id}}",
+      "currency_code": "usd"
+    }
+  },
+  {
+    "name": "create_missing_currency",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts",
+    "body": {}
+  },
+  {
+    "name": "create_unknown_field",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts",
+    "body": {
+      "currency_code": "usd",
+      "code": "MY-CODE"
+    }
+  },
+  {
+    "name": "create_eur_meta",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts",
+    "body": {
+      "customer_id": "{{c1.customer.id}}",
+      "currency_code": "eur",
+      "metadata": {
+        "tier": "gold"
+      }
+    }
+  },
+  {
+    "name": "anon",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?fields=*transactions",
+    "body": {
+      "currency_code": "usd"
+    }
+  },
+  {
+    "name": "credit1",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/credit?fields=*transactions",
+    "body": {
+      "amount": 100,
+      "note": "Crediting an account 1"
+    }
+  },
+  {
+    "name": "credit2",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/credit?fields=*transactions",
+    "body": {
+      "amount": 150,
+      "note": "Crediting an account 2"
+    }
+  },
+  {
+    "name": "credit_no_note",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/credit?fields=id,balance,credits,debits",
+    "body": {
+      "amount": 12.5
+    }
+  },
+  {
+    "name": "transactions",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/transactions"
+  },
+  {
+    "name": "transactions_paged",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/transactions?limit=1&offset=1&order=created_at"
+  },
+  {
+    "name": "credit_negative",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/credit",
+    "body": {
+      "amount": -20
+    }
+  },
+  {
+    "name": "credit_zero",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/credit",
+    "body": {
+      "amount": 0
+    }
+  },
+  {
+    "name": "credit_string",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/credit",
+    "body": {
+      "amount": "10"
+    }
+  },
+  {
+    "name": "credit_missing",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/sc_acc_missing/credit",
+    "body": {
+      "amount": 10
+    }
+  },
+  {
+    "name": "debit",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/debit?fields=*transactions",
+    "body": {
+      "amount": 40,
+      "note": "Credit issued by mistake"
+    }
+  },
+  {
+    "name": "debit_too_much",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/debit",
+    "body": {
+      "amount": 1000
+    }
+  },
+  {
+    "name": "debit_negative",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/debit",
+    "body": {
+      "amount": -20
+    }
+  },
+  {
+    "name": "debit_missing",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/sca_does_not_exist/debit",
+    "body": {
+      "amount": 10
+    }
+  },
+  {
+    "name": "debit_all",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/debit?fields=id,balance,credits,debits",
+    "body": {
+      "amount": 222.5
+    }
+  },
+  {
+    "name": "after",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}?fields=*transactions,*customer"
+  },
+  {
+    "name": "list_after",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?fields=id,customer_id,currency_code,metadata"
+  },
+  {
+    "name": "customer_link",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?customer_id={{c1.customer.id}}&fields=id,customer.email,currency_code&order=currency_code"
+  }
+]

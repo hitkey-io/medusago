@@ -1,0 +1,356 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "pk",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys",
+    "body": {
+      "title": "Store",
+      "type": "publishable"
+    }
+  },
+  {
+    "name": "reg1",
+    "method": "POST",
+    "path": "/auth/customer/emailpass/register",
+    "body": {
+      "email": "initial@customer.test",
+      "password": "secret-pass"
+    }
+  },
+  {
+    "name": "cust1",
+    "method": "POST",
+    "path": "/store/customers",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "reg1",
+    "body": {
+      "email": "initial@customer.test"
+    }
+  },
+  {
+    "name": "tok1",
+    "method": "POST",
+    "path": "/auth/customer/emailpass",
+    "body": {
+      "email": "initial@customer.test",
+      "password": "secret-pass"
+    }
+  },
+  {
+    "name": "reg2",
+    "method": "POST",
+    "path": "/auth/customer/emailpass/register",
+    "body": {
+      "email": "invited@customer.test",
+      "password": "secret-pass"
+    }
+  },
+  {
+    "name": "cust2",
+    "method": "POST",
+    "path": "/store/customers",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "reg2",
+    "body": {
+      "email": "invited@customer.test"
+    }
+  },
+  {
+    "name": "tok2",
+    "method": "POST",
+    "path": "/auth/customer/emailpass",
+    "body": {
+      "email": "invited@customer.test",
+      "password": "secret-pass"
+    }
+  },
+  {
+    "name": "acc1",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?fields=id,code",
+    "body": {
+      "currency_code": "usd",
+      "customer_id": "{{cust1.customer.id}}"
+    }
+  },
+  {
+    "name": "acc2",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?fields=id,code",
+    "body": {
+      "currency_code": "usd",
+      "customer_id": "{{cust2.customer.id}}"
+    }
+  },
+  {
+    "name": "list1",
+    "method": "GET",
+    "path": "/store/store-credit-accounts?currency_code=usd",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1"
+  },
+  {
+    "name": "list2",
+    "method": "GET",
+    "path": "/store/store-credit-accounts?currency_code=usd",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok2"
+  },
+  {
+    "name": "list_eur",
+    "method": "GET",
+    "path": "/store/store-credit-accounts?currency_code=eur",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1"
+  },
+  {
+    "name": "list_no_currency",
+    "method": "GET",
+    "path": "/store/store-credit-accounts",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1"
+  },
+  {
+    "name": "list_unknown",
+    "method": "GET",
+    "path": "/store/store-credit-accounts?currency_code=usd&customer_id=x",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1"
+  },
+  {
+    "name": "list_fields",
+    "method": "GET",
+    "path": "/store/store-credit-accounts?currency_code=usd&fields=id,code,*transactions",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1"
+  },
+  {
+    "name": "list_not_allowed",
+    "method": "GET",
+    "path": "/store/store-credit-accounts?currency_code=usd&fields=transactions.account_id",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1"
+  },
+  {
+    "name": "list_unauth",
+    "method": "GET",
+    "path": "/store/store-credit-accounts?currency_code=usd",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "get1",
+    "method": "GET",
+    "path": "/store/store-credit-accounts/{{acc1.store_credit_account.id}}",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1"
+  },
+  {
+    "name": "get2",
+    "method": "GET",
+    "path": "/store/store-credit-accounts/{{acc2.store_credit_account.id}}",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok2"
+  },
+  {
+    "name": "get_other",
+    "method": "GET",
+    "path": "/store/store-credit-accounts/{{acc2.store_credit_account.id}}",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1"
+  },
+  {
+    "name": "get_fields",
+    "method": "GET",
+    "path": "/store/store-credit-accounts/{{acc1.store_credit_account.id}}?fields=id",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1"
+  },
+  {
+    "name": "get_unauth",
+    "method": "GET",
+    "path": "/store/store-credit-accounts/{{acc1.store_credit_account.id}}",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "anon",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?fields=id,code",
+    "body": {
+      "currency_code": "usd"
+    }
+  },
+  {
+    "name": "anon_credit",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}/credit?fields=id,balance",
+    "body": {
+      "amount": 100,
+      "note": "Gift"
+    }
+  },
+  {
+    "name": "claim_missing_code",
+    "method": "POST",
+    "path": "/store/store-credit-accounts/claim",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1",
+    "body": {}
+  },
+  {
+    "name": "claim_own",
+    "method": "POST",
+    "path": "/store/store-credit-accounts/claim",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1",
+    "body": {
+      "code": "{{acc1.store_credit_account.code}}"
+    }
+  },
+  {
+    "name": "claim_others",
+    "method": "POST",
+    "path": "/store/store-credit-accounts/claim",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok2",
+    "body": {
+      "code": "{{acc1.store_credit_account.code}}"
+    }
+  },
+  {
+    "name": "claim",
+    "method": "POST",
+    "path": "/store/store-credit-accounts/claim",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1",
+    "body": {
+      "code": "{{anon.store_credit_account.code}}"
+    }
+  },
+  {
+    "name": "claim_again",
+    "method": "POST",
+    "path": "/store/store-credit-accounts/claim",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok2",
+    "body": {
+      "code": "{{anon.store_credit_account.code}}"
+    }
+  },
+  {
+    "name": "claim_unknown",
+    "method": "POST",
+    "path": "/store/store-credit-accounts/claim",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok1",
+    "body": {
+      "code": "SC-NOPE"
+    }
+  },
+  {
+    "name": "claimed",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon.store_credit_account.id}}?fields=*transactions"
+  },
+  {
+    "name": "target",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{acc1.store_credit_account.id}}?fields=*transactions"
+  },
+  {
+    "name": "anon_eur",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts?fields=id,code",
+    "body": {
+      "currency_code": "eur"
+    }
+  },
+  {
+    "name": "anon_eur_credit",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/store-credit-accounts/{{anon_eur.store_credit_account.id}}/credit?fields=id,balance",
+    "body": {
+      "amount": 30
+    }
+  },
+  {
+    "name": "claim_new_currency",
+    "method": "POST",
+    "path": "/store/store-credit-accounts/claim",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok2",
+    "body": {
+      "code": "{{anon_eur.store_credit_account.code}}"
+    }
+  },
+  {
+    "name": "list2_eur",
+    "method": "GET",
+    "path": "/store/store-credit-accounts?currency_code=eur&fields=id,currency_code,customer_id,code,balance,credits,debits,*transactions",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "bearer": "tok2"
+  }
+]
