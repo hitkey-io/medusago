@@ -24,6 +24,7 @@ import (
 type WorkflowsModuleService struct {
 	*utilsmodulessdk.MedusaService
 	*composer.LocalStepCoordinator
+	composer.WorkflowEngineAPI
 	db        dal.Querier
 	scheduler *utils.Scheduler
 	logger    *slog.Logger
@@ -43,6 +44,7 @@ func NewWorkflowsModuleService(opts modulessdk.ServiceOptions, joinerConfig *joi
 	return &WorkflowsModuleService{
 		MedusaService:        utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig),
 		LocalStepCoordinator: composer.NewLocalStepCoordinator(),
+		WorkflowEngineAPI:    composer.WorkflowEngineAPI{EngineContainer: c},
 		db:                   opts.DB,
 		scheduler:            utils.NewScheduler(c, logger),
 		logger:               logger,

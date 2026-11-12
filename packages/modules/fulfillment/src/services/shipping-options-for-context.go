@@ -280,3 +280,19 @@ func (s *FulfillmentModuleService) ListShippingOptionsForContext(ctx context.Con
 	}
 	return out, nil
 }
+
+// ValidateShippingOption mirrors validateShippingOption: whether the
+// shipping option is available for the context (its rules match).
+func (s *FulfillmentModuleService) ValidateShippingOption(ctx context.Context, shippingOptionID string, context_ *dal.Record) (bool, error) {
+	if context_ == nil {
+		context_ = dal.NewRecord()
+	}
+	f := dal.NewRecord()
+	f.Set("id", shippingOptionID)
+	f.Set("context", context_)
+	options, err := s.ListShippingOptionsForContext(ctx, f, utilsmodulessdk.FindConfig{Relations: []string{"rules"}})
+	if err != nil {
+		return false, err
+	}
+	return len(options) > 0, nil
+}

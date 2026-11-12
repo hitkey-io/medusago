@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/cockroachdb/apd/v3"
 
@@ -570,4 +571,23 @@ func (s *PaymentModuleService) GetWebhookActionAndData(ctx context.Context, prov
 		p = dal.NewRecord()
 	}
 	return s.provider.GetWebhookActionAndData(ctx, providerID, p)
+}
+
+// CompletePaymentCollections mirrors completePaymentCollections: the payment
+// collections get completed_at = now.
+func (s *PaymentModuleService) CompletePaymentCollections(ctx context.Context, ids []any) ([]*dal.Record, error) {
+	now := time.Now()
+	in := make([]any, len(ids))
+	for i, id := range ids {
+		r := dal.NewRecord()
+		r.Set("id", id)
+		r.Set("completed_at", now)
+		in[i] = r
+	}
+	res, err := s.Internal("PaymentCollection").Update(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	out, _ := res.([]*dal.Record)
+	return out, nil
 }

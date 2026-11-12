@@ -121,3 +121,20 @@ func (s *FileModuleService) GetDownloadStream(ctx context.Context, id string) (i
 func (s *FileModuleService) GetAsBuffer(ctx context.Context, id string) ([]byte, error) {
 	return s.provider.GetAsBuffer(ctx, id)
 }
+
+// GetProvider mirrors getProvider.
+func (s *FileModuleService) GetProvider() filetypes.IFileProvider { return s.provider }
+
+// GetUploadFileUrls mirrors getUploadFileUrls (array input): a presigned
+// upload URL per file.
+func (s *FileModuleService) GetUploadFileUrls(ctx context.Context, data []filetypes.ProviderGetPresignedUploadUrlDTO) ([]filetypes.ProviderFileResultDTO, error) {
+	out := make([]filetypes.ProviderFileResultDTO, 0, len(data))
+	for _, d := range data {
+		r, err := s.provider.GetPresignedUploadURL(ctx, d)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, r)
+	}
+	return out, nil
+}

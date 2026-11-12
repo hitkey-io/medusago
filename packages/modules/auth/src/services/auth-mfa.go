@@ -222,6 +222,23 @@ func (s *AuthModuleService) verifyMethod(ctx context.Context, method string, aut
 	return false, mfaMethodError(method)
 }
 
+// UseAuthMfaRecoveryCode mirrors useAuthMfaRecoveryCode: the recovery code
+// of the auth identity is verified and consumed in a transaction.
+func (s *AuthModuleService) UseAuthMfaRecoveryCode(ctx context.Context, authIdentityID any, code string) error {
+	return s.InTransaction(ctx, func(m *utilsmodulessdk.MedusaService) error {
+		tx := *s
+		tx.MedusaService = m
+		valid, err := tx.verifyMethod(ctx, "recovery_code", authIdentityID, code)
+		if err != nil {
+			return err
+		}
+		if !valid {
+			return common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "Recovery code is invalid or already used")
+		}
+		return nil
+	})
+}
+
 // MfaStartResponse mirrors AuthMfaStartResponse.
 type MfaStartResponse struct {
 	Mfa        *dal.Record

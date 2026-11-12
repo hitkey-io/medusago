@@ -25,6 +25,7 @@ import (
 type WorkflowsModuleService struct {
 	*utilsmodulessdk.MedusaService
 	*WorkflowOrchestrator
+	composer.WorkflowEngineAPI
 	storage *utils.RedisDistributedTransactionStorage
 	clients []*ioredis.Client
 	logger  *slog.Logger
@@ -103,6 +104,7 @@ func NewWorkflowsModuleService(opts modulessdk.ServiceOptions, joinerConfig *joi
 	return &WorkflowsModuleService{
 		MedusaService:        utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig),
 		WorkflowOrchestrator: NewWorkflowOrchestrator(publisher, subscriber, logger),
+		WorkflowEngineAPI:    composer.WorkflowEngineAPI{EngineContainer: c},
 		storage:              storage,
 		clients:              []*ioredis.Client{connection, workerConnection, publisher, subscriber},
 		logger:               logger,

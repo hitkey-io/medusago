@@ -42,37 +42,9 @@ func layoutFilter(zone string, userID any) *dal.Record {
 	return f
 }
 
-// upsertLayoutConfiguration mirrors upsertLayoutConfiguration_: the
-// configuration JSON is replaced ({ widgets }), not merged.
+// upsertLayoutConfiguration mirrors upsertLayoutConfiguration_.
 func upsertLayoutConfiguration(ctx context.Context, svc *utilsmodulessdk.MedusaService, zone string, userID any, isDefault bool, configuration *dal.Record) (*dal.Record, error) {
-	existing, err := firstRow(ctx, svc, "LayoutConfiguration", layoutFilter(zone, userID), []string{"id"})
-	if err != nil {
-		return nil, err
-	}
-	widgets := any(dal.NewRecord())
-	if configuration != nil {
-		if w, ok := configuration.Get("widgets"); ok && w != nil {
-			widgets = w
-		}
-	}
-	normalized := dal.NewRecord()
-	normalized.Set("widgets", widgets)
-	payload := dal.NewRecord()
-	if existing != nil {
-		id, _ := existing.Get("id")
-		payload.Set("id", id)
-		payload.Set("configuration", normalized)
-	} else {
-		payload.Set("zone", zone)
-		payload.Set("user_id", userID)
-		payload.Set("is_system_default", isDefault)
-		payload.Set("configuration", normalized)
-	}
-	out, err := svc.Internal("LayoutConfiguration").UpsertWithReplace(ctx, []*dal.Record{payload}, nil)
-	if err != nil || len(out) == 0 {
-		return nil, err
-	}
-	return out[0], nil
+	return settingsservices.Of(svc).UpsertLayoutConfiguration(ctx, zone, userID, isDefault, configuration)
 }
 
 // setUserPreference mirrors setUserPreference.
@@ -82,29 +54,11 @@ func setUserPreference(ctx context.Context, svc *utilsmodulessdk.MedusaService, 
 
 // getActiveLayoutScope mirrors getActiveLayoutScope (nil when unset).
 func getActiveLayoutScope(ctx context.Context, svc *utilsmodulessdk.MedusaService, zone, userID string) (any, error) {
-	f := dal.NewRecord()
-	f.Set("user_id", userID)
-	f.Set("key", "active_layout."+zone)
-	pref, err := firstRow(ctx, svc, "UserPreference", f, nil)
-	if err != nil || pref == nil {
-		return nil, err
-	}
-	v, _ := pref.Get("value")
-	r, _ := v.(*dal.Record)
-	if r == nil {
-		return nil, nil
-	}
-	s, _ := r.Get("scope")
-	if s == "personal" || s == "default" {
-		return s, nil
-	}
-	return nil, nil
+	return settingsservices.Of(svc).GetActiveLayoutScope(ctx, zone, userID)
 }
 
 func setActiveLayoutScope(ctx context.Context, svc *utilsmodulessdk.MedusaService, zone, userID string, scope any) error {
-	v := dal.NewRecord()
-	v.Set("scope", scope)
-	return setUserPreference(ctx, svc, userID, "active_layout."+zone, v)
+	return settingsservices.Of(svc).SetActiveLayoutScope(ctx, zone, userID, scope)
 }
 
 // SetLayoutConfigurationStepInput mirrors SetLayoutConfigurationStepInput.
