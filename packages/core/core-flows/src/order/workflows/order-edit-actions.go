@@ -14,9 +14,9 @@ import (
 // of the order change action workflows (return, claim and exchange ids go
 // in OrderID as the entity id).
 type OrderChangeActionInput struct {
-	OrderID  any
-	ActionID any
-	Data     *dal.Record
+	OrderID  any         `json:"order_id"`
+	ActionID any         `json:"action_id"`
+	Data     *dal.Record `json:"data"`
 }
 
 // FindChangeAction returns the action of an order change by id.
@@ -120,6 +120,59 @@ var UpdateOrderEditAddItemWorkflow = composer.CreateWorkflow("update-order-edit-
 			if v != nil {
 				d.Set(k, v)
 			}
+		}
+		u.Set("details", d)
+		setIfPresent(u, in.Data, "internal_note")
+		if _, err := ordersteps.UpdateOrderChangeActionsStep.Run(e, []*dal.Record{u}); err != nil {
+			return nil, err
+		}
+		if err := computeAdjustments(e, order, orderChange); err != nil {
+			return nil, err
+		}
+		return ordersteps.PreviewOrderChangeStep.Run(e, fmt.Sprint(g(order, "id")))
+	}))
+
+var updateOrderEditItemQuantityValidationStep = composer.CreateStep("update-order-edit-update-quantity-validation",
+	func(ctx composer.StepExecutionContext, in editActionValidation) (composer.StepResponse[any], error) {
+		if err := throwIfIsCancelled(in.Order, "Order"); err != nil {
+			return composer.StepResponse[any]{}, err
+		}
+		err := editAction(in.OrderChange, in.Input, "No request to update item quantity for order %v in order change %v", func(act string) error {
+			if act != "ITEM_UPDATE" {
+				return fmt.Errorf("Action %v is not updating an item", in.Input.ActionID)
+			}
+			return nil
+		})
+		return composer.NewStepResponse[any](nil), err
+	}, nil)
+
+// UpdateOrderEditItemQuantityWorkflow mirrors updateOrderEditItemQuantityWorkflow
+// (update-order-edit-item-quantity.ts): an ITEM_UPDATE action of the active
+// order edit gets a new quantity. No route runs it (the item quantity route
+// runs orderEditUpdateItemQuantityWorkflow).
+var UpdateOrderEditItemQuantityWorkflow = composer.CreateWorkflow("update-order-edit-update-quantity", withOrderLock(func(in OrderChangeActionInput) any { return in.OrderID },
+	func(e *composer.Execution, in OrderChangeActionInput) (*dal.Record, error) {
+		order, err := queryOrderForEdit(e, "order-query", in.OrderID)
+		if err != nil {
+			return nil, err
+		}
+		orderChange, err := editActiveChange(e, in.OrderID, []string{"id", "status", "version", "actions.*"})
+		if err != nil {
+			return nil, err
+		}
+		if _, err := updateOrderEditItemQuantityValidationStep.Run(e, editActionValidation{order, orderChange, in}); err != nil {
+			return nil, err
+		}
+		original := rec(g(FindChangeAction(orderChange, in.ActionID), "details"))
+		u := dal.NewRecord()
+		u.Set("id", in.ActionID)
+		d := dal.NewRecord()
+		quantity := g(in.Data, "quantity")
+		if quantity == nil {
+			quantity = g(original, "quantity")
+		}
+		if quantity != nil {
+			d.Set("quantity", quantity)
 		}
 		u.Set("details", d)
 		setIfPresent(u, in.Data, "internal_note")

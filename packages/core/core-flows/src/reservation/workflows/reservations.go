@@ -49,3 +49,23 @@ var DeleteReservationsWorkflow = composer.CreateWorkflow("delete-reservations",
 		_, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "reservation-item.deleted", Data: idEvents(ids)})
 		return nil, err
 	})
+
+// DeleteReservationsByLineItemsInput mirrors
+// DeleteReservationByLineItemsWorkflowInput.
+type DeleteReservationsByLineItemsInput struct {
+	IDs []any `json:"ids"`
+}
+
+// DeleteReservationsByLineItemsWorkflow mirrors
+// deleteReservationsByLineItemsWorkflow: the reservations of the line items
+// are deleted and reservation-item.deleted is emitted for them. No route
+// runs it.
+var DeleteReservationsByLineItemsWorkflow = composer.CreateWorkflow("delete-reservations-by-line-items",
+	func(e *composer.Execution, input DeleteReservationsByLineItemsInput) (any, error) {
+		deleted, err := steps.DeleteReservationsByLineItemsStep.Run(e, input.IDs)
+		if err != nil {
+			return nil, err
+		}
+		_, err = commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "reservation-item.deleted", Data: idEvents(deleted)})
+		return nil, err
+	})

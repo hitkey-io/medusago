@@ -130,6 +130,39 @@ var DeclineOrderChangeStep = composer.CreateStep("decline-order-change",
 		return err
 	})
 
+type canceler interface {
+	Internal(className string) *utilsmodulessdk.InternalService
+	CancelOrderChange(ctx context.Context, data []any) error
+}
+
+// CancelOrderChangeStep mirrors cancelOrderChangeStep: the order change is
+// read before it is canceled (the fields of the input, metadata as an
+// object field, plus the fields the cancel sets) and the compensation
+// writes it back (updateOrderChanges).
+var CancelOrderChangeStep = composer.CreateStep("cancel-order-change",
+	func(ctx composer.StepExecutionContext, data *dal.Record) (composer.StepResponse[any], error) {
+		svc, _ := ctx.Container.Resolve(utilsmodulessdk.ORDER).(canceler)
+		selects, relations := common.GetSelectsAndRelationsFromObjectArray([]common.ObjectLike{data}, common.SelectsAndRelationsOptions{ObjectFields: []string{"metadata"}}, "")
+		selects = append(selects, "order_id", "return_id", "claim_id", "exchange_id", "version", "canceled_at", "canceled_by")
+		before, err := svc.Internal("OrderChange").Retrieve(ctx.Context, get(data, "id"), utilsmodulessdk.FindConfig{Select: dedupe(selects), Relations: relations})
+		if err != nil {
+			return composer.StepResponse[any]{}, err
+		}
+		if err := svc.CancelOrderChange(ctx.Context, []any{data}); err != nil {
+			return composer.StepResponse[any]{}, err
+		}
+		return composer.NewStepResponse[any](nil, any(before)), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		before, _ := data.(*dal.Record)
+		if before == nil {
+			return nil
+		}
+		svc, _ := ctx.Container.Resolve(utilsmodulessdk.ORDER).(canceler)
+		_, err := svc.Internal("OrderChange").Update(ctx.Context, before)
+		return err
+	})
+
 // dedupe mirrors deduplicate (first occurrence kept).
 func dedupe(values []string) []string {
 	seen := map[string]bool{}

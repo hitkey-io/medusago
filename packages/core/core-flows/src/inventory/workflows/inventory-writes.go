@@ -92,10 +92,41 @@ var validateInventoryLevelsDelete = composer.CreateStep("validate-inventory-leve
 		return composer.NewStepResponse[any](nil), nil
 	}, nil)
 
-// DeleteInventoryLevelsInput mirrors DeleteInventoryLevelsWorkflowInput.
+// DeleteInventoryLevelsInput mirrors DeleteInventoryLevelsWorkflowInput:
+// the inventory level filters with an optional force flag, in one object.
 type DeleteInventoryLevelsInput struct {
 	Filters *dal.Record
 	Force   bool
+}
+
+// MarshalJSON serializes the input like upstream: the filters spread, then
+// force when set.
+func (in DeleteInventoryLevelsInput) MarshalJSON() ([]byte, error) {
+	r := dal.NewRecord()
+	if in.Filters != nil {
+		for _, k := range in.Filters.Keys() {
+			v, _ := in.Filters.Get(k)
+			r.Set(k, v)
+		}
+	}
+	if in.Force {
+		r.Set("force", true)
+	}
+	return r.MarshalJSON()
+}
+
+// DecodeInput reads the upstream shape ({ ...filters, force }).
+func (in *DeleteInventoryLevelsInput) DecodeInput(r *dal.Record) error {
+	in.Filters = dal.NewRecord()
+	for _, k := range r.Keys() {
+		v, _ := r.Get(k)
+		if k == "force" {
+			in.Force, _ = v.(bool)
+			continue
+		}
+		in.Filters.Set(k, v)
+	}
+	return nil
 }
 
 // DeleteInventoryLevelsWorkflow mirrors deleteInventoryLevelsWorkflow.

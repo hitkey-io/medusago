@@ -3,6 +3,7 @@ package steps
 import (
 	"context"
 
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -138,8 +139,51 @@ var ListOrderChangeActionsByTypeStep = composer.CreateStep("list-order-change-ac
 // DeleteOrderChangeActionsStep mirrors deleteOrderChangeActionsStep.
 var DeleteOrderChangeActionsStep = softDeleteStep("delete-order-change-actions", "OrderChangeAction")
 
-// UpdateOrderChangeActionsStep mirrors updateOrderChangeActionsStep.
-var UpdateOrderChangeActionsStep = updateEntitiesStep("update-order-change-actions", "OrderChangeAction", "OrderChangeActions")
+// UpdateOrderChangeActionsStep mirrors updateOrderChangeActionsStep: the
+// actions are read before the update (the fields of the input, metadata and
+// details as object fields, plus their order/return/claim/exchange ids,
+// version and order change id) and the compensation writes them back.
+var UpdateOrderChangeActionsStep = composer.CreateStep("update-order-change-actions",
+	func(ctx composer.StepExecutionContext, data []*dal.Record) (composer.StepResponse[[]*dal.Record], error) {
+		if len(data) == 0 {
+			return composer.NewStepResponse([]*dal.Record{}, any([]*dal.Record{})), nil
+		}
+		svc := returnsOf(ctx.Container)
+		objs := make([]common.ObjectLike, len(data))
+		for i, d := range data {
+			objs[i] = d
+		}
+		selects, relations := common.GetSelectsAndRelationsFromObjectArray(objs, common.SelectsAndRelationsOptions{ObjectFields: []string{"metadata", "details"}}, "")
+		selects = append(selects, "order_id", "return_id", "claim_id", "exchange_id", "version", "order_change_id")
+		f := dal.NewRecord()
+		f.Set("id", ids(data))
+		before, err := svc.Internal("OrderChangeAction").List(ctx.Context, f, utilsmodulessdk.FindConfig{Select: dedupe(selects), Relations: relations})
+		if err != nil {
+			return composer.StepResponse[[]*dal.Record]{}, err
+		}
+		in := make([]any, len(data))
+		for i, d := range data {
+			in[i] = d
+		}
+		res, err := svc.Internal("OrderChangeAction").Update(ctx.Context, in)
+		if err != nil {
+			return composer.StepResponse[[]*dal.Record]{}, err
+		}
+		updated, _ := res.([]*dal.Record)
+		return composer.NewStepResponse(updated, any(before)), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		before, _ := data.([]*dal.Record)
+		if len(before) == 0 {
+			return nil
+		}
+		in := make([]any, len(before))
+		for i, d := range before {
+			in[i] = d
+		}
+		_, err := returnsOf(ctx.Container).Internal("OrderChangeAction").Update(ctx.Context, in)
+		return err
+	})
 
 // UpdateOrderShippingMethodsStep mirrors updateOrderShippingMethodsStep.
 var UpdateOrderShippingMethodsStep = updateEntitiesStep("update-order-shopping-methods", "OrderShippingMethod", "OrderShippingMethods")

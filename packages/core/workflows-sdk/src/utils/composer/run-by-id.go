@@ -54,6 +54,12 @@ func DecodeInput(in any, out any) error {
 
 var recordPtrType = reflect.TypeOf((*dal.Record)(nil))
 
+// InputDecoder is implemented by workflow input types whose JSON shape is
+// not a plain mapping of their fields (e.g. filters spread with options).
+type InputDecoder interface {
+	DecodeInput(r *dal.Record) error
+}
+
 func normalizeName(s string) string {
 	return strings.ToLower(strings.ReplaceAll(s, "_", ""))
 }
@@ -120,6 +126,11 @@ func decodeInto(in any, dst reflect.Value) error {
 		r, ok := in.(*dal.Record)
 		if !ok {
 			return fmt.Errorf("expected an object, got %T", in)
+		}
+		if dst.CanAddr() {
+			if d, ok := dst.Addr().Interface().(InputDecoder); ok {
+				return d.DecodeInput(r)
+			}
 		}
 		return decodeStruct(r, dst)
 	case reflect.String:
