@@ -46,8 +46,51 @@ func randomHex(n int) string {
 	return hex.EncodeToString(b)
 }
 
+// redactKey mirrors redactKey (String.substring clamps its bounds).
 func redactKey(key string) string {
-	return key[:6] + "***" + key[len(key)-3:]
+	head := key
+	if len(head) > 6 {
+		head = head[:6]
+	}
+	tail := ""
+	if len(key) > 3 {
+		tail = key[len(key)-3:]
+	} else {
+		tail = key
+	}
+	return head + "***" + tail
+}
+
+// Authenticate mirrors authenticate: the unrevoked secret keys (revoked_at
+// unset or in the future) with the token's redacted form are hashed with
+// their salt; the first one matching the token is returned (nil when none,
+// upstream false).
+func (s *ApiKeyModuleService) Authenticate(ctx context.Context, tok string) (*dal.Record, error) {
+	now := dal.NewRecord()
+	now.Set("$gt", time.Now())
+	notRevoked := dal.NewRecord()
+	notRevoked.Set("revoked_at", nil)
+	revokedLater := dal.NewRecord()
+	revokedLater.Set("revoked_at", now)
+	f := dal.NewRecord()
+	f.Set("type", "secret")
+	f.Set("redacted", redactKey(tok))
+	f.Set("$or", []any{notRevoked, revokedLater})
+	keys, err := s.Internal("ApiKey").List(ctx, f, utilsmodulessdk.FindConfig{})
+	if err != nil {
+		return nil, err
+	}
+	for _, k := range keys {
+		salt, _ := get(k, "salt").(string)
+		hashed, err := CalculateHash(tok, salt)
+		if err != nil {
+			return nil, err
+		}
+		if hashed == get(k, "token") {
+			return k, nil
+		}
+	}
+	return nil, nil
 }
 
 func generatePublishableKey() token {
