@@ -220,6 +220,24 @@ func dropPath(v any, parts []string) {
 }
 
 // sortUnordered sorts the listed body arrays by their JSON encoding.
+// sortAgain sorts the normalized response once more: items the first pass
+// could not tell apart (same content, ids already seen in the scenario) are
+// ordered by their placeholders.
+func sortAgain(rec any, s Step) any {
+	return sortByField(sortUnordered(rec, s.Unordered), s.SortBy)
+}
+
+// generatedIDRe matches entity ids (prefix_ULID) and bare ULIDs.
+var generatedIDRe = regexp.MustCompile(`[a-z_]*01[0-9A-HJKMNP-TV-Z]{24}`)
+
+// orderKey is the content of an array item with its ids masked: items
+// upstream returns in random order are ordered by what they contain, not by
+// the ids generated in the run (placeholders follow that order).
+func orderKey(item any) string {
+	raw, _ := dal.MarshalValue(item)
+	return generatedIDRe.ReplaceAllString(string(raw), "<id>")
+}
+
 func sortUnordered(rec any, keys []string) any {
 	r, ok := rec.(*dal.Record)
 	if !ok || len(keys) == 0 {
@@ -238,9 +256,7 @@ func sortUnordered(rec any, keys []string) any {
 		}
 		sorted := append([]any{}, arr...)
 		sort.SliceStable(sorted, func(i, j int) bool {
-			a, _ := dal.MarshalValue(sorted[i])
-			c, _ := dal.MarshalValue(sorted[j])
-			return string(a) < string(c)
+			return orderKey(sorted[i]) < orderKey(sorted[j])
 		})
 		b.Set(k, sorted)
 	}
@@ -249,6 +265,8 @@ func sortUnordered(rec any, keys []string) any {
 
 // sortByField sorts the listed body arrays by the string form of an item
 // field.
+// sortByField sorts the arrays at the keys' dotted paths by the item field,
+// equal fields by their id-masked content (orderKey).
 func sortByField(rec any, keys map[string]string) any {
 	r, ok := rec.(*dal.Record)
 	if !ok || len(keys) == 0 {
@@ -296,7 +314,13 @@ func sortAtPath(r *dal.Record, path []string, field string) {
 		}
 		return ""
 	}
-	sort.SliceStable(sorted, func(i, j int) bool { return key(sorted[i]) < key(sorted[j]) })
+	sort.SliceStable(sorted, func(i, j int) bool {
+		ki, kj := key(sorted[i]), key(sorted[j])
+		if ki != kj {
+			return ki < kj
+		}
+		return orderKey(sorted[i]) < orderKey(sorted[j])
+	})
 	r.Set(path[0], sorted)
 }
 
@@ -1092,8 +1116,8 @@ func matchScenario(t *testing.T, file string) {
 	wantP, gotP := newPlaceholders(), newPlaceholders()
 	for _, s := range steps {
 		want, _ := golden.Get(s.Name)
-		w := pretty(wantP.normalize(sortByField(sortUnordered(dropIgnored(want, s.Ignore), s.Unordered), s.SortBy)))
-		g := pretty(gotP.normalize(sortByField(sortUnordered(dropIgnored(asRecord(results[s.Name]), s.Ignore), s.Unordered), s.SortBy)))
+		w := pretty(sortAgain(wantP.normalize(sortByField(sortUnordered(dropIgnored(want, s.Ignore), s.Unordered), s.SortBy)), s))
+		g := pretty(sortAgain(gotP.normalize(sortByField(sortUnordered(dropIgnored(asRecord(results[s.Name]), s.Ignore), s.Unordered), s.SortBy)), s))
 		if w != g {
 			t.Errorf("%s: mismatch\n--- want\n%s\n--- got\n%s", s.Name, w, g)
 		}
