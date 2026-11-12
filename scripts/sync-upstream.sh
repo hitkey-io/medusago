@@ -53,6 +53,7 @@ FRONTEND_PATHS=(
   packages/core/js-sdk
   packages/core/types
   packages/eslint-plugin
+  packages/plugins/draft-order
 )
 
 # Root files of the JavaScript workspace. turbo.json is maintained here: the
@@ -77,7 +78,7 @@ if [[ "$INCLUDE_ENTERPRISE" -eq 1 ]]; then
 fi
 
 # Go files placed next to the original sources are never touched.
-EXCLUDES=(--filter 'P *.go' --exclude node_modules --exclude dist --exclude .turbo --exclude '*.tsbuildinfo')
+EXCLUDES=(--filter 'P *.go' --exclude node_modules --exclude dist --exclude .turbo --exclude .medusa --exclude '*.tsbuildinfo')
 
 if [[ "$INCLUDE_ENTERPRISE" -eq 0 ]]; then
   # "- `path`" bullet lines of ENTERPRISE-LICENSE.md.
