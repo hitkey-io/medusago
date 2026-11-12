@@ -32,9 +32,19 @@ func AdminLoader(app *medusahttp.App, cfg config.ConfigModule, rootDirectory str
 	if slices.Contains(notAllowedAdminPaths, admin.Path) {
 		logger.Error(fmt.Sprintf("The 'admin.path' in 'medusa-config.js' is set to a value that is not allowed. This can prevent your server from working correctly. Please set 'admin.path' to a value that is not one of the following: %s.", strings.Join(notAllowedAdminPaths, ", ")))
 	}
+	// the dashboard of the configured plugins (an optional plugin with an
+	// admin extension has its own build)
+	var names []string
+	for _, p := range cfg.Plugins {
+		names = append(names, p.Resolve)
+	}
+	fallback, err := dashboardbundle.AppFor(names)
+	if err != nil {
+		return err
+	}
 	mw, err := bundler.Serve(bundler.ServeOptions{
 		OutDir:   filepath.Join(rootDirectory, utils.ADMIN_RELATIVE_OUTPUT_DIR),
-		Fallback: dashboardbundle.App(),
+		Fallback: fallback,
 		BundlerOptions: bundler.BundlerOptions{
 			Path:              admin.Path,
 			BackendURL:        admin.BackendURL,

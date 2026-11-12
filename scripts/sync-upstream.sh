@@ -54,6 +54,7 @@ FRONTEND_PATHS=(
   packages/core/types
   packages/eslint-plugin
   packages/plugins/draft-order
+  packages/plugins/loyalty
 )
 
 # Root files of the JavaScript workspace. turbo.json is maintained here: the
