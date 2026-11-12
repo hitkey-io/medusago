@@ -110,7 +110,7 @@ type journal struct {
 	state      string
 	// cancelledAt is set by cancelTransaction (flow.cancelledAt)
 	cancelledAt int64
-	version    int
+	version     int
 	// rev counts the changes (persistIfChanged)
 	rev int
 	// events receives the run's notifications (nil: not notified).
