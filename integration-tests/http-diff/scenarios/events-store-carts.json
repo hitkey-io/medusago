@@ -46,5 +46,11 @@
   {"name": "events_reset__create_usd", "method": "POST", "path": "/events-capture", "body": {}},
   {"name": "create_too_many", "method": "POST", "path": "/store/carts", "headers": {"x-publishable-api-key": "{{pk.api_key.token}}"}, "body": {"region_id": "{{regions.regions.0.id}}", "items": [{"variant_id": "{{products.products.1.variants.0.id}}", "quantity": 1000}]}},
   {"name": "events__create_too_many", "method": "GET", "path": "/events-capture"},
-  {"name": "events_reset__create_too_many", "method": "POST", "path": "/events-capture", "body": {}}
+  {"name": "events_reset__create_too_many", "method": "POST", "path": "/events-capture", "body": {}},
+  {"name": "update_region", "method": "POST", "path": "/store/carts/{{create_usd.cart.id}}?fields=id,currency_code,region_id", "headers": {"x-publishable-api-key": "{{pk.api_key.token}}"}, "body": {"region_id": "{{regions.regions.0.id}}"}},
+  {"name": "events__update_region", "method": "GET", "path": "/events-capture"},
+  {"name": "events_reset__update_region", "method": "POST", "path": "/events-capture", "body": {}},
+  {"name": "update_same_region", "method": "POST", "path": "/store/carts/{{create_usd.cart.id}}?fields=id,region_id", "headers": {"x-publishable-api-key": "{{pk.api_key.token}}"}, "body": {"region_id": "{{regions.regions.0.id}}"}},
+  {"name": "events__update_same_region", "method": "GET", "path": "/events-capture"},
+  {"name": "events_reset__update_same_region", "method": "POST", "path": "/events-capture", "body": {}}
 ]

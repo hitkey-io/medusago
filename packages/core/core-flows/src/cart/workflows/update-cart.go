@@ -258,6 +258,14 @@ var UpdateCartWorkflow = composer.CreateWorkflow("update-cart",
 		if l, ok := Get(input, "locale").(string); ok && Has(input, "locale") && l != Str(cartToUpdate, "locale") {
 			newLocale = l
 		}
+		// when("should-emit-region-updated"): CartWorkflowEvents.REGION_UPDATED
+		if regionUpdated {
+			ev := dal.NewRecord()
+			ev.Set("id", id)
+			if _, err := commonsteps.EmitEventStep.Config("emit-region-updated", composer.StepOptions{}).Run(e, commonsteps.EmitEventStepInput{EventName: "cart.region_updated", Data: ev}); err != nil {
+				return nil, err
+			}
+		}
 		err = composer.Parallelize(
 			func() error {
 				ev := dal.NewRecord()
