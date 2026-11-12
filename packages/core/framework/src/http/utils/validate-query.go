@@ -32,9 +32,12 @@ func normalizeQuery(q *dal.Record) (*dal.Record, error) {
 		if strings.Contains(key, ".") {
 			segs := strings.Split(key, ".")
 			if len(segs) > 2 {
-				return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_ARGUMENT, fmt.Sprintf("Key accessor more than 2 levels deep: %s", key))
+				return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, fmt.Sprintf("Key accessor more than 2 levels deep: %s", key))
 			}
 			parent, child := segs[0], segs[1]
+			if common.IsUnsafePathSegment(parent) || common.IsUnsafePathSegment(child) {
+				return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, fmt.Sprintf("Invalid query parameter key: %s", key))
+			}
 			cur, _ := acc.Get(parent)
 			obj := dal.NewRecord()
 			if r, ok := cur.(*dal.Record); ok {

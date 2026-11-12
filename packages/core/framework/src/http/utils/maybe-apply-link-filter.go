@@ -6,6 +6,7 @@ import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
@@ -85,6 +86,9 @@ func transformFilterableFields(ff *dal.Record) *dal.Record {
 	for _, key := range ff.Keys() {
 		value, _ := ff.Get(key)
 		parts := strings.Split(key, ".")
+		if common.HasUnsafePathSegment(parts) {
+			continue
+		}
 		cur := result
 		for i, part := range parts {
 			if i == len(parts)-1 {

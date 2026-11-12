@@ -7,6 +7,7 @@ import (
 
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	typesjoiner "github.com/hitkey-io/medusago/packages/core/types/src/joiner"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
@@ -125,6 +126,9 @@ func ToRemoteQuery(in GraphInput, joinerConfigs []*typesjoiner.ModuleJoinerConfi
 			continue
 		}
 		segments := strings.Split(field, ".")
+		if common.HasUnsafePathSegment(segments) {
+			continue
+		}
 		prop := segments[len(segments)-1]
 		ref := entry
 		for _, seg := range segments[:len(segments)-1] {

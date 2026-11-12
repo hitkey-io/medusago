@@ -78,7 +78,7 @@ func ParseFields(fields *string, defaults []string) ParsedFields {
 	if fields != nil {
 		var custom []string
 		for _, f := range strings.Split(*fields, ",") {
-			if f != "" {
+			if f != "" && !common.HasUnsafePathSegment(strings.Split(stripModifier(f), ".")) {
 				custom = append(custom, f)
 			}
 		}
@@ -195,10 +195,8 @@ func StringToSelectRelationObject(fields []string) (selectFields, relations []st
 func BuildOrder(field, direction string) *dal.Record {
 	out := dal.NewRecord()
 	segs := strings.Split(field, ".")
-	for _, s := range segs {
-		if s == "__proto__" || s == "constructor" || s == "prototype" {
-			return out
-		}
+	if common.HasUnsafePathSegment(segs) {
+		return out
 	}
 	parent := out
 	for len(segs) > 1 {

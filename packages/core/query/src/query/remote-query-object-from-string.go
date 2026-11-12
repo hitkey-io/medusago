@@ -3,6 +3,7 @@ package query
 import (
 	"strings"
 
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
@@ -43,6 +44,10 @@ func RemoteQueryObjectFromString(c RemoteQueryObjectConfig) *dal.Record {
 			continue
 		}
 		segs := strings.Split(field, ".")
+		// Guard against prototype pollution through unsafe path segments
+		if common.HasUnsafePathSegment(segs) {
+			continue
+		}
 		prop := segs[len(segs)-1]
 		ref := entry
 		combined := ""
