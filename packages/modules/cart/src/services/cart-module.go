@@ -207,6 +207,18 @@ func (s *CartModuleService) CreateCarts(ctx context.Context, data []*dal.Record)
 		for _, id := range ids {
 			for _, c := range full {
 				if get(c, "id") == id {
+					// the list returns the carts created in the same entity
+					// manager: their collections are initialized empty (the
+					// line items were created separately) and their shadow
+					// foreign keys assigned
+					for _, k := range []string{"items", "credit_lines", "shipping_methods"} {
+						c.Set(k, []any{})
+					}
+					for _, k := range []string{"shipping_address_id", "billing_address_id"} {
+						if !c.Has(k) {
+							c.Set(k, nil)
+						}
+					}
 					out = append(out, c)
 				}
 			}
