@@ -59,7 +59,7 @@ var ValidateCartShippingOptionsPriceStep = composer.CreateStep("validate-cart-sh
 	}, nil)
 
 // RemoveShippingMethodFromCartStep mirrors removeShippingMethodFromCartStep.
-var RemoveShippingMethodFromCartStep = composer.CreateStep("remove-shipping-method",
+var RemoveShippingMethodFromCartStep = composer.CreateStep("remove-shipping-method-to-cart-step",
 	func(ctx composer.StepExecutionContext, ids []any) (composer.StepResponse[any], error) {
 		if len(ids) == 0 {
 			return composer.NewStepResponse[any](nil, any([]any{})), nil

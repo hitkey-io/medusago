@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
+	lockingsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/locking/steps"
 	paymentsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/payment/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	paymenttypes "github.com/hitkey-io/medusago/packages/core/types/src/payment"
@@ -30,8 +31,7 @@ func truthy(v any) bool {
 
 // ProcessPaymentWorkflow mirrors processPaymentWorkflow: a webhook action
 // (WebhookActionResult) captures the payment, authorizes the session or
-// completes the cart. The lock steps are not run (the locking module is not
-// ported).
+// completes the cart, holding the cart's lock while it changes the payment.
 var ProcessPaymentWorkflow = composer.CreateWorkflow(ProcessPaymentWorkflowID,
 	func(e *composer.Execution, input *dal.Record) (any, error) {
 		data := asRec(g(input, "data"))
@@ -80,11 +80,19 @@ var ProcessPaymentWorkflow = composer.CreateWorkflow(ProcessPaymentWorkflowID,
 		hasSession := truthy(sessionID)
 		sid, _ := sessionID.(string)
 
+		// when("lock-cart-when-available")
+		cartKey, _ := cartID.(string)
+		if cartKey != "" {
+			if _, err := lockingsteps.AcquireLockStep.Run(e, lockingsteps.AcquireLockStepInput{Key: lockingsteps.Key(cartKey), Timeout: 30, TTL: 120}); err != nil {
+				return nil, err
+			}
+		}
+
 		if hasSession && action == paymenttypes.ActionSuccessful && len(paymentData) > 0 {
 			c := dal.NewRecord()
 			c.Set("payment_id", g(paymentData[0], "id"))
 			c.Set("amount", amount)
-			if _, err := CapturePaymentWorkflow.RunAsStep(e, c); err != nil {
+			if _, err := CapturePaymentWorkflow.RunAsStepNamed(e, "capture-payment", c); err != nil {
 				return nil, err
 			}
 		}
@@ -100,7 +108,7 @@ var ProcessPaymentWorkflow = composer.CreateWorkflow(ProcessPaymentWorkflowID,
 				c := dal.NewRecord()
 				c.Set("payment_id", g(autocapturePayment, "id"))
 				c.Set("amount", amount)
-				if _, err := CapturePaymentWorkflow.RunAsStep(e, c); err != nil {
+				if _, err := CapturePaymentWorkflow.RunAsStepNamed(e, "capture-payment-autocapture", c); err != nil {
 					return nil, err
 				}
 			}
@@ -119,6 +127,14 @@ var ProcessPaymentWorkflow = composer.CreateWorkflow(ProcessPaymentWorkflowID,
 		if order != nil && len(paymentData) == 0 && len(cartPaymentCollection) > 0 && action == paymenttypes.ActionAuthorized && hasSession {
 			if _, err := paymentsteps.AuthorizePaymentSessionStep.Config("authorize-payment-session-deferred", composer.StepOptions{}).
 				Run(e, paymentsteps.AuthorizePaymentSessionStepInput{ID: sid, Context: dal.NewRecord()}); err != nil {
+				return nil, err
+			}
+		}
+
+		// when("release-lock-cart-when-available"): released before the
+		// completion to prevent dead locks
+		if cartKey != "" {
+			if _, err := lockingsteps.ReleaseLockStep.Run(e, lockingsteps.ReleaseLockStepInput{Key: lockingsteps.Key(cartKey)}); err != nil {
 				return nil, err
 			}
 		}

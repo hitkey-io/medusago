@@ -126,7 +126,7 @@ var RefreshExchangeShippingWorkflow = composer.CreateWorkflow("refresh-exchange-
 			args.Set("order_id", g(orderChange, "order_id"))
 			args.Set("action_id", g(inbound, "id"))
 			args.Set("context", c)
-			if _, err := MaybeRefreshShippingMethodsWorkflow.RunAsStep(e, args); err != nil {
+			if _, err := MaybeRefreshShippingMethodsWorkflow.RunAsStepNamed(e, "refresh-inbound-shipping-method", args); err != nil {
 				return nil, err
 			}
 		}
@@ -139,7 +139,7 @@ var RefreshExchangeShippingWorkflow = composer.CreateWorkflow("refresh-exchange-
 			args.Set("order_id", g(orderChange, "order_id"))
 			args.Set("action_id", g(outbound, "id"))
 			args.Set("context", c)
-			if _, err := MaybeRefreshShippingMethodsWorkflow.RunAsStep(e, args); err != nil {
+			if _, err := MaybeRefreshShippingMethodsWorkflow.RunAsStepNamed(e, "refresh-outbound-shipping-method", args); err != nil {
 				return nil, err
 			}
 		}

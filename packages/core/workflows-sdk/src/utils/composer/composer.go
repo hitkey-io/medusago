@@ -668,8 +668,17 @@ func (w *Workflow[I, O]) execute(e *Execution, input I) (O, error) {
 // WorkflowResult upstream stores. The nested run is compensated as a unit
 // when the parent fails.
 func (w *Workflow[I, O]) RunAsStep(parent *Execution, input I) (O, error) {
+	return w.RunAsStepNamed(parent, "", input)
+}
+
+// RunAsStepNamed mirrors workflow.runAsStep({ input }).config({ name }): the
+// parent step (and the nested transaction id) is named after the configured
+// name; "" keeps "<id>-as-step".
+func (w *Workflow[I, O]) RunAsStepNamed(parent *Execution, name string, input I) (O, error) {
 	var zero O
-	name := w.ID + "-as-step"
+	if name == "" {
+		name = w.ID + "-as-step"
+	}
 	async := false
 	if n := findFlowNode(flowDefinition(parent.workflowID), name); n != nil {
 		async = fieldBool(n.fields, "async")

@@ -142,7 +142,7 @@ var ComputeDraftOrderAdjustmentsWorkflow = composer.CreateWorkflow("compute-draf
 			for _, item := range recs(g(previewed, "items")) {
 				actions = append(actions, replaceAction(item, []any{}))
 			}
-			if _, err := orderworkflows.CreateOrderChangeActionsWorkflow.RunAsStep(e, actions); err != nil {
+			if _, err := orderworkflows.CreateOrderChangeActionsWorkflow.RunAsStepNamed(e, "order-change-action-adjustments-input-remove", actions); err != nil {
 				return nil, err
 			}
 		}
@@ -169,7 +169,7 @@ var ComputeDraftOrderAdjustmentsWorkflow = composer.CreateWorkflow("compute-draf
 				}
 				changeActions = append(changeActions, replaceAction(item, adjustments))
 			}
-			if _, err := orderworkflows.CreateOrderChangeActionsWorkflow.RunAsStep(e, changeActions); err != nil {
+			if _, err := orderworkflows.CreateOrderChangeActionsWorkflow.RunAsStepNamed(e, "order-change-action-adjustments-input", changeActions); err != nil {
 				return nil, err
 			}
 		}

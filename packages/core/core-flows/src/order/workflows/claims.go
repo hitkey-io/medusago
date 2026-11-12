@@ -144,7 +144,7 @@ func carryOverPromotions(e *composer.Execution, order, orderChange, previewed, a
 	if input == nil {
 		input = []*dal.Record{}
 	}
-	_, err = CreateOrderChangeActionsWorkflow.RunAsStep(e, input)
+	_, err = CreateOrderChangeActionsWorkflow.RunAsStepNamed(e, "order-change-action-adjustments-input", input)
 	return err
 }
 
@@ -666,7 +666,7 @@ var RefreshClaimShippingWorkflow = composer.CreateWorkflow("refresh-claim-shippi
 			args.Set("order_id", g(orderChange, "order_id"))
 			args.Set("action_id", g(inbound, "id"))
 			args.Set("context", c)
-			if _, err := MaybeRefreshShippingMethodsWorkflow.RunAsStep(e, args); err != nil {
+			if _, err := MaybeRefreshShippingMethodsWorkflow.RunAsStepNamed(e, "refresh-inbound-shipping-method", args); err != nil {
 				return nil, err
 			}
 		}
@@ -679,7 +679,7 @@ var RefreshClaimShippingWorkflow = composer.CreateWorkflow("refresh-claim-shippi
 			args.Set("order_id", g(orderChange, "order_id"))
 			args.Set("action_id", g(outbound, "id"))
 			args.Set("context", c)
-			if _, err := MaybeRefreshShippingMethodsWorkflow.RunAsStep(e, args); err != nil {
+			if _, err := MaybeRefreshShippingMethodsWorkflow.RunAsStepNamed(e, "refresh-outbound-shipping-method", args); err != nil {
 				return nil, err
 			}
 		}
