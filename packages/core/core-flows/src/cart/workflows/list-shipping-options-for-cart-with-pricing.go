@@ -84,12 +84,20 @@ var ListShippingOptionsForCartWithPricingWorkflow = composer.CreateWorkflow("lis
 		locationOf := map[any]*dal.Record{}
 		if list := Records(scRes.Data); len(list) > 0 {
 			for _, sl := range Records(Get(list[0], "stock_locations")) {
+				// const { fulfillment_sets, ...location } = stockLocation
+				location := dal.NewRecord()
+				for _, k := range sl.Keys() {
+					if k != "fulfillment_sets" {
+						v, _ := sl.Get(k)
+						location.Set(k, v)
+					}
+				}
 				for _, fs := range Records(Get(sl, "fulfillment_sets")) {
 					id := Get(fs, "id")
 					if _, ok := locationOf[id]; !ok {
 						setIDs = append(setIDs, id)
 					}
-					locationOf[id] = sl
+					locationOf[id] = location
 				}
 			}
 		}

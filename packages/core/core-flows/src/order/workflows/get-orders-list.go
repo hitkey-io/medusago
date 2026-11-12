@@ -43,8 +43,11 @@ func GetOrdersList(ctx context.Context, q *query.Query, in GetOrdersListInput) (
 	if err != nil {
 		return nil, err
 	}
-	requiredPayment, requiredFulfillment := false, false
+	requiredPayment, requiredFulfillment, requiredItems := false, false, false
 	for _, f := range in.Fields {
+		if field := strings.TrimPrefix(f, "*"); field == "items" || strings.HasPrefix(field, "items.") {
+			requiredItems = true
+		}
 		if strings.Contains(f, "payment_collections") {
 			requiredPayment = true
 		}
@@ -64,6 +67,9 @@ func GetOrdersList(ctx context.Context, q *query.Query, in GetOrdersListInput) (
 		}
 		if !requiredFulfillment {
 			order.Delete("fulfillments")
+		}
+		if !requiredItems {
+			order.Delete("items")
 		}
 	}
 	return res, nil
