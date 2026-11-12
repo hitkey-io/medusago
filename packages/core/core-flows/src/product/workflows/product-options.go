@@ -136,16 +136,20 @@ var CreateAndLinkProductOptionsToProductWorkflow = composer.CreateWorkflow("crea
 				}
 			}
 		}
-		var createdIDs []any
-		if len(toCreate) > 0 {
+		createdIDs, err := composer.When(e, "creating-product-options", len(toCreate) > 0, func() ([]any, error) {
 			created, err := steps.CreateProductOptionsStep.Run(e, toCreate)
 			if err != nil {
 				return nil, err
 			}
+			ids := []any{}
 			for _, c := range created {
 				id, _ := c.Get("id")
-				createdIDs = append(createdIDs, id)
+				ids = append(ids, id)
 			}
+			return ids, nil
+		})
+		if err != nil {
+			return nil, err
 		}
 		var add []services.ProductOptionProductPair
 		for _, id := range toAdd {

@@ -38,6 +38,12 @@ var AddShippingMethodToCartWorkflow = composer.CreateWorkflow("add-shipping-meth
 		if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
 			return nil, err
 		}
+		validateIn := dal.NewRecord()
+		validateIn.Set("input", in)
+		validateIn.Set("cart", cart)
+		if err := composer.CreateHook(e, "validate", validateIn); err != nil {
+			return nil, err
+		}
 		var optionIDs []any
 		for _, o := range in.Options {
 			optionIDs = append(optionIDs, Get(o, "id"))

@@ -1,0 +1,127 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "events_types",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-types/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g1",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ]
+ },
+ {
+  "name": "run_types",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-types/run",
+  "body": {
+   "transaction_id": "sse-types-1",
+   "input": {
+    "product_types": [
+     {
+      "value": "sse-type-a"
+     }
+    ]
+   }
+  },
+  "parallel": "g1",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_types_dup",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-types/sse-types-2/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g2",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ]
+ },
+ {
+  "name": "run_types_dup",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-types/run",
+  "body": {
+   "transaction_id": "sse-types-2",
+   "input": {
+    "product_types": [
+     {
+      "value": "sse-type-a"
+     }
+    ]
+   }
+  },
+  "parallel": "g2",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_products",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-products/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g3",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ]
+ },
+ {
+  "name": "run_products",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-products/run",
+  "body": {
+   "transaction_id": "sse-products-1",
+   "input": {
+    "products": [
+     {
+      "title": "SSE Hoodie",
+      "options": [
+       {
+        "title": "Size",
+        "values": [
+         "S"
+        ]
+       }
+      ],
+      "variants": [
+       {
+        "title": "S",
+        "options": {
+         "Size": "S"
+        },
+        "prices": []
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "parallel": "g3",
+  "delay_ms": 1500
+ },
+ {
+  "name": "types",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/product-types?q=sse-type&fields=value"
+ }
+]

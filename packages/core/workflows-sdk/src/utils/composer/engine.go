@@ -62,6 +62,10 @@ func executionStore(c Container) ExecutionStore {
 // persistIfChanged persists the checkpoint when the journal changed since
 // the last persist.
 func (e *Execution) persistIfChanged(state string) {
+	if e.parentExec != nil {
+		e.parentExec.persistIfChanged(state)
+		return
+	}
 	e.journal.mu.Lock()
 	changed := e.journal.rev != e.persistedRev
 	e.journal.mu.Unlock()
@@ -72,6 +76,11 @@ func (e *Execution) persistIfChanged(state string) {
 
 // persist writes the current checkpoint (saveToDb).
 func (e *Execution) persist(state string) {
+	if e.parentExec != nil {
+		// a workflow run as a step: its parent holds the checkpoint
+		e.parentExec.persist(state)
+		return
+	}
 	store := executionStore(e.container)
 	if store == nil {
 		return

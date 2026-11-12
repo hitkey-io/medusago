@@ -292,7 +292,7 @@ func updateRelatedShippingWorkflow(name string, k relatedKind, validation *compo
 			hookIn.Set("order_"+k.word, entity)
 			hookIn.Set("order_change", orderChange)
 			hookIn.Set("additional_data", g(in.Data, "additional_data"))
-			if err := composer.CreateHook(e, "setPricingContext", hookIn); err != nil {
+			if _, err := composer.CreateHookWithResult(e, "setPricingContext", hookIn); err != nil {
 				return nil, err
 			}
 			var options []*dal.Record

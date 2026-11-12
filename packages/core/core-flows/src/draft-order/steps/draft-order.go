@@ -273,7 +273,7 @@ var RefreshDraftOrderAdjustmentsWorkflow = composer.CreateWorkflow("refresh-draf
 		hookIn.Set("order", in.Order)
 		hookIn.Set("promo_codes", in.PromoCodes)
 		hookIn.Set("action", in.Action)
-		if err := composer.CreateHook(e, "setPromotionContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setPromotionContext", hookIn); err != nil {
 			return nil, err
 		}
 		codes, err := cartsteps.GetPromotionCodesToApply.Run(e, cartsteps.PromotionCodesInput{Cart: in.Order, PromoCodes: in.PromoCodes, Action: in.Action})

@@ -144,7 +144,7 @@ var CreateOrderWorkflow = composer.CreateWorkflow("create-orders",
 		hookIn.Set("region", region)
 		hookIn.Set("customerData", customerData)
 		hookIn.Set("additional_data", g(input, "additional_data"))
-		if err := composer.CreateHook(e, "setPricingContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setPricingContext", hookIn); err != nil {
 			return nil, err
 		}
 		customerID := g(customerData.Customer, "id")

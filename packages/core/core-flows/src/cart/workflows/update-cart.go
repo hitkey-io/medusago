@@ -79,8 +79,8 @@ var prepareCartToUpdateStep = composer.CreateStep("prepare-cart-to-update",
 	}, nil)
 
 type cartsBefore struct {
-	carts     []*dal.Record
-	addresses []*dal.Record
+	Carts     []*dal.Record `json:"cartsBeforeUpdate"`
+	Addresses []*dal.Record `json:"addressesBeforeUpdate"`
 }
 
 // UpdateCartsStep mirrors updateCartsStep.
@@ -88,7 +88,7 @@ var UpdateCartsStep = composer.CreateStep("update-carts",
 	func(ctx composer.StepExecutionContext, data []*dal.Record) (composer.StepResponse[[]*dal.Record], error) {
 		svc := steps.CartOf(ctx.Container)
 		if len(data) == 0 {
-			return composer.NewStepResponse([]*dal.Record{}, any(cartsBefore{})), nil
+			return composer.NewStepResponse([]*dal.Record{}, any(cartsBefore{Carts: []*dal.Record{}, Addresses: []*dal.Record{}})), nil
 		}
 		var ids []any
 		for _, d := range data {
@@ -146,7 +146,7 @@ var UpdateCartsStep = composer.CreateStep("update-carts",
 		}
 		svc := steps.CartOf(ctx.Container)
 		var addrs []any
-		for _, a := range b.addresses {
+		for _, a := range b.Addresses {
 			addrs = append(addrs, a)
 		}
 		if len(addrs) > 0 {
@@ -155,7 +155,7 @@ var UpdateCartsStep = composer.CreateStep("update-carts",
 			}
 		}
 		var carts []any
-		for _, c := range b.carts {
+		for _, c := range b.Carts {
 			carts = append(carts, c)
 		}
 		if len(carts) == 0 {
@@ -203,8 +203,8 @@ var UpdateCartWorkflow = composer.CreateWorkflow("update-cart",
 		if _, err := steps.ValidateSalesChannelStep.Run(e, salesChannel); err != nil {
 			return nil, err
 		}
-		var newRegion *dal.Record
-		if rid := Str(input, "region_id"); rid != "" {
+		rid := Str(input, "region_id")
+		newRegion, err := composer.When(e, "should-fetch-region", rid != "", func() (*dal.Record, error) {
 			isList := false
 			f := dal.NewRecord()
 			f.Set("id", rid)
@@ -217,7 +217,11 @@ var UpdateCartWorkflow = composer.CreateWorkflow("update-cart",
 			if err != nil {
 				return nil, err
 			}
-			newRegion, _ = res.Data.(*dal.Record)
+			region, _ := res.Data.(*dal.Record)
+			return region, nil
+		})
+		if err != nil {
+			return nil, err
 		}
 		taxChanged := false
 		if next := Rec(input, "shipping_address"); next != nil {

@@ -40,12 +40,14 @@ func fetchCart(e *composer.Execution, name, id string, fields []string, throwIfN
 var UpdateTaxLinesWorkflow = composer.CreateWorkflow("update-tax-lines",
 	func(e *composer.Execution, in UpdateTaxLinesInput) (any, error) {
 		cart := in.Cart
+		fetched, err := composer.When(e, "should-fetch-cart", cart == nil, func() (*dal.Record, error) {
+			return fetchCart(e, "fetch-cart", in.CartID, updateTaxLinesCartFields, true)
+		})
+		if err != nil {
+			return nil, err
+		}
 		if cart == nil {
-			var err error
-			cart, err = fetchCart(e, "fetch-cart", in.CartID, updateTaxLinesCartFields, true)
-			if err != nil {
-				return nil, err
-			}
+			cart = fetched
 		}
 		if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
 			return nil, err
@@ -57,7 +59,7 @@ var UpdateTaxLinesWorkflow = composer.CreateWorkflow("update-tax-lines",
 		hookIn.Set("cart", cart)
 		hookIn.Set("items", Get(cart, "items"))
 		hookIn.Set("shipping_methods", Get(cart, "shipping_methods"))
-		if err := composer.CreateHook(e, "setTaxLineContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setTaxLineContext", hookIn); err != nil {
 			return nil, err
 		}
 		lines, err := taxsteps.GetItemTaxLinesStep.Run(e, taxsteps.GetItemTaxLinesInput{
@@ -99,14 +101,22 @@ var UpdateCartPromotionsWorkflow = composer.CreateWorkflow("update-cart-promotio
 			return nil, err
 		}
 		cart := in.Cart
+		fetched, err := composer.When(e, "should-fetch-cart", cart == nil, func() (*dal.Record, error) {
+			return fetchCart(e, "fetch-cart", in.CartID, CartFieldsForRefreshSteps, false)
+		})
+		if err != nil {
+			return nil, err
+		}
 		if cart == nil {
-			var err error
-			cart, err = fetchCart(e, "fetch-cart", in.CartID, CartFieldsForRefreshSteps, false)
-			if err != nil {
-				return nil, err
-			}
+			cart = fetched
 		}
 		if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
+			return nil, err
+		}
+		validateIn := dal.NewRecord()
+		validateIn.Set("input", in)
+		validateIn.Set("cart", cart)
+		if err := composer.CreateHook(e, "validate", validateIn); err != nil {
 			return nil, err
 		}
 		action := in.Action
@@ -117,11 +127,20 @@ var UpdateCartPromotionsWorkflow = composer.CreateWorkflow("update-cart-promotio
 		if codes == nil {
 			codes = []string{}
 		}
+		promotionIn := dal.NewRecord()
+		promotionIn.Set("cart", cart)
+		promotionIn.Set("action", action)
+		promotionIn.Set("promo_codes", codes)
+		promotionResult, err := composer.CreateHookWithResult(e, "setPromotionContext", promotionIn)
+		if err != nil {
+			return nil, err
+		}
+		additionalContext, _ := promotionResult.(*dal.Record)
 		toApply, err := steps.GetPromotionCodesToApply.Run(e, steps.PromotionCodesInput{Cart: cart, PromoCodes: codes, Action: action})
 		if err != nil {
 			return nil, err
 		}
-		actions, err := steps.GetActionsToComputeFromPromotionsStep.Run(e, steps.ActionsInput{ComputeActionContext: cart, PromotionCodesToApply: toApply})
+		actions, err := steps.GetActionsToComputeFromPromotionsStep.Run(e, steps.ActionsInput{ComputeActionContext: cart, PromotionCodesToApply: toApply, AdditionalPromotionContext: additionalContext})
 		if err != nil {
 			return nil, err
 		}
@@ -196,14 +215,14 @@ var RefreshPaymentCollectionForCartWorkflow = composer.CreateWorkflow("refresh-p
 			cartID = Str(in.Cart, "id")
 		}
 		cart := in.Cart
-		if shouldExecute {
-			fetched, err := fetchCart(e, "fetch-cart", cartID, []string{"id", "region_id", "currency_code", "total", "raw_total", "payment_collection.id", "payment_collection.raw_amount", "payment_collection.amount", "payment_collection.currency_code", "payment_collection.payment_sessions.id"}, true)
-			if err != nil {
-				return nil, err
-			}
-			if fetched != nil {
-				cart = fetched
-			}
+		fetched, err := composer.When(e, "should-fetch-cart", shouldExecute, func() (*dal.Record, error) {
+			return fetchCart(e, "fetch-cart", cartID, []string{"id", "region_id", "currency_code", "total", "raw_total", "payment_collection.id", "payment_collection.raw_amount", "payment_collection.amount", "payment_collection.currency_code", "payment_collection.payment_sessions.id"}, true)
+		})
+		if err != nil {
+			return nil, err
+		}
+		if fetched != nil {
+			cart = fetched
 		}
 		if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
 			return nil, err

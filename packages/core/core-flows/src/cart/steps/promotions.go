@@ -129,12 +129,12 @@ var GetActionsToComputeFromPromotionsStep = composer.CreateStep("get-actions-to-
 
 // PreparedAdjustments mirrors PrepareAdjustmentsFromPromotionActionsStepOutput.
 type PreparedAdjustments struct {
-	LineItemAdjustmentsToCreate         []*dal.Record
-	LineItemAdjustmentIDsToRemove       []any
-	ShippingMethodAdjustmentsToCreate   []*dal.Record
-	ShippingMethodAdjustmentIDsToRemove []any
-	ComputedPromotionCodes              []string
-	SkippedPromoCodes                   []*dal.Record
+	LineItemAdjustmentsToCreate         []*dal.Record `json:"lineItemAdjustmentsToCreate"`
+	LineItemAdjustmentIDsToRemove       []any         `json:"lineItemAdjustmentIdsToRemove"`
+	ShippingMethodAdjustmentsToCreate   []*dal.Record `json:"shippingMethodAdjustmentsToCreate"`
+	ShippingMethodAdjustmentIDsToRemove []any         `json:"shippingMethodAdjustmentIdsToRemove"`
+	ComputedPromotionCodes              []string      `json:"computedPromotionCodes"`
+	SkippedPromoCodes                   []*dal.Record `json:"skippedPromoCodes"`
 }
 
 // PrepareAdjustmentsFromPromotionActionsStep mirrors prepareAdjustmentsFromPromotionActionsStep.
@@ -205,6 +205,10 @@ func adjustmentStep(name, className string, remove bool) *composer.Step[[]any, a
 	return composer.CreateStep(name,
 		func(ctx composer.StepExecutionContext, data []any) (composer.StepResponse[any], error) {
 			if len(data) == 0 {
+				if name == "create-line-item-adjustments" {
+					// new StepResponse([], [])
+					return composer.NewStepResponse[any](any([]any{}), any([]any{})), nil
+				}
 				return composer.NewStepResponse[any](nil, any([]any{})), nil
 			}
 			svc := CartOf(ctx.Container).Internal(className)
@@ -328,7 +332,7 @@ var UpdateCartPromotionsStep = composer.CreateStep("update-cart-promotions",
 				return composer.StepResponse[any]{}, err
 			}
 		}
-		return composer.NewStepResponse[any](nil, any(promoRevert{toCreate, toDismiss})), nil
+		return composer.NewNullStepResponse[any](any(promoRevert{toCreate, toDismiss})), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		r, ok := data.(promoRevert)

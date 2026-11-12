@@ -236,7 +236,7 @@ var CreateOrderEditShippingMethodWorkflow = composer.CreateWorkflow("create-orde
 		hookIn.Set("order", order)
 		hookIn.Set("shipping_option_id", g(in, "shipping_option_id"))
 		hookIn.Set("additional_data", g(in, "additional_data"))
-		if err := composer.CreateHook(e, "setPricingContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setPricingContext", hookIn); err != nil {
 			return nil, err
 		}
 		pc := dal.NewRecord()

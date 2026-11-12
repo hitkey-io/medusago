@@ -3,6 +3,7 @@ package steps
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"strings"
@@ -118,8 +119,21 @@ type FindOrCreateCustomerInput struct {
 // CustomerData mirrors FindOrCreateCustomerOutputStepOutput (Defined is
 // false for { customer: undefined, email: undefined }).
 type CustomerData struct {
-	Customer *dal.Record
-	Email    any
+	Customer *dal.Record `json:"customer"`
+	Email    any         `json:"email"`
+	// undefinedOutput: { customer: undefined, email: undefined } (no
+	// customer id nor email): serialized as {}
+	undefinedOutput bool
+}
+
+// MarshalJSON mirrors the serialized step output: {} when both values are
+// undefined.
+func (c CustomerData) MarshalJSON() ([]byte, error) {
+	if c.undefinedOutput {
+		return []byte("{}"), nil
+	}
+	type plain CustomerData
+	return json.Marshal(plain(c))
 }
 
 type customerCompensation struct {
@@ -150,7 +164,7 @@ func listCustomersByEmail(ctx context.Context, svc commonsteps.ModuleService, em
 var FindOrCreateCustomerStep = composer.CreateStep("find-or-create-customer",
 	func(ctx composer.StepExecutionContext, in FindOrCreateCustomerInput) (composer.StepResponse[CustomerData], error) {
 		if in.CustomerID == nil && in.Email == nil {
-			return composer.NewStepResponse(CustomerData{}, any(customerCompensation{})), nil
+			return composer.NewStepResponse(CustomerData{undefinedOutput: true}, any(customerCompensation{})), nil
 		}
 		svc := commonsteps.ModuleOf(ctx.Container, utilsmodulessdk.CUSTOMER)
 		out := CustomerData{}

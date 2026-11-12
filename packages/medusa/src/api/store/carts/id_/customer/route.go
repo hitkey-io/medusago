@@ -5,6 +5,7 @@ import (
 	cartworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/workflows"
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/store/carts"
 )
 
@@ -18,7 +19,7 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 		v, _ := b.Get("additional_data")
 		in.AdditionalData, _ = v.(*dal.Record)
 	}
-	if _, err := cartworkflows.TransferCartCustomerWorkflow.Run(req.Ctx(), req.Scope, in); err != nil {
+	if _, err := cartworkflows.TransferCartCustomerWorkflow.Run(req.Ctx(), req.Scope, in, composer.RunOptions{Notify: true}); err != nil {
 		return err
 	}
 	return carts.RespondCart(req, res, req.Params["id"])

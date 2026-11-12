@@ -45,6 +45,19 @@ var ValidatePresenceOfStep = composer.CreateStep("validate-presence-of",
 		return composer.NewStepResponse[any](nil), nil
 	}, nil)
 
+// mergeRecord mirrors spreading a hook result into an object (a result
+// that is not an object adds nothing).
+func mergeRecord(dst *dal.Record, v any) {
+	r, ok := v.(*dal.Record)
+	if !ok || r == nil {
+		return
+	}
+	for _, k := range r.Keys() {
+		x, _ := r.Get(k)
+		dst.Set(k, x)
+	}
+}
+
 // ListShippingOptionsForCartWorkflow mirrors listShippingOptionsForCartWorkflow.
 var ListShippingOptionsForCartWorkflow = composer.CreateWorkflow("list-shipping-options-for-cart",
 	func(e *composer.Execution, in ListShippingOptionsInput) ([]*dal.Record, error) {
@@ -91,11 +104,25 @@ var ListShippingOptionsForCartWorkflow = composer.CreateWorkflow("list-shipping-
 		if setIDs == nil {
 			setIDs = []any{}
 		}
+		hookIn := dal.NewRecord()
+		hookIn.Set("cart", cart)
+		hookIn.Set("fulfillmentSetIds", setIDs)
+		hookIn.Set("additional_data", in.AdditionalData)
+		pricingResult, err := composer.CreateHookWithResult(e, "setPricingContext", hookIn)
+		if err != nil {
+			return nil, err
+		}
+		optionsResult, err := composer.CreateHookWithResult(e, "setShippingOptionsContext", hookIn)
+		if err != nil {
+			return nil, err
+		}
 		vars := dal.NewRecord()
 		if in.OptionIDs != nil {
 			vars.Set("id", in.OptionIDs)
 		}
+		// { ...setShippingOptionsContextResult, is_return, enabled_in_store }
 		c := dal.NewRecord()
+		mergeRecord(c, optionsResult)
 		if in.IsReturn {
 			c.Set("is_return", "true")
 		} else {
@@ -117,7 +144,9 @@ var ListShippingOptionsForCartWorkflow = composer.CreateWorkflow("list-shipping-
 		addr.Set("postal_expression", Get(sa, "postal_code"))
 		filters.Set("address", addr)
 		vars.Set("filters", filters)
+		// { ...cart pricing fields, ...setPricingContextResult, currency_code, ... }
 		pc := FilterObjectByKeys(cart, FieldsForPricingContext)
+		mergeRecord(pc, pricingResult)
 		for _, k := range []string{"currency_code", "region_id", "region", "customer_id", "customer"} {
 			if v, ok := cart.Get(k); ok {
 				pc.Set(k, v)

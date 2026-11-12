@@ -82,26 +82,27 @@ var UpdateOrderTaxLinesWorkflow = composer.CreateWorkflow("update-order-tax-line
 			return nil, err
 		}
 		order := rec(res.Data)
-		var items, methods []*dal.Record
-		if len(in.ItemIDs) > 0 {
+		items, err := composer.When(e, "get-order-line-items", len(in.ItemIDs) > 0, func() ([]*dal.Record, error) {
 			f := dal.NewRecord()
 			f.Set("id", in.ItemIDs)
-			if items, err = queryList(e, "query-order-line-items", "order_line_item", f, lineItemTaxFields); err != nil {
-				return nil, err
-			}
+			return queryList(e, "query-order-line-items", "order_line_item", f, lineItemTaxFields)
+		})
+		if err != nil {
+			return nil, err
 		}
-		if len(in.ShippingMethodIDs) > 0 {
+		methods, err := composer.When(e, "get-order-shipping-methods", len(in.ShippingMethodIDs) > 0, func() ([]*dal.Record, error) {
 			f := dal.NewRecord()
 			f.Set("id", in.ShippingMethodIDs)
-			if methods, err = queryList(e, "query-order-shipping-methods", "order_shipping_method", f, shippingMethodTaxFields); err != nil {
-				return nil, err
-			}
+			return queryList(e, "query-order-shipping-methods", "order_shipping_method", f, shippingMethodTaxFields)
+		})
+		if err != nil {
+			return nil, err
 		}
 		hookIn := dal.NewRecord()
 		hookIn.Set("order", order)
 		hookIn.Set("items", items)
 		hookIn.Set("shipping_methods", methods)
-		if err := composer.CreateHook(e, "setTaxLineContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setTaxLineContext", hookIn); err != nil {
 			return nil, err
 		}
 		if isFullOrder {

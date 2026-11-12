@@ -71,6 +71,13 @@ func remoteOne(e *composer.Execution, name, entry string, id any, fields []strin
 	return r, nil
 }
 
+// customerAccountHolder is the value of the "customer-id-exists" when.
+type customerAccountHolder struct {
+	PaymentCustomer       *dal.Record `json:"paymentCustomer"`
+	AccountHolder         *dal.Record `json:"accountHolder"`
+	ExistingAccountHolder *dal.Record `json:"existingAccountHolder,omitempty"`
+}
+
 // CreatePaymentSessionsWorkflow mirrors createPaymentSessionsWorkflow.
 var CreatePaymentSessionsWorkflow = composer.CreateWorkflow("create-payment-sessions",
 	func(e *composer.Execution, in CreatePaymentSessionsInput) (*dal.Record, error) {
@@ -87,13 +94,12 @@ var CreatePaymentSessionsWorkflow = composer.CreateWorkflow("create-payment-sess
 		if _, err := steps.ValidatePaymentSessionsDeletableStep.Run(e, recs(g(collection, "payment_sessions"))); err != nil {
 			return nil, err
 		}
-		var paymentCustomer, accountHolder *dal.Record
-		if in.CustomerID != "" {
+		holder, err := composer.When(e, "customer-id-exists", in.CustomerID != "", func() (*customerAccountHolder, error) {
 			customer, err := remoteOne(e, "get-customer", "customer", in.CustomerID, []string{"id", "email", "company_name", "first_name", "last_name", "phone", "addresses.*", "account_holders.*", "metadata"})
 			if err != nil {
 				return nil, err
 			}
-			paymentCustomer = dal.NewRecord()
+			paymentCustomer := dal.NewRecord()
 			if customer != nil {
 				for _, k := range customer.Keys() {
 					v, _ := customer.Get(k)
@@ -128,10 +134,20 @@ var CreatePaymentSessionsWorkflow = composer.CreateWorkflow("create-payment-sess
 			ahi := dal.NewRecord()
 			ahi.Set("provider_id", in.ProviderID)
 			ahi.Set("context", ahc)
-			accountHolder, err = steps.CreatePaymentAccountHolderStep.Run(e, ahi)
+			accountHolder, err := steps.CreatePaymentAccountHolderStep.Config("", composer.StepOptions{NoCompensation: true}).Run(e, ahi)
 			if err != nil {
 				return nil, err
 			}
+			return &customerAccountHolder{PaymentCustomer: paymentCustomer, AccountHolder: accountHolder, ExistingAccountHolder: existing}, nil
+		})
+		if err != nil {
+			return nil, err
+		}
+		var paymentCustomer, accountHolder, existing *dal.Record
+		if holder != nil {
+			paymentCustomer, accountHolder, existing = holder.PaymentCustomer, holder.AccountHolder, holder.ExistingAccountHolder
+		}
+		{
 			if existing == nil && accountHolder != nil {
 				c := dal.NewRecord()
 				c.Set("customer_id", g(paymentCustomer, "id"))

@@ -23,6 +23,13 @@ type AddToCartInput struct {
 	AdditionalData *dal.Record
 }
 
+// pricedItems is the value of the "should-calculate-prices" when: the
+// priced variants and the prepared line items.
+type pricedItems struct {
+	Variants  []*dal.Record `json:"variants"`
+	LineItems []*dal.Record `json:"lineItems"`
+}
+
 // AddToCartWorkflow mirrors addToCartWorkflow.
 var AddToCartWorkflow = composer.CreateWorkflow("add-to-cart",
 	func(e *composer.Execution, in AddToCartInput) (any, error) {
@@ -36,15 +43,29 @@ var AddToCartWorkflow = composer.CreateWorkflow("add-to-cart",
 		if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
 			return nil, err
 		}
-		var variantIDs []any
+		validateIn := dal.NewRecord()
+		validateIn.Set("input", in)
+		validateIn.Set("cart", cart)
+		if err := composer.CreateHook(e, "validate", validateIn); err != nil {
+			return nil, err
+		}
+		variantIDs := []any{}
 		for _, i := range in.Items {
 			if v := Str(i, "variant_id"); v != "" {
 				variantIDs = append(variantIDs, v)
 			}
 		}
-		var variants []*dal.Record
-		var lineItems []*dal.Record
-		if len(variantIDs) > 0 {
+		pricingIn := dal.NewRecord()
+		pricingIn.Set("cart", cart)
+		pricingIn.Set("variantIds", variantIDs)
+		pricingIn.Set("items", in.Items)
+		pricingIn.Set("additional_data", in.AdditionalData)
+		pricingResult, err := composer.CreateHookWithResult(e, "setPricingContext", pricingIn)
+		if err != nil {
+			return nil, err
+		}
+		pricingContextResult, _ := pricingResult.(*dal.Record)
+		priced, err := composer.When(e, "should-calculate-prices", len(variantIDs) > 0, func() (*pricedItems, error) {
 			quantities, err := steps.GetLineItemPricingQuantitiesStep.Run(e, steps.LineItemsInput{ID: in.CartID, Items: in.Items})
 			if err != nil {
 				return nil, err
@@ -57,18 +78,27 @@ var AddToCartWorkflow = composer.CreateWorkflow("add-to-cart",
 				}
 				toPrice[i] = c
 			}
-			vi, err := GetVariantsAndItemsWithPrices.RunAsStep(e, VariantsAndItemsInput{Cart: cart, Items: toPrice, VariantIDs: variantIDs, VariantFields: variantFields})
+			vi, err := GetVariantsAndItemsWithPrices.RunAsStep(e, VariantsAndItemsInput{Cart: cart, Items: toPrice, SetPricingContextResult: pricingContextResult, VariantIDs: variantIDs, VariantFields: variantFields})
 			if err != nil {
 				return nil, err
 			}
-			variants = vi.Variants
+			out := &pricedItems{Variants: vi.Variants, LineItems: []*dal.Record{}}
 			for i, li := range vi.LineItems {
 				d := Copy(Rec(li, "data"))
 				if i < len(in.Items) && Get(in.Items[i], "quantity") != nil {
 					d.Set("quantity", Get(in.Items[i], "quantity"))
 				}
-				lineItems = append(lineItems, d)
+				out.LineItems = append(out.LineItems, d)
 			}
+			return out, nil
+		})
+		if err != nil {
+			return nil, err
+		}
+		var variants []*dal.Record
+		var lineItems []*dal.Record
+		if priced != nil {
+			variants, lineItems = priced.Variants, priced.LineItems
 		}
 		if len(variants) == 0 && len(variantIDs) > 0 {
 			f := dal.NewRecord()
@@ -191,6 +221,15 @@ var RefreshCartItemsWorkflow = composer.CreateWorkflow("refresh-cart-items",
 		if err := acquireLock(e, in.CartID, 2, 10); err != nil {
 			return nil, err
 		}
+		pricingIn := dal.NewRecord()
+		pricingIn.Set("cart_id", in.CartID)
+		pricingIn.Set("items", in.Items)
+		pricingIn.Set("additional_data", in.AdditionalData)
+		pricingResult, err := composer.CreateHookWithResult(e, "setPricingContext", pricingIn)
+		if err != nil {
+			return nil, err
+		}
+		pricingContextResult, _ := pricingResult.(*dal.Record)
 		if in.ForceRefresh {
 			cart, err := fetchCart(e, "use-query-graph-step", in.CartID, CartFieldsForRefreshSteps, false)
 			if err != nil {
@@ -199,7 +238,7 @@ var RefreshCartItemsWorkflow = composer.CreateWorkflow("refresh-cart-items",
 			if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
 				return nil, err
 			}
-			vi, err := GetVariantsAndItemsWithPrices.RunAsStep(e, VariantsAndItemsInput{Cart: cart})
+			vi, err := GetVariantsAndItemsWithPrices.RunAsStep(e, VariantsAndItemsInput{Cart: cart, SetPricingContextResult: pricingContextResult})
 			if err != nil {
 				return nil, err
 			}
@@ -241,6 +280,11 @@ var RefreshCartItemsWorkflow = composer.CreateWorkflow("refresh-cart-items",
 				return nil, err
 			}
 		}
+		beforeIn := dal.NewRecord()
+		beforeIn.Set("input", in)
+		if err := composer.CreateHook(e, "beforeRefreshingPaymentCollection", beforeIn); err != nil {
+			return nil, err
+		}
 		if _, err := RefreshPaymentCollectionForCartWorkflow.RunAsStep(e, RefreshPaymentCollectionInput{Cart: refetched}); err != nil {
 			return nil, err
 		}
@@ -265,18 +309,18 @@ var RefreshCartShippingMethodsWorkflow = composer.CreateWorkflow("refresh-cart-s
 			shouldExecute = len(Records(Get(in.Cart, "shipping_methods"))) > 0
 		}
 		cart := in.Cart
-		if shouldExecute {
+		fetched, err := composer.When(e, "fetch-cart", shouldExecute, func() (*dal.Record, error) {
 			id := in.CartID
 			if id == "" {
 				id = Str(in.Cart, "id")
 			}
-			fetched, err := fetchCart(e, "get-cart", id, []string{"id", "sales_channel_id", "currency_code", "region_id", "shipping_methods.*", "shipping_address.city", "shipping_address.country_code", "shipping_address.province", "shipping_methods.shipping_option_id", "shipping_methods.data", "total", "items.requires_shipping", "items.variant.product.shipping_profile.id"}, true)
-			if err != nil {
-				return nil, err
-			}
-			if fetched != nil {
-				cart = fetched
-			}
+			return fetchCart(e, "get-cart", id, []string{"id", "sales_channel_id", "currency_code", "region_id", "shipping_methods.*", "shipping_address.city", "shipping_address.country_code", "shipping_address.province", "shipping_methods.shipping_option_id", "shipping_methods.data", "total", "items.requires_shipping", "items.variant.product.shipping_profile.id"}, true)
+		})
+		if err != nil {
+			return nil, err
+		}
+		if fetched != nil {
+			cart = fetched
 		}
 		if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
 			return nil, err
@@ -360,12 +404,14 @@ var upsertTaxLinesCartFields = []string{"id", "locale", "currency_code", "email"
 var UpsertTaxLinesWorkflow = composer.CreateWorkflow("upsert-tax-lines",
 	func(e *composer.Execution, in UpsertTaxLinesInput) (any, error) {
 		cart := in.Cart
+		fetched, err := composer.When(e, "should-fetch-cart", cart == nil, func() (*dal.Record, error) {
+			return fetchCart(e, "fetch-cart", in.CartID, upsertTaxLinesCartFields, true)
+		})
+		if err != nil {
+			return nil, err
+		}
 		if cart == nil {
-			var err error
-			cart, err = fetchCart(e, "fetch-cart", in.CartID, upsertTaxLinesCartFields, true)
-			if err != nil {
-				return nil, err
-			}
+			cart = fetched
 		}
 		if _, err := steps.ValidateCartStep.Run(e, cart); err != nil {
 			return nil, err
@@ -374,7 +420,7 @@ var UpsertTaxLinesWorkflow = composer.CreateWorkflow("upsert-tax-lines",
 		h.Set("cart", cart)
 		h.Set("items", in.Items)
 		h.Set("shipping_methods", in.ShippingMethods)
-		if err := composer.CreateHook(e, "setTaxLineContext", h); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setTaxLineContext", h); err != nil {
 			return nil, err
 		}
 		lines, err := taxsteps.GetItemTaxLinesStep.Run(e, taxsteps.GetItemTaxLinesInput{OrderOrCart: cart, Items: in.Items, ShippingMethods: in.ShippingMethods, ForceTaxCalculation: in.ForceTaxCalculation})

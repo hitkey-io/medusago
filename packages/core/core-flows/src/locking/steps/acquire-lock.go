@@ -130,6 +130,9 @@ var AcquireLockStep = composer.CreateStep(AcquireLockStepID,
 		if err != nil {
 			return err
 		}
-		_, err = locking.Release(ctx.Context, keys, args)
-		return err
+		if _, err = locking.Release(ctx.Context, keys, args); err != nil {
+			return err
+		}
+		ctx.ReturnStepResponse()
+		return nil
 	})

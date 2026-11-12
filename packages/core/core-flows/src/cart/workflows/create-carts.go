@@ -99,7 +99,7 @@ var CreateCartWorkflow = composer.CreateWorkflow("create-cart",
 		hookIn.Set("variantIds", variantIDs)
 		hookIn.Set("salesChannel", salesChannel)
 		hookIn.Set("additional_data", Get(input, "additional_data"))
-		if err := composer.CreateHook(e, "setPricingContext", hookIn); err != nil {
+		if _, err := composer.CreateHookWithResult(e, "setPricingContext", hookIn); err != nil {
 			return nil, err
 		}
 		cartForPricing := dal.NewRecord()

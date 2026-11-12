@@ -97,8 +97,8 @@ var ValidateLineItemPricesStep = composer.CreateStep("validate-line-item-prices"
 
 // LineItemActions mirrors GetLineItemActionsStepOutput.
 type LineItemActions struct {
-	ItemsToCreate []*dal.Record
-	ItemsToUpdate []*dal.Record
+	ItemsToCreate []*dal.Record `json:"itemsToCreate"`
+	ItemsToUpdate []*dal.Record `json:"itemsToUpdate"`
 }
 
 // GetLineItemActionsStep mirrors getLineItemActionsStep.

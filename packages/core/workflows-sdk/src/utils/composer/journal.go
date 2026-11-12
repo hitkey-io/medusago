@@ -9,6 +9,7 @@ import (
 	"github.com/oklog/ulid/v2"
 
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
 // TransactionState mirrors TransactionState.
@@ -25,6 +26,7 @@ const (
 // TransactionStepState / TransactionStepStatus mirror the step states.
 const (
 	stepStateInvoking     = "invoking"
+	stepStateCompensating = "compensating"
 	stepStateDone         = "done"
 	stepStateFailed       = "failed"
 	stepStateDormant      = "dormant"
@@ -71,6 +73,13 @@ type stepRecord struct {
 	// (stored as is in the context, without the step response envelope)
 	raw    any
 	hasRaw bool
+	// predefined: the step comes from the graph upstream composes; fields
+	// are its definition fields (action, noCompensation, async, ...)
+	predefined bool
+	fields     *dal.Record
+	// retryReset: a failure reset retryRescheduledAt (the property exists,
+	// null)
+	retryReset bool
 }
 
 // journal records a run the way the TransactionOrchestrator checkpoints it:
@@ -82,18 +91,19 @@ type stepRecord struct {
 // steps of conditions that were not met — while parallel branches are
 // chained in their execution order.
 type journal struct {
-	mu        sync.Mutex
-	runID     string
-	startedAt int64
-	steps     []*stepRecord
-	byID      map[string]*stepRecord
-	root      *stepRecord
-	tip       *stepRecord
-	invoke    map[string]any
-	payload   any
-	errors    []any
-	hasAsync  bool
-	hasFailed bool
+	mu         sync.Mutex
+	runID      string
+	startedAt  int64
+	steps      []*stepRecord
+	byID       map[string]*stepRecord
+	root       *stepRecord
+	tip        *stepRecord
+	invoke     map[string]any
+	compensate map[string]any
+	payload    any
+	errors     []any
+	hasAsync   bool
+	hasFailed  bool
 	// hasSkipped: a step returned StepResponse.skip()
 	hasSkipped bool
 	waiting    bool
@@ -103,6 +113,21 @@ type journal struct {
 	rev int
 	// events receives the run's notifications (nil: not notified).
 	events func(WorkflowEvent)
+	// defined: the steps follow the graph upstream composes for the
+	// workflow; pending lists the steps of an action that did not run yet
+	defined bool
+	pending map[string][]*stepRecord
+	// nested: the journal of a workflow run as a step (its flow has empty
+	// options and the metadata of the parent step)
+	nested        bool
+	parentStepKey string
+	nestedTxID    string
+	// flowOptions are the options the workflow is created with upstream
+	// (nil when it has no upstream counterpart)
+	flowOptions *dal.Record
+	// engineRun: the run goes through the workflow engine (its metadata
+	// carries preventReleaseEvents: false)
+	engineRun bool
 }
 
 func nowMillis() int64 { return time.Now().UnixMilli() }
@@ -110,15 +135,86 @@ func nowMillis() int64 { return time.Now().UnixMilli() }
 func newJournal(payload any) *journal {
 	root := &stepRecord{id: rootStepID, next: []string{}}
 	return &journal{
-		runID:     ulid.Make().String(),
-		startedAt: nowMillis(),
-		byID:      map[string]*stepRecord{rootStepID: root},
-		root:      root,
-		tip:       root,
-		invoke:    map[string]any{},
-		payload:   payload,
-		errors:    []any{},
-		state:     TransactionStateNotStarted,
+		runID:      ulid.Make().String(),
+		startedAt:  nowMillis(),
+		byID:       map[string]*stepRecord{rootStepID: root},
+		root:       root,
+		tip:        root,
+		invoke:     map[string]any{},
+		compensate: map[string]any{},
+		payload:    payload,
+		errors:     []any{},
+		state:      TransactionStateNotStarted,
+	}
+}
+
+// define lays out the steps of the graph upstream composes for the
+// workflow: they are listed from the start (not started), each run step
+// takes its place.
+func (j *journal) define(workflowID string) {
+	d := lookupFlowDef(workflowID)
+	if d == nil || len(d.nodes) == 0 {
+		return
+	}
+	nodes := d.nodes
+	j.mu.Lock()
+	defer j.mu.Unlock()
+	j.defined = true
+	j.flowOptions = d.options
+	j.pending = map[string][]*stepRecord{}
+	var add func(parent *stepRecord, ns []*flowNode)
+	add = func(parent *stepRecord, ns []*flowNode) {
+		for _, n := range ns {
+			r := &stepRecord{
+				id: parent.id + stepIDSeparator + n.action, action: n.action, uuid: n.uuid, depth: parent.depth + 1, next: []string{},
+				invokeState: stepStateNotStarted, invokeStatus: stepStatusIdle, compState: stepStateDormant, compStatus: stepStatusIdle,
+				async: fieldBool(n.fields, "async"), compensateAsync: fieldBool(n.fields, "compensateAsync"),
+				noCompensation: fieldBool(n.fields, "noCompensation"), timeout: fieldInt(n.fields, "timeout"),
+				predefined: true, fields: n.fields,
+			}
+			if r.async {
+				j.hasAsync = true
+			}
+			parent.next = append(parent.next, r.id)
+			j.steps = append(j.steps, r)
+			j.byID[r.id] = r
+			j.pending[n.action] = append(j.pending[n.action], r)
+			add(r, n.next)
+		}
+	}
+	add(j.root, nodes)
+}
+
+// takePending returns the step of the graph with the action that did not
+// run yet (nil when the graph has none).
+func (j *journal) takePending(action string) *stepRecord {
+	if !j.defined {
+		return nil
+	}
+	list := j.pending[action]
+	if len(list) == 0 {
+		return nil
+	}
+	j.pending[action] = list[1:]
+	return list[0]
+}
+
+// skipUnreached mirrors the steps of a when() whose condition was false:
+// a finished run marks the steps of its graph that did not run skipped.
+func (j *journal) skipUnreached() {
+	j.mu.Lock()
+	defer j.mu.Unlock()
+	now := nowMillis()
+	for _, r := range j.steps {
+		if !r.predefined || r.invokeState != stepStateNotStarted {
+			continue
+		}
+		r.invokeState, r.invokeStatus = stepStateSkipped, stepStatusOK
+		r.attempts, r.startedAt, r.lastAttempt = 1, now, now
+		j.hasSkipped = true
+		j.rev++
+		// the orchestrator begins the step before its condition skips it
+		j.emit("onStepBegin", r, nil)
 	}
 }
 
@@ -156,11 +252,28 @@ func (j *journal) begin(action string, opts StepOptions, noCompensation bool) *s
 	if j.state == TransactionStateNotStarted {
 		j.state = TransactionStateInvoking
 	}
-	parent := j.tip
 	now := nowMillis()
+	if r := j.takePending(action); r != nil {
+		j.rev++
+		// a running step waits for its handler's response
+		r.invokeState, r.invokeStatus = stepStateInvoking, stepStatusWaiting
+		r.attempts, r.startedAt, r.lastAttempt = 1, now, now
+		r.store = opts.Store
+		if opts.Async {
+			r.async = true
+			j.hasAsync = true
+		}
+		if opts.Timeout > 0 {
+			r.timeout = opts.Timeout
+		}
+		j.tip = r
+		j.emit("onStepBegin", r, nil)
+		return r
+	}
+	parent := j.tip
 	r := &stepRecord{
 		id: j.nextID(parent, action), action: action, uuid: ulid.Make().String(), depth: parent.depth + 1, next: []string{},
-		invokeState: stepStateInvoking, invokeStatus: stepStatusIdle, compState: stepStateDormant, compStatus: stepStatusIdle,
+		invokeState: stepStateInvoking, invokeStatus: stepStatusWaiting, compState: stepStateDormant, compStatus: stepStatusIdle,
 		attempts: 1, startedAt: now, lastAttempt: now, async: opts.Async, store: opts.Store, noCompensation: noCompensation,
 		timeout: opts.Timeout,
 	}
@@ -174,6 +287,23 @@ func (j *journal) begin(action string, opts StepOptions, noCompensation bool) *s
 func (j *journal) restore(action string, opts StepOptions, noCompensation bool, st *storedStep) *stepRecord {
 	j.mu.Lock()
 	defer j.mu.Unlock()
+	if r := j.takePending(action); r != nil {
+		if st.uuid != "" {
+			r.uuid = st.uuid
+		}
+		r.invokeState, r.invokeStatus = st.invokeState, st.invokeStatus
+		r.attempts, r.failures, r.startedAt, r.lastAttempt = st.attempts, st.failures, st.startedAt, st.lastAttempt
+		r.store = opts.Store
+		if opts.Async {
+			r.async = true
+		}
+		if opts.Timeout > 0 {
+			r.timeout = opts.Timeout
+		}
+		r.stepFailed = st.invokeState == stepStateFailed || st.invokeState == stepStateTimeout
+		j.tip = r
+		return r
+	}
 	parent := j.tip
 	uuid := st.uuid
 	if uuid == "" {
@@ -220,6 +350,18 @@ func (j *journal) succeed(r *stepRecord, output any, hasOutput bool, compInput a
 	j.emit("onStepSuccess", r, func(ev *WorkflowEvent) { ev.Response, ev.HasResponse = output, hasOutput })
 }
 
+// succeedRaw records a step whose handler returned a value that is not a
+// StepResponse: the context holds it as the output as is.
+func (j *journal) succeedRaw(r *stepRecord, output any) {
+	j.mu.Lock()
+	defer j.mu.Unlock()
+	j.rev++
+	r.invokeState, r.invokeStatus = stepStateDone, stepStatusOK
+	r.lastAttempt = nowMillis()
+	j.invoke[r.action] = map[string]any{"__type": symbolWorkflowData, "output": output}
+	j.emit("onStepSuccess", r, func(ev *WorkflowEvent) { ev.Response, ev.HasResponse = output, true })
+}
+
 // skip mirrors skipStep: the step is SKIPPED with status OK. flagFlow sets
 // hasSkippedSteps (steps of workflows run as a step belong to their own
 // flow upstream, they do not flag the root one).
@@ -249,21 +391,38 @@ func (j *journal) attempt(r *stepRecord, n int) {
 	j.rev++
 	r.attempts = n
 	r.lastAttempt = nowMillis()
+	if n > 1 {
+		// the previous attempt failed (handleStepFailure)
+		r.retryReset = true
+	}
 }
 
 // serializeError mirrors the errors stored in the checkpoint: a
-// MedusaError keeps its type, date and __isMedusaError flag.
-func serializeError(err error) map[string]any {
-	out := map[string]any{"message": err.Error(), "name": "Error", "stack": "Error: " + err.Error()}
+// MedusaError keeps its type, date and __isMedusaError flag (in the order
+// of the serialized error: message, name, stack, then the own properties).
+func serializeError(err error) *dal.Record {
+	out := dal.NewRecord()
+	out.Set("message", err.Error())
+	out.Set("name", "Error")
+	out.Set("stack", "Error: "+err.Error())
 	var me *common.MedusaError
 	if errors.As(err, &me) {
-		out["type"] = me.Type
-		out["date"] = me.Date.UTC().Format("2006-01-02T15:04:05.000Z")
-		out["__isMedusaError"] = true
+		out.Set("__isMedusaError", true)
+		out.Set("type", me.Type)
 		if me.Code != "" {
-			out["code"] = me.Code
+			out.Set("code", me.Code)
 		}
+		out.Set("date", me.Date.UTC().Format("2006-01-02T15:04:05.000Z"))
 	}
+	return out
+}
+
+// stepError mirrors a TransactionStepError: { action, handlerType, error }.
+func stepError(action, handlerType string, err error) *dal.Record {
+	out := dal.NewRecord()
+	out.Set("action", action)
+	out.Set("handlerType", handlerType)
+	out.Set("error", serializeError(err))
 	return out
 }
 
@@ -278,8 +437,9 @@ func (j *journal) fail(r *stepRecord, err error) {
 		r.invokeState = stepStateTimeout
 	}
 	r.stepFailed = true
+	r.retryReset = true
 	r.lastAttempt = nowMillis()
-	j.errors = append(j.errors, map[string]any{"action": r.action, "handlerType": "invoke", "error": serializeError(err)})
+	j.errors = append(j.errors, stepError(r.action, "invoke", err))
 	errs := j.errorsFor(r.action, "invoke")
 	j.emit("onStepFailure", r, func(ev *WorkflowEvent) { ev.Errors, ev.HasErrors = errs, true })
 }
@@ -301,20 +461,37 @@ func (j *journal) revertAll() {
 	}
 }
 
-func (j *journal) compensated(r *stepRecord, err error) {
+// compensateBegin mirrors a step starting its compensation: COMPENSATING,
+// waiting for the handler, onStepBegin.
+func (j *journal) compensateBegin(r *stepRecord) {
+	j.mu.Lock()
+	defer j.mu.Unlock()
+	j.rev++
+	r.compState, r.compStatus = stepStateCompensating, stepStatusWaiting
+	j.emit("onStepBegin", r, nil)
+}
+
+func (j *journal) compensated(r *stepRecord, err error, response bool) {
 	j.mu.Lock()
 	defer j.mu.Unlock()
 	j.rev++
 	if err != nil {
 		r.compState, r.compStatus = stepStateFailed, stepStatusPermanent
 		j.hasFailed = true
-		j.errors = append(j.errors, map[string]any{"action": r.action, "handlerType": "compensate", "error": serializeError(err)})
+		j.errors = append(j.errors, stepError(r.action, "compensate", err))
 		errs := j.errorsFor(r.action, "compensate")
 		j.emit("onCompensateStepFailure", r, func(ev *WorkflowEvent) { ev.Errors, ev.HasErrors = errs, true })
 		return
 	}
 	r.compState, r.compStatus = stepStateReverted, stepStatusOK
-	j.emit("onCompensateStepSuccess", r, nil)
+	// the compensation handler's { output } (undefined unless it returned
+	// a StepResponse)
+	entry := map[string]any{}
+	if response {
+		entry["output"] = map[string]any{"__type": symbolStepResponse}
+	}
+	j.compensate[r.action] = entry
+	j.emit("onCompensateStepSuccess", r, func(ev *WorkflowEvent) { ev.Response, ev.HasResponse = entry, true })
 }
 
 // emitRun sends a run-level event (onBegin, onCompensateBegin, onFinish).
@@ -342,12 +519,18 @@ func (j *journal) definitionTree(r *stepRecord) any {
 	var children []any
 	for _, id := range r.next {
 		c := j.byID[id]
-		d := map[string]any{"uuid": c.uuid, "action": c.action, "noCompensation": c.noCompensation}
-		if c.async {
-			d["async"] = true
-		}
-		if c.timeout > 0 {
-			d["timeout"] = c.timeout
+		var d map[string]any
+		if c.fields != nil {
+			d = recordMap(c.fields)
+			d["uuid"] = c.uuid
+		} else {
+			d = map[string]any{"uuid": c.uuid, "action": c.action, "noCompensation": c.noCompensation}
+			if c.async {
+				d["async"] = true
+			}
+			if c.timeout > 0 {
+				d["timeout"] = c.timeout
+			}
 		}
 		if sub := j.definitionTree(c); sub != nil {
 			d["next"] = sub
@@ -371,28 +554,44 @@ func (j *journal) flow(workflowID, transactionID, eventGroupID string, opts Work
 	steps := map[string]any{rootStepID: map[string]any{"id": rootStepID, "next": append([]string{}, j.root.next...)}}
 	hasReverted := false
 	for _, r := range j.steps {
-		def := map[string]any{"uuid": r.uuid, "store": r.store, "action": r.action, "noCompensation": r.noCompensation}
-		if r.async {
-			def["async"] = true
-			def["compensateAsync"] = r.compensateAsync
-		}
-		if r.timeout > 0 {
-			def["timeout"] = r.timeout
-		}
+		def := r.definition()
 		if r.compState == stepStateReverted {
 			hasReverted = true
 		}
-		steps[r.id] = map[string]any{
+		step := map[string]any{
 			"_v": j.version, "id": r.id, "next": append([]string{}, r.next...), "uuid": r.uuid, "depth": r.depth,
 			"invoke":     map[string]any{"state": r.invokeState, "status": r.invokeStatus},
 			"compensate": map[string]any{"state": r.compState, "status": r.compStatus},
 			"attempts":   r.attempts, "failures": r.failures, "startedAt": r.startedAt, "lastAttempt": r.lastAttempt,
 			"definition": def, "stepFailed": r.stepFailed, "saveResponse": true,
 		}
+		if r.retryReset {
+			step["retryRescheduledAt"] = nil
+		}
+		if r.invokeState == stepStateNotStarted && r.attempts == 0 {
+			// a step that never ran has no startedAt and a null lastAttempt
+			delete(step, "startedAt")
+			step["lastAttempt"] = nil
+		}
+		steps[r.id] = step
 	}
 	options := map[string]any{"name": workflowID, "store": opts.Store, "idempotent": opts.Idempotent}
 	if opts.RetentionTime > 0 {
 		options["retentionTime"] = opts.RetentionTime
+	}
+	if j.flowOptions != nil {
+		options = j.parsedFlowOptions()
+	}
+	// the metadata of the run: preventReleaseEvents is set by the workflow
+	// engine (false) and for a workflow run as a step (true)
+	metadata := map[string]any{"eventGroupId": eventGroupID}
+	if j.engineRun {
+		metadata["preventReleaseEvents"] = false
+	}
+	if j.nested {
+		metadata["parentStepIdempotencyKey"] = j.parentStepKey
+		metadata["preventReleaseEvents"] = true
+		transactionID = j.nestedTxID
 	}
 	definition := j.definitionTree(j.root)
 	if definition == nil {
@@ -400,11 +599,66 @@ func (j *journal) flow(workflowID, transactionID, eventGroupID string, opts Work
 	}
 	return map[string]any{
 		"_v": j.version, "runId": j.runID, "state": j.state, "steps": steps, "modelId": workflowID, "options": options,
-		"metadata":  map[string]any{"eventGroupId": eventGroupID, "preventReleaseEvents": false},
+		"metadata":  metadata,
 		"startedAt": j.startedAt, "definition": definition, "timedOutAt": nil, "hasAsyncSteps": j.hasAsync,
 		"transactionId": transactionID, "hasFailedSteps": j.hasFailed, "hasSkippedSteps": j.hasSkipped, "hasWaitingSteps": j.waiting,
 		"hasRevertedSteps": hasReverted, "hasSkippedOnFailureSteps": false,
 	}
+}
+
+// parsedFlowOptions mirrors parseFlowOptions: the options the workflow is
+// created with, store forced when a step is async, has a timeout or a retry
+// interval, or the workflow has a timeout, is idempotent or retained
+// (caller holds j.mu).
+func (j *journal) parsedFlowOptions() map[string]any {
+	options := recordMap(j.flowOptions)
+	force := j.hasAsync || fieldBool(j.flowOptions, "idempotent") || fieldInt(j.flowOptions, "retentionTime") > 0 || fieldInt(j.flowOptions, "timeout") > 0
+	for _, r := range j.steps {
+		if r.async || r.timeout > 0 || fieldInt(r.fields, "retryInterval") > 0 {
+			force = true
+		}
+	}
+	if force {
+		options["store"] = true
+	}
+	return options
+}
+
+// definition mirrors step.definition: the definition fields of the step,
+// its uuid and store (caller holds j.mu).
+func (r *stepRecord) definition() map[string]any {
+	if r.fields != nil {
+		def := recordMap(r.fields)
+		def["uuid"] = r.uuid
+		// buildSteps forces store for async steps and steps with a timeout
+		// or a retry interval
+		def["store"] = fieldBool(r.fields, "store") || r.store || r.async || r.timeout > 0 || fieldInt(r.fields, "retryInterval") > 0
+		if r.async {
+			def["async"] = true
+		}
+		if r.timeout > 0 {
+			def["timeout"] = r.timeout
+		}
+		return def
+	}
+	def := map[string]any{"uuid": r.uuid, "store": r.store, "action": r.action, "noCompensation": r.noCompensation}
+	if r.async {
+		def["async"] = true
+		def["compensateAsync"] = r.compensateAsync
+	}
+	if r.timeout > 0 {
+		def["timeout"] = r.timeout
+	}
+	return def
+}
+
+func recordMap(r *dal.Record) map[string]any {
+	out := make(map[string]any, r.Len())
+	for _, k := range r.Keys() {
+		v, _ := r.Get(k)
+		out[k] = v
+	}
+	return out
 }
 
 // context mirrors { data: TransactionContext, errors } as stored in
@@ -416,8 +670,12 @@ func (j *journal) context() map[string]any {
 	for k, v := range j.invoke {
 		invoke[k] = v
 	}
+	compensate := make(map[string]any, len(j.compensate))
+	for k, v := range j.compensate {
+		compensate[k] = v
+	}
 	return map[string]any{
-		"data":   map[string]any{"invoke": invoke, "payload": j.payload, "compensate": map[string]any{}},
+		"data":   map[string]any{"invoke": invoke, "payload": j.payload, "compensate": compensate},
 		"errors": append([]any{}, j.errors...),
 	}
 }

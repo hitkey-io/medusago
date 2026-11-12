@@ -104,7 +104,17 @@ var ListShippingOptionsForCartWithPricingWorkflow = composer.CreateWorkflow("lis
 		if setIDs == nil {
 			setIDs = []any{}
 		}
+		hookIn := dal.NewRecord()
+		hookIn.Set("cart", cart)
+		hookIn.Set("fulfillmentSetIds", setIDs)
+		hookIn.Set("additional_data", in.AdditionalData)
+		optionsResult, err := composer.CreateHookWithResult(e, "setShippingOptionsContext", hookIn)
+		if err != nil {
+			return nil, err
+		}
+		// { ...setShippingOptionsContextResult, is_return, enabled_in_store }
 		ctxRec := dal.NewRecord()
+		mergeRecord(ctxRec, optionsResult)
 		if in.IsReturn {
 			ctxRec.Set("is_return", "true")
 		} else {
@@ -150,6 +160,12 @@ var ListShippingOptionsForCartWithPricingWorkflow = composer.CreateWorkflow("lis
 		if err != nil {
 			return nil, err
 		}
+		calcHookIn := dal.NewRecord()
+		calcHookIn.Set("input", in)
+		calcResult, err := composer.CreateHookWithResult(e, "setCalculatedShippingPricingContext", calcHookIn)
+		if err != nil {
+			return nil, err
+		}
 		var calculated []*dal.Record
 		var prices []*dal.Record
 		if len(calcIDs) > 0 {
@@ -168,7 +184,9 @@ var ListShippingOptionsForCartWithPricingWorkflow = composer.CreateWorkflow("lis
 			}
 			var input []*dal.Record
 			for _, so := range calculated {
+				// { ...setCalculatedShippingPricingContextResult, ...cart, items, from_location }
 				c := dal.NewRecord()
+				mergeRecord(c, calcResult)
 				for _, k := range cart.Keys() {
 					c.Set(k, Get(cart, k))
 				}

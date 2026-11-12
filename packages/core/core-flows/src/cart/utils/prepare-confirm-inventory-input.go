@@ -97,12 +97,12 @@ func DeepFlatMap(data any, path string, callback func(ctx map[string]*dal.Record
 
 // ConfirmInventoryItem mirrors ConfirmInventoryItem.
 type ConfirmInventoryItem struct {
-	ID               any
-	InventoryItemID  any
-	RequiredQuantity any
-	AllowBackorder   bool
-	Quantity         any
-	LocationIDs      []any
+	ID               any   `json:"id,omitempty"`
+	InventoryItemID  any   `json:"inventory_item_id"`
+	RequiredQuantity any   `json:"required_quantity"`
+	AllowBackorder   bool  `json:"allow_backorder"`
+	Quantity         any   `json:"quantity"`
+	LocationIDs      []any `json:"location_ids"`
 }
 
 // ConfirmVariantInventoryInput mirrors ConfirmVariantInventoryWorkflowInputDTO.

@@ -26,8 +26,8 @@ type VariantsAndItemsInput struct {
 
 // VariantsAndItems mirrors GetVariantsAndItemsWithPricesWorkflowOutput.
 type VariantsAndItems struct {
-	Variants  []*dal.Record
-	LineItems []*dal.Record // { selector: { id }, data }
+	Variants  []*dal.Record `json:"variants"`
+	LineItems []*dal.Record `json:"lineItems"` // { selector: { id }, data }
 }
 
 func itemIDLike(item *dal.Record) string {
@@ -184,9 +184,15 @@ var GetVariantsAndItemsWithPrices = composer.CreateWorkflow("get-variant-items-w
 		return prepareVariantsAndItemsWithPricesStep.Run(e, prepareInput{cart: cart, items: itemsOf(in), variants: variants, priceSets: priceSets})
 	})
 
+// ConfirmVariantInventoryOutput mirrors ConfirmVariantInventoryWorkflowOutput
+// ({ items }).
+type ConfirmVariantInventoryOutput struct {
+	Items []ConfirmInventoryItem `json:"items"`
+}
+
 // ConfirmVariantInventoryWorkflow mirrors confirmVariantInventoryWorkflow.
 var ConfirmVariantInventoryWorkflow = composer.CreateWorkflow("confirm-item-inventory",
-	func(e *composer.Execution, in ConfirmVariantInventoryInput) ([]ConfirmInventoryItem, error) {
+	func(e *composer.Execution, in ConfirmVariantInventoryInput) (*ConfirmVariantInventoryOutput, error) {
 		items, err := PrepareConfirmInventoryInput(in)
 		if err != nil {
 			return nil, err
@@ -194,5 +200,5 @@ var ConfirmVariantInventoryWorkflow = composer.CreateWorkflow("confirm-item-inve
 		if _, err := steps.ConfirmInventoryStep.Run(e, items); err != nil {
 			return nil, err
 		}
-		return items, nil
+		return &ConfirmVariantInventoryOutput{Items: items}, nil
 	})

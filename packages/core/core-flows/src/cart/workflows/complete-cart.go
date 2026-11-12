@@ -21,10 +21,16 @@ const CompleteCartWorkflowID = "complete-cart"
 
 func boolPtr(b bool) *bool { return &b }
 
+// CompleteCartWorkflowInput mirrors CompleteCartWorkflowInput.
+type CompleteCartWorkflowInput struct {
+	ID string `json:"id"`
+}
+
 // CompleteCartWorkflow mirrors completeCartWorkflow: the cart is locked
 // (30s timeout, 2 minutes ttl) for the whole completion.
 var CompleteCartWorkflow = composer.CreateWorkflowWithOptions(CompleteCartWorkflowID, composer.WorkflowOptions{Store: true, RetentionTime: 60 * 60 * 24 * 3},
-	func(e *composer.Execution, cartID string) (*dal.Record, error) {
+	func(e *composer.Execution, input CompleteCartWorkflowInput) (*dal.Record, error) {
+		cartID := input.ID
 		if _, err := lockingsteps.AcquireLockStep.Run(e, lockingsteps.AcquireLockStepInput{Key: lockingsteps.Key(cartID), Timeout: 30, TTL: 120}); err != nil {
 			return nil, err
 		}
@@ -78,12 +84,12 @@ var CompleteCartWorkflow = composer.CreateWorkflowWithOptions(CompleteCartWorkfl
 			return nil, err
 		}
 
-		var order *dal.Record
-		if !Truthy(orderID) {
-			order, err = completeCartCreateOrder(e, cart, firstSessionID)
-			if err != nil {
-				return nil, err
-			}
+		// If order ID does not exist, we are completing the cart for the first time
+		order, err := composer.When(e, "create-order", !Truthy(orderID), func() (*dal.Record, error) {
+			return completeCartCreateOrder(e, cart, firstSessionID)
+		})
+		if err != nil {
+			return nil, err
 		}
 
 		if _, err := lockingsteps.ReleaseLockStep.Run(e, lockingsteps.ReleaseLockStepInput{Key: lockingsteps.Key(cartID)}); err != nil {
