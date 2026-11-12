@@ -18,8 +18,8 @@ type ProviderUploadFileDTO struct {
 
 // ProviderFileResultDTO mirrors ProviderFileResultDTO.
 type ProviderFileResultDTO struct {
-	Key string
-	URL string
+	URL string `json:"url"`
+	Key string `json:"key"`
 }
 
 // ProviderGetPresignedUploadUrlDTO mirrors ProviderGetPresignedUploadUrlDTO.

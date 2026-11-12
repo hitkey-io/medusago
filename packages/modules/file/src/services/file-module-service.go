@@ -130,7 +130,7 @@ func (s *FileModuleService) GetProvider() filetypes.IFileProvider { return s.pro
 func (s *FileModuleService) GetUploadFileUrls(ctx context.Context, data []filetypes.ProviderGetPresignedUploadUrlDTO) ([]filetypes.ProviderFileResultDTO, error) {
 	out := make([]filetypes.ProviderFileResultDTO, 0, len(data))
 	for _, d := range data {
-		r, err := s.provider.GetPresignedUploadURL(ctx, d)
+		r, err := s.GetUploadFileURL(ctx, d)
 		if err != nil {
 			return nil, err
 		}
