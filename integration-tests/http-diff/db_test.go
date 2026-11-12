@@ -3,6 +3,7 @@ package httpdiff
 import (
 	"context"
 	"fmt"
+	loyaltyplugin "github.com/hitkey-io/medusago/packages/plugins/loyalty/src"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -44,7 +45,7 @@ func setupDatabase(t *testing.T, name string) string {
 	u, _ := url.Parse(admin)
 	u.Path = "/" + name
 	dbURL := u.String()
-	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{DatabaseURL: dbURL}, Modules: scenarioModules()})
+	cfg := config.DefineConfig(config.InputConfig{ProjectConfig: config.ProjectConfig{DatabaseURL: dbURL}, Modules: scenarioModules(), Plugins: scenarioPlugins()})
 	if err := db.Migrate(ctx, cfg, db.MigrateOptions{}); err != nil {
 		t.Fatal(err)
 	}
@@ -157,6 +158,16 @@ func indexModuleOptions() map[string]any {
 		panic(err)
 	}
 	return map[string]any{"schema": string(data)}
+}
+
+// scenarioPlugins are the plugins of a scenario: HTTP_DIFF_LOYALTY=true
+// enables @medusajs/loyalty-plugin (the reference application reads the
+// same variable).
+func scenarioPlugins() []config.PluginConfig {
+	if os.Getenv("HTTP_DIFF_LOYALTY") == "true" {
+		return []config.PluginConfig{{Resolve: loyaltyplugin.Name, Options: map[string]any{}}}
+	}
+	return nil
 }
 
 func scenarioModules() []config.ModuleConfig {

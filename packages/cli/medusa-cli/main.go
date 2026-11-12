@@ -2,13 +2,16 @@
 //
 // It is the CLI library (packages/cli/medusa-cli/src) without project hooks:
 // a project configured with medusa-config.json (or .yaml) only. Go projects call
-// cli.Run from their own main package instead.
+// cli.Run from their own main package instead. The official plugins are
+// linked in, so a configuration can enable them in its plugins.
 package main
 
 import (
 	"os"
 
 	cli "github.com/hitkey-io/medusago/packages/cli/medusa-cli/src"
+	// @medusajs/loyalty-plugin
+	_ "github.com/hitkey-io/medusago/packages/plugins/loyalty/src"
 )
 
 func main() {

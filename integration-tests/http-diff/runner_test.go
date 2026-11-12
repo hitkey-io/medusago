@@ -1071,7 +1071,7 @@ func goServer(t *testing.T, scenario string) string {
 			DatabaseURL:    dbURL,
 			HTTP:           config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
 			SessionOptions: scenarioSessionOptions(),
-		}, Modules: scenarioModules()})
+		}, Modules: scenarioModules(), Plugins: scenarioPlugins()})
 		app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, Routes: append(append(append(routes, scenarioRoutes()...), indexQueryRoutes()...), workflowEngineOpsRoutes()...), OnLoad: append(scenarioHooks(t), registerEventsCapture)})
 		if err != nil {
 			t.Fatal(err)

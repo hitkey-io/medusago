@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	defaultsworkflows "github.com/hitkey-io/medusago/packages/core/core-flows/src/defaults/workflows"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/plugins"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/medusa/src/subscribers"
 	"log/slog"
@@ -317,6 +318,15 @@ func Initialize(ctx context.Context, cfg config.ConfigModule) (*MedusaApp, error
 // InitializeWithOptions is Initialize with options.
 func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Options) (*MedusaApp, error) {
 	logger := slog.Default()
+	// getResolvedPlugins + mergePluginModules: the plugin modules, links and
+	// workflow hooks
+	if err := plugins.Apply(&cfg); err != nil {
+		return nil, err
+	}
+	resolvedPlugins, err := plugins.Resolved(cfg)
+	if err != nil {
+		return nil, err
+	}
 	if opts.Directory == "" {
 		if cwd, err := os.Getwd(); err == nil {
 			opts.Directory = cwd
@@ -376,6 +386,17 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 				return subscribers.SearchIngestionHandler(ctx, c, ev.Name, ev.Data, ev.Metadata)
 			})
 		}
+		// the subscribers of the plugins (<plugin>/subscribers)
+		for _, p := range resolvedPlugins {
+			for _, sub := range p.Subscribers {
+				handler := sub.Handler
+				for _, event := range sub.Events {
+					bus.Subscribe(event, func(ctx context.Context, ev eventbus.Event) error {
+						return handler(ctx, c, ev)
+					})
+				}
+			}
+		}
 	}
 
 	// createQuery's indexModule and searchModule
@@ -429,9 +450,15 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 	}
 	// start.ts registers the health check after the loaders; it is matched
 	// by path only, so its position does not change the routing.
+	// the API of the plugins comes after the core one, before the project's
+	routes, mws := api.Routes(), api.Middlewares()
+	for _, p := range resolvedPlugins {
+		routes = append(routes, p.Routes...)
+		mws = append(mws, p.Middlewares...)
+	}
 	medusahttp.LoadAPI(app, medusahttp.ApiLoaderOptions{
-		Routes:               append(api.Routes(), opts.Routes...),
-		Middlewares:          append(api.Middlewares(), opts.Middlewares...),
+		Routes:               append(routes, opts.Routes...),
+		Middlewares:          append(mws, opts.Middlewares...),
 		AdminCors:            cfg.ProjectConfig.HTTP.AdminCors,
 		StoreCors:            cfg.ProjectConfig.HTTP.StoreCors,
 		AuthCors:             cfg.ProjectConfig.HTTP.AuthCors,

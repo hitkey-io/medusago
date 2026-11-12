@@ -9,7 +9,8 @@
 //
 // Every upstream migration class is instantiated with a stub driver and its
 // up()/down() are run; the SQL passed to addSql() is captured and written to
-// packages/modules/[providers/]<name>/src/migrations/<MigrationName>.go, keeping the
+// packages/modules/[providers/]<name>/src/migrations/<MigrationName>.go (and
+// packages/plugins/<plugin>/src/modules/<name>/migrations), keeping the
 // upstream name so the rows in mikro_orm_migrations stay identical.
 //
 // Modules listed as Medusa Enterprise Edition materials in the upstream
@@ -192,10 +193,33 @@ const packageDirs = ["packages/modules", "packages/modules/providers"].flatMap((
     .map((name) => `${base}/${name}`)
 )
 
-for (const pkgDir of packageDirs.sort()) {
+// The modules of the plugins: packages/plugins/<plugin>/src/modules/<name>,
+// compiled into .medusa/server/src/modules/<name>/migrations.
+const pluginModules = fs
+  .readdirSync(path.join(UPSTREAM, "packages/plugins"))
+  .flatMap((plugin) => {
+    const modulesDir = path.join(UPSTREAM, "packages/plugins", plugin, "src/modules")
+    if (!fs.existsSync(modulesDir)) return []
+    return fs
+      .readdirSync(modulesDir, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => ({
+        pkgDir: `packages/plugins/${plugin}/src/modules/${d.name}`,
+        distDir: path.join(UPSTREAM, "packages/plugins", plugin, ".medusa/server/src/modules", d.name, "migrations"),
+        srcDir: path.join(modulesDir, d.name, "migrations"),
+        outDir: path.join(ROOT, "packages/plugins", plugin, "src/modules", d.name, "migrations"),
+      }))
+  })
+
+const entries = packageDirs.sort().map((pkgDir) => ({
+  pkgDir,
+  distDir: path.join(UPSTREAM, pkgDir, "dist/migrations"),
+  srcDir: path.join(UPSTREAM, pkgDir, "src/migrations"),
+  outDir: path.join(ROOT, pkgDir, "src/migrations"),
+})).concat(pluginModules)
+
+for (const { pkgDir, distDir, srcDir, outDir } of entries) {
   const mod = path.basename(pkgDir)
-  const distDir = path.join(UPSTREAM, pkgDir, "dist/migrations")
-  const srcDir = path.join(UPSTREAM, pkgDir, "src/migrations")
   if (!fs.existsSync(srcDir) || enterprisePaths.includes(pkgDir)) {
     continue
   }
@@ -209,7 +233,6 @@ for (const pkgDir of packageDirs.sort()) {
     .map((f) => f.replace(/\.ts$/, ""))
     .sort()
 
-  const outDir = path.join(ROOT, pkgDir, "src/migrations")
   fs.mkdirSync(outDir, { recursive: true })
 
   for (const name of names) {
@@ -303,7 +326,7 @@ ${names.map((n) => `\t${n.replace(/[^A-Za-z0-9_]/g, "_")},`).join("\n")}
   report.modules.push(`${pkgDir}: ${names.length}`)
 }
 
-execFileSync("gofmt", ["-w", ...packageDirs.map((d) => path.join(ROOT, d, "src/migrations")).filter((d) => fs.existsSync(d))])
+execFileSync("gofmt", ["-w", ...entries.map((e) => e.outDir).filter((d) => fs.existsSync(d))])
 
 console.log(`modules: ${report.modules.length}`)
 for (const line of report.modules) console.log(`  ${line}`)

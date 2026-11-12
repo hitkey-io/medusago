@@ -6,7 +6,12 @@ import "sync"
 type HookHandler struct {
 	invoke     func(StepExecutionContext, any) (StepResponse[any], error)
 	compensate func(StepExecutionContext, any) error
+	// enabled restricts the handler to the applications it belongs to
+	// (a plugin's handler: the applications using the plugin)
+	enabled func(Container) bool
 }
+
+func (h HookHandler) activeIn(c Container) bool { return h.enabled == nil || h.enabled(c) }
 
 type hookRegistry struct {
 	mu       sync.RWMutex
@@ -21,6 +26,15 @@ func (w *Workflow[I, O]) RegisterHook(name string, invoke func(StepExecutionCont
 	w.hooks.mu.Lock()
 	defer w.hooks.mu.Unlock()
 	w.hooks.handlers[name] = HookHandler{invoke: invoke, compensate: compensate}
+}
+
+// RegisterHookWhen is RegisterHook for the runs whose container satisfies
+// enabled (a plugin registers its handlers for the applications that use
+// it; elsewhere the hook has no handler).
+func (w *Workflow[I, O]) RegisterHookWhen(name string, enabled func(Container) bool, invoke func(StepExecutionContext, any) (StepResponse[any], error), compensate func(StepExecutionContext, any) error) {
+	w.hooks.mu.Lock()
+	defer w.hooks.mu.Unlock()
+	w.hooks.handlers[name] = HookHandler{invoke: invoke, compensate: compensate, enabled: enabled}
 }
 
 // CreateHook mirrors createHook(name, input) inside the workflow body: the
@@ -38,6 +52,9 @@ func (w *Workflow[I, O]) CreateHook(e *Execution, name string, input any) error 
 // <name>); without a handler the hook step completes with no output. Like
 // upstream, a hook is always compensated (a no-op without a compensation).
 func runHook(e *Execution, workflowID, name string, h HookHandler, ok bool, input any) (any, error) {
+	if ok && !h.activeIn(e.container) {
+		ok = false
+	}
 	if !ok {
 		if e.journal == nil {
 			return nil, nil

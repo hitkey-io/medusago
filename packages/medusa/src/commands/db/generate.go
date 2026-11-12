@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/plugins"
 	"log/slog"
 	"path/filepath"
 	"strings"
@@ -44,6 +45,10 @@ func isLocalPath(resolve string) bool {
 // directory: only project modules (resolved from a local path) can
 // generate migrations.
 func Generate(ctx context.Context, cfg config.ConfigModule, opts GenerateOptions) error {
+	// the modules and links of the plugins (mergePluginModules)
+	if err := plugins.Apply(&cfg); err != nil {
+		return err
+	}
 	logger := opts.Logger
 	if logger == nil {
 		logger = slog.Default()

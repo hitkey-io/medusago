@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/plugins"
 	"log/slog"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -63,6 +64,10 @@ func LinkDefinitions(cfg *config.ConfigModule) ([]*joiner.ModuleJoinerConfig, er
 
 // SyncLinksCommand mirrors `medusa db:sync-links`.
 func SyncLinksCommand(ctx context.Context, cfg config.ConfigModule, opts SyncLinksOptions) error {
+	// the modules and links of the plugins (mergePluginModules)
+	if err := plugins.Apply(&cfg); err != nil {
+		return err
+	}
 	pool, err := connect(ctx, cfg)
 	if err != nil {
 		return err

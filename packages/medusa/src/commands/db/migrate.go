@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/plugins"
 	"log/slog"
 	"os"
 	"strconv"
@@ -114,6 +115,10 @@ func connect(ctx context.Context, cfg config.ConfigModule) (*pgxpool.Pool, error
 // providers, the link tables, the search indexes, the module loaders (which
 // upstream run when the application is loaded) and the migration scripts.
 func Migrate(ctx context.Context, cfg config.ConfigModule, opts MigrateOptions) error {
+	// the modules and links of the plugins (mergePluginModules)
+	if err := plugins.Apply(&cfg); err != nil {
+		return err
+	}
 	logger := slog.Default()
 	pool, err := connect(ctx, cfg)
 	if err != nil {
@@ -189,6 +194,10 @@ func IsSearchModuleEnabled(cfg config.ConfigModule) bool {
 // the application is loaded (module loaders) and the pending migration
 // scripts are executed.
 func RunMigrationScripts(ctx context.Context, cfg config.ConfigModule) error {
+	// the modules and links of the plugins (mergePluginModules)
+	if err := plugins.Apply(&cfg); err != nil {
+		return err
+	}
 	logger := slog.Default()
 	pool, err := connect(ctx, cfg)
 	if err != nil {
@@ -236,6 +245,10 @@ func runMigrationScripts(ctx context.Context, pool *pgxpool.Pool, cfg config.Con
 // RunModuleLoaders runs the loaders of the enabled modules in configuration
 // order, with their configured providers.
 func RunModuleLoaders(ctx context.Context, pool *pgxpool.Pool, cfg config.ConfigModule) error {
+	// the modules and links of the plugins (mergePluginModules)
+	if err := plugins.Apply(&cfg); err != nil {
+		return err
+	}
 	logger := slog.Default()
 	// The application is loaded: the joiner configs of the modules and
 	// links are known (MedusaModule.getAllJoinerConfigs(), the index module

@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/plugins"
 	"log/slog"
 	"strings"
 
@@ -15,6 +16,10 @@ import (
 // last executed migration is reverted (MikroORM migrator.down() without
 // options), with the logs of buildRevertMigrationScript.
 func Rollback(ctx context.Context, cfg config.ConfigModule, moduleNames []string) error {
+	// the modules and links of the plugins (mergePluginModules)
+	if err := plugins.Apply(&cfg); err != nil {
+		return err
+	}
 	logger := slog.Default()
 	pool, err := connect(ctx, cfg)
 	if err != nil {

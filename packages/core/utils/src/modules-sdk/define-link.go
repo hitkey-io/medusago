@@ -130,20 +130,56 @@ type RegisterLink func(modules []*joiner.ModuleJoinerConfig) (*joiner.ModuleJoin
 var (
 	customLinksMu sync.Mutex
 	customLinks   []RegisterLink
+	// pluginLinks are the links of the plugins of the running application
+	// (SetPluginLinks); capturing collects the links a plugin defines.
+	pluginLinks []RegisterLink
+	capturing   *[]RegisterLink
+	captureMu   sync.Mutex
 )
 
 // SetCustomLink mirrors MedusaModule.setCustomLink.
 func SetCustomLink(fn RegisterLink) {
 	customLinksMu.Lock()
 	defer customLinksMu.Unlock()
+	if capturing != nil {
+		*capturing = append(*capturing, fn)
+		return
+	}
 	customLinks = append(customLinks, fn)
 }
 
-// GetCustomLinks mirrors MedusaModule.getCustomLinks.
+// CaptureCustomLinks runs define (the links of a plugin, defined with
+// DefineLink) and returns the links it defines instead of registering them.
+func CaptureCustomLinks(define func() error) ([]RegisterLink, error) {
+	captureMu.Lock()
+	defer captureMu.Unlock()
+	var out []RegisterLink
+	customLinksMu.Lock()
+	capturing = &out
+	customLinksMu.Unlock()
+	defer func() {
+		customLinksMu.Lock()
+		capturing = nil
+		customLinksMu.Unlock()
+	}()
+	err := define()
+	return out, err
+}
+
+// SetPluginLinks sets the links of the plugins of the application (loaded
+// before the links of the project, like the plugin links directories).
+func SetPluginLinks(links []RegisterLink) {
+	customLinksMu.Lock()
+	defer customLinksMu.Unlock()
+	pluginLinks = append([]RegisterLink(nil), links...)
+}
+
+// GetCustomLinks mirrors MedusaModule.getCustomLinks: the links of the
+// plugins, then those of the project.
 func GetCustomLinks() []RegisterLink {
 	customLinksMu.Lock()
 	defer customLinksMu.Unlock()
-	return append([]RegisterLink(nil), customLinks...)
+	return append(append([]RegisterLink(nil), pluginLinks...), customLinks...)
 }
 
 // ClearCustomLinks forgets the registered custom links.
