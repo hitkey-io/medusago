@@ -2,8 +2,13 @@
 package services
 
 import (
+	"errors"
+	"log/slog"
+
 	"context"
 	"fmt"
+	taxtypes "github.com/hitkey-io/medusago/packages/core/types/src/tax"
+	"github.com/hitkey-io/medusago/packages/modules/tax/src/providers"
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
@@ -17,11 +22,47 @@ import (
 // TaxModuleService mirrors TaxModuleService (writes).
 type TaxModuleService struct {
 	*utilsmodulessdk.MedusaService
+	// providers are the registered tax providers by their container key
+	// (tp_system, tp_<identifier>_<id>).
+	providers map[string]taxtypes.ITaxProvider
+	logger    *slog.Logger
 }
 
-// NewTaxModuleService builds the service.
+// NewTaxModuleService builds the service with the system provider and the
+// configured providers.
 func NewTaxModuleService(opts modulessdk.ServiceOptions, joinerConfig *joiner.ModuleJoinerConfig) (*TaxModuleService, error) {
-	return &TaxModuleService{MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig)}, nil
+	s := &TaxModuleService{
+		MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig),
+		providers:     map[string]taxtypes.ITaxProvider{"tp_" + providers.SystemTaxIdentifier: providers.SystemTaxService{}},
+		logger:        opts.Logger,
+	}
+	if s.logger == nil {
+		s.logger = slog.Default()
+	}
+	for _, p := range opts.Providers {
+		if inst, ok := p.Instance.(taxtypes.ITaxProvider); ok {
+			key := "tp_" + p.Identifier
+			if p.ID != "" {
+				key += "_" + p.ID
+			}
+			s.providers[key] = inst
+		}
+	}
+	return s, nil
+}
+
+// retrieveProvider mirrors TaxProviderService.retrieveProvider.
+func (s *TaxModuleService) retrieveProvider(providerID string) (taxtypes.ITaxProvider, error) {
+	if p, ok := s.providers[providerID]; ok {
+		return p, nil
+	}
+	s.logger.Error("AwilixResolutionError: Could not resolve '" + providerID + "'.")
+	return nil, errors.New("\n  Unable to retrieve the tax provider with id: " + providerID + "\n  Please make sure that the provider is registered in the container and it is configured correctly in your project configuration file.")
+}
+
+// GetProvider mirrors getProvider.
+func (s *TaxModuleService) GetProvider(providerID string) (taxtypes.ITaxProvider, error) {
+	return s.retrieveProvider(providerID)
 }
 
 func (s *TaxModuleService) tx(ctx context.Context, fn func(t *TaxModuleService) error) error {

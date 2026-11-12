@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	taxtypes "github.com/hitkey-io/medusago/packages/core/types/src/tax"
 	"sort"
 	"strings"
 
@@ -193,8 +194,8 @@ func (s *TaxModuleService) GetTaxLines(ctx context.Context, items []*dal.Record,
 	if err != nil {
 		return nil, err
 	}
-	var itemLines, shippingLines []*dal.Record
-	var itemRates, shippingRates [][]*dal.Record
+	var itemLines []taxtypes.ItemTaxCalculationLine
+	var shippingLines []taxtypes.ShippingTaxCalculationLine
 	for _, item := range items {
 		queries := itemRuleQueries(item)
 		var matched []*dal.Record
@@ -205,39 +206,23 @@ func (s *TaxModuleService) GetTaxLines(ctx context.Context, items []*dal.Record,
 		}
 		rates := getTaxRatesForItem(item, matched)
 		if isShippingItem(item) {
-			shippingLines = append(shippingLines, item)
-			shippingRates = append(shippingRates, rates)
+			shippingLines = append(shippingLines, taxtypes.ShippingTaxCalculationLine{ShippingLine: item, Rates: rates})
 		} else {
-			itemLines = append(itemLines, item)
-			itemRates = append(itemRates, rates)
+			itemLines = append(itemLines, taxtypes.ItemTaxCalculationLine{LineItem: item, Rates: rates})
 		}
 	}
-	// the system provider
-	providerID := "system"
-	var out []*dal.Record
-	line := func(rate *dal.Record, key string, id any) *dal.Record {
-		l := dal.NewRecord()
-		l.Set("rate_id", rget(rate, "id"))
-		r := rget(rate, "rate")
-		if r == nil {
-			r = float64(0)
-		}
-		l.Set("rate", r)
-		l.Set("name", rget(rate, "name"))
-		l.Set("code", rget(rate, "code"))
-		l.Set(key, id)
-		l.Set("provider_id", providerID)
-		return l
+	// getTaxLinesFromProvider: the provider of the parent region
+	providerID := fmt.Sprint(rget(parent, "provider_id"))
+	if rget(parent, "provider_id") == nil {
+		providerID = "null"
 	}
-	for i, item := range itemLines {
-		for _, rate := range itemRates[i] {
-			out = append(out, line(rate, "line_item_id", rget(item, "id")))
-		}
+	provider, err := s.retrieveProvider(providerID)
+	if err != nil {
+		return nil, err
 	}
-	for i, item := range shippingLines {
-		for _, rate := range shippingRates[i] {
-			out = append(out, line(rate, "shipping_line_id", rget(item, "id")))
-		}
+	out, err := provider.GetTaxLines(ctx, itemLines, shippingLines, calculationContext)
+	if err != nil {
+		return nil, err
 	}
 	if out == nil {
 		out = []*dal.Record{}
