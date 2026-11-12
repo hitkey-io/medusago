@@ -473,7 +473,8 @@ func (r *Repository) Create(ctx context.Context, inputs []*Record) ([]*Record, e
 
 // createNestedToOne inserts the nested owning to-one objects without a
 // primary key (MikroORM cascade persist) and replaces them with references.
-func (r *Repository) createNestedToOne(ctx context.Context, e *dml.Entity, input *Record, idm identityMap) (*Record, error) {
+func (r *Repository) createNestedToOne(ctx context.Context, e *dml.Entity, input *Record, idm identityMap) (*Record, map[string]*instance, error) {
+	created := map[string]*instance{}
 	for _, rel := range e.Meta.Properties {
 		if (rel.Kind != "m:1" && !(rel.Kind == "1:1" && rel.Owner)) || len(rel.FieldNames) == 0 {
 			continue
@@ -488,12 +489,13 @@ func (r *Repository) createNestedToOne(ctx context.Context, e *dml.Entity, input
 		}
 		target, err := r.Schema.Entity(rel.Entity)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		child, err := r.create(ctx, target, obj, idm)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
+		created[rel.Name] = child
 		copyInput := NewRecord()
 		for _, k := range input.Keys() {
 			val, _ := input.Get(k)
@@ -504,11 +506,11 @@ func (r *Repository) createNestedToOne(ctx context.Context, e *dml.Entity, input
 		copyInput.Set(rel.Name, ref)
 		input = copyInput
 	}
-	return input, nil
+	return input, created, nil
 }
 
 func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, idm identityMap) (*instance, error) {
-	input, err := r.createNestedToOne(ctx, e, input, idm)
+	input, nestedToOne, err := r.createNestedToOne(ctx, e, input, idm)
 	if err != nil {
 		return nil, err
 	}
@@ -533,6 +535,10 @@ func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, i
 	inst.initChanged = nil
 	inst.data = data
 	inst.created = true
+	// the nested to-one entities created with it are set on the entity
+	for name, child := range nestedToOne {
+		inst.relations[name] = child
+	}
 
 	for _, mp := range e.Meta.Properties {
 		if mp.Kind != "1:m" && mp.Kind != "m:n" {
@@ -753,7 +759,7 @@ func (r *Repository) UpdateWith(ctx context.Context, opts FindOptions, dataFor f
 // mergeObjects mirrors assign(entity, data, { mergeObjectProperties: true })
 // of repository.update (upsert assigns without it).
 func (r *Repository) applyUpdate(ctx context.Context, inst *instance, data *Record, idm identityMap, mergeObjects bool) error {
-	data, err := r.createNestedToOne(ctx, inst.entity, data, idm)
+	data, _, err := r.createNestedToOne(ctx, inst.entity, data, idm)
 	if err != nil {
 		return err
 	}
