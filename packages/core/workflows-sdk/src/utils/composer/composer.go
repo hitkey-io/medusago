@@ -222,6 +222,8 @@ type Execution struct {
 	// finished is closed once the (root) run finished
 	finished     chan struct{}
 	finishedOnce sync.Once
+	// preventReleaseEvents: the run leaves its grouped events alone
+	preventReleaseEvents bool
 }
 
 // Context returns the run context.
@@ -532,6 +534,10 @@ type RunOptions struct {
 	// Notify delivers the run's events to the workflow engine subscribers
 	// (runs started through the workflow engine).
 	Notify bool
+	// PreventReleaseEvents mirrors the context flag preventReleaseEvents:
+	// the grouped events are neither released nor cleared when the run
+	// finishes (a run sharing the event group of another one).
+	PreventReleaseEvents bool
 }
 
 // Run mirrors workflow(container).run({ input }): the result, or the first
@@ -558,7 +564,8 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 	// background step does)
 	runCtx := context.WithoutCancel(ctx)
 	e := &Execution{ctx: runCtx, container: c, workflowID: w.ID, transactionID: o.TransactionID, eventGroupID: o.EventGroupID, hooks: w.hooks,
-		journal: newJournal(input), detacher: newDetacher(), rootWorkflowID: w.ID, rootOptions: w.Options}
+		journal: newJournal(input), detacher: newDetacher(), rootWorkflowID: w.ID, rootOptions: w.Options,
+		preventReleaseEvents: o.PreventReleaseEvents}
 	e.journal.define(w.ID)
 	e.journal.engineRun = o.Notify
 	e.registerLive()
@@ -645,6 +652,9 @@ func (e *Execution) notifyEvents() {
 // checkpoint of a finished run; it returns the final state.
 func (w *Workflow[I, O]) finish(e *Execution, err error, stored bool) string {
 	bus, _ := e.container.Resolve(utilsmodulessdk.EVENT_BUS).(EventBus)
+	if e.preventReleaseEvents {
+		bus = nil
+	}
 	state := TransactionStateDone
 	if err != nil {
 		state = TransactionStateReverted
