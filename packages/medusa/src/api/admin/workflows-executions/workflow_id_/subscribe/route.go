@@ -69,7 +69,8 @@ func Stream(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, workf
 			flusher.Flush()
 		}
 	})
-	<-req.Ctx().Done()
+	// the stream ends when the client disconnects
+	<-req.Request.Context().Done()
 	mu.Lock()
 	closed = true
 	mu.Unlock()

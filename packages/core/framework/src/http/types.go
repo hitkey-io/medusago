@@ -91,8 +91,11 @@ func NewMedusaRequest(r *nethttp.Request) *MedusaRequest {
 	return &MedusaRequest{Request: r, Params: map[string]string{}, Locals: map[string]any{}}
 }
 
-// Ctx returns the request context.
-func (r *MedusaRequest) Ctx() context.Context { return r.Request.Context() }
+// Ctx returns the context handlers run with: the request context without
+// its cancellation. Like a Node handler, the work of a request (queries,
+// workflows) goes on when the client disconnects; Request.Context() still
+// reports the disconnection (event streams wait on it).
+func (r *MedusaRequest) Ctx() context.Context { return context.WithoutCancel(r.Request.Context()) }
 
 // Path mirrors req.path: the URL path (not decoded).
 func (r *MedusaRequest) Path() string { return r.URL.EscapedPath() }
