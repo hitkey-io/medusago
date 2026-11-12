@@ -97,7 +97,7 @@ func IsPresent(v any) bool {
 	case []any:
 		return len(t) > 0
 	case *dal.Record:
-		return t.Len() > 0
+		return t != nil && t.Len() > 0
 	}
 	return true
 }

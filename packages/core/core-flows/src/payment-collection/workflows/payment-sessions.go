@@ -156,7 +156,9 @@ var CreatePaymentSessionsWorkflow = composer.CreateWorkflow("create-payment-sess
 				link := dal.NewRecord()
 				link.Set(utilsmodulessdk.CUSTOMER, c)
 				link.Set(utilsmodulessdk.PAYMENT, p)
-				if _, err := commonsteps.CreateRemoteLinkStep.Run(e, []*dal.Record{link}); err != nil {
+				// when("account-holder-created"): createRemoteLinkStep with
+				// noCompensation, so a failed run keeps the account holder linked
+				if _, err := commonsteps.CreateRemoteLinkStep.Config("", composer.StepOptions{NoCompensation: true}).Run(e, []*dal.Record{link}); err != nil {
 					return nil, err
 				}
 			}

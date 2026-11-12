@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	cartutils "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/utils"
+
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
@@ -21,6 +23,7 @@ type PaymentService interface {
 	CreatePaymentSession(ctx context.Context, collectionID string, input *dal.Record) (*dal.Record, error)
 	DeletePaymentSession(ctx context.Context, id any) error
 	CreateAccountHolder(ctx context.Context, input *dal.Record) (*dal.Record, error)
+	DeleteAccountHolder(ctx context.Context, id any) error
 	UpdatePaymentSession(ctx context.Context, data *dal.Record) (*dal.Record, error)
 }
 
@@ -209,15 +212,30 @@ var CreatePaymentSessionStep = composer.CreateStep("create-payment-session",
 		return PaymentOf(ctx.Container).DeletePaymentSession(ctx.Context, data)
 	})
 
-// CreatePaymentAccountHolderStep mirrors createPaymentAccountHolderStep.
+// CreatePaymentAccountHolderStep mirrors createPaymentAccountHolderStep:
+// createAccountHolder is idempotent, so the compensation deletes the account
+// holder only when it was created (no context.account_holder given).
 var CreatePaymentAccountHolderStep = composer.CreateStep("create-payment-account-holder",
 	func(ctx composer.StepExecutionContext, in *dal.Record) (composer.StepResponse[*dal.Record], error) {
 		holder, err := PaymentOf(ctx.Container).CreateAccountHolder(ctx.Context, in)
 		if err != nil {
 			return composer.StepResponse[*dal.Record]{}, err
 		}
-		return composer.NewStepResponse(holder), nil
-	}, nil)
+		var created any = holder
+		ctxRec, _ := g(in, "context").(*dal.Record)
+		if cartutils.IsPresent(g(ctxRec, "account_holder")) {
+			created = nil
+		}
+		return composer.NewStepResponse(holder, created), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		holder, _ := data.(*dal.Record)
+		if holder == nil {
+			return nil
+		}
+		id, _ := holder.Get("id")
+		return PaymentOf(ctx.Container).DeleteAccountHolder(ctx.Context, id)
+	})
 
 // CreatePaymentCollectionsStep mirrors createPaymentCollectionsStep (cart).
 var CreatePaymentCollectionsStep = composer.CreateStep("create-payment-collections",
