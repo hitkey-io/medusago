@@ -157,8 +157,8 @@ func resolveRefs(v any, outputs map[string]any) any {
 }
 
 var (
-	generatedIDRe = regexp.MustCompile(`^([a-z]+_)?[0-9A-HJKMNP-TV-Z]{26}$`)
-	embeddedIDRe  = regexp.MustCompile(`\b[a-z]+_[0-9A-HJKMNP-TV-Z]{26}\b`)
+	generatedIDRe = regexp.MustCompile(`^([a-z]+_)*[0-9A-HJKMNP-TV-Z]{26}$`)
+	embeddedIDRe  = regexp.MustCompile(`\b(?:[a-z]+_)+[0-9A-HJKMNP-TV-Z]{26}\b`)
 	timestampRe   = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$`)
 )
 

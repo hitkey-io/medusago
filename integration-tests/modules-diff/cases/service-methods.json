@@ -1,0 +1,803 @@
+[
+  {
+    "name": "cart",
+    "module": "cart",
+    "method": "createCarts",
+    "args": [
+      [
+        {
+          "currency_code": "eur",
+          "email": "svc@example.test",
+          "items": [
+            {
+              "title": "Item",
+              "quantity": 1,
+              "unit_price": 10
+            }
+          ]
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "cart_items",
+    "module": "cart",
+    "method": "listLineItems",
+    "args": [
+      {
+        "cart_id": "{{cart.result.0.id}}"
+      },
+      {
+        "select": [
+          "id",
+          "title"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ship",
+    "module": "cart",
+    "method": "addShippingMethods",
+    "args": [
+      "{{cart.result.0.id}}",
+      [
+        {
+          "name": "Standard",
+          "amount": 5
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "ship_missing",
+    "module": "cart",
+    "method": "addShippingMethods",
+    "args": [
+      "cart_missing",
+      [
+        {
+          "name": "Standard",
+          "amount": 5
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "adj",
+    "module": "cart",
+    "method": "addLineItemAdjustments",
+    "args": [
+      "{{cart.result.0.id}}",
+      [
+        {
+          "item_id": "{{cart_items.result.0.id}}",
+          "amount": 2,
+          "code": "A"
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "adj_foreign",
+    "module": "cart",
+    "method": "addLineItemAdjustments",
+    "args": [
+      "{{cart.result.0.id}}",
+      [
+        {
+          "item_id": "cali_foreign",
+          "amount": 1,
+          "code": "X"
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "adj_set",
+    "module": "cart",
+    "method": "setLineItemAdjustments",
+    "args": [
+      "{{cart.result.0.id}}",
+      [
+        {
+          "item_id": "{{cart_items.result.0.id}}",
+          "amount": 3,
+          "code": "B"
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "adj_list",
+    "module": "cart",
+    "method": "listLineItemAdjustments",
+    "args": [
+      {
+        "item_id": "{{cart_items.result.0.id}}"
+      },
+      {
+        "select": [
+          "code",
+          "amount"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "adj_deleted",
+    "module": "cart",
+    "method": "listLineItemAdjustments",
+    "args": [
+      {
+        "item_id": "{{cart_items.result.0.id}}"
+      },
+      {
+        "select": [
+          "code"
+        ],
+        "withDeleted": true,
+        "order": {
+          "code": "ASC"
+        }
+      }
+    ]
+  },
+  {
+    "name": "smadj",
+    "module": "cart",
+    "method": "addShippingMethodAdjustments",
+    "args": [
+      "{{cart.result.0.id}}",
+      [
+        {
+          "shipping_method_id": "{{ship.result.0.id}}",
+          "amount": 1,
+          "code": "S"
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "smadj_foreign",
+    "module": "cart",
+    "method": "addShippingMethodAdjustments",
+    "args": [
+      "{{cart.result.0.id}}",
+      [
+        {
+          "shipping_method_id": "casm_foreign",
+          "amount": 1
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "smadj_set",
+    "module": "cart",
+    "method": "setShippingMethodAdjustments",
+    "args": [
+      "{{cart.result.0.id}}",
+      []
+    ],
+    "service": true
+  },
+  {
+    "name": "smadj_list",
+    "module": "cart",
+    "method": "listShippingMethodAdjustments",
+    "args": [
+      {
+        "shipping_method_id": "{{ship.result.0.id}}"
+      },
+      {
+        "select": [
+          "code"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "taxl",
+    "module": "cart",
+    "method": "addLineItemTaxLines",
+    "args": [
+      "{{cart.result.0.id}}",
+      [
+        {
+          "item_id": "{{cart_items.result.0.id}}",
+          "code": "VAT",
+          "rate": 19
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "taxl_missing",
+    "module": "cart",
+    "method": "addLineItemTaxLines",
+    "args": [
+      "cart_missing",
+      [
+        {
+          "item_id": "x",
+          "code": "VAT",
+          "rate": 19
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "taxs",
+    "module": "cart",
+    "method": "addShippingMethodTaxLines",
+    "args": [
+      "{{cart.result.0.id}}",
+      [
+        {
+          "shipping_method_id": "{{ship.result.0.id}}",
+          "code": "VAT",
+          "rate": 19
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "cus",
+    "module": "customer",
+    "method": "createCustomers",
+    "args": [
+      [
+        {
+          "email": "group@example.test"
+        }
+      ]
+    ]
+  },
+  {
+    "name": "grp",
+    "module": "customer",
+    "method": "createCustomerGroups",
+    "args": [
+      [
+        {
+          "name": "Members"
+        }
+      ]
+    ]
+  },
+  {
+    "name": "join",
+    "module": "customer",
+    "method": "addCustomerToGroup",
+    "args": [
+      [
+        {
+          "customer_id": "{{cus.result.0.id}}",
+          "customer_group_id": "{{grp.result.0.id}}"
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "joined",
+    "module": "customer",
+    "method": "listCustomers",
+    "args": [
+      {
+        "id": "{{cus.result.0.id}}"
+      },
+      {
+        "select": [
+          "id",
+          "groups.name"
+        ],
+        "relations": [
+          "groups"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "leave",
+    "module": "customer",
+    "method": "removeCustomerFromGroup",
+    "args": [
+      [
+        {
+          "customer_id": "{{cus.result.0.id}}",
+          "customer_group_id": "{{grp.result.0.id}}"
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "left",
+    "module": "customer",
+    "method": "listCustomers",
+    "args": [
+      {
+        "id": "{{cus.result.0.id}}"
+      },
+      {
+        "select": [
+          "id",
+          "groups.name"
+        ],
+        "relations": [
+          "groups"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "pc",
+    "module": "payment",
+    "method": "createPaymentCollections",
+    "args": [
+      [
+        {
+          "currency_code": "eur",
+          "amount": 10
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "pc_complete",
+    "module": "payment",
+    "method": "completePaymentCollections",
+    "args": [
+      [
+        "{{pc.result.0.id}}"
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "pl",
+    "module": "pricing",
+    "method": "createPriceLists",
+    "args": [
+      [
+        {
+          "title": "VIP",
+          "description": "vip",
+          "rules": {
+            "customer.groups.id": [
+              "cg_1"
+            ]
+          }
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "pl_set",
+    "module": "pricing",
+    "method": "setPriceListRules",
+    "args": [
+      {
+        "price_list_id": "{{pl.result.0.id}}",
+        "rules": {
+          "region_id": [
+            "reg_1"
+          ]
+        }
+      }
+    ],
+    "service": true
+  },
+  {
+    "name": "pl_after_set",
+    "module": "pricing",
+    "method": "listPriceLists",
+    "args": [
+      {
+        "id": "{{pl.result.0.id}}"
+      },
+      {
+        "select": [
+          "id",
+          "rules_count",
+          "price_list_rules.attribute",
+          "price_list_rules.value"
+        ],
+        "relations": [
+          "price_list_rules"
+        ]
+      }
+    ],
+    "sortby": {
+      "result.0.price_list_rules": "attribute"
+    }
+  },
+  {
+    "name": "pl_remove",
+    "module": "pricing",
+    "method": "removePriceListRules",
+    "args": [
+      {
+        "price_list_id": "{{pl.result.0.id}}",
+        "rules": [
+          "customer.groups.id"
+        ]
+      }
+    ],
+    "service": true
+  },
+  {
+    "name": "pl_after_remove",
+    "module": "pricing",
+    "method": "listPriceLists",
+    "args": [
+      {
+        "id": "{{pl.result.0.id}}"
+      },
+      {
+        "select": [
+          "id",
+          "rules_count",
+          "price_list_rules.attribute",
+          "price_list_rules.value"
+        ],
+        "relations": [
+          "price_list_rules"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ps",
+    "module": "pricing",
+    "method": "createPriceSets",
+    "args": [
+      [
+        {
+          "prices": [
+            {
+              "amount": 10,
+              "currency_code": "eur"
+            }
+          ]
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "ps_add",
+    "module": "pricing",
+    "method": "addPrices",
+    "args": [
+      [
+        {
+          "priceSetId": "{{ps.result.0.id}}",
+          "prices": [
+            {
+              "amount": 20,
+              "currency_code": "usd"
+            }
+          ]
+        }
+      ]
+    ],
+    "service": true,
+    "sortby": {
+      "result.0.prices": "currency_code"
+    }
+  },
+  {
+    "name": "ps_add_missing",
+    "module": "pricing",
+    "method": "addPrices",
+    "args": [
+      [
+        {
+          "priceSetId": "pset_missing",
+          "prices": [
+            {
+              "amount": 20,
+              "currency_code": "usd"
+            }
+          ]
+        }
+      ]
+    ],
+    "service": true
+  },
+  {
+    "name": "lay_default_none",
+    "module": "settings",
+    "method": "getSystemDefaultLayoutConfiguration",
+    "args": [
+      "orders"
+    ],
+    "service": true
+  },
+  {
+    "name": "lay_set",
+    "module": "settings",
+    "method": "setLayoutConfiguration",
+    "args": [
+      "orders",
+      "user_1",
+      {
+        "widgets": {
+          "w1": {
+            "visible": true
+          }
+        },
+        "extra": 1
+      }
+    ],
+    "service": true
+  },
+  {
+    "name": "lay_set_again",
+    "module": "settings",
+    "method": "setLayoutConfiguration",
+    "args": [
+      "orders",
+      "user_1",
+      {
+        "widgets": {
+          "w2": {
+            "visible": false
+          }
+        }
+      }
+    ],
+    "service": true
+  },
+  {
+    "name": "lay_default",
+    "module": "settings",
+    "method": "setSystemDefaultLayoutConfiguration",
+    "args": [
+      "orders",
+      {
+        "widgets": {}
+      }
+    ],
+    "service": true
+  },
+  {
+    "name": "lay_get_default",
+    "module": "settings",
+    "method": "getSystemDefaultLayoutConfiguration",
+    "args": [
+      "orders"
+    ],
+    "service": true
+  },
+  {
+    "name": "lay_scope_none",
+    "module": "settings",
+    "method": "getActiveLayoutScope",
+    "args": [
+      "orders",
+      "user_1"
+    ],
+    "service": true
+  },
+  {
+    "name": "lay_scope_set",
+    "module": "settings",
+    "method": "setActiveLayoutScope",
+    "args": [
+      "orders",
+      "user_1",
+      "personal"
+    ],
+    "service": true
+  },
+  {
+    "name": "lay_scope",
+    "module": "settings",
+    "method": "getActiveLayoutScope",
+    "args": [
+      "orders",
+      "user_1"
+    ],
+    "service": true
+  },
+  {
+    "name": "lay_clear",
+    "module": "settings",
+    "method": "clearLayoutConfiguration",
+    "args": [
+      "orders",
+      "user_1"
+    ],
+    "service": true
+  },
+  {
+    "name": "lay_list",
+    "module": "settings",
+    "method": "listLayoutConfigurations",
+    "args": [
+      {
+        "zone": "orders"
+      },
+      {
+        "select": [
+          "zone",
+          "user_id",
+          "is_system_default",
+          "configuration"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ord",
+    "module": "order",
+    "service": true,
+    "method": "createOrders",
+    "args": [
+      [
+        {
+          "currency_code": "eur",
+          "email": "ord@example.test",
+          "items": [
+            {
+              "title": "Item",
+              "quantity": 1,
+              "unit_price": 10
+            }
+          ],
+          "shipping_methods": [
+            {
+              "name": "Std",
+              "amount": 5
+            }
+          ]
+        }
+      ]
+    ]
+  },
+  {
+    "name": "ord_items",
+    "module": "order",
+    "method": "listOrderLineItems",
+    "args": [
+      {
+        "title": "Item"
+      },
+      {
+        "select": [
+          "id"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ord_sms",
+    "module": "order",
+    "method": "listOrderShippingMethods",
+    "args": [
+      {
+        "name": "Std"
+      },
+      {
+        "select": [
+          "id"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ord_adj",
+    "module": "order",
+    "service": true,
+    "method": "setOrderLineItemAdjustments",
+    "args": [
+      "{{ord.result.0.id}}",
+      [
+        {
+          "item_id": "{{ord_items.result.0.id}}",
+          "amount": 1,
+          "code": "A"
+        }
+      ]
+    ]
+  },
+  {
+    "name": "ord_adj2",
+    "module": "order",
+    "service": true,
+    "method": "setOrderLineItemAdjustments",
+    "args": [
+      "{{ord.result.0.id}}",
+      [
+        {
+          "item_id": "{{ord_items.result.0.id}}",
+          "amount": 2,
+          "code": "B"
+        }
+      ]
+    ]
+  },
+  {
+    "name": "ord_adj_list",
+    "module": "order",
+    "method": "listOrderLineItemAdjustments",
+    "args": [
+      {
+        "item_id": "{{ord_items.result.0.id}}"
+      },
+      {
+        "select": [
+          "code"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ord_smadj",
+    "module": "order",
+    "service": true,
+    "method": "setOrderShippingMethodAdjustments",
+    "args": [
+      "{{ord.result.0.id}}",
+      [
+        {
+          "shipping_method_id": "{{ord_sms.result.0.id}}",
+          "amount": 1,
+          "code": "S"
+        }
+      ]
+    ]
+  },
+  {
+    "name": "ord_smadj_clear",
+    "module": "order",
+    "service": true,
+    "method": "setOrderShippingMethodAdjustments",
+    "args": [
+      "{{ord.result.0.id}}",
+      []
+    ]
+  },
+  {
+    "name": "ord_smadj_list",
+    "module": "order",
+    "method": "listOrderShippingMethodAdjustments",
+    "args": [
+      {
+        "shipping_method_id": "{{ord_sms.result.0.id}}"
+      },
+      {
+        "select": [
+          "code"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "ord_adj_missing",
+    "module": "order",
+    "service": true,
+    "method": "setOrderLineItemAdjustments",
+    "args": [
+      "order_missing",
+      []
+    ]
+  }
+]
