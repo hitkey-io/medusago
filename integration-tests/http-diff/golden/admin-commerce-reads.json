@@ -7,7 +7,7 @@
       "Vary": "Origin"
     },
     "body": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQyNTQwNzQsImV4cCI6MTc5NDM0MDQ3NH0.BWXAj8s94uV3FpLhQNZUR7ow4pMhxeOmovZpOac3fzI"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ0NTgzNjcsImV4cCI6MTc5NDU0NDc2N30.Yc8YFcw5ZTVnvELT4jKccAbpTb668pzLQM630qBCwY8"
     }
   },
   "customers": {
@@ -410,6 +410,7 @@
             "type": "fixed",
             "target_type": "shipping_methods",
             "allocation": "across",
+            "target_selection_strategy": "most_expensive_first",
             "raw_value": {
               "value": "5",
               "precision": 20
@@ -448,6 +449,7 @@
             "type": "percentage",
             "target_type": "items",
             "allocation": "each",
+            "target_selection_strategy": "most_expensive_first",
             "raw_value": {
               "value": "10",
               "precision": 20
@@ -575,6 +577,7 @@
           "type": "percentage",
           "target_type": "items",
           "allocation": "each",
+          "target_selection_strategy": "most_expensive_first",
           "raw_value": {
             "value": "10",
             "precision": 20
