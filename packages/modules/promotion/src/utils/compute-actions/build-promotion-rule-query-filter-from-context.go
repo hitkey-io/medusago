@@ -253,7 +253,7 @@ func BuildPromotionRuleQueryFilterFromContext(ctx context.Context, db dal.Querie
 
 	if len(order) == 0 {
 		return func(alias string, _ func(any) string) string {
-			return excludePromotionsWithRuleMatching(alias, "TRUE") + " = true"
+			return excludePromotionsWithRuleMatching(alias, "TRUE")
 		}, true, nil
 	}
 
@@ -271,7 +271,7 @@ func BuildPromotionRuleQueryFilterFromContext(ctx context.Context, db dal.Querie
     OR (pr.attribute IN (%s) AND (%s))
   )`, attributeKeys, attributeKeys, joined)
 	return func(alias string, _ func(any) string) string {
-		return excludePromotionsWithRuleMatching(alias, unsatisfiable) + " = true"
+		return excludePromotionsWithRuleMatching(alias, unsatisfiable)
 	}, true, nil
 }
 
@@ -282,9 +282,11 @@ var ruleSources = []struct{ from, promotionID string }{
       JOIN promotion_rule pr ON ppr.promotion_rule_id = pr.id`, "ppr.promotion_id"},
 	{`promotion_application_method am
       JOIN application_method_target_rules amtr ON am.id = amtr.application_method_id
+        AND am.deleted_at IS NULL
       JOIN promotion_rule pr ON amtr.promotion_rule_id = pr.id`, "am.promotion_id"},
 	{`promotion_application_method am
       JOIN application_method_buy_rules ambr ON am.id = ambr.application_method_id
+        AND am.deleted_at IS NULL
       JOIN promotion_rule pr ON ambr.promotion_rule_id = pr.id`, "am.promotion_id"},
 }
 

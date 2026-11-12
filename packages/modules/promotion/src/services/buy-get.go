@@ -60,14 +60,34 @@ func jsNumberBN(v any) *totals.BN {
 	return totals.Convert(number(v))
 }
 
-// buyGetSortByPrice mirrors items.sort(sortByPrice): higher unit price first,
-// equal prices keep their order.
-func buyGetSortByPrice(items []*dal.Record) {
+// buyGetUnitPrice mirrors getUnitPrice: subtotal / quantity, 0 without a
+// positive quantity.
+func buyGetUnitPrice(item *dal.Record) *totals.BN {
+	if totals.Gt(cget(item, "quantity"), 0) {
+		return totals.Div(cget(item, "subtotal"), cget(item, "quantity"))
+	}
+	return totals.Convert(0)
+}
+
+// buyGetSortByUnitPrice mirrors items.sort(compareByUnitPrice(direction)):
+// items ranked by unit price, equal prices keep their order (stable sort).
+func buyGetSortByUnitPrice(items []*dal.Record, ascending bool) {
 	sort.SliceStable(items, func(i, j int) bool {
-		priceA := totals.Div(cget(items[i], "subtotal"), cget(items[i], "quantity"))
-		priceB := totals.Div(cget(items[j], "subtotal"), cget(items[j], "quantity"))
-		return totals.Gt(priceA, priceB)
+		a, b := buyGetUnitPrice(items[i]), buyGetUnitPrice(items[j])
+		if ascending {
+			return totals.Lt(a, b)
+		}
+		return totals.Gt(a, b)
 	})
+}
+
+// sortTargetItemsByStrategy mirrors sortTargetItemsByStrategy: the order in
+// which target units are discounted ("most_expensive_first" by default,
+// "cheapest_first" ascending). The input is not modified.
+func sortTargetItemsByStrategy(items []*dal.Record, strategy string) []*dal.Record {
+	out := append([]*dal.Record{}, items...)
+	buyGetSortByUnitPrice(out, strategy == "cheapest_first")
+	return out
 }
 
 // isValidBuyGetPromotionContext mirrors isValidPromotionContext.
@@ -333,7 +353,7 @@ func filterItemsByPromotionRules(items []*dal.Record, rules []*dal.Record) []*da
 			out = append(out, item)
 		}
 	}
-	buyGetSortByPrice(out)
+	buyGetSortByUnitPrice(out, false)
 	return out
 }
 
@@ -354,6 +374,7 @@ func getComputedActionsForBuyGet(promotion *dal.Record, items []*dal.Record, ite
 	eligibleTarget := filterItemsByPromotionRules(items, crecords(cget(am, "target_rules")))
 	remainingBuy := calculateRemainingQuantities(eligibleBuy, eligibleBuyItemMap, code)
 	remainingTarget := calculateRemainingQuantities(eligibleTarget, eligibleTargetItemMap, code)
+	targetItemsInDiscountOrder := sortTargetItemsByStrategy(eligibleTarget, cstr(am, "target_selection_strategy"))
 
 	totalBuy := newEligibleItemsMap()
 	totalTarget := newEligibleItemsMap()
@@ -369,7 +390,7 @@ func getComputedActionsForBuyGet(promotion *dal.Record, items []*dal.Record, ite
 			slog.Warn(fmt.Sprintf("Buy-get promotion %s exceeded maximum iterations (%d). Breaking loop to prevent infinite execution.", code, maxPromotionIterations))
 			break
 		}
-		state := preparePromotionApplicationState(eligibleBuy, eligibleTarget, remainingBuy, remainingTarget, config, appliedQuantity)
+		state := preparePromotionApplicationState(eligibleBuy, targetItemsInDiscountOrder, remainingBuy, remainingTarget, config, appliedQuantity)
 		if !state.isValid {
 			break
 		}

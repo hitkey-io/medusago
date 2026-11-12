@@ -40,13 +40,15 @@ var AdminUpdatePromotionRule = zod.Object(
 ).Strict()
 
 var (
-	methodType   = zod.Enum("fixed", "percentage")
-	targetType   = zod.Enum("order", "shipping_methods", "items")
-	allocation   = zod.Enum("each", "across", "once")
-	promoType    = zod.Enum("standard", "buyget")
-	promoStatus  = zod.Enum("draft", "active", "inactive")
-	limitSchema  = func() *zod.Schema { return zod.Number().Int().Min(1).Nullable().Optional() }
-	metadataType = func() *zod.Schema { return zod.Record(zod.String(), zod.Unknown()).Nullish() }
+	methodType = zod.Enum("fixed", "percentage")
+	targetType = zod.Enum("order", "shipping_methods", "items")
+	allocation = zod.Enum("each", "across", "once")
+	// targetSelectionStrategy mirrors z.nativeEnum(ApplicationMethodTargetSelectionStrategy).
+	targetSelectionStrategy = zod.Enum("most_expensive_first", "cheapest_first")
+	promoType               = zod.Enum("standard", "buyget")
+	promoStatus             = zod.Enum("draft", "active", "inactive")
+	limitSchema             = func() *zod.Schema { return zod.Number().Int().Min(1).Nullable().Optional() }
+	metadataType            = func() *zod.Schema { return zod.Record(zod.String(), zod.Unknown()).Nullish() }
 )
 
 // AdminCreateApplicationMethod mirrors AdminCreateApplicationMethod.
@@ -62,6 +64,7 @@ var AdminCreateApplicationMethod = zod.Object(
 	zod.F("buy_rules", zod.Array(AdminCreatePromotionRule).Optional()),
 	zod.F("apply_to_quantity", zod.Number().Nullish()),
 	zod.F("buy_rules_min_quantity", zod.Number().Nullish()),
+	zod.F("target_selection_strategy", targetSelectionStrategy.Optional()),
 ).Strict()
 
 // AdminUpdateApplicationMethod mirrors AdminUpdateApplicationMethod.
@@ -75,6 +78,7 @@ var AdminUpdateApplicationMethod = zod.Object(
 	zod.F("allocation", allocation.Optional()),
 	zod.F("apply_to_quantity", zod.Number().Nullish()),
 	zod.F("buy_rules_min_quantity", zod.Number().Nullish()),
+	zod.F("target_selection_strategy", targetSelectionStrategy.Optional()),
 ).Strict()
 
 func field(v any, k string) any {
