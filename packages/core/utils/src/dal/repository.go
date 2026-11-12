@@ -959,7 +959,11 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 	childParents := append(append([]string(nil), parents...), e.Meta.ClassName)
 
 	hydrated := func(name string) bool {
-		return tree.all || tree.fields[name] || slices.Contains(e.Meta.PrimaryKey, name)
+		if tree.all || tree.fields[name] || slices.Contains(e.Meta.PrimaryKey, name) {
+			return true
+		}
+		// the raw_ column of a selected BigNumber field is hydrated with it
+		return strings.HasPrefix(name, "raw_") && bigNumbers[name[4:]] && tree.fields[name[4:]]
 	}
 	// fkHydrated reports whether the foreign key column of an owning
 	// to-one relation was selected (by its property or a shadow property).
