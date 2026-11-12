@@ -799,5 +799,129 @@
       "order_missing",
       []
     ]
+  },
+  {
+    "name": "fset",
+    "module": "fulfillment",
+    "service": true,
+    "method": "createFulfillmentSets",
+    "args": [
+      [
+        {
+          "name": "EU",
+          "type": "shipping",
+          "service_zones": [
+            {
+              "name": "DE",
+              "geo_zones": [
+                {
+                  "type": "country",
+                  "country_code": "de"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    ]
+  },
+  {
+    "name": "sopt",
+    "module": "fulfillment",
+    "service": true,
+    "method": "createShippingOptions",
+    "args": [
+      [
+        {
+          "name": "Std",
+          "price_type": "flat",
+          "service_zone_id": "{{fset.result.0.service_zones.0.id}}",
+          "shipping_profile_id": "sp_01M70EKFVXJQ9SQF567TDFDJPE",
+          "provider_id": "manual_manual",
+          "type": {
+            "label": "Standard",
+            "description": "Std",
+            "code": "std"
+          },
+          "rules": [
+            {
+              "attribute": "enabled_in_store",
+              "operator": "eq",
+              "value": "true"
+            }
+          ]
+        }
+      ]
+    ]
+  },
+  {
+    "name": "sopt_valid",
+    "module": "fulfillment",
+    "service": true,
+    "method": "validateShippingOption",
+    "args": [
+      "{{sopt.result.0.id}}",
+      {
+        "enabled_in_store": "true"
+      }
+    ]
+  },
+  {
+    "name": "sopt_invalid",
+    "module": "fulfillment",
+    "service": true,
+    "method": "validateShippingOption",
+    "args": [
+      "{{sopt.result.0.id}}",
+      {
+        "enabled_in_store": "false"
+      }
+    ]
+  },
+  {
+    "name": "sopt_no_context",
+    "module": "fulfillment",
+    "service": true,
+    "method": "validateShippingOption",
+    "args": [
+      "{{sopt.result.0.id}}"
+    ]
+  },
+  {
+    "name": "sopt_missing",
+    "module": "fulfillment",
+    "service": true,
+    "method": "validateShippingOption",
+    "args": [
+      "so_missing",
+      {}
+    ]
+  },
+  {
+    "name": "lnk_delete_bad",
+    "module": "ApiKeyApiKeySalesChannelSalesChannelLink",
+    "service": true,
+    "method": "delete",
+    "args": [
+      [
+        {
+          "order_id": "x"
+        }
+      ]
+    ]
+  },
+  {
+    "name": "lnk_after",
+    "module": "ApiKeyApiKeySalesChannelSalesChannelLink",
+    "service": true,
+    "method": "list",
+    "args": [
+      {
+        "publishable_key_id": "apk_01M70J8YKETMZZ75CJ2MNK70DZ"
+      },
+      {
+        "withDeleted": true
+      }
+    ]
   }
 ]

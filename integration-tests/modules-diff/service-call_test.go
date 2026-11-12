@@ -3,6 +3,8 @@ package modulesdiff
 import (
 	"context"
 	"fmt"
+	linkdefinitions "github.com/hitkey-io/medusago/packages/modules/link-modules/src/definitions"
+	linkservices "github.com/hitkey-io/medusago/packages/modules/link-modules/src/services"
 	"reflect"
 	"sort"
 	"strconv"
@@ -19,6 +21,12 @@ import (
 // moduleServiceInstance builds the module's own service (with its
 // overridden methods), for the cases marked "service".
 func moduleServiceInstance(pool *pgxpool.Pool, key string) (any, error) {
+	// link module services are registered by their service name
+	for _, def := range linkdefinitions.All {
+		if def.ServiceName == key {
+			return linkservices.NewLinkModuleService(pool, def)
+		}
+	}
 	exp, ok := modules.Registry[modulessdk.MODULE_PACKAGE_NAMES[key]]
 	if !ok || exp.Service == nil {
 		return nil, fmt.Errorf("module %s has no service", key)

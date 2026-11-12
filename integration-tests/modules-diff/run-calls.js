@@ -30,13 +30,29 @@ function resolveRefs(value, out) {
   return value
 }
 
+// A module is resolved from the container; a link module (not registered in
+// the container) by its service name from the loaded modules.
+function resolveService(container, name) {
+  if (container.hasRegistration(name)) {
+    return container.resolve(name)
+  }
+  const { createRequire } = require("module")
+  const req = createRequire(process.cwd() + "/package.json")
+  const { MedusaModule } = req("@medusajs/framework/modules-sdk")
+  const instance = MedusaModule.getModuleInstance(name)
+  if (!instance) {
+    throw new Error(`Unknown module ${name}`)
+  }
+  return Object.values(instance)[0]
+}
+
 exports.default = async function runCalls({ container, args }) {
   const [casesFile, outFile] = args
   const cases = JSON.parse(fs.readFileSync(casesFile, "utf8"))
   const out = {}
 
   for (const c of cases) {
-    const service = container.resolve(c.module)
+    const service = resolveService(container, c.module)
     try {
       const result = await service[c.method](...resolveRefs(c.args ?? [], out))
       out[c.name] = { result: JSON.parse(JSON.stringify(result ?? null)) }

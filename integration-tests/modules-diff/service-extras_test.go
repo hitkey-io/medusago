@@ -2,6 +2,7 @@ package modulesdiff
 
 import (
 	"context"
+	linkservices "github.com/hitkey-io/medusago/packages/modules/link-modules/src/services"
 	"testing"
 
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
@@ -110,5 +111,34 @@ func TestUseAuthMfaRecoveryCode(t *testing.T) {
 	left, err := svc.Internal("AuthMfaRecoveryCode").List(ctx, rec("auth_identity_id", id), utilsmodulessdk.FindConfig{})
 	if err != nil || len(left) != 1 {
 		t.Fatalf("recovery codes left = %d, %v", len(left), err)
+	}
+}
+
+// Link module retrieve / delete throw in upstream v2.22.6 (the query
+// options are passed as filters: "Trying to query by not existing property
+// LinkModel.where"); Go implements the documented contract.
+func TestLinkModuleRetrieveAndDelete(t *testing.T) {
+	pool := setupDatabase(t, "medusa_diff_go_link_methods")
+	ctx := context.Background()
+	inst, err := moduleServiceInstance(pool, "ApiKeyApiKeySalesChannelSalesChannelLink")
+	if err != nil {
+		t.Fatal(err)
+	}
+	svc := inst.(*linkservices.LinkModuleService)
+	pk, sc := "apk_01M70J8YKETMZZ75CJ2MNK70DZ", "sc_01M70J8YJF5KEJAPTY188DK2AX"
+	got, err := svc.Retrieve(ctx, pk, sc)
+	if err != nil || field(got, "id") != "pksc_01M70J8YKK6EBSMFQ2R43YWS4H" {
+		t.Fatalf("Retrieve = %v, %v", got, err)
+	}
+	_, err = svc.Retrieve(ctx, pk, "sc_missing")
+	if me, ok := common.AsMedusaError(err); !ok || me.Message != "Entry publishable_key_id["+pk+"] and sales_channel_id[sc_missing] was not found" {
+		t.Fatalf("Retrieve missing err = %v", err)
+	}
+	if err := svc.Delete(ctx, []*dal.Record{rec("publishable_key_id", pk, "sales_channel_id", sc)}); err != nil {
+		t.Fatal(err)
+	}
+	left, err := svc.List(ctx, rec("publishable_key_id", pk), utilsmodulessdk.FindConfig{WithDeleted: true})
+	if err != nil || len(left) != 0 {
+		t.Fatalf("links left = %d, %v", len(left), err)
 	}
 }

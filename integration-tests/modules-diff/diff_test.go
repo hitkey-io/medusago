@@ -423,7 +423,7 @@ func TestModulesMatchUpstream(t *testing.T) {
 		for _, c := range cases {
 			t.Run(c.Name, func(t *testing.T) {
 				var svc *modulessdk.MedusaService
-				if c.Module != "query" {
+				if c.Module != "query" && !c.Service {
 					svc, err = moduleService(pool, c.Module)
 					if err != nil {
 						t.Fatal(err)
