@@ -5,9 +5,12 @@ package loyaltyplugin
 
 import (
 	"github.com/hitkey-io/medusago/packages/core/framework/src/plugins"
+	"github.com/hitkey-io/medusago/packages/plugins/loyalty/src/api"
 	"github.com/hitkey-io/medusago/packages/plugins/loyalty/src/links"
 	"github.com/hitkey-io/medusago/packages/plugins/loyalty/src/modules/loyalty"
 	storecredit "github.com/hitkey-io/medusago/packages/plugins/loyalty/src/modules/store-credit"
+	"github.com/hitkey-io/medusago/packages/plugins/loyalty/src/subscribers"
+	"github.com/hitkey-io/medusago/packages/plugins/loyalty/src/workflows/hooks"
 )
 
 // Name is the package name of the plugin.
@@ -22,7 +25,11 @@ var Plugin = &plugins.Definition{
 		{Dir: "loyalty", Exports: &loyalty.Module.ModuleExports},
 		{Dir: "store-credit", Exports: &storecredit.Module.ModuleExports},
 	},
-	Links: links.Define,
+	Links:       links.Define,
+	Routes:      api.Routes(),
+	Middlewares: api.Middlewares(),
+	Subscribers: subscribers.All(),
+	Load:        hooks.Register,
 }
 
 func init() { plugins.Register(Plugin) }
