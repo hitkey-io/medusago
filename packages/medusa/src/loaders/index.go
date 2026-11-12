@@ -363,6 +363,11 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 
 	// subscribers loader (packages/medusa/src/subscribers)
 	if bus, ok := c.Resolve(utilsmodulessdk.EVENT_BUS).(eventbus.Subscribable); ok {
+		for _, event := range subscribers.ConfigurableNotificationsEvents() {
+			bus.Subscribe(event, func(ctx context.Context, ev eventbus.Event) error {
+				return subscribers.ConfigurableNotificationsHandler(ctx, c, ev.Name, ev.Data)
+			})
+		}
 		bus.Subscribe("payment.webhook_received", func(ctx context.Context, ev eventbus.Event) error {
 			return subscribers.PaymentWebhookHandler(ctx, c, ev.Data)
 		})
