@@ -28,6 +28,20 @@ var failedOrDoneStates = map[string]bool{
 // transaction (none, or a finished one: nil), with the flow and errors of
 // the Redis checkpoint when present.
 func (s *RedisDistributedTransactionStorage) LoadCheckpoint(ctx context.Context, workflowID, transactionID string) (*composer.Checkpoint, error) {
+	cp, err := s.ReadCheckpoint(ctx, workflowID, transactionID)
+	if err != nil || cp == nil {
+		return nil, err
+	}
+	if state, _ := cp.Flow.Get("state"); failedOrDoneStates[fmt.Sprint(state)] {
+		return nil, nil
+	}
+	return cp, nil
+}
+
+// ReadCheckpoint implements composer.CheckpointReader: the latest
+// workflow_execution row of the transaction whatever its state, with the
+// flow and errors of the Redis checkpoint when present.
+func (s *RedisDistributedTransactionStorage) ReadCheckpoint(ctx context.Context, workflowID, transactionID string) (*composer.Checkpoint, error) {
 	if s.opts.DB == nil {
 		return nil, nil
 	}
@@ -53,9 +67,6 @@ where "workflow_id" = $1 and "transaction_id" = $2 and "deleted_at" is null orde
 		return nil, nil
 	}
 	flow := decodeRecord(execution)
-	if state, _ := flow.Get("state"); failedOrDoneStates[fmt.Sprint(state)] {
-		return nil, nil
-	}
 	ctxRec := decodeRecord(context_)
 	cp := &composer.Checkpoint{Flow: flow}
 	if data, ok := ctxRec.Get("data"); ok {

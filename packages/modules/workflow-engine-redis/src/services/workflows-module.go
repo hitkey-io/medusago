@@ -158,6 +158,11 @@ func (s *WorkflowsModuleService) LoadCheckpoint(ctx context.Context, workflowID,
 	return s.storage.LoadCheckpoint(ctx, workflowID, transactionID)
 }
 
+// ReadCheckpoint implements composer.CheckpointReader.
+func (s *WorkflowsModuleService) ReadCheckpoint(ctx context.Context, workflowID, transactionID string) (*composer.Checkpoint, error) {
+	return s.storage.ReadCheckpoint(ctx, workflowID, transactionID)
+}
+
 // LockTransaction implements composer.DurableEngine.
 func (s *WorkflowsModuleService) LockTransaction(ctx context.Context, workflowID, transactionID string) (func(), error) {
 	return s.storage.LockTransaction(ctx, workflowID, transactionID)

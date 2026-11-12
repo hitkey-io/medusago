@@ -1,0 +1,348 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ1MDQ0NjcsImV4cCI6MTc5NDU5MDg2N30.M5klgUrmaEp2GRH18LPAUlC4JUl4iajEWNrPmF1ScU8"
+    }
+  },
+  "up_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "1794504467795-detail_a.csv",
+          "url": "http://localhost:9000/static/1794504467795-detail_a.csv"
+        }
+      ]
+    }
+  },
+  "import_a": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "transaction_id": "auto-01M78CT9AN5AA9EPZ6A3AHHSW6",
+      "summary": {
+        "toCreate": 1,
+        "toUpdate": 0
+      }
+    }
+  },
+  "get_waiting": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "transaction": {
+        "state": "invoking",
+        "cancelled": false,
+        "has_failed_steps": false,
+        "steps": {
+          "_root.normalize-product-csv-to-chunks": {
+            "invoke": "done",
+            "invoke_status": "ok",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import": {
+            "invoke": "invoking",
+            "invoke_status": "waiting_response",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks.send-notifications": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          }
+        }
+      }
+    }
+  },
+  "retry_waiting": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "transaction": {
+        "state": "invoking",
+        "cancelled": false,
+        "has_failed_steps": false,
+        "steps": {
+          "_root.normalize-product-csv-to-chunks": {
+            "invoke": "done",
+            "invoke_status": "ok",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import": {
+            "invoke": "invoking",
+            "invoke_status": "waiting_response",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks.send-notifications": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          }
+        }
+      }
+    }
+  },
+  "get_after_retry": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "transaction": {
+        "state": "invoking",
+        "cancelled": false,
+        "has_failed_steps": false,
+        "steps": {
+          "_root.normalize-product-csv-to-chunks": {
+            "invoke": "done",
+            "invoke_status": "ok",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import": {
+            "invoke": "invoking",
+            "invoke_status": "waiting_response",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks.send-notifications": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          }
+        }
+      }
+    }
+  },
+  "cancel": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M78CT9AN5AA9EPZ6A3AHHSW6",
+        "workflowId": "import-products-as-chunks",
+        "hasFinished": false,
+        "hasFailed": false,
+        "exists": true
+      },
+      "transaction": {
+        "state": "waiting_to_compensate",
+        "cancelled": true,
+        "has_failed_steps": false,
+        "steps": {
+          "_root.normalize-product-csv-to-chunks": {
+            "invoke": "done",
+            "invoke_status": "ok",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import": {
+            "invoke": "invoking",
+            "invoke_status": "waiting_response",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks.send-notifications": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          }
+        }
+      }
+    }
+  },
+  "get_cancelled": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "transaction": {
+        "state": "waiting_to_compensate",
+        "cancelled": true,
+        "has_failed_steps": false,
+        "steps": {
+          "_root.normalize-product-csv-to-chunks": {
+            "invoke": "done",
+            "invoke_status": "ok",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import": {
+            "invoke": "invoking",
+            "invoke_status": "waiting_response",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          },
+          "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks.send-notifications": {
+            "invoke": "not_started",
+            "invoke_status": "idle",
+            "compensate": "dormant"
+          }
+        }
+      }
+    }
+  },
+  "executions_after_cancel": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_executions": [
+        {
+          "id": "wf_exec_01M78CT9AR4HXKNDZR6HCR7TX7",
+          "state": "waiting_to_compensate",
+          "transaction_id": "auto-01M78CT9AN5AA9EPZ6A3AHHSW6"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "cancel_again": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "error": "Cannot revert a transaction that is already compensating.",
+      "type": "not_allowed"
+    }
+  },
+  "cancel_missing": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "error": "Transaction tx-missing could not be found.",
+      "type": "not_found"
+    }
+  },
+  "cancel_missing_quiet": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "error": "Transaction tx-missing could not be found.",
+      "type": "not_found"
+    }
+  },
+  "get_missing": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "error": "Transaction tx-missing could not be found.",
+      "type": "not_found"
+    }
+  },
+  "cancel_unknown_workflow": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "error": "Workflow with id \"no-such-workflow\" not found.",
+      "type": null
+    }
+  },
+  "confirm_cancelled": {
+    "status": 500,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "code": "unknown_error",
+      "type": "unknown_error",
+      "message": "An unknown error occurred."
+    }
+  },
+  "executions": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_executions": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 100
+    }
+  }
+}

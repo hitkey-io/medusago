@@ -4,8 +4,8 @@ import "context"
 
 // WorkflowEngineAPI is the public surface of a workflow engine module
 // service (IWorkflowEngineService: run, setStepSuccess, setStepFailure,
-// subscribe, unsubscribe) over the engine of a container. The workflow
-// engine modules embed it.
+// subscribe, unsubscribe, getRunningTransaction, cancel, retryStep) over
+// the engine of a container. The workflow engine modules embed it.
 type WorkflowEngineAPI struct {
 	EngineContainer Container
 }
@@ -34,4 +34,19 @@ func (a WorkflowEngineAPI) Subscribe(workflowID, transactionID, subscriberID str
 // Unsubscribe mirrors workflowEngine.unsubscribe.
 func (a WorkflowEngineAPI) Unsubscribe(workflowID, transactionID, subscriberID string) {
 	Unsubscribe(workflowID, transactionID, subscriberID)
+}
+
+// GetRunningTransaction mirrors workflowEngine.getRunningTransaction.
+func (a WorkflowEngineAPI) GetRunningTransaction(ctx context.Context, workflowID, transactionID string) (*Checkpoint, error) {
+	return GetRunningTransaction(ctx, a.EngineContainer, workflowID, transactionID)
+}
+
+// Cancel mirrors workflowEngine.cancel.
+func (a WorkflowEngineAPI) Cancel(ctx context.Context, workflowID string, opts CancelOptions) (*CancelResult, error) {
+	return Cancel(ctx, a.EngineContainer, workflowID, opts)
+}
+
+// RetryStep mirrors workflowEngine.retryStep.
+func (a WorkflowEngineAPI) RetryStep(ctx context.Context, key IdempotencyKey) (*Checkpoint, error) {
+	return RetryStep(ctx, a.EngineContainer, key)
 }

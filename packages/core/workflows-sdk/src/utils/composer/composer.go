@@ -215,6 +215,13 @@ type Execution struct {
 	replay *replayState
 	// persistedRev is the journal revision of the last persist
 	persistedRev int
+	// cancelled: cancelTransaction was called on the (root) run
+	cancelled bool
+	// finalState is the state of a detached run that finished
+	finalState string
+	// finished is closed once the (root) run finished
+	finished     chan struct{}
+	finishedOnce sync.Once
 }
 
 // Context returns the run context.
@@ -301,17 +308,19 @@ func (s *stepFailed) Unwrap() error { return s.err }
 // Run invokes the step inside the workflow execution.
 func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 	var zero O
-	var res StepResponse[O]
-	var err error
 	action := s.Name
 	if s.action != "" {
 		action = s.action
 	}
 	noComp := s.compensate == nil || s.Options.NoCompensation
 	if e.replay != nil {
-		if out, handled, rerr := s.replayStep(e, action, noComp); handled {
+		if out, handled, rerr := s.replayStep(e, action, noComp, input); handled {
 			return out, rerr
 		}
+	}
+	// a cancelled transaction runs no further step (cancelTransaction)
+	if e.isCancelled() {
+		return zero, errRunCancelled
 	}
 	rec := e.journal.begin(action, s.Options, noComp)
 	background := s.Options.Async && s.Options.BackgroundExecution
@@ -320,8 +329,17 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 		e.persist(TransactionStateInvoking)
 		e.detacher.detach()
 	}
-	attempts := s.Options.MaxRetries + 1
-	for attempt := 1; attempt <= attempts; attempt++ {
+	return s.invokeFrom(e, rec, action, input, 1, background)
+}
+
+// invokeFrom invokes the step handler from the given attempt (retries
+// included), waits for the response of an async step and settles the
+// step. retryStep re-invokes a waiting step through it.
+func (s *Step[I, O]) invokeFrom(e *Execution, rec *stepRecord, action string, input I, first int, background bool) (O, error) {
+	var zero O
+	var res StepResponse[O]
+	var err error
+	invoke := func(attempt int) {
 		e.journal.attempt(rec, attempt)
 		ctx := e.stepContext(s.Name, "invoke", attempt)
 		err = callSafely(func() error {
@@ -331,14 +349,18 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 		})
 		if err == nil && res.permanentFail != nil {
 			err = res.permanentFail
-			break
 		}
+	}
+	last := first + s.Options.MaxRetries
+	for attempt := first; attempt <= last; attempt++ {
+		invoke(attempt)
 		if err == nil {
 			break
 		}
 		var sf *stepFailed
-		if errors.As(err, &sf) {
-			// a nested workflow already failed permanently
+		if errors.As(err, &sf) || res.permanentFail != nil {
+			// a nested workflow already failed permanently, or the step
+			// failed permanently: no retry
 			break
 		}
 	}
@@ -360,30 +382,48 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 			e.detacher.detach()
 			return zero, errSuspended
 		}
-		// waits for setStepSuccess / setStepFailure; the run returns to its
-		// caller meanwhile
+		// waits for setStepSuccess / setStepFailure (or retryStep); the run
+		// returns to its caller meanwhile
 		coord := stepCoordinator(e.container)
-		ch := coord.Wait(key)
-		e.journal.wait(rec)
-		e.persist(TransactionStateInvoking)
-		e.detacher.detach()
-		var r StepResult
+		var deadline <-chan time.Time
 		if s.Options.Timeout > 0 {
+			deadline = time.After(time.Duration(s.Options.Timeout) * time.Second)
+		}
+		for {
+			ch := coord.Wait(key)
+			e.journal.wait(rec)
+			e.persist(TransactionStateInvoking)
+			e.detacher.detach()
+			var r StepResult
 			select {
 			case r = <-ch:
-			case <-time.After(time.Duration(s.Options.Timeout) * time.Second):
-				coord.Cancel(key)
+			case <-deadline:
+				coord.Forget(key)
 				r = StepResult{Err: &TransactionStepTimeoutError{}}
 			}
-		} else {
-			r = <-ch
-		}
-		res, err = applyStepResult[O](r)
-		if r.Err == nil {
-			rec.raw, rec.hasRaw = r.Output, true
+			if r.Retry {
+				// retryStep: the handler runs again; an empty response
+				// waits again
+				invoke(rec.attempts + 1)
+				if err == nil && isNilOutput(any(res.Output)) {
+					continue
+				}
+				break
+			}
+			res, err = applyStepResult[O](r)
+			if r.Err == nil {
+				rec.raw, rec.hasRaw = r.Output, true
+			}
+			break
 		}
 	}
-	return s.settle(e, rec, res, err)
+	out, err := s.settle(e, rec, res, err)
+	if err == nil && e.isCancelled() {
+		// the transaction was cancelled while the step ran or waited: it
+		// is compensated now (waiting_to_compensate -> compensating)
+		return zero, errRunCancelled
+	}
+	return out, err
 }
 
 // applyStepResult converts the response delivered to a waiting step.
@@ -521,6 +561,7 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 		journal: newJournal(input), detacher: newDetacher(), rootWorkflowID: w.ID, rootOptions: w.Options}
 	e.journal.define(w.ID)
 	e.journal.engineRun = o.Notify
+	e.registerLive()
 	if o.Notify {
 		e.notifyEvents()
 		e.journal.emitRun("onBegin", nil)
@@ -542,6 +583,7 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 	case r := <-done:
 		if errors.Is(r.err, errSuspended) {
 			// the run waits for a response; the checkpoint resumes it
+			e.forgetLive()
 			e.persistIfChanged(TransactionStateInvoking)
 			var zero O
 			if p, ok := e.partial.(O); ok {
@@ -551,6 +593,7 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 		}
 		state := w.finish(e, r.err, stored)
 		e.emitFinish(r.out, r.err)
+		e.markFinished()
 		info := RunInfo{TransactionID: e.transactionID, RunID: e.journal.runID, State: state}
 		if r.err != nil {
 			var zero O
@@ -563,11 +606,13 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 			if errors.Is(r.err, errSuspended) {
 				// the steps run after the suspension (parallel branches)
 				// are part of the checkpoint
+				e.forgetLive()
 				e.persistIfChanged(TransactionStateInvoking)
 				return
 			}
-			w.finish(e, r.err, true)
+			e.finalState = w.finish(e, r.err, true)
 			e.emitFinish(r.out, r.err)
+			e.markFinished()
 		}()
 		var zero O
 		if p, ok := e.partial.(O); ok {
@@ -642,6 +687,10 @@ func (w *Workflow[I, O]) execute(e *Execution, input I) (O, error) {
 	if errors.Is(err, errSuspended) {
 		var zero O
 		return zero, errSuspended
+	}
+	if err == nil && e.parentExec == nil && e.isCancelled() {
+		// a cancelled transaction whose steps all finished is compensated
+		err = errRunCancelled
 	}
 	if err != nil {
 		e.journal.emitRun("onCompensateBegin", nil)

@@ -42,6 +42,10 @@ cp "$HERE/events-capture-route.js" "$APP/src/api/events-capture/route.js"
 # same route in index_query_test.go) runs query.index() / the index module.
 mkdir -p "$APP/src/api/index-query"
 cp "$HERE/index-query-route.js" "$APP/src/api/index-query/route.js"
+# The workflow-engine-ops route (workflow-engine-route.js; the Go server
+# registers the same route).
+mkdir -p "$APP/src/api/workflow-engine-ops"
+cp "$HERE/workflow-engine-route.js" "$APP/src/api/workflow-engine-ops/route.js"
 
 scenarios=("$@")
 if [ ${#scenarios[@]} -eq 0 ]; then

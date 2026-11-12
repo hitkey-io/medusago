@@ -12,6 +12,8 @@ import (
 type StepResult struct {
 	Output any
 	Err    error
+	// Retry: retryStep, the waiting step is invoked again
+	Retry bool
 }
 
 // StepCoordinator is implemented by the workflow engine module: it holds
@@ -22,8 +24,8 @@ type StepResult struct {
 type StepCoordinator interface {
 	// Wait registers a waiting step; its response arrives on the channel.
 	Wait(key IdempotencyKey) <-chan StepResult
-	// Cancel forgets a waiting step (step timeout).
-	Cancel(key IdempotencyKey)
+	// Forget forgets a waiting step (step timeout).
+	Forget(key IdempotencyKey)
 	// Deliver delivers a response; NotFoundWaiting when no step waits.
 	Deliver(ctx context.Context, key IdempotencyKey, r StepResult) error
 }
@@ -53,8 +55,8 @@ func (l *LocalStepCoordinator) Wait(key IdempotencyKey) <-chan StepResult {
 	return ch
 }
 
-// Cancel implements StepCoordinator.
-func (l *LocalStepCoordinator) Cancel(key IdempotencyKey) { l.take(WaiterKey(key)) }
+// Forget implements StepCoordinator.
+func (l *LocalStepCoordinator) Forget(key IdempotencyKey) { l.take(WaiterKey(key)) }
 
 func (l *LocalStepCoordinator) take(k string) chan StepResult {
 	l.mu.Lock()

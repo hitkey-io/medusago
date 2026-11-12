@@ -121,6 +121,15 @@ type resumeState struct {
 	// engineRun: the metadata carries preventReleaseEvents: false (a run
 	// of the workflow engine)
 	engineRun bool
+	// state and cancelledAt of the stored flow (a cancelled transaction
+	// waiting for a step response is waiting_to_compensate)
+	state       string
+	cancelledAt int64
+}
+
+// cancelled reports a transaction cancelled while a step was waiting.
+func (rs *resumeState) cancelled() bool {
+	return rs.cancelledAt != 0 || rs.state == TransactionStateWaitingToCompensate
 }
 
 func recGet(r *dal.Record, k string) any {
@@ -165,6 +174,8 @@ func parseCheckpoint(cp *Checkpoint) *resumeState {
 		invoke:        map[string]any{},
 		errors:        append([]any{}, cp.Errors...),
 		options:       asRec(recGet(flow, "options")),
+		state:         asStr(recGet(flow, "state")),
+		cancelledAt:   int64(asNum(recGet(flow, "cancelledAt"))),
 	}
 	if md := asRec(recGet(flow, "metadata")); md != nil {
 		if v, ok := md.Get("preventReleaseEvents"); ok && v == false {
@@ -253,11 +264,15 @@ func restoredJournal(rs *resumeState) *journal {
 	j.hasAsync = rs.hasAsync
 	j.state = TransactionStateInvoking
 	j.version = rs.version
+	j.cancelledAt = rs.cancelledAt
 	return j
 }
 
 // replayState drives the replay of a resumed run.
 type replayState struct {
+	// cancel: the replay runs for cancelTransaction (the steps that ran
+	// are compensated)
+	cancel    bool
 	mu        sync.Mutex
 	steps     []*storedStep
 	target    string
@@ -366,7 +381,7 @@ func sameJSON(a, b any) bool {
 
 // replayStep handles a step of a resumed run: handled is false when the
 // step runs normally.
-func (s *Step[I, O]) replayStep(e *Execution, action string, noComp bool) (O, bool, error) {
+func (s *Step[I, O]) replayStep(e *Execution, action string, noComp bool, input I) (O, bool, error) {
 	var zero O
 	rp := e.replay
 	st := rp.take(action)
@@ -406,6 +421,12 @@ func (s *Step[I, O]) replayStep(e *Execution, action string, noComp bool) (O, bo
 			return zero, true, errSuspended
 		}
 		r := e.journal.restore(action, s.Options, noComp, st)
+		if resp.Retry {
+			// retryStep: the waiting step is invoked again (an empty
+			// response waits again)
+			out, err := s.invokeFrom(e, r, action, input, st.attempts+1, false)
+			return out, true, err
+		}
 		r.delivered = true
 		if s.Options.Timeout > 0 {
 			if de := durableEngine(e.container); de != nil {
@@ -442,6 +463,9 @@ var resumers = map[string]resumer{}
 type resumedRun struct {
 	detached <-chan struct{}
 	finished chan struct{}
+	// state and err of a run that finished
+	state string
+	err   error
 }
 
 // wait returns once the response was applied, or the run detached
@@ -470,6 +494,11 @@ func (w *Workflow[I, O]) resume(ctx context.Context, c Container, rs *resumeStat
 	e := &Execution{ctx: context.WithoutCancel(ctx), container: c, workflowID: w.ID, transactionID: rs.transactionID, eventGroupID: rs.eventGroupID,
 		hooks: w.hooks, journal: restoredJournal(rs), detacher: newDetacher(), rootWorkflowID: w.ID, rootOptions: w.Options, replay: rp}
 	e.persistedRev = e.journal.rev
+	e.cancelled = rs.cancelled() || rp.cancel
+	if rp.cancel && e.journal.cancelledAt == 0 {
+		e.journal.cancelledAt = nowMillis()
+	}
+	e.finished = make(chan struct{})
 	e.notifyEvents()
 	e.journal.emitRun("onResume", nil)
 	run := &resumedRun{detached: e.detacher.ch, finished: make(chan struct{})}
@@ -482,8 +511,10 @@ func (w *Workflow[I, O]) resume(ctx context.Context, c Container, rs *resumeStat
 			}
 			return
 		}
-		w.finish(e, err, true)
+		run.state = w.finish(e, err, true)
+		run.err = err
 		e.emitFinish(out, err)
+		e.markFinished()
 	}()
 	return run, nil
 }
@@ -522,17 +553,33 @@ func deliverDurable(ctx context.Context, c Container, de DurableEngine, key Idem
 		}
 		return common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, fmt.Sprintf("Cannot set step %s when status is %s", verb, st.invokeStatus))
 	}
-	return startResume(ctx, c, rs, newReplayState(rs, st.action, &r))
+	rp := newReplayState(rs, st.action, &r)
+	if !rs.cancelled() {
+		return startResume(ctx, c, rs, rp)
+	}
+	// a cancelled transaction is compensated once the waiting step
+	// responds; the response of setStepSuccess is "Unknown error" (the
+	// transaction is reverted without invoke errors)
+	run, err := resumeRun(ctx, c, rs, rp)
+	if err != nil {
+		return err
+	}
+	<-run.finished
+	return cancelledResponseError(failure, run.state)
 }
 
-func startResume(ctx context.Context, c Container, rs *resumeState, rp *replayState) error {
+func resumeRun(ctx context.Context, c Container, rs *resumeState, rp *replayState) (*resumedRun, error) {
 	registryMu.RLock()
 	resume := resumers[rs.workflowID]
 	registryMu.RUnlock()
 	if resume == nil {
-		return notFoundWorkflow(rs.workflowID)
+		return nil, notFoundWorkflow(rs.workflowID)
 	}
-	run, err := resume(ctx, c, rs, rp)
+	return resume(ctx, c, rs, rp)
+}
+
+func startResume(ctx context.Context, c Container, rs *resumeState, rp *replayState) error {
+	run, err := resumeRun(ctx, c, rs, rp)
 	if err != nil {
 		return err
 	}

@@ -108,6 +108,8 @@ type journal struct {
 	hasSkipped bool
 	waiting    bool
 	state      string
+	// cancelledAt is set by cancelTransaction (flow.cancelledAt)
+	cancelledAt int64
 	version    int
 	// rev counts the changes (persistIfChanged)
 	rev int
@@ -597,13 +599,17 @@ func (j *journal) flow(workflowID, transactionID, eventGroupID string, opts Work
 	if definition == nil {
 		definition = map[string]any{}
 	}
-	return map[string]any{
+	out := map[string]any{
 		"_v": j.version, "runId": j.runID, "state": j.state, "steps": steps, "modelId": workflowID, "options": options,
 		"metadata":  metadata,
 		"startedAt": j.startedAt, "definition": definition, "timedOutAt": nil, "hasAsyncSteps": j.hasAsync,
 		"transactionId": transactionID, "hasFailedSteps": j.hasFailed, "hasSkippedSteps": j.hasSkipped, "hasWaitingSteps": j.waiting,
 		"hasRevertedSteps": hasReverted, "hasSkippedOnFailureSteps": false,
 	}
+	if j.cancelledAt != 0 {
+		out["cancelledAt"] = j.cancelledAt
+	}
+	return out
 }
 
 // parsedFlowOptions mirrors parseFlowOptions: the options the workflow is

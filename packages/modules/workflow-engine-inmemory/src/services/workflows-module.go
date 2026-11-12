@@ -127,6 +127,55 @@ on conflict ("workflow_id", "transaction_id", "run_id") do update set "execution
 	return dal.MapDBError(err)
 }
 
+// ReadCheckpoint implements composer.CheckpointReader: the latest
+// workflow_execution row of the transaction (storage.get reads it).
+func (s *WorkflowsModuleService) ReadCheckpoint(ctx context.Context, workflowID, transactionID string) (*composer.Checkpoint, error) {
+	rows, err := s.db.Query(ctx, `select "execution"::text, "context"::text from "workflow_execution"
+where "workflow_id" = $1 and "transaction_id" = $2 and "deleted_at" is null order by "id" desc limit 1`, workflowID, transactionID)
+	if err != nil {
+		return nil, dal.MapDBError(err)
+	}
+	var execution, context_ *string
+	found := false
+	for rows.Next() {
+		if err := rows.Scan(&execution, &context_); err != nil {
+			rows.Close()
+			return nil, err
+		}
+		found = true
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return nil, dal.MapDBError(err)
+	}
+	if !found {
+		return nil, nil
+	}
+	cp := &composer.Checkpoint{Flow: decodeRecord(execution)}
+	ctxRec := decodeRecord(context_)
+	if data, ok := ctxRec.Get("data"); ok {
+		cp.Context, _ = data.(*dal.Record)
+	}
+	if errs, ok := ctxRec.Get("errors"); ok {
+		cp.Errors, _ = errs.([]any)
+	}
+	return cp, nil
+}
+
+func decodeRecord(s *string) *dal.Record {
+	if s == nil || *s == "" {
+		return dal.NewRecord()
+	}
+	v, err := dal.DecodeOrderedJSON([]byte(*s))
+	if err != nil {
+		return dal.NewRecord()
+	}
+	if r, _ := v.(*dal.Record); r != nil {
+		return r
+	}
+	return dal.NewRecord()
+}
+
 // DeleteExecution mirrors workflowExecutionService.delete([{ run_id }]).
 func (s *WorkflowsModuleService) DeleteExecution(ctx context.Context, workflowID, transactionID, runID string) error {
 	_, err := s.db.Exec(ctx, `delete from "workflow_execution" where "run_id" = $1`, runID)

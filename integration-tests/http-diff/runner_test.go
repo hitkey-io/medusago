@@ -746,7 +746,7 @@ func recordScenario(t *testing.T, base, file string) {
 var _ = encode
 
 var (
-	embeddedIDRe = regexp.MustCompile(`[a-z]+_[0-9A-HJKMNP-TV-Z]{26}`)
+	embeddedIDRe = regexp.MustCompile(`(?:[a-z]+_|auto-)[0-9A-HJKMNP-TV-Z]{26}`)
 	// Date.prototype.toString: the zone name is ICU's, in the system locale
 	jsDateZoneRe   = regexp.MustCompile(`(GMT[+-]\d{4}) \([^)]*\)`)
 	embeddedDateRe = regexp.MustCompile(`\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{3})?Z`)
@@ -800,7 +800,7 @@ func (p *placeholders) of(s string) string {
 		if kind == "" && len(s) > 30 {
 			// generated ids and dates inside messages (and CSV files)
 			s = embeddedIDRe.ReplaceAllStringFunc(s, func(id string) string {
-				if g, k := isGenerated(id); g && k == "id" {
+				if g, k := isGenerated(id); g && (k == "id" || k == "transaction") {
 					return p.of(id)
 				}
 				return id
@@ -1072,7 +1072,7 @@ func goServer(t *testing.T, scenario string) string {
 			HTTP:           config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
 			SessionOptions: scenarioSessionOptions(),
 		}, Modules: scenarioModules()})
-		app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, Routes: append(append(routes, scenarioRoutes()...), indexQueryRoutes()...), OnLoad: append(scenarioHooks(t), registerEventsCapture)})
+		app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, Routes: append(append(append(routes, scenarioRoutes()...), indexQueryRoutes()...), workflowEngineOpsRoutes()...), OnLoad: append(scenarioHooks(t), registerEventsCapture)})
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -1,0 +1,18 @@
+[
+  {"name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": {"email": "admin@medusa-test.com", "password": "supersecret"}},
+  {"name": "up_a", "method": "POST", "bearer": "login", "path": "/admin/uploads", "files": [{"field": "files", "name": "detail_a.csv", "type": "text/csv", "content": "Product Handle,Product Title,Product Status,Variant Title,Variant Sku,Variant Price EUR,Variant Option 1 Name,Variant Option 1 Value\ndetail-mug,Detail Mug,published,Standard,DETAIL-MUG-1,9,Size,Standard\n"}]},
+  {"name": "import_a", "method": "POST", "bearer": "login", "path": "/admin/products/imports", "body": {"file_key": "{{up_a.files.0.id}}", "originalname": "detail_a.csv", "extension": "csv", "size": 100, "mime_type": "text/csv"}},
+  {"name": "get_waiting", "method": "POST", "path": "/workflow-engine-ops", "body": {"op": "get", "workflow_id": "import-products-as-chunks", "transaction_id": "{{import_a.transaction_id}}"}},
+  {"name": "retry_waiting", "method": "POST", "path": "/workflow-engine-ops", "body": {"op": "retry", "workflow_id": "import-products-as-chunks", "transaction_id": "{{import_a.transaction_id}}", "step_id": "wait-confirmation-product-import"}},
+  {"name": "get_after_retry", "method": "POST", "path": "/workflow-engine-ops", "body": {"op": "get", "workflow_id": "import-products-as-chunks", "transaction_id": "{{import_a.transaction_id}}"}},
+  {"name": "cancel", "method": "POST", "path": "/workflow-engine-ops", "body": {"op": "cancel", "workflow_id": "import-products-as-chunks", "transaction_id": "{{import_a.transaction_id}}"}},
+  {"name": "get_cancelled", "method": "POST", "path": "/workflow-engine-ops", "body": {"op": "get", "workflow_id": "import-products-as-chunks", "transaction_id": "{{import_a.transaction_id}}"}},
+  {"name": "executions_after_cancel", "method": "GET", "bearer": "login", "path": "/admin/workflows-executions?workflow_id=import-products-as-chunks&fields=id,state,transaction_id"},
+  {"name": "cancel_again", "method": "POST", "path": "/workflow-engine-ops", "body": {"op": "cancel", "workflow_id": "import-products-as-chunks", "transaction_id": "{{import_a.transaction_id}}"}},
+  {"name": "cancel_missing", "method": "POST", "path": "/workflow-engine-ops", "body": {"op": "cancel", "workflow_id": "import-products-as-chunks", "transaction_id": "tx-missing"}},
+  {"name": "cancel_missing_quiet", "method": "POST", "path": "/workflow-engine-ops", "body": {"op": "cancel", "workflow_id": "import-products-as-chunks", "transaction_id": "tx-missing", "throw_on_error": false}},
+  {"name": "get_missing", "method": "POST", "path": "/workflow-engine-ops", "body": {"op": "get", "workflow_id": "import-products-as-chunks", "transaction_id": "tx-missing"}},
+  {"name": "cancel_unknown_workflow", "method": "POST", "path": "/workflow-engine-ops", "body": {"op": "cancel", "workflow_id": "no-such-workflow", "transaction_id": "tx"}},
+  {"name": "confirm_cancelled", "method": "POST", "bearer": "login", "path": "/admin/products/imports/{{import_a.transaction_id}}/confirm", "restart": true},
+  {"name": "executions", "method": "GET", "bearer": "login", "path": "/admin/workflows-executions?workflow_id=import-products-as-chunks&fields=id,state"}
+]

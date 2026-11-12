@@ -85,6 +85,11 @@ func (e *Execution) persist(state string) {
 	if store == nil {
 		return
 	}
+	if state == TransactionStateInvoking && e.isCancelled() {
+		// a cancelled transaction stays waiting_to_compensate until its
+		// waiting step responds
+		state = TransactionStateWaitingToCompensate
+	}
 	e.journal.setState(state)
 	e.journal.mu.Lock()
 	e.persistedRev = e.journal.rev
@@ -192,7 +197,22 @@ func SetStepSuccess(ctx context.Context, c Container, key IdempotencyKey, respon
 	if de := durableEngine(c); de != nil {
 		return deliverDurable(ctx, c, de, key, StepResult{Output: response}, false)
 	}
-	return stepCoordinator(c).Deliver(ctx, key, StepResult{Output: response})
+	return deliverLocal(ctx, c, key, StepResult{Output: response}, false)
+}
+
+// deliverLocal delivers a response to a step waiting in this process. A
+// cancelled transaction is compensated after the response: the caller
+// waits for it (registerStepSuccess awaits the transaction).
+func deliverLocal(ctx context.Context, c Container, key IdempotencyKey, r StepResult, failure bool) error {
+	e := liveExecution(key.WorkflowID, key.TransactionID)
+	if err := stepCoordinator(c).Deliver(ctx, key, r); err != nil {
+		return err
+	}
+	if e == nil || !e.isCancelled() || e.finished == nil {
+		return nil
+	}
+	<-e.finished
+	return cancelledResponseError(failure, e.finalState)
 }
 
 // SetStepFailure mirrors workflowEngine.setStepFailure.
@@ -203,7 +223,7 @@ func SetStepFailure(ctx context.Context, c Container, key IdempotencyKey, err er
 	if de := durableEngine(c); de != nil {
 		return deliverDurable(ctx, c, de, key, StepResult{Err: err}, true)
 	}
-	return stepCoordinator(c).Deliver(ctx, key, StepResult{Err: err})
+	return deliverLocal(ctx, c, key, StepResult{Err: err}, true)
 }
 
 // convertOutput converts a value delivered by setStepSuccess (JSON-like) to
