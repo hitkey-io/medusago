@@ -820,6 +820,20 @@ func setDefined(dst *dal.Record, key string, src *dal.Record, srcKey string) {
 	}
 }
 
+// ConfirmOrderChangeResult is ConfirmOrderChange returning the serialized
+// OrderChangeReturn ({ items, shipping_methods, credit_lines }).
+func (s *OrderModuleService) ConfirmOrderChangeResult(ctx context.Context, data []any) (*dal.Record, error) {
+	res, err := s.ConfirmOrderChange(ctx, data)
+	if err != nil {
+		return nil, err
+	}
+	out := dal.NewRecord()
+	out.Set("items", res.Items)
+	out.Set("shipping_methods", res.ShippingMethods)
+	out.Set("credit_lines", res.CreditLines)
+	return out, nil
+}
+
 // ConfirmOrderChangeRecords confirms changes given as ids or { id, ... }.
 func (s *OrderModuleService) ConfirmOrderChangeRecords(ctx context.Context, data []any) error {
 	_, err := s.ConfirmOrderChange(ctx, data)

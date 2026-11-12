@@ -64,9 +64,11 @@ type ConfirmOrderChangesInput struct {
 	ConfirmedBy any
 }
 
-// ConfirmOrderChangesStep mirrors confirmOrderChanges.
-var ConfirmOrderChangesStep = composer.CreateStep("confirm-order-changes",
-	func(ctx composer.StepExecutionContext, in ConfirmOrderChangesInput) (composer.StepResponse[any], error) {
+// confirmOrderChangesInvoke is the invoke of confirmOrderChanges; withResult
+// makes the confirmOrderChange result ({ items, shipping_methods,
+// credit_lines }) the step output.
+func confirmOrderChangesInvoke(withResult bool) func(composer.StepExecutionContext, ConfirmOrderChangesInput) (composer.StepResponse[any], error) {
+	return func(ctx composer.StepExecutionContext, in ConfirmOrderChangesInput) (composer.StepResponse[any], error) {
 		var data []any
 		var currentChanges []*dal.Record
 		for _, c := range in.Changes {
@@ -81,21 +83,41 @@ var ConfirmOrderChangesStep = composer.CreateStep("confirm-order-changes",
 			current.Set("status", get(c, "status"))
 			currentChanges = append(currentChanges, current)
 		}
+		if withResult {
+			res, err := ctx.Container.Resolve(utilsmodulessdk.ORDER).(interface {
+				ConfirmOrderChangeResult(ctx context.Context, data []any) (*dal.Record, error)
+			}).ConfirmOrderChangeResult(ctx.Context, data)
+			if err != nil {
+				return composer.StepResponse[any]{}, err
+			}
+			return composer.NewStepResponse[any](res, any(currentChanges)), nil
+		}
 		if err := ctx.Container.Resolve(utilsmodulessdk.ORDER).(confirmer).ConfirmOrderChangeRecords(ctx.Context, data); err != nil {
 			return composer.StepResponse[any]{}, err
 		}
 		return composer.NewStepResponse[any](nil, any(currentChanges)), nil
-	},
-	func(ctx composer.StepExecutionContext, data any) error {
-		currentChanges, _ := data.([]*dal.Record)
-		if len(currentChanges) == 0 {
-			return nil
-		}
-		svc := ctx.Container.Resolve(utilsmodulessdk.ORDER).(interface {
-			UndoLastChange(ctx context.Context, orderID string, lastOrderChange *dal.Record) error
-		})
-		return svc.UndoLastChange(ctx.Context, fmt.Sprint(get(currentChanges[0], "order_id")), currentChanges[0])
+	}
+}
+
+// ConfirmOrderChangesStep mirrors confirmOrderChanges (its output is not
+// kept).
+var ConfirmOrderChangesStep = composer.CreateStep("confirm-order-changes", confirmOrderChangesInvoke(false), undoConfirmOrderChanges)
+
+// ConfirmOrderChangesWithResultStep is confirmOrderChanges with its output:
+// the confirmOrderChange result.
+var ConfirmOrderChangesWithResultStep = composer.CreateStep("confirm-order-changes", confirmOrderChangesInvoke(true), undoConfirmOrderChanges)
+
+// undoConfirmOrderChanges is the compensation of confirmOrderChanges.
+var undoConfirmOrderChanges = func(ctx composer.StepExecutionContext, data any) error {
+	currentChanges, _ := data.([]*dal.Record)
+	if len(currentChanges) == 0 {
+		return nil
+	}
+	svc := ctx.Container.Resolve(utilsmodulessdk.ORDER).(interface {
+		UndoLastChange(ctx context.Context, orderID string, lastOrderChange *dal.Record) error
 	})
+	return svc.UndoLastChange(ctx.Context, fmt.Sprint(get(currentChanges[0], "order_id")), currentChanges[0])
+}
 
 type decliner interface {
 	Internal(className string) *utilsmodulessdk.InternalService

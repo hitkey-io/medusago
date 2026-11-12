@@ -116,12 +116,26 @@ var CreateOrderCreditLinesWorkflow = composer.CreateWorkflow("create-order-credi
 		if list := recs(changes.Data); len(list) > 0 {
 			orderChange = list[0]
 		}
-		if _, err := ordersteps.ConfirmOrderChangesStep.Run(e, ordersteps.ConfirmOrderChangesInput{OrderID: g(order, "id"), Changes: []*dal.Record{orderChange}}); err != nil {
+		confirmed, err := ordersteps.ConfirmOrderChangesWithResultStep.Run(e, ordersteps.ConfirmOrderChangesInput{OrderID: g(order, "id"), Changes: []*dal.Record{orderChange}})
+		if err != nil {
 			return nil, err
+		}
+		// the credit lines created in the version of the order change
+		createdCreditLines := []*dal.Record{}
+		if c, ok := confirmed.(*dal.Record); ok {
+			for _, cl := range recs(g(c, "credit_lines")) {
+				if md := rec(g(cl, "metadata")); md != nil && totals.Eq(g(md, "created_in_version"), g(orderChange, "version")) && g(md, "created_in_version") != nil {
+					createdCreditLines = append(createdCreditLines, cl)
+				}
+			}
 		}
 		hook := dal.NewRecord()
 		hook.Set("order_id", in.ID)
-		return nil, composer.CreateHook(e, "creditLinesCreated", hook)
+		hook.Set("credit_lines", createdCreditLines)
+		if err := composer.CreateHook(e, "creditLinesCreated", hook); err != nil {
+			return nil, err
+		}
+		return createdCreditLines, nil
 	})
 
 var validatePresenceOfOrder = composer.CreateStep("validate-presence-of",

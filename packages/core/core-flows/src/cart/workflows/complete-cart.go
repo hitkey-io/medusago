@@ -245,8 +245,11 @@ func completeCartCreateOrder(e *composer.Execution, cart *dal.Record, paymentSes
 	if _, err := commonsteps.EmitEventStep.Config("emit-reservation-item-created", composer.StepOptions{}).Run(e, commonsteps.EmitEventStepInput{EventName: "reservation-item.created", Data: reservationEvents}); err != nil {
 		return nil, err
 	}
+	// { input }: the workflow input ({ id })
+	hookInput := dal.NewRecord()
+	hookInput.Set("id", Get(cart, "id"))
 	hookIn := dal.NewRecord()
-	hookIn.Set("input", Get(cart, "id"))
+	hookIn.Set("input", hookInput)
 	if err := composer.CreateHook(e, "beforePaymentAuthorization", hookIn); err != nil {
 		return nil, err
 	}
