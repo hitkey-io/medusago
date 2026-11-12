@@ -1002,10 +1002,13 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 			if err != nil {
 				return err
 			}
-			// the JOINED strategy assigns null to an unmatched to-one
-			// relation (mapJoinedProps)
-			if v == nil && p.Kind == "1:1" && !fkHydrated(p) && !tree.joined {
-				// joined 1:1 without a match and without its foreign key
+			// The JOINED strategy assigns null to an unmatched to-one
+			// relation (mapJoinedProps) when specific fields of it are
+			// selected; with all its fields (a select of "<relation>.*",
+			// or none) the property stays unassigned, like with the
+			// SELECT_IN strategy.
+			if v == nil && p.Kind == "1:1" && !fkHydrated(p) && (!tree.joined || child.all) {
+				// 1:1 without a match and without its foreign key
 				// selected: MikroORM never assigns the property (m:1
 				// relations always fetch their foreign key)
 				return nil
