@@ -1,0 +1,1054 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ0Njc5NjcsImV4cCI6MTc5NDU1NDM2N30.lci5PVKHa3-DK8tD41OJI8DTlfeatR8F_KDrmoiPLBs"
+    }
+  },
+  "events_types": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-1"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-product-types",
+            "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+            "depth": 1,
+            "definition": {
+              "action": "create-product-types",
+              "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467968615,
+            "next": [
+              "_root.create-product-types.productTypesCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794467968615
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-product-types",
+            "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+            "depth": 1,
+            "definition": {
+              "action": "create-product-types",
+              "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467968615,
+            "next": [
+              "_root.create-product-types.productTypesCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794467968615
+          },
+          "response": [
+            {
+              "id": "ptyp_01M77A0DK9NJMG3QE6N71AFA51",
+              "value": "sse-type-a",
+              "external_id": null,
+              "metadata": null,
+              "created_at": "2026-11-12T07:19:28.617Z",
+              "updated_at": "2026-11-12T07:19:28.617Z",
+              "deleted_at": null,
+              "products": []
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-product-types.productTypesCreated",
+            "uuid": "01M77A06JT4EMJDD22XF5197GP",
+            "depth": 2,
+            "definition": {
+              "action": "productTypesCreated",
+              "uuid": "01M77A06JT4EMJDD22XF5197GP",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467968629,
+            "next": [
+              "_root.create-product-types.productTypesCreated.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794467968629
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-product-types.productTypesCreated",
+            "uuid": "01M77A06JT4EMJDD22XF5197GP",
+            "depth": 2,
+            "definition": {
+              "action": "productTypesCreated",
+              "uuid": "01M77A06JT4EMJDD22XF5197GP",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467968629,
+            "next": [
+              "_root.create-product-types.productTypesCreated.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794467968629
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-product-types.productTypesCreated.emit-event-step",
+            "uuid": "01M77A06JTEVQRMZC0ZG70XRRR",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M77A06JTEVQRMZC0ZG70XRRR",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467968629,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794467968629
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-product-types.productTypesCreated.emit-event-step",
+            "uuid": "01M77A06JTEVQRMZC0ZG70XRRR",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M77A06JTEVQRMZC0ZG70XRRR",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467968629,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794467968629
+          },
+          "response": {
+            "eventGroupId": "01M77A0DK4J3PA9YFSXN6K9NY6",
+            "eventName": "product-type.created"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-1",
+          "result": [
+            {
+              "id": "ptyp_01M77A0DK9NJMG3QE6N71AFA51",
+              "value": "sse-type-a",
+              "external_id": null,
+              "metadata": null,
+              "created_at": "2026-11-12T07:19:28.617Z",
+              "updated_at": "2026-11-12T07:19:28.617Z",
+              "deleted_at": null,
+              "products": []
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_types": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "sse-types-1",
+        "workflowId": "create-product-types",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_types_dup": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-2"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-2",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-product-types",
+            "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+            "depth": 1,
+            "definition": {
+              "action": "create-product-types",
+              "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467970136,
+            "next": [
+              "_root.create-product-types.productTypesCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794467970136
+          }
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-2",
+          "step": {
+            "stepFailed": true,
+            "id": "_root.create-product-types",
+            "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+            "depth": 1,
+            "definition": {
+              "action": "create-product-types",
+              "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467970179,
+            "next": [
+              "_root.create-product-types.productTypesCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794467970136,
+            "retryRescheduledAt": null
+          },
+          "errors": [
+            {
+              "action": "create-product-types",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Product type with value: sse-type-a, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-12T07:19:30.154Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-2"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-2",
+          "step": {
+            "stepFailed": true,
+            "id": "_root.create-product-types",
+            "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+            "depth": 1,
+            "definition": {
+              "action": "create-product-types",
+              "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467970179,
+            "next": [
+              "_root.create-product-types.productTypesCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794467970136,
+            "retryRescheduledAt": null
+          }
+        },
+        {
+          "event_type": "onCompensateStepSuccess",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-2",
+          "step": {
+            "stepFailed": true,
+            "id": "_root.create-product-types",
+            "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+            "depth": 1,
+            "definition": {
+              "action": "create-product-types",
+              "uuid": "01M77A06JT94WHR2RZNDCKXY28",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467970179,
+            "next": [
+              "_root.create-product-types.productTypesCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794467970136,
+            "retryRescheduledAt": null
+          },
+          "response": {}
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-product-types",
+          "transaction_id": "sse-types-2",
+          "errors": [
+            {
+              "action": "create-product-types",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Product type with value: sse-type-a, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-12T07:19:30.154Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_types_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Product type with value: sse-type-a, already exists."
+    }
+  },
+  "events_products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input",
+            "uuid": "01M77A06J265NNV31ZY0SCMPZA",
+            "depth": 1,
+            "definition": {
+              "action": "validate-product-input",
+              "uuid": "01M77A06J265NNV31ZY0SCMPZA",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971691,
+            "next": [
+              "_root.validate-product-input.create-products"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971691
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input",
+            "uuid": "01M77A06J265NNV31ZY0SCMPZA",
+            "depth": 1,
+            "definition": {
+              "action": "validate-product-input",
+              "uuid": "01M77A06J265NNV31ZY0SCMPZA",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971691,
+            "next": [
+              "_root.validate-product-input.create-products"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971691
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products",
+            "uuid": "01M77A06J203GRMF6W35TZC73P",
+            "depth": 2,
+            "definition": {
+              "action": "create-products",
+              "uuid": "01M77A06J203GRMF6W35TZC73P",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971691,
+            "next": [
+              "_root.validate-product-input.create-products.associate-products-with-channels"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971691
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products",
+            "uuid": "01M77A06J203GRMF6W35TZC73P",
+            "depth": 2,
+            "definition": {
+              "action": "create-products",
+              "uuid": "01M77A06J203GRMF6W35TZC73P",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971691,
+            "next": [
+              "_root.validate-product-input.create-products.associate-products-with-channels"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971691
+          },
+          "response": [
+            {
+              "id": "prod_01M77A0GKGSFY9BEYKGN461YY0",
+              "title": "SSE Hoodie",
+              "handle": "sse-hoodie",
+              "subtitle": null,
+              "description": null,
+              "is_giftcard": false,
+              "status": "draft",
+              "thumbnail": null,
+              "weight": null,
+              "length": null,
+              "height": null,
+              "width": null,
+              "origin_country": null,
+              "hs_code": null,
+              "mid_code": null,
+              "material": null,
+              "discountable": true,
+              "external_id": null,
+              "metadata": null,
+              "type_id": null,
+              "type": null,
+              "collection_id": null,
+              "collection": null,
+              "created_at": "2026-11-12T07:19:31.698Z",
+              "updated_at": "2026-11-12T07:19:31.698Z",
+              "deleted_at": null,
+              "variants": [],
+              "tags": [],
+              "options": [
+                {
+                  "id": "opt_01M77A0GKGPK49XEAW2NZTXN7W",
+                  "title": "Size",
+                  "is_exclusive": true,
+                  "metadata": null,
+                  "created_at": "2026-11-12T07:19:31.698Z",
+                  "updated_at": "2026-11-12T07:19:31.698Z",
+                  "deleted_at": null,
+                  "values": [
+                    {
+                      "id": "optval_01M77A0GKJ79400REZ4ZVEG48X",
+                      "value": "S",
+                      "rank": null,
+                      "metadata": null,
+                      "option_id": "opt_01M77A0GKGPK49XEAW2NZTXN7W",
+                      "created_at": "2026-11-12T07:19:31.698Z",
+                      "updated_at": "2026-11-12T07:19:31.698Z",
+                      "deleted_at": null,
+                      "variants": [],
+                      "product_options": []
+                    }
+                  ]
+                }
+              ],
+              "product_options": [],
+              "images": [],
+              "categories": []
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products.associate-products-with-channels",
+            "uuid": "01M77A06J20K4SHAEKW75ZWV0B",
+            "depth": 3,
+            "definition": {
+              "action": "associate-products-with-channels",
+              "uuid": "01M77A06J20K4SHAEKW75ZWV0B",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971725,
+            "next": [
+              "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971725
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products.associate-products-with-channels",
+            "uuid": "01M77A06J20K4SHAEKW75ZWV0B",
+            "depth": 3,
+            "definition": {
+              "action": "associate-products-with-channels",
+              "uuid": "01M77A06J20K4SHAEKW75ZWV0B",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971725,
+            "next": [
+              "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971725
+          },
+          "response": []
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links",
+            "uuid": "01M77A06J27D6EHNR6YKPN5VBZ",
+            "depth": 4,
+            "definition": {
+              "action": "create-remote-links",
+              "uuid": "01M77A06J27D6EHNR6YKPN5VBZ",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971725,
+            "next": [
+              "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971725
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links",
+            "uuid": "01M77A06J27D6EHNR6YKPN5VBZ",
+            "depth": 4,
+            "definition": {
+              "action": "create-remote-links",
+              "uuid": "01M77A06J27D6EHNR6YKPN5VBZ",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971725,
+            "next": [
+              "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971725
+          },
+          "response": []
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step",
+            "uuid": "01M77A06J22957X2YFZKSQNASJ",
+            "depth": 5,
+            "definition": {
+              "action": "create-product-variants-as-step",
+              "name": "create-product-variants-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M77A06J22957X2YFZKSQNASJ",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971725,
+            "next": [
+              "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971725
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step",
+            "uuid": "01M77A06J22957X2YFZKSQNASJ",
+            "depth": 5,
+            "definition": {
+              "action": "create-product-variants-as-step",
+              "name": "create-product-variants-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M77A06J22957X2YFZKSQNASJ",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971725,
+            "next": [
+              "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971725
+          },
+          "response": [
+            {
+              "id": "variant_01M77A0GMKMAK2YKGAHJWQHTCT",
+              "title": "S",
+              "sku": null,
+              "barcode": null,
+              "ean": null,
+              "upc": null,
+              "allow_backorder": false,
+              "manage_inventory": true,
+              "hs_code": null,
+              "origin_country": null,
+              "mid_code": null,
+              "material": null,
+              "weight": null,
+              "length": null,
+              "height": null,
+              "width": null,
+              "metadata": null,
+              "variant_rank": 0,
+              "thumbnail": null,
+              "product_id": "prod_01M77A0GKGSFY9BEYKGN461YY0",
+              "created_at": "2026-11-12T07:19:31.731Z",
+              "updated_at": "2026-11-12T07:19:31.731Z",
+              "deleted_at": null,
+              "images": [],
+              "options": [
+                {
+                  "id": "optval_01M77A0GKJ79400REZ4ZVEG48X",
+                  "value": "S",
+                  "rank": null,
+                  "metadata": null,
+                  "option_id": "opt_01M77A0GKGPK49XEAW2NZTXN7W",
+                  "option": {
+                    "id": "opt_01M77A0GKGPK49XEAW2NZTXN7W",
+                    "title": "Size",
+                    "is_exclusive": true,
+                    "metadata": null,
+                    "created_at": "2026-11-12T07:19:31.698Z",
+                    "updated_at": "2026-11-12T07:19:31.698Z",
+                    "deleted_at": null
+                  },
+                  "created_at": "2026-11-12T07:19:31.698Z",
+                  "updated_at": "2026-11-12T07:19:31.698Z",
+                  "deleted_at": null
+                }
+              ],
+              "prices": []
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step.emit-event-step",
+            "uuid": "01M77A06J26W31RMC6VVSEDZXP",
+            "depth": 6,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M77A06J26W31RMC6VVSEDZXP",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971758,
+            "next": [
+              "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step.emit-event-step.productsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971758
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step.emit-event-step",
+            "uuid": "01M77A06J26W31RMC6VVSEDZXP",
+            "depth": 6,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M77A06J26W31RMC6VVSEDZXP",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971758,
+            "next": [
+              "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step.emit-event-step.productsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794467971758
+          },
+          "response": {
+            "eventGroupId": "01M77A0GK7DDW1BVB494T023V2",
+            "eventName": "product.created"
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step.emit-event-step.productsCreated",
+            "uuid": "01M77A06J2XG2P7V14KNVKVQ9H",
+            "depth": 7,
+            "definition": {
+              "action": "productsCreated",
+              "uuid": "01M77A06J2XG2P7V14KNVKVQ9H",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971758,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794467971758
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-product-input.create-products.associate-products-with-channels.create-remote-links.create-product-variants-as-step.emit-event-step.productsCreated",
+            "uuid": "01M77A06J2XG2P7V14KNVKVQ9H",
+            "depth": 7,
+            "definition": {
+              "action": "productsCreated",
+              "uuid": "01M77A06J2XG2P7V14KNVKVQ9H",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794467971758,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794467971758
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-products",
+          "transaction_id": "sse-products-1",
+          "result": [
+            {
+              "id": "prod_01M77A0GKGSFY9BEYKGN461YY0",
+              "title": "SSE Hoodie",
+              "handle": "sse-hoodie",
+              "subtitle": null,
+              "description": null,
+              "is_giftcard": false,
+              "status": "draft",
+              "thumbnail": null,
+              "weight": null,
+              "length": null,
+              "height": null,
+              "width": null,
+              "origin_country": null,
+              "hs_code": null,
+              "mid_code": null,
+              "material": null,
+              "discountable": true,
+              "external_id": null,
+              "metadata": null,
+              "type_id": null,
+              "type": null,
+              "collection_id": null,
+              "collection": null,
+              "created_at": "2026-11-12T07:19:31.698Z",
+              "updated_at": "2026-11-12T07:19:31.698Z",
+              "deleted_at": null,
+              "variants": [
+                {
+                  "id": "variant_01M77A0GMKMAK2YKGAHJWQHTCT",
+                  "title": "S",
+                  "sku": null,
+                  "barcode": null,
+                  "ean": null,
+                  "upc": null,
+                  "allow_backorder": false,
+                  "manage_inventory": true,
+                  "hs_code": null,
+                  "origin_country": null,
+                  "mid_code": null,
+                  "material": null,
+                  "weight": null,
+                  "length": null,
+                  "height": null,
+                  "width": null,
+                  "metadata": null,
+                  "variant_rank": 0,
+                  "thumbnail": null,
+                  "product_id": "prod_01M77A0GKGSFY9BEYKGN461YY0",
+                  "created_at": "2026-11-12T07:19:31.731Z",
+                  "updated_at": "2026-11-12T07:19:31.731Z",
+                  "deleted_at": null,
+                  "images": [],
+                  "options": [
+                    {
+                      "id": "optval_01M77A0GKJ79400REZ4ZVEG48X",
+                      "value": "S",
+                      "rank": null,
+                      "metadata": null,
+                      "option_id": "opt_01M77A0GKGPK49XEAW2NZTXN7W",
+                      "option": {
+                        "id": "opt_01M77A0GKGPK49XEAW2NZTXN7W",
+                        "title": "Size",
+                        "is_exclusive": true,
+                        "metadata": null,
+                        "created_at": "2026-11-12T07:19:31.698Z",
+                        "updated_at": "2026-11-12T07:19:31.698Z",
+                        "deleted_at": null
+                      },
+                      "created_at": "2026-11-12T07:19:31.698Z",
+                      "updated_at": "2026-11-12T07:19:31.698Z",
+                      "deleted_at": null
+                    }
+                  ],
+                  "prices": []
+                }
+              ],
+              "tags": [],
+              "options": [
+                {
+                  "id": "opt_01M77A0GKGPK49XEAW2NZTXN7W",
+                  "title": "Size",
+                  "is_exclusive": true,
+                  "metadata": null,
+                  "created_at": "2026-11-12T07:19:31.698Z",
+                  "updated_at": "2026-11-12T07:19:31.698Z",
+                  "deleted_at": null,
+                  "values": [
+                    {
+                      "id": "optval_01M77A0GKJ79400REZ4ZVEG48X",
+                      "value": "S",
+                      "rank": null,
+                      "metadata": null,
+                      "option_id": "opt_01M77A0GKGPK49XEAW2NZTXN7W",
+                      "created_at": "2026-11-12T07:19:31.698Z",
+                      "updated_at": "2026-11-12T07:19:31.698Z",
+                      "deleted_at": null,
+                      "variants": [],
+                      "product_options": []
+                    }
+                  ]
+                }
+              ],
+              "product_options": [],
+              "images": [],
+              "categories": []
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "sse-products-1",
+        "workflowId": "create-products",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "types": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "product_types": [
+        {
+          "value": "sse-type-a",
+          "id": "ptyp_01M77A0DK9NJMG3QE6N71AFA51"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 10
+    }
+  }
+}

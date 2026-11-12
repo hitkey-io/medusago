@@ -1,0 +1,611 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ0Njc2ODIsImV4cCI6MTc5NDU1NDA4Mn0._edb8l1lQ-a2tBdNcRUrPXPaBz7Fee_PIHguva3L25o"
+    }
+  },
+  "up_a": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "files": [
+        {
+          "id": "1794467682933-detail_a.csv",
+          "url": "http://localhost:9000/static/1794467682933-detail_a.csv"
+        }
+      ]
+    }
+  },
+  "import_a": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "transaction_id": "auto-01M779QPKQB79F8YNP8ZYQ31TP",
+      "summary": {
+        "toCreate": 1,
+        "toUpdate": 0
+      }
+    }
+  },
+  "executions": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_executions": [
+        {
+          "id": "wf_exec_01M779QPKTQN0V8HC091CYT5QC",
+          "state": "invoking"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "journal_waiting": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_execution": {
+        "id": "wf_exec_01M779QPKTQN0V8HC091CYT5QC",
+        "workflow_id": "import-products-as-chunks",
+        "transaction_id": "auto-01M779QPKQB79F8YNP8ZYQ31TP",
+        "context": {
+          "data": {
+            "invoke": {
+              "normalize-product-csv-to-chunks": {
+                "__type": "Symbol(WorkflowWorkflowData)",
+                "output": {
+                  "__type": "Symbol(WorkflowStepResponse)",
+                  "output": {
+                    "chunks": [
+                      {
+                        "id": "private-1794467682951-1794467682933-detail_a.csv-1.json",
+                        "toCreate": 1,
+                        "toUpdate": 0
+                      }
+                    ],
+                    "summary": {
+                      "toCreate": 1,
+                      "toUpdate": 0
+                    }
+                  },
+                  "compensateInput": {
+                    "chunks": [
+                      {
+                        "id": "private-1794467682951-1794467682933-detail_a.csv-1.json",
+                        "toCreate": 1,
+                        "toUpdate": 0
+                      }
+                    ],
+                    "summary": {
+                      "toCreate": 1,
+                      "toUpdate": 0
+                    }
+                  }
+                }
+              }
+            },
+            "payload": {
+              "fileKey": "1794467682933-detail_a.csv",
+              "filename": "detail_a.csv"
+            },
+            "compensate": {}
+          },
+          "errors": []
+        },
+        "execution": {
+          "_v": 0,
+          "runId": "01M779QPKRRQEJ50B6EY0PEZ94",
+          "state": "invoking",
+          "steps": {
+            "_root": {
+              "id": "_root",
+              "next": [
+                "_root.normalize-product-csv-to-chunks"
+              ]
+            },
+            "_root.normalize-product-csv-to-chunks": {
+              "_v": 0,
+              "id": "_root.normalize-product-csv-to-chunks",
+              "next": [
+                "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import"
+              ],
+              "uuid": "01M779QGXZTC45RTQ4CPZRSQKJ",
+              "depth": 1,
+              "invoke": {
+                "state": "done",
+                "status": "ok"
+              },
+              "attempts": 1,
+              "failures": 0,
+              "startedAt": 1794467682944,
+              "compensate": {
+                "state": "dormant",
+                "status": "idle"
+              },
+              "definition": {
+                "uuid": "01M779QGXZTC45RTQ4CPZRSQKJ",
+                "store": false,
+                "action": "normalize-product-csv-to-chunks",
+                "noCompensation": true
+              },
+              "stepFailed": false,
+              "lastAttempt": 1794467682944,
+              "saveResponse": true
+            },
+            "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import": {
+              "_v": 0,
+              "id": "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import",
+              "next": [
+                "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure"
+              ],
+              "uuid": "01M779QGXZ6S7442VE26TWKV27",
+              "depth": 2,
+              "invoke": {
+                "state": "invoking",
+                "status": "waiting_response"
+              },
+              "attempts": 1,
+              "failures": 0,
+              "startedAt": 1794467682951,
+              "compensate": {
+                "state": "dormant",
+                "status": "idle"
+              },
+              "definition": {
+                "name": "wait-confirmation-product-import",
+                "uuid": "01M779QGXZ6S7442VE26TWKV27",
+                "async": true,
+                "store": true,
+                "action": "wait-confirmation-product-import",
+                "timeout": 3600,
+                "noCompensation": true
+              },
+              "stepFailed": false,
+              "lastAttempt": 1794467682951,
+              "saveResponse": true
+            },
+            "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure": {
+              "_v": 0,
+              "id": "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure",
+              "next": [
+                "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks"
+              ],
+              "uuid": "01M779QGXZ3GYTB64WCHQY77BJ",
+              "depth": 3,
+              "invoke": {
+                "state": "not_started",
+                "status": "idle"
+              },
+              "attempts": 0,
+              "failures": 0,
+              "compensate": {
+                "state": "dormant",
+                "status": "idle"
+              },
+              "definition": {
+                "uuid": "01M779QGXZ3GYTB64WCHQY77BJ",
+                "store": false,
+                "action": "notify-on-failure",
+                "noCompensation": false
+              },
+              "stepFailed": false,
+              "lastAttempt": null,
+              "saveResponse": true
+            },
+            "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks": {
+              "_v": 0,
+              "id": "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks",
+              "next": [
+                "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks.send-notifications"
+              ],
+              "uuid": "01M779QGXZZSNM9C8MQDWAMGT5",
+              "depth": 4,
+              "invoke": {
+                "state": "not_started",
+                "status": "idle"
+              },
+              "attempts": 0,
+              "failures": 0,
+              "compensate": {
+                "state": "dormant",
+                "status": "idle"
+              },
+              "definition": {
+                "name": "process-import-chunks",
+                "uuid": "01M779QGXZZSNM9C8MQDWAMGT5",
+                "async": true,
+                "store": true,
+                "action": "process-import-chunks",
+                "noCompensation": true
+              },
+              "stepFailed": false,
+              "lastAttempt": null,
+              "saveResponse": true
+            },
+            "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks.send-notifications": {
+              "_v": 0,
+              "id": "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks.send-notifications",
+              "next": [],
+              "uuid": "01M779QGXZ5KRZGGT9EJC3MW9X",
+              "depth": 5,
+              "invoke": {
+                "state": "not_started",
+                "status": "idle"
+              },
+              "attempts": 0,
+              "failures": 0,
+              "compensate": {
+                "state": "dormant",
+                "status": "idle"
+              },
+              "definition": {
+                "uuid": "01M779QGXZ5KRZGGT9EJC3MW9X",
+                "store": false,
+                "action": "send-notifications",
+                "noCompensation": true
+              },
+              "stepFailed": false,
+              "lastAttempt": null,
+              "saveResponse": true
+            }
+          },
+          "modelId": "import-products-as-chunks",
+          "options": {
+            "store": true
+          },
+          "metadata": {
+            "eventGroupId": "01M779QPKQB79F8YNP8ZYQ31TP"
+          },
+          "startedAt": 1794467682944,
+          "definition": {
+            "next": {
+              "name": "wait-confirmation-product-import",
+              "next": {
+                "next": {
+                  "name": "process-import-chunks",
+                  "next": {
+                    "uuid": "01M779QGXZ5KRZGGT9EJC3MW9X",
+                    "action": "send-notifications",
+                    "noCompensation": true
+                  },
+                  "uuid": "01M779QGXZZSNM9C8MQDWAMGT5",
+                  "async": true,
+                  "action": "process-import-chunks",
+                  "noCompensation": true
+                },
+                "uuid": "01M779QGXZ3GYTB64WCHQY77BJ",
+                "action": "notify-on-failure",
+                "noCompensation": false
+              },
+              "uuid": "01M779QGXZ6S7442VE26TWKV27",
+              "async": true,
+              "action": "wait-confirmation-product-import",
+              "timeout": 3600,
+              "noCompensation": true
+            },
+            "uuid": "01M779QGXZTC45RTQ4CPZRSQKJ",
+            "action": "normalize-product-csv-to-chunks",
+            "noCompensation": true
+          },
+          "timedOutAt": null,
+          "hasAsyncSteps": true,
+          "transactionId": "auto-01M779QPKQB79F8YNP8ZYQ31TP",
+          "hasFailedSteps": false,
+          "hasSkippedSteps": false,
+          "hasWaitingSteps": true,
+          "hasRevertedSteps": false,
+          "hasSkippedOnFailureSteps": false
+        },
+        "state": "invoking",
+        "created_at": "2026-11-12T02:14:42.939Z",
+        "updated_at": "2026-11-12T02:14:42.963Z",
+        "deleted_at": null
+      }
+    }
+  },
+  "list_full": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "workflow_executions": [
+        {
+          "id": "wf_exec_01M779QPKTQN0V8HC091CYT5QC",
+          "workflow_id": "import-products-as-chunks",
+          "transaction_id": "auto-01M779QPKQB79F8YNP8ZYQ31TP",
+          "state": "invoking",
+          "execution": {
+            "_v": 0,
+            "runId": "01M779QPKRRQEJ50B6EY0PEZ94",
+            "state": "invoking",
+            "steps": {
+              "_root": {
+                "id": "_root",
+                "next": [
+                  "_root.normalize-product-csv-to-chunks"
+                ]
+              },
+              "_root.normalize-product-csv-to-chunks": {
+                "_v": 0,
+                "id": "_root.normalize-product-csv-to-chunks",
+                "next": [
+                  "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import"
+                ],
+                "uuid": "01M779QGXZTC45RTQ4CPZRSQKJ",
+                "depth": 1,
+                "invoke": {
+                  "state": "done",
+                  "status": "ok"
+                },
+                "attempts": 1,
+                "failures": 0,
+                "startedAt": 1794467682944,
+                "compensate": {
+                  "state": "dormant",
+                  "status": "idle"
+                },
+                "definition": {
+                  "uuid": "01M779QGXZTC45RTQ4CPZRSQKJ",
+                  "store": false,
+                  "action": "normalize-product-csv-to-chunks",
+                  "noCompensation": true
+                },
+                "stepFailed": false,
+                "lastAttempt": 1794467682944,
+                "saveResponse": true
+              },
+              "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import": {
+                "_v": 0,
+                "id": "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import",
+                "next": [
+                  "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure"
+                ],
+                "uuid": "01M779QGXZ6S7442VE26TWKV27",
+                "depth": 2,
+                "invoke": {
+                  "state": "invoking",
+                  "status": "waiting_response"
+                },
+                "attempts": 1,
+                "failures": 0,
+                "startedAt": 1794467682951,
+                "compensate": {
+                  "state": "dormant",
+                  "status": "idle"
+                },
+                "definition": {
+                  "name": "wait-confirmation-product-import",
+                  "uuid": "01M779QGXZ6S7442VE26TWKV27",
+                  "async": true,
+                  "store": true,
+                  "action": "wait-confirmation-product-import",
+                  "timeout": 3600,
+                  "noCompensation": true
+                },
+                "stepFailed": false,
+                "lastAttempt": 1794467682951,
+                "saveResponse": true
+              },
+              "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure": {
+                "_v": 0,
+                "id": "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure",
+                "next": [
+                  "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks"
+                ],
+                "uuid": "01M779QGXZ3GYTB64WCHQY77BJ",
+                "depth": 3,
+                "invoke": {
+                  "state": "not_started",
+                  "status": "idle"
+                },
+                "attempts": 0,
+                "failures": 0,
+                "compensate": {
+                  "state": "dormant",
+                  "status": "idle"
+                },
+                "definition": {
+                  "uuid": "01M779QGXZ3GYTB64WCHQY77BJ",
+                  "store": false,
+                  "action": "notify-on-failure",
+                  "noCompensation": false
+                },
+                "stepFailed": false,
+                "lastAttempt": null,
+                "saveResponse": true
+              },
+              "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks": {
+                "_v": 0,
+                "id": "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks",
+                "next": [
+                  "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks.send-notifications"
+                ],
+                "uuid": "01M779QGXZZSNM9C8MQDWAMGT5",
+                "depth": 4,
+                "invoke": {
+                  "state": "not_started",
+                  "status": "idle"
+                },
+                "attempts": 0,
+                "failures": 0,
+                "compensate": {
+                  "state": "dormant",
+                  "status": "idle"
+                },
+                "definition": {
+                  "name": "process-import-chunks",
+                  "uuid": "01M779QGXZZSNM9C8MQDWAMGT5",
+                  "async": true,
+                  "store": true,
+                  "action": "process-import-chunks",
+                  "noCompensation": true
+                },
+                "stepFailed": false,
+                "lastAttempt": null,
+                "saveResponse": true
+              },
+              "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks.send-notifications": {
+                "_v": 0,
+                "id": "_root.normalize-product-csv-to-chunks.wait-confirmation-product-import.notify-on-failure.process-import-chunks.send-notifications",
+                "next": [],
+                "uuid": "01M779QGXZ5KRZGGT9EJC3MW9X",
+                "depth": 5,
+                "invoke": {
+                  "state": "not_started",
+                  "status": "idle"
+                },
+                "attempts": 0,
+                "failures": 0,
+                "compensate": {
+                  "state": "dormant",
+                  "status": "idle"
+                },
+                "definition": {
+                  "uuid": "01M779QGXZ5KRZGGT9EJC3MW9X",
+                  "store": false,
+                  "action": "send-notifications",
+                  "noCompensation": true
+                },
+                "stepFailed": false,
+                "lastAttempt": null,
+                "saveResponse": true
+              }
+            },
+            "modelId": "import-products-as-chunks",
+            "options": {
+              "store": true
+            },
+            "metadata": {
+              "eventGroupId": "01M779QPKQB79F8YNP8ZYQ31TP"
+            },
+            "startedAt": 1794467682944,
+            "definition": {
+              "next": {
+                "name": "wait-confirmation-product-import",
+                "next": {
+                  "next": {
+                    "name": "process-import-chunks",
+                    "next": {
+                      "uuid": "01M779QGXZ5KRZGGT9EJC3MW9X",
+                      "action": "send-notifications",
+                      "noCompensation": true
+                    },
+                    "uuid": "01M779QGXZZSNM9C8MQDWAMGT5",
+                    "async": true,
+                    "action": "process-import-chunks",
+                    "noCompensation": true
+                  },
+                  "uuid": "01M779QGXZ3GYTB64WCHQY77BJ",
+                  "action": "notify-on-failure",
+                  "noCompensation": false
+                },
+                "uuid": "01M779QGXZ6S7442VE26TWKV27",
+                "async": true,
+                "action": "wait-confirmation-product-import",
+                "timeout": 3600,
+                "noCompensation": true
+              },
+              "uuid": "01M779QGXZTC45RTQ4CPZRSQKJ",
+              "action": "normalize-product-csv-to-chunks",
+              "noCompensation": true
+            },
+            "timedOutAt": null,
+            "hasAsyncSteps": true,
+            "transactionId": "auto-01M779QPKQB79F8YNP8ZYQ31TP",
+            "hasFailedSteps": false,
+            "hasSkippedSteps": false,
+            "hasWaitingSteps": true,
+            "hasRevertedSteps": false,
+            "hasSkippedOnFailureSteps": false
+          },
+          "created_at": "2026-11-12T02:14:42.939Z",
+          "updated_at": "2026-11-12T02:14:42.963Z",
+          "deleted_at": null
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 100
+    }
+  },
+  "confirm": {
+    "status": 202,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "journal_after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {}
+  },
+  "products": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "products": [
+        {
+          "handle": "detail-mug",
+          "title": "Detail Mug",
+          "id": "prod_01M779QPNWF8JAEQBPXCC27239"
+        },
+        {
+          "handle": "hoodie",
+          "title": "Draft Hoodie",
+          "id": "prod_01M70XZZZ49MK9W0NV0YSF74CE"
+        },
+        {
+          "handle": "sweatpants",
+          "title": "Medusa Sweatpants",
+          "id": "prod_01M70XZZZ4QCEP179PD336GCSV"
+        },
+        {
+          "handle": "t-shirt",
+          "title": "Medusa T-Shirt",
+          "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR"
+        }
+      ],
+      "count": 4,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}

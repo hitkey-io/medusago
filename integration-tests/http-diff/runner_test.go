@@ -7,6 +7,7 @@
 package httpdiff
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/base64"
@@ -81,6 +82,10 @@ type Step struct {
 	Parallel string `json:"parallel,omitempty"`
 	// DelayMs waits before sending the step (staggers a parallel group).
 	DelayMs int `json:"delay_ms,omitempty"`
+	// SSEUntil reads a text/event-stream response until an event whose
+	// event_type is this value (for up to 30s): the body is recorded as
+	// { events: [<data of each event>] }.
+	SSEUntil string `json:"sse_until,omitempty"`
 	// Service sends the request to a fake third-party service of the
 	// scenario (e.g. "stripe") instead of the server.
 	Service string `json:"service,omitempty"`
@@ -219,7 +224,6 @@ func dropPath(v any, parts []string) {
 	}
 }
 
-// sortUnordered sorts the listed body arrays by their JSON encoding.
 // sortAgain sorts the normalized response once more: items the first pass
 // could not tell apart (same content, ids already seen in the scenario) are
 // ordered by their placeholders.
@@ -238,6 +242,7 @@ func orderKey(item any) string {
 	return generatedIDRe.ReplaceAllString(string(raw), "<id>")
 }
 
+// sortUnordered sorts the listed body arrays by their id-masked content.
 func sortUnordered(rec any, keys []string) any {
 	r, ok := rec.(*dal.Record)
 	if !ok || len(keys) == 0 {
@@ -466,7 +471,12 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 			if err != nil {
 				return Response{}, fmt.Errorf("%s: %v", step.Name, err)
 			}
-			raw, _ := io.ReadAll(res.Body)
+			var raw []byte
+			if step.SSEUntil != "" {
+				raw = readEvents(res.Body, step.SSEUntil)
+			} else {
+				raw, _ = io.ReadAll(res.Body)
+			}
 			res.Body.Close()
 
 			rec := Response{Status: res.StatusCode, Headers: map[string]string{}}
@@ -540,6 +550,51 @@ func runScenario(t *testing.T, baseURL string, steps []Step) map[string]Response
 		}
 		i = j
 	}
+	return out
+}
+
+// readEvents reads the data lines of an event stream until an event of the
+// given type (or 30s) and returns them as { "events": [...] }.
+func readEvents(body io.Reader, until string) []byte {
+	lines := make(chan string)
+	go func() {
+		defer close(lines)
+		sc := bufio.NewScanner(body)
+		sc.Buffer(make([]byte, 1024*1024), 16*1024*1024)
+		for sc.Scan() {
+			lines <- sc.Text()
+		}
+	}()
+	var events []json.RawMessage
+	timeout := time.After(30 * time.Second)
+	for {
+		select {
+		case line, ok := <-lines:
+			if !ok {
+				return eventsJSON(events)
+			}
+			data, isData := strings.CutPrefix(line, "data: ")
+			if !isData {
+				continue
+			}
+			events = append(events, json.RawMessage(data))
+			var ev struct {
+				EventType string `json:"event_type"`
+			}
+			if json.Unmarshal([]byte(data), &ev) == nil && ev.EventType == until {
+				return eventsJSON(events)
+			}
+		case <-timeout:
+			return eventsJSON(events)
+		}
+	}
+}
+
+func eventsJSON(events []json.RawMessage) []byte {
+	if events == nil {
+		events = []json.RawMessage{}
+	}
+	out, _ := json.Marshal(map[string]any{"events": events})
 	return out
 }
 
@@ -670,6 +725,9 @@ func recordScenario(t *testing.T, base, file string) {
 				rec.Set("set_cookie", cookies)
 			}
 			rec.Set("body", r.Body)
+			// ignored values are not compared: they are not recorded
+			// either (upstream source paths and stack traces)
+			dropIgnored(rec, s.Ignore)
 			ordered.Set(s.Name, rec)
 		}
 		raw, err := ordered.MarshalJSON()
@@ -770,6 +828,18 @@ func (p *placeholders) of(s string) string {
 	return n
 }
 
+// journalTimestampKeys are the millisecond timestamps of a workflow
+// execution (TransactionFlow and its steps).
+var journalTimestampKeys = map[string]bool{"startedAt": true, "lastAttempt": true, "timedOutAt": true, "temporaryFailedAt": true, "retryRescheduledAt": true}
+
+func isNumber(v any) bool {
+	switch v.(type) {
+	case float64, int, int64, json.Number:
+		return true
+	}
+	return false
+}
+
 // normalize masks the values that differ between runs: JWT timestamps
 // (iat/exp), tokens (replaced by their decoded, masked payload) and ids and
 // timestamps generated during the scenario.
@@ -791,6 +861,9 @@ func (p *placeholders) normalize(v any) any {
 				out.Set(k, maskRandom(x))
 			case k == "otpauth_url":
 				out.Set(k, otpSecretRe.ReplaceAllString(fmt.Sprint(x), "secret=<secret>"))
+			case journalTimestampKeys[k] && isNumber(x):
+				// workflow journal timestamps (Date.now())
+				out.Set(k, "<timestamp>")
 			default:
 				out.Set(k, p.normalize(x))
 			}
