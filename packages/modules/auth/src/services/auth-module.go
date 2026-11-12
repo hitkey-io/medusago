@@ -195,6 +195,27 @@ func (s *AuthModuleService) identityService(provider string) authtypes.AuthIdent
 	return &identityProviderService{s: s, provider: provider}
 }
 
+// GetAuthIdentityProviderService mirrors getAuthIdentityProviderService: the
+// auth identity operations scoped to a provider, as given to auth providers.
+func (s *AuthModuleService) GetAuthIdentityProviderService(provider string) authtypes.AuthIdentityProviderService {
+	return s.identityService(provider)
+}
+
+// ValidateAuthIdentity mirrors validateAuthIdentity: the auth identity, with
+// an MFA challenge when the identity requires one; failures are returned as
+// an unsuccessful response, not as errors.
+func (s *AuthModuleService) ValidateAuthIdentity(ctx context.Context, id, provider string, config utilsmodulessdk.FindConfig) authtypes.AuthenticationResponse {
+	identity, err := s.Internal("AuthIdentity").Retrieve(ctx, id, config)
+	if err != nil {
+		return authtypes.AuthenticationResponse{Success: false, Error: err.Error()}
+	}
+	res, err := s.applyMfaRequirement(ctx, authtypes.AuthenticationResponse{Success: true, AuthIdentity: identity}, provider)
+	if err != nil {
+		return authtypes.AuthenticationResponse{Success: false, Error: err.Error()}
+	}
+	return res
+}
+
 type identityProviderService struct {
 	s        *AuthModuleService
 	provider string

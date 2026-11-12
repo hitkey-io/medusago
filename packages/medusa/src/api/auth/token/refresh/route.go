@@ -18,11 +18,11 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 		return common.NewMedusaError(common.MedusaErrorTypes.UNAUTHORIZED, "The auth provider is not set while refreshing token")
 	}
 	identityID := req.AuthString("auth_identity_id")
-	identity, err := service.Internal("AuthIdentity").Retrieve(req.Ctx(), identityID, utilsmodulessdk.FindConfig{Relations: []string{"provider_identities"}})
-	if err != nil {
-		return err
-	}
 	if req.AuthString("actor_id") != "" {
+		identity, err := service.Internal("AuthIdentity").Retrieve(req.Ctx(), identityID, utilsmodulessdk.FindConfig{Relations: []string{"provider_identities"}})
+		if err != nil {
+			return err
+		}
 		mfa, _ := req.AuthContext.Get("mfa_enabled")
 		mfaEnabled, _ := mfa.(bool)
 		completed, _ := req.AuthContext.Get("mfa_challenge_completed_at")
@@ -40,7 +40,12 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 		out.Set("token", token)
 		return res.JSON(out)
 	}
-	body, err := authutils.GenerateJwtTokenWithChecks(req.Ctx(), req.Scope, identity, nil, req.AuthString("actor_type"), provider)
+	// validateAuthIdentity performs the checks of an authenticate call (MFA)
+	validated := service.ValidateAuthIdentity(req.Ctx(), identityID, provider, utilsmodulessdk.FindConfig{Relations: []string{"provider_identities"}})
+	if validated.AuthIdentity == nil {
+		return common.NewMedusaError(common.MedusaErrorTypes.UNAUTHORIZED, "Invalid auth identity while refreshing token")
+	}
+	body, err := authutils.GenerateJwtTokenWithChecks(req.Ctx(), req.Scope, validated.AuthIdentity, validated.MfaChallenge, req.AuthString("actor_type"), provider)
 	if err != nil {
 		return err
 	}
