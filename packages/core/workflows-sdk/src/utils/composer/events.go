@@ -226,14 +226,30 @@ func deliverEvent(ev WorkflowEvent) {
 // stepSnapshot mirrors a serialized TransactionStep (caller holds j.mu).
 func (j *journal) stepSnapshot(r *stepRecord) *dal.Record {
 	def := dal.NewRecord()
-	def.Set("action", r.action)
-	def.Set("uuid", r.uuid)
-	if r.async {
-		def.Set("async", true)
-		def.Set("compensateAsync", r.compensateAsync)
+	if r.fields != nil {
+		// the definition upstream composed: action, uuid, the other fields,
+		// store
+		for _, k := range r.fields.Keys() {
+			v, _ := r.fields.Get(k)
+			if k == "uuid" {
+				v = r.uuid
+			}
+			def.Set(k, v)
+		}
+		if !def.Has("uuid") {
+			def.Set("uuid", r.uuid)
+		}
+		def.Set("store", fieldBool(r.fields, "store") || r.store || r.async || r.timeout > 0 || fieldInt(r.fields, "retryInterval") > 0)
+	} else {
+		def.Set("action", r.action)
+		def.Set("uuid", r.uuid)
+		if r.async {
+			def.Set("async", true)
+			def.Set("compensateAsync", r.compensateAsync)
+		}
+		def.Set("noCompensation", r.noCompensation)
+		def.Set("store", r.store)
 	}
-	def.Set("noCompensation", r.noCompensation)
-	def.Set("store", r.store)
 	state := func(s, st string) *dal.Record {
 		o := dal.NewRecord()
 		o.Set("state", s)
@@ -255,6 +271,9 @@ func (j *journal) stepSnapshot(r *stepRecord) *dal.Record {
 	out.Set("next", append([]string{}, r.next...))
 	out.Set("_v", j.version)
 	out.Set("startedAt", r.startedAt)
+	if r.retryReset {
+		out.Set("retryRescheduledAt", nil)
+	}
 	return out
 }
 
@@ -279,8 +298,15 @@ func (j *journal) emit(eventType string, r *stepRecord, fill func(*WorkflowEvent
 func (j *journal) errorsFor(action, handlerType string) []any {
 	out := []any{}
 	for _, e := range j.errors {
-		m, _ := e.(map[string]any)
-		if m["action"] == action && m["handlerType"] == handlerType {
+		var a, h any
+		switch m := e.(type) {
+		case *dal.Record:
+			a, _ = m.Get("action")
+			h, _ = m.Get("handlerType")
+		case map[string]any:
+			a, h = m["action"], m["handlerType"]
+		}
+		if a == action && h == handlerType {
 			out = append(out, e)
 		}
 	}

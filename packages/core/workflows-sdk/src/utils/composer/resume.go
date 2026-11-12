@@ -118,6 +118,9 @@ type resumeState struct {
 	errors        []any
 	options       *dal.Record
 	steps         []*storedStep
+	// engineRun: the metadata carries preventReleaseEvents: false (a run
+	// of the workflow engine)
+	engineRun bool
 }
 
 func recGet(r *dal.Record, k string) any {
@@ -162,6 +165,11 @@ func parseCheckpoint(cp *Checkpoint) *resumeState {
 		invoke:        map[string]any{},
 		errors:        append([]any{}, cp.Errors...),
 		options:       asRec(recGet(flow, "options")),
+	}
+	if md := asRec(recGet(flow, "metadata")); md != nil {
+		if v, ok := md.Get("preventReleaseEvents"); ok && v == false {
+			rs.engineRun = true
+		}
 	}
 	if invoke := asRec(recGet(data, "invoke")); invoke != nil {
 		for _, k := range invoke.Keys() {
@@ -230,6 +238,8 @@ func (rs *resumeState) stepByAction(action string) *storedStep {
 // are appended as the replay passes them.
 func restoredJournal(rs *resumeState) *journal {
 	j := newJournal(rs.payload)
+	j.define(rs.workflowID)
+	j.engineRun = rs.engineRun
 	if rs.runID != "" {
 		j.runID = rs.runID
 	}
@@ -385,11 +395,9 @@ func (s *Step[I, O]) replayStep(e *Execution, action string, noComp bool) (O, bo
 		return out, true, nil
 	case st.invokeState == stepStateSkipped:
 		e.journal.restore(action, s.Options, noComp, st)
-		if !e.subWorkflow {
-			e.journal.mu.Lock()
-			e.journal.hasSkipped = true
-			e.journal.mu.Unlock()
-		}
+		e.journal.mu.Lock()
+		e.journal.hasSkipped = true
+		e.journal.mu.Unlock()
 		return zero, true, nil
 	case st.waiting() && action == rp.target:
 		resp := rp.deliver(action)

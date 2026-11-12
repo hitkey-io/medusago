@@ -64,6 +64,17 @@ type StepExecutionContext struct {
 	// Attempt is the 1-based invoke attempt.
 	Attempt int
 	exec    *Execution
+	// compResponse is set by a compensation that returns a StepResponse
+	compResponse *bool
+}
+
+// ReturnStepResponse mirrors a compensation returning new StepResponse():
+// the context records its response ({ output: StepResponse }) instead of
+// undefined.
+func (c StepExecutionContext) ReturnStepResponse() {
+	if c.compResponse != nil {
+		*c.compResponse = true
+	}
 }
 
 // Execution returns the running execution (for nested workflows).
@@ -83,6 +94,9 @@ type StepResponse[O any] struct {
 	hasCompensate   bool
 	permanentFail   error
 	skip            bool
+	// nullOutput: the output is null (new StepResponse(null)), not
+	// undefined
+	nullOutput bool
 }
 
 // SkipStep mirrors StepResponse.skip(): the step is marked skipped, its
@@ -98,6 +112,15 @@ func NewStepResponse[O any](output O, compensateInput ...any) StepResponse[O] {
 		r.CompensateInput = compensateInput[0]
 		r.hasCompensate = true
 	}
+	return r
+}
+
+// NewNullStepResponse mirrors new StepResponse(null, compensateInput?): the
+// output is stored as null (NewStepResponse with a nil output leaves it
+// undefined).
+func NewNullStepResponse[O any](compensateInput ...any) StepResponse[O] {
+	r := NewStepResponse[O](*new(O), compensateInput...)
+	r.nullOutput = true
 	return r
 }
 
@@ -185,8 +208,9 @@ type Execution struct {
 	partial        any
 	rootWorkflowID string
 	rootOptions    WorkflowOptions
-	// subWorkflow: the workflow runs as a step of another one
+	// subWorkflow: the workflow runs as a step of another one (parentExec)
 	subWorkflow bool
+	parentExec  *Execution
 	// replay is set when the run resumes a stored transaction
 	replay *replayState
 	// persistedRev is the journal revision of the last persist
@@ -227,6 +251,15 @@ func (e *Execution) stepContext(name, action string, attempt int) StepExecutionC
 		Context: eventbus.WithSharedAggregator(eventbus.WithEventGroupID(e.ctx, e.eventGroupID), e.aggregator()), Container: e.container, WorkflowID: e.workflowID, StepName: name,
 		TransactionID: e.transactionID, Action: action, EventGroupID: e.eventGroupID, Attempt: attempt, exec: e,
 	}
+}
+
+// compensateContext is the step context of a compensation and the flag it
+// sets when it returns a StepResponse.
+func (e *Execution) compensateContext(name string) (StepExecutionContext, *bool) {
+	ctx := e.stepContext(name, "compensate", 1)
+	resp := new(bool)
+	ctx.compResponse = resp
+	return ctx, resp
 }
 
 // compensate runs the compensations in reverse order. Compensation errors
@@ -383,15 +416,17 @@ func (s *Step[I, O]) settle(e *Execution, rec *stepRecord, res StepResponse[O], 
 			comp := s.compensate
 			name := s.Name
 			e.pushCompensation(compensation{name: name, run: func() error {
-				cerr := callSafely(func() error { return comp(e.stepContext(name, "compensate", 1), nil) })
-				e.journal.compensated(rec, cerr)
+				e.journal.compensateBegin(rec)
+				ctx, resp := e.compensateContext(name)
+				cerr := callSafely(func() error { return comp(ctx, nil) })
+				e.journal.compensated(rec, cerr, *resp)
 				return cerr
 			}})
 		}
 		return zero, &stepFailed{err: err}
 	}
 	if res.skip {
-		e.journal.skip(rec, !e.subWorkflow)
+		e.journal.skip(rec, true)
 		e.afterDelivered(rec)
 		return zero, nil
 	}
@@ -399,7 +434,7 @@ func (s *Step[I, O]) settle(e *Execution, rec *stepRecord, res StepResponse[O], 
 	if res.hasCompensate {
 		compInput = res.CompensateInput
 	}
-	e.journal.succeed(rec, res.Output, any(res.Output) != nil, compInput, res.hasCompensate)
+	e.journal.succeed(rec, res.Output, any(res.Output) != nil || res.nullOutput, compInput, res.hasCompensate)
 	e.afterDelivered(rec)
 	s.pushStepCompensation(e, rec, compInput)
 	return res.Output, nil
@@ -412,8 +447,10 @@ func (s *Step[I, O]) pushStepCompensation(e *Execution, rec *stepRecord, compInp
 	comp := s.compensate
 	name := s.Name
 	e.pushCompensation(compensation{name: name, run: func() error {
-		cerr := callSafely(func() error { return comp(e.stepContext(name, "compensate", 1), compInput) })
-		e.journal.compensated(rec, cerr)
+		e.journal.compensateBegin(rec)
+		ctx, resp := e.compensateContext(name)
+		cerr := callSafely(func() error { return comp(ctx, compInput) })
+		e.journal.compensated(rec, cerr, *resp)
 		return cerr
 	}})
 }
@@ -482,6 +519,8 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 	runCtx := context.WithoutCancel(ctx)
 	e := &Execution{ctx: runCtx, container: c, workflowID: w.ID, transactionID: o.TransactionID, eventGroupID: o.EventGroupID, hooks: w.hooks,
 		journal: newJournal(input), detacher: newDetacher(), rootWorkflowID: w.ID, rootOptions: w.Options}
+	e.journal.define(w.ID)
+	e.journal.engineRun = o.Notify
 	if o.Notify {
 		e.notifyEvents()
 		e.journal.emitRun("onBegin", nil)
@@ -577,6 +616,8 @@ func (w *Workflow[I, O]) finish(e *Execution, err error, stored bool) string {
 		if e.journal.hasFailed {
 			state = TransactionStateFailed
 		}
+	} else {
+		e.journal.skipUnreached()
 	}
 	e.journal.setState(state)
 	if stored || e.journal.hasAsync {
@@ -619,31 +660,142 @@ func (w *Workflow[I, O]) execute(e *Execution, input I) (O, error) {
 }
 
 // RunAsStep mirrors workflow.runAsStep({ input }): the nested workflow runs
-// within the parent execution (same container, event group) and is
-// compensated as a unit when the parent fails.
+// within the parent execution (same container, event group) as one step of
+// the parent, "<id>-as-step". The nested run has its own transaction
+// ("<id>-as-step-<parent transaction id>"): its steps are not steps of the
+// parent; the parent step's output is the nested result and its
+// compensation input the nested transaction (flow and context), like the
+// WorkflowResult upstream stores. The nested run is compensated as a unit
+// when the parent fails.
 func (w *Workflow[I, O]) RunAsStep(parent *Execution, input I) (O, error) {
-	e := &Execution{ctx: parent.ctx, container: parent.container, workflowID: w.ID, transactionID: parent.transactionID, eventGroupID: parent.eventGroupID, hooks: w.hooks,
-		journal: parent.journal, detacher: parent.detacher, rootWorkflowID: parent.rootWorkflowID, rootOptions: parent.rootOptions, subWorkflow: true,
-		replay: parent.replay}
+	var zero O
+	name := w.ID + "-as-step"
+	async := false
+	if n := findFlowNode(flowDefinition(parent.workflowID), name); n != nil {
+		async = fieldBool(n.fields, "async")
+	}
+	if parent.replay != nil {
+		if out, handled, err := w.replayAsStep(parent, name, async, input); handled {
+			return out, err
+		}
+	}
+	rec := parent.journal.begin(name, StepOptions{Async: async}, false)
+	e := w.nestedExecution(parent, name, input)
 	out, err := w.execute(e, input)
 	if errors.Is(err, errSuspended) {
-		var zero O
 		return zero, err
 	}
 	if err != nil {
+		e.journal.revertAll()
+		state := TransactionStateReverted
+		if e.journal.hasFailed {
+			state = TransactionStateFailed
+		}
+		e.journal.setState(state)
+		parent.journal.fail(rec, err)
 		parent.mu.Lock()
 		parent.errors = append(parent.errors, err)
 		parent.mu.Unlock()
-		var zero O
+		// the failed step is compensated too: the nested transaction
+		// already reverted itself
+		parent.pushCompensation(compensation{name: name, run: func() error {
+			parent.journal.compensateBegin(rec)
+			parent.journal.compensated(rec, nil, false)
+			return nil
+		}})
 		return zero, &stepFailed{err: err}
 	}
+	e.journal.skipUnreached()
+	e.journal.setState(TransactionStateDone)
+	var compInput any = parent.transactionID
+	if !async {
+		result := map[string]any{"errors": []any{}, "transaction": e.nestedTransaction(w.ID, input), "thrownError": nil}
+		if !isNilOutput(any(out)) {
+			result["result"] = out
+		}
+		compInput = result
+	}
+	// an undefined result leaves the step output undefined
+	parent.journal.succeed(rec, out, !isNilOutput(any(out)), compInput, true)
 	nested := e.compensations
-	parent.pushCompensation(compensation{name: w.ID + "-as-step", run: func() error {
+	parent.pushCompensation(compensation{name: name, run: func() error {
+		parent.journal.compensateBegin(rec)
 		e.compensations = nested
 		e.compensate()
+		parent.journal.compensated(rec, nil, false)
 		return nil
 	}})
 	return out, nil
+}
+
+// nestedExecution starts the execution of a workflow run as a step.
+func (w *Workflow[I, O]) nestedExecution(parent *Execution, name string, input I) *Execution {
+	j := newJournal(input)
+	j.nested = true
+	j.runID = parent.journal.runID
+	j.nestedTxID = name + "-" + parent.transactionID
+	j.parentStepKey = parent.workflowID + ":" + parent.transactionID + ":" + name + ":invoke"
+	j.state = TransactionStateInvoking
+	j.define(w.ID)
+	return &Execution{ctx: parent.ctx, container: parent.container, workflowID: w.ID, transactionID: parent.transactionID, eventGroupID: parent.eventGroupID, hooks: w.hooks,
+		journal: j, detacher: parent.detacher, rootWorkflowID: parent.rootWorkflowID, rootOptions: parent.rootOptions, subWorkflow: true,
+		parentExec: parent}
+}
+
+// nestedTransaction mirrors the serialized DistributedTransaction of a
+// workflow run as a step.
+func (e *Execution) nestedTransaction(workflowID string, input any) map[string]any {
+	flow := e.journal.flow(workflowID, e.transactionID, e.eventGroupID, WorkflowOptions{})
+	ctx := e.journal.context()
+	return map[string]any{
+		"_events": map[string]any{}, "_eventsCount": 0, "flow": flow, "payload": input, "errors": ctx["errors"], "context": ctx["data"],
+		"transactionId": e.journal.nestedTxID, "modelId": workflowID, "runId": e.journal.runID,
+	}
+}
+
+// replayAsStep handles the "-as-step" step of a resumed run: a finished one
+// returns its stored result and the nested run is rebuilt from the stored
+// transaction (its steps restored, so it can be compensated).
+func (w *Workflow[I, O]) replayAsStep(parent *Execution, name string, async bool, input I) (O, bool, error) {
+	var zero O
+	rp := parent.replay
+	st := rp.take(name)
+	if st == nil {
+		return zero, false, nil
+	}
+	switch {
+	case st.invokeState == stepStateDone:
+		rec := parent.journal.restore(name, StepOptions{Async: async}, false, st)
+		out, err := decodeStored[O](st.output)
+		if err != nil {
+			parent.journal.fail(rec, err)
+			return zero, true, &stepFailed{err: err}
+		}
+		e := w.nestedExecution(parent, name, input)
+		if tx := asRec(recGet(asRec(st.compInput), "transaction")); tx != nil {
+			if flow := asRec(recGet(tx, "flow")); flow != nil {
+				rs := parseCheckpoint(&Checkpoint{Flow: flow, Context: asRec(recGet(tx, "context"))})
+				e.replay = newReplayState(rs, "", nil)
+				if _, rerr := w.execute(e, input); rerr != nil {
+					slog.Error(fmt.Sprintf("%s: cannot restore the nested transaction: %v", name, rerr))
+				}
+			}
+		}
+		nested := e.compensations
+		parent.pushCompensation(compensation{name: name, run: func() error {
+			parent.journal.compensateBegin(rec)
+			e.compensations = nested
+			e.compensate()
+			parent.journal.compensated(rec, nil, false)
+			return nil
+		}})
+		return out, true, nil
+	case st.invokeState == stepStateNotStarted || st.invokeState == "":
+		return zero, false, nil
+	default:
+		rp.stop()
+		return zero, true, errSuspended
+	}
 }
 
 // Parallelize mirrors parallelize(...): the branches run in order (upstream
@@ -689,7 +841,8 @@ func isNilOutput(v any) bool {
 // the result (undefined for a failed run) and the transaction errors.
 func (e *Execution) emitFinish(out any, err error) {
 	e.journal.emitRun("onFinish", func(ev *WorkflowEvent) {
-		if err == nil {
+		// an undefined result is not serialized
+		if err == nil && !isNilOutput(out) {
 			ev.Result, ev.HasResult = out, true
 		}
 		ev.Errors, ev.HasErrors = append([]any{}, e.journal.errors...), true
