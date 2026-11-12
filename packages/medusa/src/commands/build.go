@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	bundler "github.com/hitkey-io/medusago/packages/admin/admin-bundler/src/commands"
@@ -124,7 +125,7 @@ type adminBuildOptions struct {
 
 // buildAdminWithNode compiles the dashboard with the project's admin
 // extensions through the original @medusajs/admin-bundler (Node).
-func buildAdminWithNode(dir, outDir, mode string, admin config.AdminOptions, sources []string) error {
+func buildAdminWithNode(dir, outDir, mode string, admin config.AdminOptions, sources, plugins []string) error {
 	node, err := exec.LookPath("node")
 	if err != nil {
 		return errors.New("compiling admin extensions (src/admin) requires Node.js and the @medusajs/admin-bundler package installed in the project")
@@ -147,7 +148,7 @@ func buildAdminWithNode(dir, outDir, mode string, admin config.AdminOptions, sou
 		BackendURL:    admin.BackendURL,
 		StorefrontURL: admin.StorefrontURL,
 		Sources:       sources,
-		Plugins:       []string{},
+		Plugins:       plugins,
 	}
 	if !math.IsInf(admin.MaxUploadFileSize, 0) {
 		v := admin.MaxUploadFileSize
@@ -163,6 +164,78 @@ func buildAdminWithNode(dir, outDir, mode string, admin config.AdminOptions, sou
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+// resolveAdminPlugins mirrors the admin part of getResolvedPlugins: a plugin
+// whose package.json exports "./admin" contributes "<name>/admin" (bundled as
+// a package), one whose .medusa/server/medusa-plugin-options.json has a
+// srcDir contributes "<srcDir>/admin" (compiled as a source). Plugins are
+// resolved from the project like require.resolve; one that is not installed
+// is skipped with a warning (upstream fails, but the Go project does not
+// otherwise need the Node packages of its default plugins).
+func resolveAdminPlugins(dir string, plugins []config.PluginConfig, logger *slog.Logger) (sources, packages []string) {
+	sources, packages = []string{}, []string{}
+	for _, p := range plugins {
+		pkgPath := resolveNodePackageJSON(dir, p.Resolve)
+		if pkgPath == "" {
+			logger.Warn(fmt.Sprintf("Unable to resolve plugin %q: its admin extensions are not compiled (install it in the project to include them)", p.Resolve))
+			continue
+		}
+		raw, err := os.ReadFile(pkgPath)
+		if err != nil {
+			continue
+		}
+		var pkg struct {
+			Name    string         `json:"name"`
+			Exports map[string]any `json:"exports"`
+		}
+		_ = json.Unmarshal(raw, &pkg)
+		name := pkg.Name
+		if name == "" {
+			name = p.Resolve
+		}
+		var static struct {
+			SrcDir string `json:"srcDir"`
+		}
+		if b, err := os.ReadFile(filepath.Join(filepath.Dir(pkgPath), ".medusa", "server", "medusa-plugin-options.json")); err == nil {
+			_ = json.Unmarshal(b, &static)
+		}
+		_, hasAdminExport := pkg.Exports["./admin"]
+		switch {
+		case static.SrcDir != "":
+			sources = append(sources, filepath.Join(static.SrcDir, "admin"))
+		case hasAdminExport:
+			packages = append(packages, name+"/admin")
+		}
+	}
+	return sources, packages
+}
+
+// resolveNodePackageJSON finds <request>/package.json like require.resolve
+// from dir: a relative or absolute path, or node_modules/<request> in dir and
+// its parents.
+func resolveNodePackageJSON(dir, request string) string {
+	if filepath.IsAbs(request) || strings.HasPrefix(request, ".") {
+		p := filepath.Join(request, "package.json")
+		if !filepath.IsAbs(request) {
+			p = filepath.Join(dir, p)
+		}
+		if _, err := os.Stat(p); err == nil {
+			return p
+		}
+		return ""
+	}
+	for d := dir; ; {
+		p := filepath.Join(d, "node_modules", request, "package.json")
+		if _, err := os.Stat(p); err == nil {
+			return p
+		}
+		parent := filepath.Dir(d)
+		if parent == d {
+			return ""
+		}
+		d = parent
+	}
 }
 
 // buildAppFrontend mirrors compiler.buildAppFrontend. Without admin
@@ -196,7 +269,8 @@ func buildAppFrontend(dir string, adminOnly bool, cfg config.ConfigModule, logge
 		if adminOnly {
 			mode = "static"
 		}
-		err = buildAdminWithNode(dir, outDir, mode, admin, []string{sourceDir})
+		sources, plugins := resolveAdminPlugins(dir, cfg.Plugins, logger)
+		err = buildAdminWithNode(dir, outDir, mode, admin, append([]string{sourceDir}, sources...), plugins)
 	} else if adminOnly {
 		var b *bundler.Bundle
 		b, err = bundler.LoadBundle(dashboardbundle.App(), bundler.BundlerOptions{

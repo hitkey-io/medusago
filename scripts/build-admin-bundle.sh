@@ -36,6 +36,27 @@ export PATH="$SHIM_DIR:$PATH"
 node "$YARN_RELEASE" install --immutable
 node "$YARN_RELEASE" turbo run build --filter=@medusajs/admin-bundler... --no-daemon
 
+# Default plugins: defineConfig adds @medusajs/draft-order to every
+# application, so its admin extension (the Draft Orders section) is part of the
+# stock dashboard. It is compiled from the synced sources like
+# `medusa plugin:build` (admin-bundler's plugin command, output in
+# .medusa/server) and bundled through its "./admin" export.
+DEFAULT_PLUGINS=(packages/plugins/draft-order)
+ADMIN_PLUGINS=()
+for plugin_dir in "${DEFAULT_PLUGINS[@]}"; do
+  # Like `medusa plugin:build`, which runs in the plugin's directory.
+  (cd "$ROOT/$plugin_dir" && node -e '
+    const bundler = require(require.resolve("@medusajs/admin-bundler", { paths: [process.argv[1]] }))
+    bundler.plugin({ root: process.argv[2], outDir: ".medusa/server" }).catch((e) => {
+      console.error(e)
+      process.exit(1)
+    })
+  ' "$ROOT" "$ROOT/$plugin_dir")
+  name="$(node -p 'require(process.argv[1]).name' "$ROOT/$plugin_dir/package.json")"
+  ADMIN_PLUGINS+=("\"$name/admin\"")
+done
+ADMIN_PLUGINS_JSON="[$(IFS=,; echo "${ADMIN_PLUGINS[*]}")]"
+
 # The build runs inside the repository so the generated entry
 # (.medusa/client/entry.jsx) resolves @medusajs/dashboard from the workspace.
 WORK_DIR="$ROOT/node_modules/.cache/medusa-admin-build"
@@ -49,7 +70,7 @@ cat > "$WORK_DIR/options.json" <<EOF
   "outDir": "$OUT",
   "mode": "runtime",
   "sources": [],
-  "plugins": []
+  "plugins": $ADMIN_PLUGINS_JSON
 }
 EOF
 

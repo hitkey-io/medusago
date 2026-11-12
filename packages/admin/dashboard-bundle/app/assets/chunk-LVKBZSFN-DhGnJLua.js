@@ -1,1 +1,0 @@
-import{c2 as e,c0 as u,s as i}from"./index-DGE72T0q.js";var n="product_variant",o=e(n),c=(r,a)=>{const{data:s,...t}=u({queryFn:()=>i.admin.productVariant.list(r),queryKey:o.list(r),...a});return{...s,...t}};export{o as p,c as u};
