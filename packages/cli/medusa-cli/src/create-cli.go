@@ -42,7 +42,7 @@ import (
 )
 
 // Version is the Medusa version this CLI mirrors (UPSTREAM_VERSION).
-const Version = "2.22.4"
+const Version = "2.22.6"
 
 // defaultPort mirrors defaultPort of create-cli.ts.
 const defaultPort = "9000"

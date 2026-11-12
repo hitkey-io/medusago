@@ -17,6 +17,7 @@ var (
 	allAllocationTypes           = []string{"each", "across", "once"}
 	allowedAllocationTargetTypes = []string{"shipping_methods", "items"}
 	allowedAllocationTypes       = []string{"across", "each", "once"}
+	allTargetSelectionStrategies = []string{"most_expensive_first", "cheapest_first"}
 	allowedAllocationForQuantity = []string{"each", "once"}
 	ruleOperators                = []string{"gte", "lte", "gt", "lt", "eq", "ne", "in"}
 )
@@ -61,9 +62,18 @@ func validateApplicationMethodAttributes(data *dal.Record, promotion *dal.Record
 	}
 	maxQuantity := or(get(data, "max_quantity"), get(am, "max_quantity"))
 	allocation := or(get(data, "allocation"), get(am, "allocation"))
+	targetSelectionStrategy := or(get(data, "target_selection_strategy"), get(am, "target_selection_strategy"))
 
 	if methodType == "percentage" && (totals.Lte(value, 0) || totals.Gt(value, 100)) {
 		return badData("Application Method value should be a percentage number between 0 and 100")
+	}
+	if jsTruthy(targetSelectionStrategy) {
+		if !contains(allTargetSelectionStrategies, targetSelectionStrategy) {
+			return badData("application_method.target_selection_strategy should be one of %s", strings.Join(allTargetSelectionStrategies, ", "))
+		}
+		if get(promotion, "type") != "buyget" && targetSelectionStrategy != "most_expensive_first" {
+			return badData("application_method.target_selection_strategy '%v' is only allowed for Promotion type of buyget", targetSelectionStrategy)
+		}
 	}
 	if get(promotion, "type") == "buyget" {
 		if !isPresent(applyToQuantity) {

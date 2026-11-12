@@ -38,7 +38,7 @@
   {"name": "events__batch_delete_stocked", "method": "GET", "path": "/events-capture"},
   {"name": "events_reset__batch_delete_stocked", "method": "POST", "path": "/events-capture", "body": {}},
   {"name": "batch", "method": "POST", "bearer": "login", "path": "/admin/inventory-items/{{create.inventory_item.id}}/location-levels/batch", "body": {"update": [{"location_id": "{{locations.stock_locations.0.id}}", "stocked_quantity": 9}], "delete": ["{{levels_list.inventory_levels.1.id}}"], "force": true}},
-  {"name": "events__batch", "method": "GET", "path": "/events-capture"},
+  {"name": "events__batch", "method": "GET", "path": "/events-capture", "sortby": {"events": "name"}},
   {"name": "events_reset__batch", "method": "POST", "path": "/events-capture", "body": {}},
   {"name": "level_delete", "method": "DELETE", "bearer": "login", "path": "/admin/inventory-items/{{create.inventory_item.id}}/location-levels/{{locations.stock_locations.0.id}}?fields=id,location_levels.id"},
   {"name": "events__level_delete", "method": "GET", "path": "/events-capture"},

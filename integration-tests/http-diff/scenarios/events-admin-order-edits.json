@@ -83,7 +83,7 @@
   {"name": "events__confirm", "method": "GET", "path": "/events-capture"},
   {"name": "events_reset__confirm", "method": "POST", "path": "/events-capture", "body": {}},
   {"name": "order_after", "method": "GET", "bearer": "login", "path": "/admin/orders/{{complete.order.id}}?fields=id,version,summary,total,items.quantity,items.detail.quantity,items.detail.fulfilled_quantity,shipping_methods.amount"},
-  {"name": "reservations", "method": "GET", "bearer": "login", "path": "/admin/reservations?fields=quantity,line_item_id,location_id"},
+  {"name": "reservations", "sortby": {"reservations": "quantity"}, "method": "GET", "bearer": "login", "path": "/admin/reservations?fields=quantity,line_item_id,location_id"},
   {"name": "begin2", "method": "POST", "bearer": "login", "path": "/admin/order-edits", "body": {"order_id": "{{complete.order.id}}"}},
   {"name": "events__begin2", "method": "GET", "path": "/events-capture"},
   {"name": "events_reset__begin2", "method": "POST", "path": "/events-capture", "body": {}},

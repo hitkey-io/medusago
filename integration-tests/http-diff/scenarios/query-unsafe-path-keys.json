@@ -1,0 +1,132 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "pk",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys",
+    "body": {
+      "title": "Store",
+      "type": "publishable"
+    }
+  },
+  {
+    "name": "channels",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/sales-channels?order=name&fields=id,name"
+  },
+  {
+    "name": "link",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys/{{pk.api_key.id}}/sales-channels?fields=id",
+    "body": {
+      "add": [
+        "{{channels.sales_channels.0.id}}"
+      ]
+    }
+  },
+  {
+    "name": "fields_proto",
+    "method": "GET",
+    "path": "/admin/products?fields=id,title,__proto__.polluted&order=title",
+    "bearer": "login"
+  },
+  {
+    "name": "fields_constructor",
+    "method": "GET",
+    "path": "/admin/products?fields=id,constructor.prototype.polluted,variants.__proto__.id&order=title",
+    "bearer": "login"
+  },
+  {
+    "name": "fields_modifiers",
+    "method": "GET",
+    "path": "/admin/products?fields=+__proto__.x,-constructor,*prototype&order=title&limit=1",
+    "bearer": "login"
+  },
+  {
+    "name": "fields_star_proto",
+    "method": "GET",
+    "path": "/admin/products?fields=*__proto__&order=title&limit=1",
+    "bearer": "login"
+  },
+  {
+    "name": "order_proto",
+    "method": "GET",
+    "path": "/admin/products?fields=id,title&order=__proto__.title",
+    "bearer": "login"
+  },
+  {
+    "name": "order_constructor",
+    "method": "GET",
+    "path": "/admin/products?fields=id,title&order=-constructor.prototype",
+    "bearer": "login"
+  },
+  {
+    "name": "filter_proto",
+    "method": "GET",
+    "path": "/admin/products?fields=id&__proto__.polluted=1",
+    "bearer": "login"
+  },
+  {
+    "name": "filter_constructor",
+    "method": "GET",
+    "path": "/admin/products?fields=id&constructor.prototype=1",
+    "bearer": "login"
+  },
+  {
+    "name": "filter_child_proto",
+    "method": "GET",
+    "path": "/admin/products?fields=id&variants.__proto__=1",
+    "bearer": "login"
+  },
+  {
+    "name": "filter_three_levels",
+    "method": "GET",
+    "path": "/admin/products?fields=id&a.b.c=1",
+    "bearer": "login"
+  },
+  {
+    "name": "retrieve_proto",
+    "method": "GET",
+    "path": "/admin/products/{{fields_proto.products.0.id}}?fields=id,__proto__.x,title",
+    "bearer": "login"
+  },
+  {
+    "name": "store_fields_proto",
+    "method": "GET",
+    "path": "/store/products?fields=id,__proto__.polluted,+constructor.x&order=title",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "store_filter_proto",
+    "method": "GET",
+    "path": "/store/products?fields=id&prototype.x=1",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "orders_fields_proto",
+    "method": "GET",
+    "path": "/admin/orders?fields=id,__proto__.x,items.constructor.y",
+    "bearer": "login"
+  },
+  {
+    "name": "after",
+    "method": "GET",
+    "path": "/admin/products?fields=id,title&order=title&limit=1",
+    "bearer": "login"
+  }
+]

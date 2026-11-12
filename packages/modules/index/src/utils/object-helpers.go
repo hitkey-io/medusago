@@ -4,6 +4,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
@@ -125,8 +126,6 @@ func deepMergeRecursive(a, b any) any {
 	return ar
 }
 
-var unsafePathKeys = map[string]bool{"__proto__": true, "constructor": true, "prototype": true}
-
 // ObjectFromStringPath mirrors objectFromStringPath (the collection is
 // sorted in place).
 func ObjectFromStringPath(collection []string) *dal.Record {
@@ -137,13 +136,7 @@ func ObjectFromStringPath(collection []string) *dal.Record {
 			continue
 		}
 		nested := strings.Split(relation, ".")
-		unsafe := false
-		for _, s := range nested {
-			if unsafePathKeys[s] {
-				unsafe = true
-			}
-		}
-		if unsafe {
+		if common.HasUnsafePathSegment(nested) {
 			continue
 		}
 		if len(nested) > 1 {

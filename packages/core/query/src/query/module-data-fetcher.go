@@ -65,13 +65,17 @@ func fieldsAndRelations(expand *joiner.ExpandProperty, prefix string, args map[s
 	}
 	if expand.Expands != nil {
 		for _, key := range expand.Expands.Keys {
+			nested := expand.Expands.Values[key]
+			if nested == nil {
+				continue
+			}
 			newPrefix := key
 			if prefix != "" {
 				newPrefix = prefix + "." + key
 			}
 			relations = append(relations, newPrefix)
 			remove(newPrefix)
-			sub, subAll, subRelations := fieldsAndRelations(expand.Expands.Values[key], newPrefix, args, argOrder)
+			sub, subAll, subRelations := fieldsAndRelations(nested, newPrefix, args, argOrder)
 			// result.select is undefined when the relation selects "*"
 			if !subAll {
 				for _, f := range sub {
