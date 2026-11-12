@@ -447,7 +447,15 @@ func (r *Repository) insertRow(ctx context.Context, e *dml.Entity, data Row) err
 // Create mirrors repository.create + flush: every input becomes an entity,
 // with nested one-to-many children created and many-to-many items attached.
 func (r *Repository) Create(ctx context.Context, inputs []*Record) ([]*Record, error) {
+	// the entities the module already loaded (one entity manager upstream: a
+	// shared identity map) are the items the new entities reference and
+	// serialize with; the new entities do not join the shared map
 	idm := identityMap{}
+	if shared, ok := ctx.Value(sharedIdentityMapKey{}).(identityMap); ok {
+		for k, v := range shared {
+			idm[k] = v
+		}
+	}
 	var out []*Record
 	for _, input := range inputs {
 		inst, err := r.create(ctx, r.Entity, input, idm)
@@ -734,7 +742,7 @@ func (r *Repository) UpdateWith(ctx context.Context, opts FindOptions, dataFor f
 			return nil, err
 		}
 	}
-	return r.serialize(roots, idm, opts)
+	return r.serializeWith(roots, idm, opts, true)
 }
 
 // applyUpdate assigns data to a loaded entity: scalar columns, then the

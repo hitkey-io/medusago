@@ -968,6 +968,9 @@ func (s *ProductModuleService) CreateProductVariants(ctx context.Context, data [
 }
 
 func (s *ProductModuleService) createVariants(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
+	// the option values loaded below are the entities the created variants
+	// reference (one entity manager upstream): they serialize fully
+	ctx = dal.WithSharedIdentityMap(ctx)
 	var productIDs []any
 	seen := map[string]bool{}
 	for _, v := range data {

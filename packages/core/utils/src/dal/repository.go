@@ -848,6 +848,9 @@ type fieldTree struct {
 	joined   bool
 	fields   map[string]bool
 	children map[string]*fieldTree
+	// updated: the entities were just updated (repository.update): a
+	// shadow foreign key whose relation is null is assigned null
+	updated bool
 }
 
 func buildFieldTree(opts FindOptions, paths []string) *fieldTree {
@@ -907,7 +910,12 @@ func buildFieldTree(opts FindOptions, paths []string) *fieldTree {
 }
 
 func (r *Repository) serialize(roots []*instance, idm identityMap, opts FindOptions) ([]*Record, error) {
+	return r.serializeWith(roots, idm, opts, false)
+}
+
+func (r *Repository) serializeWith(roots []*instance, idm identityMap, opts FindOptions, updated bool) ([]*Record, error) {
 	tree := buildFieldTree(opts, r.relationPaths(opts))
+	tree.updated = updated
 	out := make([]*Record, 0, len(roots))
 	for _, inst := range roots {
 		rec, err := r.serializeInstance(inst, tree, nil, nil, idm)
@@ -1096,7 +1104,11 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 	for _, p := range lateScalars {
 		v := inst.data[p.FieldNames[0]]
 		if v == nil {
-			// assigned from the relation, which is null
+			// assigned from the relation, which is null: present (null)
+			// when the relation was loaded, absent otherwise
+			if tree.updated && relationSerializedNull(e, rec, p) {
+				rec.Set(p.Name, nil)
+			}
 			continue
 		}
 		rec.Set(p.Name, runtimeNumber(p.Type, v))
@@ -1200,4 +1212,18 @@ func (r *Repository) serializeValue(value any, tree *fieldTree, prop *dml.MetaPr
 func (r *Repository) entityByClass(className string) *dml.Entity {
 	e, _ := r.Schema.Entity(className)
 	return e
+}
+
+// relationSerializedNull reports whether the to-one relation a shadow
+// foreign key belongs to is serialized as null (loaded, no entity): the
+// shadow key is assigned from it.
+func relationSerializedNull(e *dml.Entity, rec *Record, shadow *dml.MetaProperty) bool {
+	for _, rel := range e.Meta.Properties {
+		if (rel.Kind != "m:1" && rel.Kind != "1:1") || len(rel.FieldNames) == 0 || rel.FieldNames[0] != shadow.FieldNames[0] || rel.Name == shadow.Name {
+			continue
+		}
+		v, ok := rec.Get(rel.Name)
+		return ok && v == nil
+	}
+	return false
 }
