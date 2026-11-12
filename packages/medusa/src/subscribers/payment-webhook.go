@@ -45,6 +45,6 @@ func PaymentWebhookHandler(ctx context.Context, c composer.Container, data any) 
 		paymenttypes.ActionPendingAuthorization, paymenttypes.ActionPending:
 		return nil
 	}
-	_, _, err = composer.RunByID(ctx, c, paymentworkflows.ProcessPaymentWorkflowID, processed, composer.RunOptions{})
+	_, _, err = composer.RunByID(ctx, c, paymentworkflows.ProcessPaymentWorkflowID, processed, composer.RunOptions{Notify: true})
 	return err
 }
