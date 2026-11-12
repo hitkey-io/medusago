@@ -178,6 +178,16 @@ func buildFieldAlias(shortcuts []Shortcut) map[string]joiner.FieldAlias {
 	return out
 }
 
+// shortcutProperties returns the shortcut properties in declaration order
+// (the key order of the fieldAlias object built from them).
+func shortcutProperties(shortcuts []Shortcut) []string {
+	var out []string
+	for _, sc := range shortcuts {
+		out = append(out, sc.Property)
+	}
+	return out
+}
+
 func findModule(modules []*joiner.ModuleJoinerConfig, name string) *joiner.ModuleJoinerConfig {
 	for _, m := range modules {
 		if m.ServiceName == name {
@@ -378,9 +388,10 @@ func defineReadOnlyLink(a, b moduleLinkableKeyConfig, opts DefineLinkOptions) {
 		}
 		isList := opts.IsList || a.isList
 		ext := []joiner.JoinerExtension{{
-			ServiceName: a.module,
-			Entity:      a.entity,
-			FieldAlias:  buildFieldAlias(opts.Shortcut),
+			ServiceName:     a.module,
+			Entity:          a.entity,
+			FieldAlias:      buildFieldAlias(opts.Shortcut),
+			FieldAliasOrder: shortcutProperties(opts.Shortcut),
 			Relationship: joiner.JoinerRelationship{
 				ServiceName: b.module, Entity: b.entity, PrimaryKey: b.primaryKey, ForeignKey: a.field, Alias: b.alias, IsList: isList,
 			},
@@ -391,9 +402,10 @@ func defineReadOnlyLink(a, b moduleLinkableKeyConfig, opts DefineLinkOptions) {
 				alias = common.Pluralize(b.alias)
 			}
 			ext = append(ext, joiner.JoinerExtension{
-				ServiceName: a.module,
-				Entity:      a.entity,
-				FieldAlias:  buildFieldAlias(opts.Shortcut),
+				ServiceName:     a.module,
+				Entity:          a.entity,
+				FieldAlias:      buildFieldAlias(opts.Shortcut),
+				FieldAliasOrder: shortcutProperties(opts.Shortcut),
 				Relationship: joiner.JoinerRelationship{
 					ServiceName: b.module, Entity: b.entity, PrimaryKey: b.primaryKey, ForeignKey: a.field, Alias: alias, IsList: isList,
 				},

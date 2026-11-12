@@ -41,9 +41,3 @@ func RequireSuperAdmin(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResp
 	next(nil)
 	return nil
 }
-
-// NotPorted answers the view routes that are not ported yet (entity
-// discovery: /admin/views/entities and /admin/views/:entity/columns).
-func NotPorted(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
-	return common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, "View configurations are not supported yet")
-}

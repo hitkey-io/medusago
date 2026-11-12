@@ -12,6 +12,9 @@ type Type struct {
 	Fields []*FieldDefinition
 	Values []string
 	Types  []string
+	// ValueDirectives are the directives of the enum values (same-name
+	// directives merged), keyed by value.
+	ValueDirectives map[string][]*Directive
 	// Directives are the directives of the definition and its extensions
 	// (same-name directives merged).
 	Directives []*Directive
@@ -77,6 +80,12 @@ func MergeTypeDefs(docs ...*Document) *Schema {
 			for _, v := range d.Values {
 				if !containsString(t.Values, v) {
 					t.Values = append(t.Values, v)
+				}
+				if dirs := d.ValueDirectives[v]; len(dirs) > 0 {
+					if t.ValueDirectives == nil {
+						t.ValueDirectives = map[string][]*Directive{}
+					}
+					t.ValueDirectives[v] = mergeDirectives(t.ValueDirectives[v], dirs)
 				}
 			}
 			for _, v := range d.Types {

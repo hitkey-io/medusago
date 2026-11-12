@@ -3,7 +3,6 @@ package utils
 import (
 	"fmt"
 	"log/slog"
-	"sort"
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
@@ -91,12 +90,8 @@ func GenerateGraphQLSchema(cfg *joiner.ModuleJoinerConfig, primary, foreign *joi
 		}
 
 		var aliases []string
-		names := make([]string, 0, len(extend.FieldAlias))
-		for name := range extend.FieldAlias {
-			names = append(names, name)
-		}
-		sort.Strings(names)
-		for _, name := range names {
+		// Object.entries(extend.fieldAlias): declaration order
+		for _, name := range extend.FieldAliasNames() {
 			alias := extend.FieldAlias[name]
 			// config.isList ?? relationship.isList (an absent isList and
 			// false are not distinguished)

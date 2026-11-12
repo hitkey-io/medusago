@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"sort"
 )
 
 // JoinerRelationship mirrors JoinerRelationship.
@@ -129,6 +130,12 @@ func (c *ModuleJoinerConfig) Clone() *ModuleJoinerConfig {
 	if err := json.Unmarshal(b, &out); err != nil {
 		panic(err)
 	}
+	// the fieldAlias key order (JS object order) survives the round trip
+	for i := range out.Extends {
+		if i < len(c.Extends) {
+			out.Extends[i].FieldAliasOrder = append([]string(nil), c.Extends[i].FieldAliasOrder...)
+		}
+	}
 	return &out
 }
 
@@ -153,6 +160,64 @@ type JoinerExtension struct {
 	Entity       string                `json:"entity,omitempty"`
 	FieldAlias   map[string]FieldAlias `json:"fieldAlias,omitempty"`
 	Relationship JoinerRelationship    `json:"relationship"`
+	// FieldAliasOrder is the key order of fieldAlias (the order of
+	// Object.entries upstream).
+	FieldAliasOrder []string `json:"-"`
+}
+
+// UnmarshalJSON decodes the extension keeping the key order of fieldAlias.
+func (e *JoinerExtension) UnmarshalJSON(data []byte) error {
+	type plain JoinerExtension
+	if err := strictUnmarshal(data, (*plain)(e)); err != nil {
+		return err
+	}
+	var raw struct {
+		FieldAlias json.RawMessage `json:"fieldAlias"`
+	}
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+	e.FieldAliasOrder = nil
+	if len(raw.FieldAlias) == 0 || raw.FieldAlias[0] != '{' {
+		return nil
+	}
+	dec := json.NewDecoder(bytes.NewReader(raw.FieldAlias))
+	if _, err := dec.Token(); err != nil {
+		return err
+	}
+	for dec.More() {
+		key, err := dec.Token()
+		if err != nil {
+			return err
+		}
+		e.FieldAliasOrder = append(e.FieldAliasOrder, key.(string))
+		var skip json.RawMessage
+		if err := dec.Decode(&skip); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// FieldAliasNames returns the fieldAlias keys in their declaration order
+// (keys without a known order follow, sorted).
+func (e *JoinerExtension) FieldAliasNames() []string {
+	out := make([]string, 0, len(e.FieldAlias))
+	seen := map[string]bool{}
+	for _, name := range e.FieldAliasOrder {
+		if _, ok := e.FieldAlias[name]; ok && !seen[name] {
+			seen[name] = true
+			out = append(out, name)
+		}
+	}
+	var rest []string
+	for name := range e.FieldAlias {
+		if !seen[name] {
+			rest = append(rest, name)
+		}
+	}
+	sort.Strings(rest)
+	return append(out, rest...)
 }
 
 // ExtraField is an extra column of a link table.

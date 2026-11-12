@@ -72,6 +72,9 @@ type Definition struct {
 	// Values are the enum values; Types the union members.
 	Values []string
 	Types  []string
+	// ValueDirectives are the directives applied to the enum values (e.g.
+	// @enumValue(value: "...")), keyed by value.
+	ValueDirectives map[string][]*Directive
 	// Interfaces are the implemented interfaces.
 	Interfaces []string
 	// Directives are the directives applied to the type (object types,
@@ -565,8 +568,15 @@ func (p *parser) definition() (*Definition, error) {
 					return nil, err
 				}
 				def.Values = append(def.Values, v)
-				if err := p.directives(); err != nil {
+				dirs, err := p.parseDirectives()
+				if err != nil {
 					return nil, err
+				}
+				if len(dirs) > 0 {
+					if def.ValueDirectives == nil {
+						def.ValueDirectives = map[string][]*Directive{}
+					}
+					def.ValueDirectives[v] = dirs
 				}
 			}
 			p.take()

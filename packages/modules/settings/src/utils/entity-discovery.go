@@ -81,6 +81,17 @@ func (s *EntityDiscoveryService) IsInitialized() bool {
 	return s.initialized
 }
 
+// GetSchemaTypeMap mirrors getSchemaTypeMap: the merged and cleaned schema
+// of the joiner config schemas (empty when not initialised).
+func (s *EntityDiscoveryService) GetSchemaTypeMap() *graphql.Schema {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if !s.initialized {
+		return graphql.MergeTypeDefs()
+	}
+	return s.schemaTypeMap()
+}
+
 // schemaTypeMap mirrors getSchemaTypeMap: the merged and cleaned schema of
 // the joiner config schemas.
 func (s *EntityDiscoveryService) schemaTypeMap() *graphql.Schema {
@@ -200,6 +211,51 @@ func (s *EntityDiscoveryService) GetEntityInfo(entity DiscoveredEntity, hasOverr
 		PropertyCount: count,
 		HasOverrides:  hasOverrides,
 	}
+}
+
+// NamedType is a named type of the schema type map a field type unwraps
+// to: a built-in scalar (Type nil) or a type of the schema.
+type NamedType struct {
+	Name string
+	Kind string
+	Type *graphql.Type
+}
+
+var builtinScalarNames = map[string]bool{"String": true, "Int": true, "Float": true, "Boolean": true, "ID": true}
+
+// IsScalar mirrors isScalarType.
+func (t NamedType) IsScalar() bool { return t.Kind == graphql.KindScalar }
+
+// IsEnum mirrors isEnumType.
+func (t NamedType) IsEnum() bool { return t.Kind == graphql.KindEnum }
+
+// IsObject mirrors instanceof GraphQLObjectType.
+func (t NamedType) IsObject() bool { return t.Kind == graphql.KindObject }
+
+// GetUnderlyingType mirrors getUnderlyingType: the named type a field type
+// (NonNull, List) wraps, resolved in the schema type map.
+func GetUnderlyingType(schema *graphql.Schema, ref *graphql.TypeRef) NamedType {
+	name := ref.NamedType()
+	if builtinScalarNames[name] {
+		return NamedType{Name: name, Kind: graphql.KindScalar}
+	}
+	if t := schema.Type(name); t != nil {
+		return NamedType{Name: name, Kind: t.Kind, Type: t}
+	}
+	return NamedType{Name: name}
+}
+
+// IsArrayField mirrors isArrayField.
+func IsArrayField(ref *graphql.TypeRef) bool {
+	return ref.IsList()
+}
+
+// IsSingleRelationship mirrors isSingleRelationship.
+func IsSingleRelationship(schema *graphql.Schema, ref *graphql.TypeRef) bool {
+	if IsArrayField(ref) {
+		return false
+	}
+	return GetUnderlyingType(schema, ref).IsObject()
 }
 
 // LocaleCompare approximates String.prototype.localeCompare (ICU root

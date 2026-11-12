@@ -3,6 +3,7 @@ package configurations
 import (
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
+	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/views/entity_/columns"
 )
 
 func mws(fns ...medusahttp.MiddlewareFunction) []medusahttp.MiddlewareFunction { return fns }
@@ -53,7 +54,11 @@ var EntitiesRoutesMiddlewares = []medusahttp.MiddlewareRoute{
 // ColumnRoutesMiddlewares mirrors columnRoutesMiddlewares.
 var ColumnRoutesMiddlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"GET", "POST"}, Matcher: "/admin/views/*/columns", Middlewares: mws(EnsureViewConfigurationsEnabled)},
-	{Methods: []string{"GET"}, Matcher: "/admin/views/:entity/columns", Middlewares: mws(EnsureViewConfigurationsEnabled, EnsureViewEntityReadable)},
+	{Methods: []string{"GET"}, Matcher: "/admin/views/:entity/columns", Middlewares: mws(
+		EnsureViewConfigurationsEnabled,
+		EnsureViewEntityReadable,
+		httputils.ValidateAndTransformQuery(columns.AdminGetColumnsParams, httputils.QueryConfig{}),
+	)},
 }
 
 // Middlewares are the view route middlewares in upstream order

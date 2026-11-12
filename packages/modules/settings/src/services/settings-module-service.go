@@ -4,6 +4,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"sort"
 
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
@@ -15,8 +16,8 @@ import (
 )
 
 // SettingsModuleService mirrors SettingsModuleService (view configurations,
-// user preferences, property labels, layout configurations). Entity
-// discovery (listDiscoverableEntities, generateEntityColumns) is not ported.
+// user preferences, property labels, layout configurations, entity
+// discovery and column generation).
 type SettingsModuleService struct {
 	*utilsmodulessdk.MedusaService
 	entityDiscovery *utils.EntityDiscoveryService
@@ -24,7 +25,44 @@ type SettingsModuleService struct {
 
 // NewSettingsModuleService builds the service.
 func NewSettingsModuleService(opts modulessdk.ServiceOptions, joinerConfig *joiner.ModuleJoinerConfig) (*SettingsModuleService, error) {
-	return &SettingsModuleService{MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig), entityDiscovery: &utils.EntityDiscoveryService{}}, nil
+	s := &SettingsModuleService{MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig), entityDiscovery: &utils.EntityDiscoveryService{}}
+	s.registerColumnCustomizations(opts.Options)
+	return s, nil
+}
+
+// registerColumnCustomizations mirrors registerColumnCustomizations_: the
+// entity overrides and computed columns of the module options
+// (entityOverrides) merged into the shared registries.
+func (s *SettingsModuleService) registerColumnCustomizations(options map[string]any) {
+	overrides, ok := options["entityOverrides"]
+	if !ok || overrides == nil {
+		return
+	}
+	var entities []string
+	values := map[string]any{}
+	switch t := overrides.(type) {
+	case map[string]any:
+		for k, v := range t {
+			entities = append(entities, k)
+			values[k] = v
+		}
+		sort.Strings(entities)
+	case *dal.Record:
+		for _, k := range t.Keys() {
+			v, _ := t.Get(k)
+			entities = append(entities, k)
+			values[k] = v
+		}
+	}
+	overrideRegistry := utils.GetEntityOverrideRegistry()
+	computedRegistry := utils.GetComputedColumnRegistry()
+	for _, entity := range entities {
+		merged, computed := utils.SpreadEntityOverride(overrideRegistry.Get(entity), values[entity])
+		overrideRegistry.Register(entity, merged)
+		if len(computed) > 0 {
+			computedRegistry.Register(entity, computed)
+		}
+	}
 }
 
 // Of returns the settings module service registered in a container (the
@@ -377,4 +415,44 @@ func (s *SettingsModuleService) ListDiscoverableEntities(ctx context.Context) ([
 		out[i] = s.entityDiscovery.GetEntityInfo(e, withLabels[e.Name])
 	}
 	return out, nil
+}
+
+// GenerateEntityColumns mirrors generateEntityColumns: the columns of an
+// entity with its property labels applied (nil = null: discovery not
+// initialised or unknown entity).
+func (s *SettingsModuleService) GenerateEntityColumns(ctx context.Context, entityKey string) ([]*dal.Record, error) {
+	if !s.entityDiscovery.IsInitialized() {
+		return nil, nil
+	}
+	entity := s.entityDiscovery.GetEntity(entityKey)
+	if entity == nil {
+		return nil, nil
+	}
+	filters := dal.NewRecord()
+	filters.Set("entity", entity.Name)
+	labels, err := s.Internal("PropertyLabel").List(ctx, filters, utilsmodulessdk.FindConfig{})
+	if err != nil {
+		return nil, err
+	}
+	str := func(r *dal.Record, key string) string {
+		v, _ := r.Get(key)
+		s, _ := v.(string)
+		return s
+	}
+	labelsMap := map[string]utils.PropertyLabel{}
+	for _, l := range labels {
+		label := utils.PropertyLabel{
+			ID:       str(l, "id"),
+			Entity:   str(l, "entity"),
+			Property: str(l, "property"),
+			Label:    str(l, "label"),
+		}
+		if v, _ := l.Get("description"); v != nil {
+			if d, ok := v.(string); ok {
+				label.Description = &d
+			}
+		}
+		labelsMap[label.Property] = label
+	}
+	return utils.GenerateEntityColumns(s.entityDiscovery, entityKey, labelsMap, nil), nil
 }
