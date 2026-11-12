@@ -7,8 +7,9 @@ import (
 )
 
 // ApplyEntityHooks mirrors applyEntityHooks: InventoryLevel computes
-// available_quantity (stocked - reserved) when it is hydrated. The lazy
-// stocked/reserved formulas of InventoryItem are not ported yet.
+// available_quantity (stocked - reserved) when it is hydrated, and the lazy
+// stocked_quantity / reserved_quantity formulas of InventoryItem are
+// registered.
 func ApplyEntityHooks() {
 	dal.RegisterOnInit("InventoryLevel", func(data dal.Row) {
 		stocked, okS := data["raw_stocked_quantity"]
