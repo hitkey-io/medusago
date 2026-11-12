@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -96,15 +97,48 @@ var ConfirmOrderChangesStep = composer.CreateStep("confirm-order-changes",
 		return svc.UndoLastChange(ctx.Context, fmt.Sprint(get(currentChanges[0], "order_id")), currentChanges[0])
 	})
 
-// DeclineOrderChangeStep mirrors declineOrderChangeStep (the
-// updateOrderChanges compensation is not ported yet).
+type decliner interface {
+	Internal(className string) *utilsmodulessdk.InternalService
+	DeclineOrderChange(ctx context.Context, data []any) error
+}
+
+// DeclineOrderChangeStep mirrors declineOrderChangeStep: the order change is
+// read before it is declined (the fields of the input, metadata as an object
+// field, plus the fields the decline sets) and the compensation writes it
+// back (updateOrderChanges).
 var DeclineOrderChangeStep = composer.CreateStep("decline-order-change",
 	func(ctx composer.StepExecutionContext, data *dal.Record) (composer.StepResponse[any], error) {
-		svc, _ := ctx.Container.Resolve(utilsmodulessdk.ORDER).(interface {
-			DeclineOrderChange(ctx context.Context, data []any) error
-		})
+		svc, _ := ctx.Container.Resolve(utilsmodulessdk.ORDER).(decliner)
+		selects, relations := common.GetSelectsAndRelationsFromObjectArray([]common.ObjectLike{data}, common.SelectsAndRelationsOptions{ObjectFields: []string{"metadata"}}, "")
+		selects = append(selects, "order_id", "return_id", "claim_id", "exchange_id", "version", "declined_at", "declined_by", "declined_reason")
+		before, err := svc.Internal("OrderChange").Retrieve(ctx.Context, get(data, "id"), utilsmodulessdk.FindConfig{Select: dedupe(selects), Relations: relations})
+		if err != nil {
+			return composer.StepResponse[any]{}, err
+		}
 		if err := svc.DeclineOrderChange(ctx.Context, []any{data}); err != nil {
 			return composer.StepResponse[any]{}, err
 		}
-		return composer.NewStepResponse[any](nil), nil
-	}, nil)
+		return composer.NewStepResponse[any](nil, any(before)), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		before, _ := data.(*dal.Record)
+		if before == nil {
+			return nil
+		}
+		svc, _ := ctx.Container.Resolve(utilsmodulessdk.ORDER).(decliner)
+		_, err := svc.Internal("OrderChange").Update(ctx.Context, before)
+		return err
+	})
+
+// dedupe mirrors deduplicate (first occurrence kept).
+func dedupe(values []string) []string {
+	seen := map[string]bool{}
+	out := make([]string, 0, len(values))
+	for _, v := range values {
+		if !seen[v] {
+			seen[v] = true
+			out = append(out, v)
+		}
+	}
+	return out
+}

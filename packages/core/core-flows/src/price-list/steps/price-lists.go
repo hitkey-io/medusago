@@ -302,21 +302,37 @@ var CreatePriceListPricesStep = composer.CreateStep("create-price-list-prices",
 		return pricing(ctx.Container).RemovePrices(ctx.Context, ids)
 	})
 
-// UpdatePriceListPricesStep mirrors updatePriceListPricesStep (the
-// upstream compensation data is always empty: its map is iterated with
-// Object.entries).
+// UpdatePriceListPricesStep mirrors updatePriceListPricesStep. Upstream
+// iterates its map of the prices before the update with Object.entries, so
+// the compensation data is always empty and the compensation restores
+// nothing; it is kept so the step is compensated like upstream.
 var UpdatePriceListPricesStep = composer.CreateStep("update-price-list-prices",
 	func(ctx composer.StepExecutionContext, in PriceListsStepInput) (composer.StepResponse[[]*dal.Record], error) {
 		data, _ := priceListPrices(in, false)
 		if len(data) == 0 {
-			return composer.NewStepResponse([]*dal.Record{}), nil
+			return composer.NewStepResponse([]*dal.Record{}, any([]any{})), nil
 		}
 		updated, err := pricing(ctx.Container).UpdatePriceListPrices(ctx.Context, data)
 		if err != nil {
 			return composer.StepResponse[[]*dal.Record]{}, err
 		}
-		return composer.NewStepResponse(updated), nil
-	}, nil)
+		// dataBeforePriceUpdate
+		return composer.NewStepResponse(updated, any([]any{})), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		before, _ := data.([]any)
+		if len(before) == 0 {
+			return nil
+		}
+		recs := make([]*dal.Record, 0, len(before))
+		for _, b := range before {
+			if r, ok := b.(*dal.Record); ok {
+				recs = append(recs, r)
+			}
+		}
+		_, err := pricing(ctx.Container).UpdatePriceListPrices(ctx.Context, recs)
+		return err
+	})
 
 // RemovePriceListPricesStep mirrors removePriceListPricesStep.
 var RemovePriceListPricesStep = composer.CreateStep("remove-price-list-prices",
