@@ -1,0 +1,1 @@
+import{r as e}from"./index-DGE72T0q.js";const n=e.forwardRef(({color:r="currentColor",...t},o)=>e.createElement("svg",{xmlns:"http://www.w3.org/2000/svg",width:15,height:15,viewBox:"0 0 15 15",fill:"none",ref:o,...t},e.createElement("path",{stroke:r,strokeLinecap:"round",strokeLinejoin:"round",strokeWidth:1.5,d:"M7.5 2.5v10M2.5 7.5h10"})));n.displayName="PlusMini";export{n as P};
