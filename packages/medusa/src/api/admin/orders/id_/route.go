@@ -17,7 +17,7 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	if req.ValidatedQuery != nil {
 		version, _ = req.ValidatedQuery.Get("version")
 	}
-	order, err := workflows.GetOrderDetail(req.Ctx(), httputils.QueryOf(req.Scope), workflows.GetOrderDetailInput{
+	order, err := workflows.GetOrderDetail(req.Ctx(), req.Scope, workflows.GetOrderDetailInput{
 		Fields: req.QueryConfig.Fields, OrderID: req.Params["id"], Version: version,
 	})
 	if err != nil {

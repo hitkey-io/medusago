@@ -4,7 +4,6 @@ package authorize
 import (
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/order/workflows"
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
-	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/admin/orders"
 )
@@ -17,7 +16,7 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	if err != nil {
 		return err
 	}
-	order, err := workflows.GetOrderDetail(req.Ctx(), httputils.QueryOf(req.Scope), workflows.GetOrderDetailInput{OrderID: req.Params["id"], Fields: req.QueryConfig.Fields})
+	order, err := workflows.GetOrderDetail(req.Ctx(), req.Scope, workflows.GetOrderDetailInput{OrderID: req.Params["id"], Fields: req.QueryConfig.Fields})
 	if err != nil {
 		return err
 	}

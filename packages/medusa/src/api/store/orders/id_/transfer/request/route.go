@@ -4,7 +4,6 @@ package request
 import (
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/order/workflows"
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
-	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
@@ -38,7 +37,7 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	if _, err := workflows.RequestOrderTransferWorkflow.Run(req.Ctx(), req.Scope, in); err != nil {
 		return err
 	}
-	order, err := workflows.GetOrderDetail(req.Ctx(), httputils.QueryOf(req.Scope), workflows.GetOrderDetailInput{
+	order, err := workflows.GetOrderDetail(req.Ctx(), req.Scope, workflows.GetOrderDetailInput{
 		Fields: req.QueryConfig.Fields, OrderID: req.Params["id"],
 	})
 	if err != nil {

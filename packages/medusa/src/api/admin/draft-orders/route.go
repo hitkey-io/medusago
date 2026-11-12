@@ -18,7 +18,7 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 		}
 	}
 	filters.Set("is_draft_order", true)
-	r, err := workflows.GetOrdersList(req.Ctx(), httputils.QueryOf(req.Scope), workflows.GetOrdersListInput{
+	r, err := workflows.GetOrdersList(req.Ctx(), req.Scope, workflows.GetOrdersListInput{
 		Fields:    req.QueryConfig.Fields,
 		Variables: httputils.ListVariables(filters, req.QueryConfig.Pagination),
 	})

@@ -20,7 +20,7 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	}
 	f := dal.NewRecord()
 	f.Set("is_draft_order", true)
-	order, err := workflows.GetOrderDetail(req.Ctx(), httputils.QueryOf(req.Scope), workflows.GetOrderDetailInput{
+	order, err := workflows.GetOrderDetail(req.Ctx(), req.Scope, workflows.GetOrderDetailInput{
 		Fields: req.QueryConfig.Fields, OrderID: req.Params["id"], Version: version, Filters: f,
 	})
 	if err != nil {

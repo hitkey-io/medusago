@@ -80,7 +80,7 @@ func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 		actorID, _ = req.AuthContext.Get("actor_id")
 	}
 	filters.Set("customer_id", actorID)
-	r, err := workflows.GetOrdersList(req.Ctx(), httputils.QueryOf(req.Scope), workflows.GetOrdersListInput{
+	r, err := workflows.GetOrdersList(req.Ctx(), req.Scope, workflows.GetOrdersListInput{
 		Fields:    req.QueryConfig.Fields,
 		Variables: httputils.ListVariables(filters, req.QueryConfig.Pagination),
 	})

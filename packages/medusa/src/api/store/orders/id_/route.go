@@ -4,7 +4,6 @@ package id_
 import (
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/order/workflows"
 	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
-	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
@@ -12,7 +11,7 @@ import (
 func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	filters := dal.NewRecord()
 	filters.Set("is_draft_order", false)
-	order, err := workflows.GetOrderDetail(req.Ctx(), httputils.QueryOf(req.Scope), workflows.GetOrderDetailInput{
+	order, err := workflows.GetOrderDetail(req.Ctx(), req.Scope, workflows.GetOrderDetailInput{
 		Fields: req.QueryConfig.Fields, OrderID: req.Params["id"], Filters: filters,
 	})
 	if err != nil {
