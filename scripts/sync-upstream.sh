@@ -68,9 +68,8 @@ ROOT_FILES=(
   .nvmrc
   .prettierrc
   .prettierignore
-  .eslintrc.js
-  .eslintignore
-  eslint.medusa.cjs
+  eslint.config.mjs
+  eslint.medusa.mjs
   .syncpackrc.json
 )
 if [[ "$INCLUDE_ENTERPRISE" -eq 1 ]]; then

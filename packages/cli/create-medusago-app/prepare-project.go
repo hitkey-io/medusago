@@ -110,7 +110,7 @@ func prepareProject(ctx context.Context, o prepareOptions) (string, error) {
 		}
 		o.spinner.fact("Ran Migrations")
 
-		// the seed option is declared but not applied upstream (v2.22.4)
+		// the seed option is declared but not applied upstream (v2.22.6)
 		out, _ = execute(ctx, backend, nil, o.verbose, bin, "user", "-e", adminEmail, "--invite")
 		if m := inviteTokenRe.FindStringSubmatch(out); m != nil {
 			inviteToken = m[1]
