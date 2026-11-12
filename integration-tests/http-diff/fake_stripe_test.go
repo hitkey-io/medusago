@@ -421,6 +421,15 @@ func (f *fakeStripe) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	segs := strings.Split(strings.TrimPrefix(path, "/v1/"), "/")
 	switch {
 	case r.Method == http.MethodPost && path == "/v1/payment_intents":
+		// a description "fake_failure" fails the creation (scenarios
+		// reverting the workflow after the account holder was created)
+		if str(params, "description") == "fake_failure" {
+			e := dal.NewRecord()
+			e.Set("message", "Fake failure")
+			e.Set("type", "invalid_request_error")
+			stripeError(w, 400, e)
+			return
+		}
 		pi := f.createIntent(params)
 		if str(params, "confirm") == "true" && str(params, "payment_method") != "" {
 			if e := f.confirm(pi, str(params, "payment_method")); e != nil {
