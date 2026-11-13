@@ -1124,7 +1124,15 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 			}
 
 		default: // 1:m, m:n
-			if _, populated := tree.children[p.Name]; populated && !isParent(p) {
+			if isParent(p) {
+				continue
+			}
+			if _, populated := tree.children[p.Name]; populated {
+				collections = append(collections, p)
+			} else if _, initialized := inst.relations[p.Name]; initialized {
+				// the serializer runs with populate: true: every collection
+				// initialized on the entity (by any load of the same entity
+				// manager) is serialized
 				collections = append(collections, p)
 			}
 		}
@@ -1150,7 +1158,13 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 	}
 
 	for _, p := range collections {
-		v, err := r.serializeValue(inst.relations[p.Name], tree.children[p.Name], p, childParents, idm)
+		child := tree.children[p.Name]
+		if child == nil {
+			// an initialized collection outside the requested tree: all its
+			// loaded fields
+			child = &fieldTree{all: true, joined: tree.joined, fields: map[string]bool{}, children: map[string]*fieldTree{}}
+		}
+		v, err := r.serializeValue(inst.relations[p.Name], child, p, childParents, idm)
 		if err != nil {
 			return nil, err
 		}
