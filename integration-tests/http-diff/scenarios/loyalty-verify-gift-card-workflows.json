@@ -1,0 +1,331 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "pk",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/api-keys",
+  "body": {
+   "title": "Store",
+   "type": "publishable"
+  }
+ },
+ {
+  "name": "reg1",
+  "method": "POST",
+  "path": "/auth/customer/emailpass/register",
+  "body": {
+   "email": "redeemer@customer.test",
+   "password": "secret-pass"
+  }
+ },
+ {
+  "name": "cust1",
+  "method": "POST",
+  "path": "/store/customers?fields=id,has_account",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "bearer": "reg1",
+  "body": {
+   "email": "redeemer@customer.test"
+  }
+ },
+ {
+  "name": "tok1",
+  "method": "POST",
+  "path": "/auth/customer/emailpass",
+  "body": {
+   "email": "redeemer@customer.test",
+   "password": "secret-pass"
+  }
+ },
+ {
+  "name": "guest",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/customers?fields=id,has_account",
+  "body": {
+   "email": "guest@customer.test"
+  }
+ },
+ {
+  "name": "gc1",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code,value,status,currency_code",
+  "body": {
+   "currency_code": "eur",
+   "value": 25,
+   "code": "REDEEM25"
+  }
+ },
+ {
+  "name": "gc2",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code,value,status,currency_code",
+  "body": {
+   "currency_code": "eur",
+   "value": 40,
+   "code": "REDEEM40"
+  }
+ },
+ {
+  "name": "gc3",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code,value,status,currency_code",
+  "body": {
+   "currency_code": "usd",
+   "value": 15,
+   "code": "PLAIN15"
+  }
+ },
+ {
+  "name": "claim_not_redeemed",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/claim-gift-card/run",
+  "body": {
+   "input": {
+    "code": "PLAIN15",
+    "customer_id": "{{cust1.customer.id}}"
+   }
+  }
+ },
+ {
+  "name": "claim_unknown_code",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/claim-gift-card/run",
+  "body": {
+   "input": {
+    "code": "NOPE",
+    "customer_id": "{{cust1.customer.id}}"
+   }
+  }
+ },
+ {
+  "name": "redeem_missing",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/redeem-gift-card/run",
+  "body": {
+   "input": {
+    "gift_card_id": "gc_missing"
+   }
+  }
+ },
+ {
+  "name": "gc1_initial",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{gc1.gift_card.id}}?fields=id,status,*store_credit_account"
+ },
+ {
+  "name": "dismiss1",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/dismiss-link/run",
+  "body": {
+   "input": [
+    {
+     "loyalty": {
+      "gift_card_id": "{{gc1.gift_card.id}}"
+     },
+     "store_credit": {
+      "store_credit_account_id": "{{gc1_initial.gift_card.store_credit_account.id}}"
+     }
+    }
+   ]
+  }
+ },
+ {
+  "name": "gc1_unlinked",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{gc1.gift_card.id}}?fields=id,status,*store_credit_account",
+  "body": {
+   "status": "pending"
+  }
+ },
+ {
+  "name": "redeem1",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/redeem-gift-card/run",
+  "body": {
+   "input": {
+    "gift_card_id": "{{gc1.gift_card.id}}"
+   }
+  }
+ },
+ {
+  "name": "gc1_after",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{gc1.gift_card.id}}?fields=id,code,status,value,currency_code,customer_id,*store_credit_account"
+ },
+ {
+  "name": "acc1",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/store-credit-accounts/{{gc1_after.gift_card.store_credit_account.id}}?fields=id,code,currency_code,customer_id,balance,credits,debits,*transactions"
+ },
+ {
+  "name": "redeem1_again",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/redeem-gift-card/run",
+  "body": {
+   "input": {
+    "gift_card_id": "{{gc1.gift_card.id}}"
+   }
+  }
+ },
+ {
+  "name": "gc1_pending",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{gc1.gift_card.id}}?fields=id,status",
+  "body": {
+   "status": "pending"
+  }
+ },
+ {
+  "name": "redeem1_linked",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/redeem-gift-card/run",
+  "body": {
+   "input": {
+    "gift_card_id": "{{gc1.gift_card.id}}"
+   }
+  }
+ },
+ {
+  "name": "claim_guest",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/claim-gift-card/run",
+  "body": {
+   "input": {
+    "code": "REDEEM25",
+    "customer_id": "{{guest.customer.id}}"
+   }
+  }
+ },
+ {
+  "name": "claim1",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/claim-gift-card/run",
+  "body": {
+   "input": {
+    "code": "REDEEM25",
+    "customer_id": "{{cust1.customer.id}}"
+   }
+  }
+ },
+ {
+  "name": "acc1_claimed",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/store-credit-accounts/{{gc1_after.gift_card.store_credit_account.id}}?fields=id,customer_id,balance,credits,debits,*transactions"
+ },
+ {
+  "name": "store_accounts1",
+  "method": "GET",
+  "path": "/store/store-credit-accounts?currency_code=eur&fields=id,currency_code,customer_id,balance,credits,debits,*transactions",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "bearer": "tok1"
+ },
+ {
+  "name": "claim1_again",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/claim-gift-card/run",
+  "body": {
+   "input": {
+    "code": "REDEEM25",
+    "customer_id": "{{cust1.customer.id}}"
+   }
+  }
+ },
+ {
+  "name": "redeem2",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/redeem-gift-card/run",
+  "body": {
+   "input": {
+    "gift_card_id": "{{gc2.gift_card.id}}"
+   }
+  }
+ },
+ {
+  "name": "claim2",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/claim-gift-card/run",
+  "body": {
+   "input": {
+    "code": "REDEEM40",
+    "customer_id": "{{cust1.customer.id}}"
+   }
+  }
+ },
+ {
+  "name": "store_accounts2",
+  "method": "GET",
+  "path": "/store/store-credit-accounts?currency_code=eur&fields=id,currency_code,customer_id,balance,credits,debits,*transactions",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "bearer": "tok1"
+ },
+ {
+  "name": "store_accounts_usd",
+  "method": "GET",
+  "path": "/store/store-credit-accounts?currency_code=usd&fields=id,currency_code,customer_id,balance,credits,debits,*transactions",
+  "headers": {
+   "x-publishable-api-key": "{{pk.api_key.token}}"
+  },
+  "bearer": "tok1"
+ },
+ {
+  "name": "gc2_after",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards/{{gc2.gift_card.id}}?fields=id,status,*store_credit_account"
+ },
+ {
+  "name": "all_accounts",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/store-credit-accounts?fields=id,currency_code,customer_id,balance,credits,debits&order=created_at"
+ },
+ {
+  "name": "all_gift_cards",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/gift-cards?fields=id,code,status,value&order=code"
+ },
+ {
+  "name": "executions",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions?workflow_id[]=redeem-gift-card&workflow_id[]=claim-gift-card&fields=workflow_id,state"
+ }
+]

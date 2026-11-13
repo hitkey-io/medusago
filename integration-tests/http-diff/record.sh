@@ -46,6 +46,11 @@ cp "$HERE/index-query-route.js" "$APP/src/api/index-query/route.js"
 # registers the same route).
 mkdir -p "$APP/src/api/workflow-engine-ops"
 cp "$HERE/workflow-engine-route.js" "$APP/src/api/workflow-engine-ops/route.js"
+# The workflow-run route (workflow-run-route.js; the Go server registers the
+# same route in workflow_run_test.go) runs core workflows followed by a
+# failing step.
+mkdir -p "$APP/src/api/workflow-run"
+cp "$HERE/workflow-run-route.js" "$APP/src/api/workflow-run/route.js"
 
 scenarios=("$@")
 if [ ${#scenarios[@]} -eq 0 ]; then

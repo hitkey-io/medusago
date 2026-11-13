@@ -93,3 +93,13 @@ var RedeemGiftCardWorkflow = composer.CreateWorkflow("redeem-gift-card",
 		}
 		return first(accountRows), nil
 	})
+
+func init() {
+	// Run through the workflow engine (throwOnError false), a failed run
+	// still resolves the return transform: accountQuery.data[0] of a query
+	// step that never ran throws, and that TypeError replaces the step
+	// error.
+	RedeemGiftCardWorkflow.SetEngineFailure(func(error) error {
+		return fmt.Errorf("Cannot read properties of undefined (reading 'data')")
+	})
+}
