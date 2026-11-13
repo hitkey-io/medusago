@@ -25,9 +25,13 @@ func orNull(v any, ok bool) any {
 // RETURN_REQUEST order change; the return is retrieved in the same entity
 // manager (items, shipping methods with tax lines and adjustments).
 func (s *OrderModuleService) CreateReturn(ctx context.Context, data *dal.Record) (*dal.Record, error) {
-	// one entity manager whose loaded collections are not refreshed: the
+	// One entity manager whose loaded collections are not refreshed: the
 	// returned order graph is the one loaded before the change is applied
-	ctx = dal.WithoutRelationRefresh(ctx)
+	// (upstream flushes the changes of confirmOrderChange at commit, after
+	// the return is retrieved). order.summary is the exception: the JOINED
+	// retrieve of the return hydrates it from its rows without a version
+	// filter, so formatOrder reports the first summary row (version 1).
+	ctx = dal.WithRefreshedRelations(dal.WithoutRelationRefresh(ctx), "order.summary")
 	var out *dal.Record
 	err := s.InTransaction(ctx, func(m *utilsmodulessdk.MedusaService) error {
 		t := s.tx(m)

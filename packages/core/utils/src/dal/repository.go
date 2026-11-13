@@ -117,6 +117,24 @@ func relationRefreshDisabled(ctx context.Context) bool {
 	return v
 }
 
+type refreshedRelationsKey struct{}
+
+// WithRefreshedRelations makes the given relation paths reload even when
+// WithoutRelationRefresh keeps the initialized relations (relations a
+// JOINED find hydrates from its own rows).
+func WithRefreshedRelations(ctx context.Context, paths ...string) context.Context {
+	set := map[string]bool{}
+	for _, p := range paths {
+		set[p] = true
+	}
+	return context.WithValue(ctx, refreshedRelationsKey{}, set)
+}
+
+func refreshedRelation(ctx context.Context, path string) bool {
+	set, _ := ctx.Value(refreshedRelationsKey{}).(map[string]bool)
+	return set[path]
+}
+
 // WithSharedIdentityMap returns a context whose finds share one identity
 // map, like the queries of one MikroORM entity manager (a service method
 // decorated with @InjectManager).
@@ -598,7 +616,11 @@ func (r *Repository) populate(ctx context.Context, roots []*instance, idm identi
 			byPath[path] = nil
 			continue
 		}
-		children, err := r.loadRelationSelecting(ctx, parents, relation, idm, withDeleted, relationOrder[path], tree.at(path), populateWhere[path])
+		loadCtx := ctx
+		if refreshedRelation(ctx, path) {
+			loadCtx = context.WithValue(ctx, noRelationRefreshKey{}, false)
+		}
+		children, err := r.loadRelationSelecting(loadCtx, parents, relation, idm, withDeleted, relationOrder[path], tree.at(path), populateWhere[path])
 		if err != nil {
 			return fmt.Errorf("populate %s: %w", path, err)
 		}
