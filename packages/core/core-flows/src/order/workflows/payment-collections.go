@@ -123,3 +123,8 @@ var DeleteOrderPaymentCollections = composer.CreateWorkflow("delete-order-paymen
 		_, err = commonsteps.RemoveRemoteLinkStep.Run(e, []*dal.Record{entry})
 		return nil, err
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	DeleteOrderPaymentCollections.InputFrom("id")
+}

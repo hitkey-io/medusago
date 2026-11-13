@@ -720,10 +720,25 @@ func (s *ProductModuleService) updateVariants(ctx context.Context, data []*dal.R
 			}
 		}
 	}
-	if r, ok := res.(*dal.Record); ok {
-		return []*dal.Record{r}, nil
+	_ = res
+	// upsertWithReplace returns the normalized input entities
+	// ({ ...update, options?, id, product_id, metadata? })
+	out := make([]*dal.Record, len(withProduct))
+	for i, v := range withProduct {
+		out[i] = clone(v)
+		if md, ok := v.Get("metadata"); ok && isPresentValue(md) {
+			if mdr, ok := md.(*dal.Record); ok {
+				var cur any
+				for _, x := range variants {
+					if strOf(x, "id") == strOf(v, "id") {
+						cur, _ = x.Get("metadata")
+					}
+				}
+				out[i].Set("metadata", utilsmodulessdk.MergeMetadata(cur, mdr))
+			}
+		}
 	}
-	return records(res), nil
+	return out, nil
 }
 
 // isPresentValue mirrors isPresent: not null/undefined and not an empty

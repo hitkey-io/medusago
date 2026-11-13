@@ -77,6 +77,12 @@ func parseFlowNodes(v any) []*flowNode {
 		}
 		return out
 	case *dal.Record:
+		if _, ok := t.Get("action"); !ok {
+			// the root of a workflow starting with parallel steps holds
+			// only their list: the steps hang off _root directly
+			x, _ := t.Get("next")
+			return parseFlowNodes(x)
+		}
 		n := &flowNode{uuid: ulid.Make().String(), fields: dal.NewRecord()}
 		for _, k := range t.Keys() {
 			x, _ := t.Get(k)

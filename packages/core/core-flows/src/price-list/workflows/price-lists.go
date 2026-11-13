@@ -199,17 +199,17 @@ var RemovePriceListPricesWorkflow = composer.CreateWorkflow("remove-price-list-p
 
 // BatchPriceListPricesInput mirrors BatchPriceListPricesWorkflowDTO.
 type BatchPriceListPricesInput struct {
-	ID     any
-	Create []*dal.Record
-	Update []*dal.Record
-	Delete []any
+	ID     any           `json:"id"`
+	Create []*dal.Record `json:"create"`
+	Update []*dal.Record `json:"update"`
+	Delete []any         `json:"delete"`
 }
 
 // BatchPriceListPricesResult mirrors BatchPriceListPricesWorkflowResult.
 type BatchPriceListPricesResult struct {
-	Created []*dal.Record
-	Updated []*dal.Record
-	Deleted []any
+	Created []*dal.Record `json:"created"`
+	Updated []*dal.Record `json:"updated"`
+	Deleted []any         `json:"deleted"`
 }
 
 func listWithPrices(id any, prices []*dal.Record) []*dal.Record {
@@ -247,3 +247,14 @@ var BatchPriceListPricesWorkflow = composer.CreateWorkflow("batch-price-list-pri
 		}
 		return BatchPriceListPricesResult{Created: created, Updated: updated, Deleted: deleted}, nil
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	CreatePriceListsWorkflow.InputFrom("price_lists_data")
+	UpdatePriceListsWorkflow.InputFrom("price_lists_data")
+	DeletePriceListsWorkflow.InputFrom("ids")
+	CreatePriceListPricesWorkflow.InputFrom("data")
+	UpdatePriceListPricesWorkflow.InputFrom("data")
+	RemovePriceListPricesWorkflow.InputFrom("ids")
+	BatchPriceListPricesWorkflow.InputFrom("data")
+}

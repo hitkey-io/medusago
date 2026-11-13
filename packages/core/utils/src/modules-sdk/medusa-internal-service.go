@@ -34,6 +34,10 @@ type FindConfig struct {
 // InternalService mirrors MedusaInternalService for one model.
 type InternalService struct {
 	Repository *dal.Repository
+	// UpdateFind adjusts the find of the entities an update loads (a
+	// module repository overriding find, e.g. the version-aware find of
+	// the order module's related entities).
+	UpdateFind func(FindConfig) FindConfig
 }
 
 func (s *InternalService) model() *dml.Entity { return s.Repository.Entity }
@@ -271,6 +275,9 @@ func (s *InternalService) Update(ctx context.Context, input any) (any, error) {
 func (s *InternalService) updateMatching(ctx context.Context, repo *dal.Repository, where, data *dal.Record, keyed *dal.Record) ([]*dal.Record, error) {
 	config := FindConfig{}
 	s.applyDefaultOrdering(&config)
+	if s.UpdateFind != nil {
+		config = s.UpdateFind(config)
+	}
 	opts := buildQuery(where, config)
 	pks := s.model().Meta.PrimaryKey
 	return repo.UpdateWith(ctx, opts, func(current dal.Row) *dal.Record {

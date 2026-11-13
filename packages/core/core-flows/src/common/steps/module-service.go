@@ -117,3 +117,22 @@ func SoftDeleteRecordsStep(name, moduleKey, className string) *composer.Step[[]a
 			return err
 		})
 }
+
+// Caller is a module service with the generated methods callable by name
+// (MedusaService.Call).
+type Caller interface {
+	Call(ctx context.Context, method string, args []any) (any, error)
+}
+
+// SoftDeleteVia mirrors service.softDelete<X>(ids): the soft deleted
+// entities' linkable keys (falls back to the internal service of
+// className without them).
+func SoftDeleteVia(ctx context.Context, svc interface {
+	Internal(className string) *utilsmodulessdk.InternalService
+}, method, className string, ids []any) (any, error) {
+	if c, ok := svc.(Caller); ok {
+		return c.Call(ctx, method, []any{ids})
+	}
+	_, err := svc.Internal(className).SoftDelete(ctx, ids)
+	return dal.NewRecord(), err
+}

@@ -1,0 +1,431 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "variants",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/product-variants?fields=id,sku&order=sku&limit=1"
+ },
+ {
+  "name": "events_run_create",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-price-lists/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g1",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-price-lists/run",
+  "body": {
+   "input": {
+    "price_lists_data": [
+     {
+      "title": "WF PL",
+      "description": "wf list",
+      "type": "sale",
+      "status": "active",
+      "prices": [
+       {
+        "amount": 5,
+        "currency_code": "eur",
+        "variant_id": "{{variants.variants.0.id}}"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "parallel": "g1",
+  "delay_ms": 1500
+ },
+ {
+  "name": "pl",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/price-lists?q=WF%20PL&fields=id,title,prices.id"
+ },
+ {
+  "name": "events_run_update",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-price-lists/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g2",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-price-lists/run",
+  "body": {
+   "input": {
+    "price_lists_data": [
+     {
+      "id": "{{pl.price_lists.0.id}}",
+      "title": "WF PL 2",
+      "status": "draft"
+     }
+    ]
+   }
+  },
+  "parallel": "g2",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_update_bad",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-price-lists/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g3",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update_bad",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-price-lists/run",
+  "body": {
+   "input": {
+    "price_lists_data": [
+     {
+      "id": "plist_missing",
+      "title": "x"
+     }
+    ]
+   }
+  },
+  "parallel": "g3",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_batch",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-price-list-prices/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g4",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_batch",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-price-list-prices/run",
+  "body": {
+   "input": {
+    "data": {
+     "id": "{{pl.price_lists.0.id}}",
+     "create": [
+      {
+       "amount": 7,
+       "currency_code": "usd",
+       "variant_id": "{{variants.variants.0.id}}"
+      }
+     ],
+     "update": [
+      {
+       "id": "{{pl.price_lists.0.prices.0.id}}",
+       "amount": 6,
+       "currency_code": "eur",
+       "variant_id": "{{variants.variants.0.id}}"
+      }
+     ],
+     "delete": []
+    }
+   }
+  },
+  "parallel": "g4",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_create_prices",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-price-list-prices/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g5",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_prices",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-price-list-prices/run",
+  "body": {
+   "input": {
+    "data": [
+     {
+      "id": "{{pl.price_lists.0.id}}",
+      "prices": [
+       {
+        "amount": 9,
+        "currency_code": "dkk",
+        "variant_id": "{{variants.variants.0.id}}"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "parallel": "g5",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_remove_prices",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/remove-price-list-prices/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g6",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_remove_prices",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/remove-price-list-prices/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{pl.price_lists.0.prices.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g6",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_delete",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-price-lists/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g7",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_delete",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-price-lists/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{pl.price_lists.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g7",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_pref_create",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-price-preferences/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g8",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_pref_create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-price-preferences/run",
+  "body": {
+   "input": [
+    {
+     "attribute": "currency_code",
+     "value": "jpy",
+     "is_tax_inclusive": true
+    }
+   ]
+  },
+  "parallel": "g8",
+  "delay_ms": 1500
+ },
+ {
+  "name": "pref",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/price-preferences?attribute=currency_code&value=jpy&fields=id"
+ },
+ {
+  "name": "events_run_pref_create_dup",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-price-preferences/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g9",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_pref_create_dup",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-price-preferences/run",
+  "body": {
+   "input": [
+    {
+     "attribute": "currency_code",
+     "value": "jpy",
+     "is_tax_inclusive": false
+    }
+   ]
+  },
+  "parallel": "g9",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_pref_update",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-price-preferences/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g10",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_pref_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-price-preferences/run",
+  "body": {
+   "input": {
+    "selector": {
+     "id": [
+      "{{pref.price_preferences.0.id}}"
+     ]
+    },
+    "update": {
+     "is_tax_inclusive": false
+    }
+   }
+  },
+  "parallel": "g10",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_pref_delete",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-price-preferences/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g11",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_pref_delete",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-price-preferences/run",
+  "body": {
+   "input": [
+    "{{pref.price_preferences.0.id}}"
+   ]
+  },
+  "parallel": "g11",
+  "delay_ms": 1500
+ },
+ {
+  "name": "after",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/price-lists?q=WF&fields=id"
+ }
+]

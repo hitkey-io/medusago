@@ -27,7 +27,9 @@ type OrderModuleService struct {
 
 // NewOrderModuleService builds the service.
 func NewOrderModuleService(opts modulessdk.ServiceOptions, joinerConfig *joiner.ModuleJoinerConfig) (*OrderModuleService, error) {
-	return &OrderModuleService{MedusaService: utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig)}, nil
+	m := utilsmodulessdk.NewMedusaService(opts.DB, models.All, joinerConfig)
+	registerRelatedUpdateFind(m)
+	return &OrderModuleService{MedusaService: m}, nil
 }
 
 var totalFields = []string{"*", "total", "subtotal", "tax_total", "discount_total", "discount_tax_total", "original_total", "original_tax_total",

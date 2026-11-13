@@ -268,3 +268,8 @@ var CreateReturnFulfillmentWorkflow = composer.CreateWorkflow("create-return-ful
 		in.Set("location", location)
 		return CreateReturnFulfillmentStep.Run(e, in)
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	CancelFulfillmentWorkflow.InputFrom("id")
+}

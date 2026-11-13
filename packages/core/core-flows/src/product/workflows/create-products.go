@@ -37,6 +37,8 @@ type CreateProductsInput struct {
 // CreateProductsWorkflow mirrors createProductsWorkflow.
 var CreateProductsWorkflow = composer.CreateWorkflow("create-products",
 	func(e *composer.Execution, input CreateProductsInput) ([]*dal.Record, error) {
+		// the response transform iterates the created variants
+		composer.FailedResultThrows(e)
 		withoutExternal := make([]*dal.Record, len(input.Products))
 		for i, p := range input.Products {
 			withoutExternal[i] = without(p, "sales_channels", "shipping_profile_id", "variants")
@@ -94,6 +96,7 @@ var CreateProductsWorkflow = composer.CreateWorkflow("create-products",
 			}
 			p.Set("variants", vs)
 		}
+		composer.SetFailedResult(e, created)
 		events := make([]any, len(created))
 		for i, p := range created {
 			ev := dal.NewRecord()

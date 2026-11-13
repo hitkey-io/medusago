@@ -827,11 +827,60 @@ func (s *OrderModuleService) ConfirmOrderChangeResult(ctx context.Context, data 
 	if err != nil {
 		return nil, err
 	}
+	if err := s.expandLoadedReferences(ctx, res.Items, "item", "OrderLineItem"); err != nil {
+		return nil, err
+	}
+	if err := s.expandLoadedReferences(ctx, res.ShippingMethods, "shipping_method", "OrderShippingMethod"); err != nil {
+		return nil, err
+	}
 	out := dal.NewRecord()
 	out.Set("items", res.Items)
 	out.Set("shipping_methods", res.ShippingMethods)
 	out.Set("credit_lines", res.CreditLines)
 	return out, nil
+}
+
+// expandLoadedReferences mirrors how the entities returned by
+// confirmOrderChange look once stringified (toJSON): the line items and
+// shipping methods they reference were loaded by the confirmation in the
+// same entity manager (with their tax lines and adjustments, by
+// includeTaxLinesAndAdjustmentsToPreview), so they are written in full,
+// their collections as primary keys.
+func (s *OrderModuleService) expandLoadedReferences(ctx context.Context, rows []*dal.Record, field, className string) error {
+	var ids []any
+	for _, r := range rows {
+		if ref, ok := get(r, field).(*dal.Record); ok && ref.Len() == 1 && ref.Has("id") {
+			ids = append(ids, get(ref, "id"))
+		}
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	f := dal.NewRecord()
+	f.Set("id", ids)
+	loaded, err := s.Internal(className).List(ctx, f, utilsmodulessdk.FindConfig{Relations: []string{"tax_lines", "adjustments"}})
+	if err != nil {
+		return err
+	}
+	byID := map[any]*dal.Record{}
+	for _, l := range loaded {
+		for _, k := range []string{"tax_lines", "adjustments"} {
+			pks := []any{}
+			for _, x := range records(get(l, k)) {
+				pks = append(pks, get(x, "id"))
+			}
+			l.Set(k, pks)
+		}
+		byID[get(l, "id")] = l
+	}
+	for _, r := range rows {
+		if ref, ok := get(r, field).(*dal.Record); ok && ref.Len() == 1 {
+			if l := byID[get(ref, "id")]; l != nil {
+				r.Set(field, l)
+			}
+		}
+	}
+	return nil
 }
 
 // ConfirmOrderChangeRecords confirms changes given as ids or { id, ... }.

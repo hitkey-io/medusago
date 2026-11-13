@@ -36,18 +36,22 @@ func (s *OrderModuleService) orderShippingIDs(ctx context.Context, m *utilsmodul
 
 // SoftDeleteOrderShippingMethods mirrors softDeleteOrderShippingMethods: the
 // OrderShipping pivots of the methods are soft deleted as well.
-func (s *OrderModuleService) SoftDeleteOrderShippingMethods(ctx context.Context, ids []any) error {
-	return s.InTransaction(ctx, func(m *utilsmodulessdk.MedusaService) error {
+// It returns what the generated softDeleteOrderShippingMethods returns (the
+// linkable keys of the soft deleted entities).
+func (s *OrderModuleService) SoftDeleteOrderShippingMethods(ctx context.Context, ids []any) (any, error) {
+	var returned any
+	err := s.InTransaction(ctx, func(m *utilsmodulessdk.MedusaService) error {
 		rel, err := s.orderShippingIDs(ctx, m, ids)
 		if err != nil {
 			return err
 		}
-		if _, err := m.Internal("OrderShippingMethod").SoftDelete(ctx, ids); err != nil {
+		if returned, err = m.Call(ctx, "softDeleteOrderShippingMethods", []any{ids}); err != nil {
 			return err
 		}
 		_, err = m.Internal("OrderShipping").SoftDelete(ctx, rel)
 		return err
 	})
+	return returned, err
 }
 
 // RestoreOrderShippingMethods mirrors restoreOrderShippingMethods.

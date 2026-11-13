@@ -148,6 +148,8 @@ var RefundPaymentWorkflow = composer.CreateWorkflow("refund-payment-workflow",
 		if err != nil {
 			return nil, err
 		}
+		// new WorkflowResponse(payment)
+		composer.SetFailedResult(e, payment)
 		if amount := g(input, "amount"); amount != nil && !totals.Eq(amount, 0) {
 			if _, err := validateRefundPaymentExceedsCapturedAmountStep.Run(e, struct {
 				Payment      *dal.Record

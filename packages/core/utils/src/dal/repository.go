@@ -58,6 +58,27 @@ type instance struct {
 	sel *fieldTree
 	// initChanged lists the columns @OnInit hooks changed after hydration.
 	initChanged map[string]bool
+	// unsetFKs lists the foreign key properties (mapToPk) of a created
+	// entity its input did not give: em.create leaves them undefined
+	unsetFKs map[string]bool
+	// mergedAfterCollections lists the columns a later load added to the
+	// entity once collections were initialized on it: the properties are
+	// assigned after those collections (object key order)
+	mergedAfterCollections map[string]bool
+	// inputCollections lists the collections the create input gave
+	inputCollections map[string]bool
+	// reloadedWithCollections: a find loaded the entity again after
+	// collections were initialized on it
+	reloadedWithCollections bool
+}
+
+func (inst *instance) hasInitializedCollection() bool {
+	for _, v := range inst.relations {
+		if _, ok := v.([]*instance); ok {
+			return true
+		}
+	}
+	return false
 }
 
 func (inst *instance) selectFields(t *fieldTree) {
@@ -85,10 +106,23 @@ func (m identityMap) get(e *dml.Entity, row Row) *instance {
 		// Like MikroORM's merge, columns loaded now that the managed
 		// entity did not have yet are added to it.
 		merged := false
+		withCollections := inst.hasInitializedCollection()
+		if withCollections {
+			// a managed entity loaded again once its collections were
+			// initialized gets its shadow foreign keys assigned again,
+			// after those collections (observed MikroORM key order)
+			inst.reloadedWithCollections = true
+		}
 		for k, v := range row {
 			if _, has := inst.data[k]; !has {
 				inst.data[k] = v
 				merged = true
+				if withCollections {
+					if inst.mergedAfterCollections == nil {
+						inst.mergedAfterCollections = map[string]bool{}
+					}
+					inst.mergedAfterCollections[k] = true
+				}
 			}
 		}
 		if merged {
@@ -873,10 +907,14 @@ type fieldTree struct {
 	// updated: the entities were just updated (repository.update): a
 	// shadow foreign key whose relation is null is assigned null
 	updated bool
+	// noSelect: the find gave no fields (relations only)
+	noSelect bool
+	// root: the level of the entities the find returns
+	root bool
 }
 
 func buildFieldTree(opts FindOptions, paths []string) *fieldTree {
-	root := &fieldTree{all: len(opts.Select) == 0, fields: map[string]bool{}, children: map[string]*fieldTree{}}
+	root := &fieldTree{all: len(opts.Select) == 0, root: true, fields: map[string]bool{}, children: map[string]*fieldTree{}}
 	node := func(path string) *fieldTree {
 		n := root
 		if path == "" {
@@ -918,6 +956,16 @@ func buildFieldTree(opts FindOptions, paths []string) *fieldTree {
 		}
 	}
 	fill(root)
+	if len(opts.Select) == 0 {
+		var mark func(n *fieldTree)
+		mark = func(n *fieldTree) {
+			n.noSelect = true
+			for _, c := range n.children {
+				mark(c)
+			}
+		}
+		mark(root)
+	}
 	if opts.JoinedStrategy {
 		var mark func(n *fieldTree)
 		mark = func(n *fieldTree) {
@@ -1038,7 +1086,38 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 			rec.Set(p.Name, v)
 			return nil
 		}
-		if inst.created || len(p.FieldNames) == 0 || !(hydrated(p.Name) || hydrated(p.FieldNames[0])) {
+		if inst.created {
+			// em.create assigns a reference to an owning 1:1 relation
+			// given by its foreign key (provider_id -> provider: { id })
+			if p.Kind == "1:1" && p.Owner && !p.MapToPk && (p.Persist == nil || *p.Persist) && len(p.FieldNames) > 0 {
+				if fk := inst.data[p.FieldNames[0]]; fk != nil {
+					if _, ok := inst.relations[p.Name]; !ok {
+						target, err := r.Schema.Entity(p.Entity)
+						if err != nil {
+							return err
+						}
+						if loaded, ok := idm.lookup(target, fk); ok {
+							// the entity manager holds the referenced entity
+							sel := loaded.sel
+							if sel == nil {
+								sel = allFields
+							}
+							v, err := r.serializeInstance(loaded, sel, childParents, nil, idm)
+							if err != nil {
+								return err
+							}
+							rec.Set(p.Name, v)
+							return nil
+						}
+						ref := NewRecord()
+						ref.Set(target.Meta.PrimaryKey[0], fk)
+						rec.Set(p.Name, ref)
+					}
+				}
+			}
+			return nil
+		}
+		if len(p.FieldNames) == 0 || !(hydrated(p.Name) || hydrated(p.FieldNames[0])) {
 			return nil
 		}
 		fk := inst.data[p.FieldNames[0]]
@@ -1105,6 +1184,9 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 
 		case p.MapToPk && (p.Persist == nil || *p.Persist):
 			// Foreign key property (e.g. product_id).
+			if inst.created && inst.unsetFKs[p.Name] && inst.data[p.FieldNames[0]] == nil {
+				continue
+			}
 			if hydrated(p.Name) || requiredFK[p.FieldNames[0]] {
 				rec.Set(p.Name, inst.data[p.FieldNames[0]])
 			}
@@ -1113,7 +1195,9 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 			if isParent(p) {
 				continue
 			}
-			if tree.joined && p.Persist != nil && !*p.Persist && p.InversedBy == "" && p.MappedBy == "" {
+			// (also for entities an update loaded in full: repository
+			// find with the default BALANCED strategy)
+			if (tree.joined || (tree.updated && tree.all)) && p.Persist != nil && !*p.Persist && p.InversedBy == "" && p.MappedBy == "" {
 				// JOINED strategy: unidirectional non persisted references
 				// are assigned after the hydration of the scalar properties
 				deferredRefs = append(deferredRefs, p)
@@ -1138,17 +1222,50 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 		}
 	}
 
-	for _, p := range lateScalars {
-		v := inst.data[p.FieldNames[0]]
-		if v == nil {
-			// assigned from the relation, which is null: present (null)
-			// when the relation was loaded, absent otherwise
-			if tree.updated && relationSerializedNull(e, rec, p) {
-				rec.Set(p.Name, nil)
+	// a created entity gets its shadow foreign keys at the flush: after
+	// its collections
+	var afterCollections []*dml.MetaProperty
+	// a created entity: the shadow foreign keys given in its input precede
+	// its collections, unless the input gave collections (observed MikroORM
+	// key order); the keys of nested created relations are assigned at the
+	// flush, after the collections
+	var givenCollections, otherCollections, inputShadows []*dml.MetaProperty
+	if inst.created {
+		otherCollections = collections
+		for _, p := range lateScalars {
+			if len(inst.inputCollections) > 0 || r.shadowOfNestedCreate(e, inst, p) {
+				afterCollections = append(afterCollections, p)
+			} else {
+				inputShadows = append(inputShadows, p)
 			}
-			continue
 		}
-		rec.Set(p.Name, runtimeNumber(p.Type, v))
+	} else {
+		otherCollections = collections
+		// the shadow foreign keys follow the collections populated by
+		// separate queries (select-in) when the entity was loaded again
+		// after its collections were initialized, when it is a root entity
+		// of a find without fields, or when the find gave some fields of a
+		// collection; the JOINED strategy hydrates the collections with the
+		// entity (observed MikroORM key order)
+		lateKeys := false
+		if !tree.joined && len(collections) > 0 {
+			lateKeys = inst.reloadedWithCollections || (tree.noSelect && tree.root)
+			for _, p := range collections {
+				if child := tree.children[p.Name]; child != nil && !child.all {
+					lateKeys = true
+				}
+			}
+		}
+		var before []*dml.MetaProperty
+		for _, p := range lateScalars {
+			late := lateKeys && !tree.fields[p.Name]
+			if late || inst.mergedAfterCollections[p.FieldNames[0]] {
+				afterCollections = append(afterCollections, p)
+			} else {
+				before = append(before, p)
+			}
+		}
+		r.serializeLateScalars(rec, inst, tree, before)
 	}
 
 	for _, p := range deferredRefs {
@@ -1157,18 +1274,46 @@ func (r *Repository) serializeInstance(inst *instance, tree *fieldTree, parents 
 		}
 	}
 
-	for _, p := range collections {
-		child := tree.children[p.Name]
-		if child == nil {
-			// an initialized collection outside the requested tree: all its
-			// loaded fields
-			child = &fieldTree{all: true, joined: tree.joined, fields: map[string]bool{}, children: map[string]*fieldTree{}}
+	serializeCollections := func(list []*dml.MetaProperty) error {
+		for _, p := range list {
+			child := tree.children[p.Name]
+			if child == nil {
+				// an initialized collection outside the requested tree: all
+				// its loaded fields
+				child = &fieldTree{all: true, joined: tree.joined, fields: map[string]bool{}, children: map[string]*fieldTree{}}
+			}
+			v, err := r.serializeValue(inst.relations[p.Name], child, p, childParents, idm)
+			if err != nil {
+				return err
+			}
+			rec.Set(p.Name, v)
 		}
-		v, err := r.serializeValue(inst.relations[p.Name], child, p, childParents, idm)
-		if err != nil {
-			return nil, err
+		return nil
+	}
+	if err := serializeCollections(givenCollections); err != nil {
+		return nil, err
+	}
+	r.serializeLateScalars(rec, inst, tree, inputShadows)
+	if err := serializeCollections(otherCollections); err != nil {
+		return nil, err
+	}
+	r.serializeLateScalars(rec, inst, tree, afterCollections)
+	if inst.created {
+		// the formula properties of a created entity are initialized null
+		for _, f := range formulas[e.Meta.ClassName] {
+			if !rec.Has(f.Property) {
+				rec.Set(f.Property, nil)
+			}
 		}
-		rec.Set(p.Name, v)
+	}
+	if tree.updated && !inst.created {
+		// the lazy formula properties of an updated entity that were not
+		// loaded serialize null
+		for _, f := range formulas[e.Meta.ClassName] {
+			if !rec.Has(f.Property) {
+				rec.Set(f.Property, nil)
+			}
+		}
 	}
 
 	// BigNumber values: the computed ones (own properties set by entity
@@ -1267,6 +1412,39 @@ func relationSerializedNull(e *dml.Entity, rec *Record, shadow *dml.MetaProperty
 		}
 		v, ok := rec.Get(rel.Name)
 		return ok && v == nil
+	}
+	return false
+}
+
+// serializeLateScalars writes the persist:false shadow foreign keys (a 1:1
+// owner's key is assigned after hydration).
+func (r *Repository) serializeLateScalars(rec *Record, inst *instance, tree *fieldTree, lateScalars []*dml.MetaProperty) {
+	for _, p := range lateScalars {
+		v := inst.data[p.FieldNames[0]]
+		if v == nil {
+			// assigned from the relation, which is null: present (null)
+			// when the relation was loaded, absent otherwise
+			if tree.updated && relationSerializedNull(inst.entity, rec, p) {
+				rec.Set(p.Name, nil)
+			}
+			continue
+		}
+		rec.Set(p.Name, runtimeNumber(p.Type, v))
+	}
+}
+
+// shadowOfNestedCreate reports whether the shadow foreign key of a created
+// entity belongs to an owning to-one relation created with it (its key is
+// known at the flush).
+func (r *Repository) shadowOfNestedCreate(e *dml.Entity, inst *instance, shadow *dml.MetaProperty) bool {
+	for i := range e.Meta.Properties {
+		rel := &e.Meta.Properties[i]
+		if (rel.Kind != "m:1" && rel.Kind != "1:1") || len(rel.FieldNames) == 0 || rel.FieldNames[0] != shadow.FieldNames[0] || rel.Name == shadow.Name {
+			continue
+		}
+		if child, ok := inst.relations[rel.Name].(*instance); ok && child != nil && child.created {
+			return true
+		}
 	}
 	return false
 }

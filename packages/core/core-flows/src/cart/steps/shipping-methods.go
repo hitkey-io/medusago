@@ -62,12 +62,13 @@ var ValidateCartShippingOptionsPriceStep = composer.CreateStep("validate-cart-sh
 var RemoveShippingMethodFromCartStep = composer.CreateStep("remove-shipping-method-to-cart-step",
 	func(ctx composer.StepExecutionContext, ids []any) (composer.StepResponse[any], error) {
 		if len(ids) == 0 {
-			return composer.NewStepResponse[any](nil, any([]any{})), nil
+			return composer.NewNullStepResponse[any](any([]any{})), nil
 		}
-		if _, err := CartOf(ctx.Container).Internal("ShippingMethod").SoftDelete(ctx.Context, ids); err != nil {
+		methods, err := commonsteps.SoftDeleteVia(ctx.Context, CartOf(ctx.Container), "softDeleteShippingMethods", "ShippingMethod", ids)
+		if err != nil {
 			return composer.StepResponse[any]{}, err
 		}
-		return composer.NewStepResponse[any](nil, any(ids)), nil
+		return composer.NewStepResponse(methods, any(ids)), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		ids, _ := data.([]any)

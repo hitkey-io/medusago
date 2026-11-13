@@ -1,0 +1,2273 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ1NzE3MzMsImV4cCI6MTc5NDY1ODEzM30.gTQ8MxxOgu1Eyk1g735Kx-Uj_ubtiM7x3WD5SW7CTqo"
+    }
+  },
+  "events_run_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ3H179C1RFSSYG3TXZM2"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ3H179C1RFSSYG3TXZM2",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-customers",
+            "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+            "depth": 1,
+            "definition": {
+              "action": "create-customers",
+              "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571734563,
+            "next": [
+              "_root.create-customers.customersCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571734563
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ3H179C1RFSSYG3TXZM2",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-customers",
+            "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+            "depth": 1,
+            "definition": {
+              "action": "create-customers",
+              "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571734563,
+            "next": [
+              "_root.create-customers.customersCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571734563
+          },
+          "response": [
+            {
+              "id": "cus_01M7ACZ3H5NWR2ASWQYA5ZF6RM",
+              "company_name": null,
+              "first_name": "Wf",
+              "last_name": "Cust",
+              "email": "wf-cust@example.test",
+              "phone": null,
+              "has_account": false,
+              "metadata": {
+                "k": "v"
+              },
+              "created_by": null,
+              "created_at": "2026-11-13T12:08:54.566Z",
+              "updated_at": "2026-11-13T12:08:54.566Z",
+              "deleted_at": null,
+              "groups": [],
+              "addresses": []
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ3H179C1RFSSYG3TXZM2",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-customers.customersCreated",
+            "uuid": "01M7ACYVC5AM61B4VPEPSHAW4J",
+            "depth": 2,
+            "definition": {
+              "action": "customersCreated",
+              "uuid": "01M7ACYVC5AM61B4VPEPSHAW4J",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571734573,
+            "next": [
+              "_root.create-customers.customersCreated.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794571734573
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ3H179C1RFSSYG3TXZM2",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-customers.customersCreated",
+            "uuid": "01M7ACYVC5AM61B4VPEPSHAW4J",
+            "depth": 2,
+            "definition": {
+              "action": "customersCreated",
+              "uuid": "01M7ACYVC5AM61B4VPEPSHAW4J",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571734573,
+            "next": [
+              "_root.create-customers.customersCreated.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794571734573
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ3H179C1RFSSYG3TXZM2",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-customers.customersCreated.emit-event-step",
+            "uuid": "01M7ACYVC5Z31XBGK8DN2Z3YF4",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ACYVC5Z31XBGK8DN2Z3YF4",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571734573,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571734573
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ3H179C1RFSSYG3TXZM2",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-customers.customersCreated.emit-event-step",
+            "uuid": "01M7ACYVC5Z31XBGK8DN2Z3YF4",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ACYVC5Z31XBGK8DN2Z3YF4",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571734573,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571734573
+          },
+          "response": {
+            "eventGroupId": "01M7ACZ3H1TCNJA614M5ASDQX4",
+            "eventName": "customer.created"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ3H179C1RFSSYG3TXZM2",
+          "result": [
+            {
+              "id": "cus_01M7ACZ3H5NWR2ASWQYA5ZF6RM",
+              "company_name": null,
+              "first_name": "Wf",
+              "last_name": "Cust",
+              "email": "wf-cust@example.test",
+              "phone": null,
+              "has_account": false,
+              "metadata": {
+                "k": "v"
+              },
+              "created_by": null,
+              "created_at": "2026-11-13T12:08:54.566Z",
+              "updated_at": "2026-11-13T12:08:54.566Z",
+              "deleted_at": null,
+              "groups": [],
+              "addresses": []
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ACZ3H179C1RFSSYG3TXZM2",
+        "workflowId": "create-customers",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "cus": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customers": [
+        {
+          "id": "cus_01M7ACZ3H5NWR2ASWQYA5ZF6RM",
+          "email": "wf-cust@example.test"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "events_run_create_dup": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ50XFS1C25WZJD9ARMH4"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ50XFS1C25WZJD9ARMH4",
+          "step": {
+            "id": "_root.create-customers",
+            "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+            "depth": 1,
+            "definition": {
+              "action": "create-customers",
+              "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571736099,
+            "next": [
+              "_root.create-customers.customersCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571736099
+          }
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ50XFS1C25WZJD9ARMH4",
+          "step": {
+            "id": "_root.create-customers",
+            "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+            "depth": 1,
+            "definition": {
+              "action": "create-customers",
+              "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571736120,
+            "next": [
+              "_root.create-customers.customersCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571736099
+          },
+          "errors": [
+            {
+              "action": "create-customers",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Customer with email: wf-cust@example.test, has_account: false, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:08:56.110Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ50XFS1C25WZJD9ARMH4"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ50XFS1C25WZJD9ARMH4",
+          "step": {
+            "id": "_root.create-customers",
+            "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+            "depth": 1,
+            "definition": {
+              "action": "create-customers",
+              "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571736120,
+            "next": [
+              "_root.create-customers.customersCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571736099
+          }
+        },
+        {
+          "event_type": "onCompensateStepSuccess",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ50XFS1C25WZJD9ARMH4",
+          "step": {
+            "id": "_root.create-customers",
+            "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+            "depth": 1,
+            "definition": {
+              "action": "create-customers",
+              "uuid": "01M7ACYVC54Z0MM4NRTGMWVV53",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571736120,
+            "next": [
+              "_root.create-customers.customersCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571736099
+          },
+          "response": {}
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-customers",
+          "transaction_id": "auto-01M7ACZ50XFS1C25WZJD9ARMH4",
+          "errors": [
+            {
+              "action": "create-customers",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Customer with email: wf-cust@example.test, has_account: false, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:08:56.110Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_create_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Customer with email: wf-cust@example.test, has_account: false, already exists."
+    }
+  },
+  "events_run_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-customers",
+          "transaction_id": "auto-01M7ACZ6GTA57AFYBPQZ595S82"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-customers",
+          "transaction_id": "auto-01M7ACZ6GTA57AFYBPQZ595S82",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-customer",
+            "uuid": "01M7ACYVCAS43Y2JWY63B597WW",
+            "depth": 1,
+            "definition": {
+              "action": "update-customer",
+              "uuid": "01M7ACYVCAS43Y2JWY63B597WW",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571737628,
+            "next": [
+              "_root.update-customer.customersUpdated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571737628
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-customers",
+          "transaction_id": "auto-01M7ACZ6GTA57AFYBPQZ595S82",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-customer",
+            "uuid": "01M7ACYVCAS43Y2JWY63B597WW",
+            "depth": 1,
+            "definition": {
+              "action": "update-customer",
+              "uuid": "01M7ACYVCAS43Y2JWY63B597WW",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571737628,
+            "next": [
+              "_root.update-customer.customersUpdated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571737628
+          },
+          "response": [
+            {
+              "id": "cus_01M7ACZ3H5NWR2ASWQYA5ZF6RM",
+              "company_name": "ACME",
+              "first_name": "Updated",
+              "last_name": "Cust",
+              "email": "wf-cust@example.test",
+              "phone": null,
+              "has_account": false,
+              "metadata": {
+                "k": "v"
+              },
+              "created_by": null,
+              "created_at": "2026-11-13T12:08:54.566Z",
+              "updated_at": "2026-11-13T12:08:57.633Z",
+              "deleted_at": null
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-customers",
+          "transaction_id": "auto-01M7ACZ6GTA57AFYBPQZ595S82",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-customer.customersUpdated",
+            "uuid": "01M7ACYVCA27Z3BE2YZ94HA7PW",
+            "depth": 2,
+            "definition": {
+              "action": "customersUpdated",
+              "uuid": "01M7ACYVCA27Z3BE2YZ94HA7PW",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571737646,
+            "next": [
+              "_root.update-customer.customersUpdated.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794571737646
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-customers",
+          "transaction_id": "auto-01M7ACZ6GTA57AFYBPQZ595S82",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-customer.customersUpdated",
+            "uuid": "01M7ACYVCA27Z3BE2YZ94HA7PW",
+            "depth": 2,
+            "definition": {
+              "action": "customersUpdated",
+              "uuid": "01M7ACYVCA27Z3BE2YZ94HA7PW",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571737646,
+            "next": [
+              "_root.update-customer.customersUpdated.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794571737646
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-customers",
+          "transaction_id": "auto-01M7ACZ6GTA57AFYBPQZ595S82",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-customer.customersUpdated.emit-event-step",
+            "uuid": "01M7ACYVCA09TVGK7611S7QRVN",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ACYVCA09TVGK7611S7QRVN",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571737646,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571737646
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-customers",
+          "transaction_id": "auto-01M7ACZ6GTA57AFYBPQZ595S82",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-customer.customersUpdated.emit-event-step",
+            "uuid": "01M7ACYVCA09TVGK7611S7QRVN",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ACYVCA09TVGK7611S7QRVN",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571737646,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571737646
+          },
+          "response": {
+            "eventGroupId": "01M7ACZ6GT923WJYZ30EQKWP6H",
+            "eventName": "customer.updated"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-customers",
+          "transaction_id": "auto-01M7ACZ6GTA57AFYBPQZ595S82",
+          "result": [
+            {
+              "id": "cus_01M7ACZ3H5NWR2ASWQYA5ZF6RM",
+              "company_name": "ACME",
+              "first_name": "Updated",
+              "last_name": "Cust",
+              "email": "wf-cust@example.test",
+              "phone": null,
+              "has_account": false,
+              "metadata": {
+                "k": "v"
+              },
+              "created_by": null,
+              "created_at": "2026-11-13T12:08:54.566Z",
+              "updated_at": "2026-11-13T12:08:57.633Z",
+              "deleted_at": null
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ACZ6GTA57AFYBPQZ595S82",
+        "workflowId": "update-customers",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_addr_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-customer-addresses",
+          "transaction_id": "auto-01M7ACZ80GFXT0NMNSM3XS50N5"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customer-addresses",
+          "transaction_id": "auto-01M7ACZ80GFXT0NMNSM3XS50N5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-shipping-customer-addresses",
+            "uuid": "01M7ACYVC4NS03ANJWWTM54CCW",
+            "depth": 1,
+            "definition": {
+              "action": "maybe-unset-default-shipping-customer-addresses",
+              "uuid": "01M7ACYVC4NS03ANJWWTM54CCW",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571739154,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571739154
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customer-addresses",
+          "transaction_id": "auto-01M7ACZ80GFXT0NMNSM3XS50N5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses",
+            "uuid": "01M7ACYVC4PDQMC01B7SSRYPES",
+            "depth": 1,
+            "definition": {
+              "action": "maybe-unset-default-billing-customer-addresses",
+              "uuid": "01M7ACYVC4PDQMC01B7SSRYPES",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571739154,
+            "next": [
+              "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses"
+            ],
+            "_v": 0,
+            "startedAt": 1794571739154
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-customer-addresses",
+          "transaction_id": "auto-01M7ACZ80GFXT0NMNSM3XS50N5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses",
+            "uuid": "01M7ACYVC4PDQMC01B7SSRYPES",
+            "depth": 1,
+            "definition": {
+              "action": "maybe-unset-default-billing-customer-addresses",
+              "uuid": "01M7ACYVC4PDQMC01B7SSRYPES",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571739154,
+            "next": [
+              "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses"
+            ],
+            "_v": 0,
+            "startedAt": 1794571739154
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-customer-addresses",
+          "transaction_id": "auto-01M7ACZ80GFXT0NMNSM3XS50N5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-shipping-customer-addresses",
+            "uuid": "01M7ACYVC4NS03ANJWWTM54CCW",
+            "depth": 1,
+            "definition": {
+              "action": "maybe-unset-default-shipping-customer-addresses",
+              "uuid": "01M7ACYVC4NS03ANJWWTM54CCW",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571739154,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571739154
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customer-addresses",
+          "transaction_id": "auto-01M7ACZ80GFXT0NMNSM3XS50N5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses",
+            "uuid": "01M7ACYVC4JDS2G4VSSY073HVB",
+            "depth": 2,
+            "definition": {
+              "action": "create-customer-addresses",
+              "uuid": "01M7ACYVC4JDS2G4VSSY073HVB",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571739159,
+            "next": [
+              "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses.addressesCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571739159
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-customer-addresses",
+          "transaction_id": "auto-01M7ACZ80GFXT0NMNSM3XS50N5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses",
+            "uuid": "01M7ACYVC4JDS2G4VSSY073HVB",
+            "depth": 2,
+            "definition": {
+              "action": "create-customer-addresses",
+              "uuid": "01M7ACYVC4JDS2G4VSSY073HVB",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571739159,
+            "next": [
+              "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses.addressesCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571739159
+          },
+          "response": [
+            {
+              "id": "cuaddr_01M7ACZ80QHM8ZKSDW8SMBW06T",
+              "address_name": "Home",
+              "is_default_shipping": true,
+              "is_default_billing": false,
+              "company": null,
+              "first_name": null,
+              "last_name": null,
+              "address_1": "Street 1",
+              "address_2": null,
+              "city": "Berlin",
+              "country_code": "de",
+              "province": null,
+              "postal_code": null,
+              "phone": null,
+              "metadata": null,
+              "customer_id": "cus_01M7ACZ3H5NWR2ASWQYA5ZF6RM",
+              "created_at": "2026-11-13T12:08:59.159Z",
+              "updated_at": "2026-11-13T12:08:59.159Z",
+              "deleted_at": null
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customer-addresses",
+          "transaction_id": "auto-01M7ACZ80GFXT0NMNSM3XS50N5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses.addressesCreated",
+            "uuid": "01M7ACYVC48CS26RSN11J0K53P",
+            "depth": 3,
+            "definition": {
+              "action": "addressesCreated",
+              "uuid": "01M7ACYVC48CS26RSN11J0K53P",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571739170,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571739170
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-customer-addresses",
+          "transaction_id": "auto-01M7ACZ80GFXT0NMNSM3XS50N5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses.addressesCreated",
+            "uuid": "01M7ACYVC48CS26RSN11J0K53P",
+            "depth": 3,
+            "definition": {
+              "action": "addressesCreated",
+              "uuid": "01M7ACYVC48CS26RSN11J0K53P",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571739170,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571739170
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-customer-addresses",
+          "transaction_id": "auto-01M7ACZ80GFXT0NMNSM3XS50N5",
+          "result": [
+            {
+              "id": "cuaddr_01M7ACZ80QHM8ZKSDW8SMBW06T",
+              "address_name": "Home",
+              "is_default_shipping": true,
+              "is_default_billing": false,
+              "company": null,
+              "first_name": null,
+              "last_name": null,
+              "address_1": "Street 1",
+              "address_2": null,
+              "city": "Berlin",
+              "country_code": "de",
+              "province": null,
+              "postal_code": null,
+              "phone": null,
+              "metadata": null,
+              "customer_id": "cus_01M7ACZ3H5NWR2ASWQYA5ZF6RM",
+              "created_at": "2026-11-13T12:08:59.159Z",
+              "updated_at": "2026-11-13T12:08:59.159Z",
+              "deleted_at": null
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_addr_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ACZ80GFXT0NMNSM3XS50N5",
+        "workflowId": "create-customer-addresses",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "addrs": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "addresses": [
+        {
+          "id": "cuaddr_01M7ACZ80QHM8ZKSDW8SMBW06T",
+          "address_name": "Home"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "events_run_addr_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-customer-addresses",
+          "transaction_id": "auto-01M7ACZ9GB60J0PW3HTZK1VGY6"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-customer-addresses",
+          "transaction_id": "auto-01M7ACZ9GB60J0PW3HTZK1VGY6",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-shipping-customer-addresses",
+            "uuid": "01M7ACYVC9M7QQ2VDHNHDB9T02",
+            "depth": 1,
+            "definition": {
+              "action": "maybe-unset-default-shipping-customer-addresses",
+              "uuid": "01M7ACYVC9M7QQ2VDHNHDB9T02",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571740688,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571740688
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-customer-addresses",
+          "transaction_id": "auto-01M7ACZ9GB60J0PW3HTZK1VGY6",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses",
+            "uuid": "01M7ACYVC9RV09HKQ7JKZXPNAD",
+            "depth": 1,
+            "definition": {
+              "action": "maybe-unset-default-billing-customer-addresses",
+              "uuid": "01M7ACYVC9RV09HKQ7JKZXPNAD",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571740688,
+            "next": [
+              "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses"
+            ],
+            "_v": 0,
+            "startedAt": 1794571740688
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-customer-addresses",
+          "transaction_id": "auto-01M7ACZ9GB60J0PW3HTZK1VGY6",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-shipping-customer-addresses",
+            "uuid": "01M7ACYVC9M7QQ2VDHNHDB9T02",
+            "depth": 1,
+            "definition": {
+              "action": "maybe-unset-default-shipping-customer-addresses",
+              "uuid": "01M7ACYVC9M7QQ2VDHNHDB9T02",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571740688,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571740688
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-customer-addresses",
+          "transaction_id": "auto-01M7ACZ9GB60J0PW3HTZK1VGY6",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses",
+            "uuid": "01M7ACYVC9RV09HKQ7JKZXPNAD",
+            "depth": 1,
+            "definition": {
+              "action": "maybe-unset-default-billing-customer-addresses",
+              "uuid": "01M7ACYVC9RV09HKQ7JKZXPNAD",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571740688,
+            "next": [
+              "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses"
+            ],
+            "_v": 0,
+            "startedAt": 1794571740688
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-customer-addresses",
+          "transaction_id": "auto-01M7ACZ9GB60J0PW3HTZK1VGY6",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses",
+            "uuid": "01M7ACYVC9HAPRCF3QJ9F1Y6GC",
+            "depth": 2,
+            "definition": {
+              "action": "update-customer-addresses",
+              "uuid": "01M7ACYVC9HAPRCF3QJ9F1Y6GC",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571740695,
+            "next": [
+              "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses.addressesUpdated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571740695
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-customer-addresses",
+          "transaction_id": "auto-01M7ACZ9GB60J0PW3HTZK1VGY6",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses",
+            "uuid": "01M7ACYVC9HAPRCF3QJ9F1Y6GC",
+            "depth": 2,
+            "definition": {
+              "action": "update-customer-addresses",
+              "uuid": "01M7ACYVC9HAPRCF3QJ9F1Y6GC",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571740695,
+            "next": [
+              "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses.addressesUpdated"
+            ],
+            "_v": 0,
+            "startedAt": 1794571740695
+          },
+          "response": [
+            {
+              "id": "cuaddr_01M7ACZ80QHM8ZKSDW8SMBW06T",
+              "address_name": "Home",
+              "is_default_shipping": true,
+              "is_default_billing": true,
+              "company": null,
+              "first_name": null,
+              "last_name": null,
+              "address_1": "Street 1",
+              "address_2": null,
+              "city": "Munich",
+              "country_code": "de",
+              "province": null,
+              "postal_code": null,
+              "phone": null,
+              "metadata": null,
+              "customer_id": "cus_01M7ACZ3H5NWR2ASWQYA5ZF6RM",
+              "customer": {
+                "id": "cus_01M7ACZ3H5NWR2ASWQYA5ZF6RM"
+              },
+              "created_at": "2026-11-13T12:08:59.159Z",
+              "updated_at": "2026-11-13T12:09:00.699Z",
+              "deleted_at": null
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-customer-addresses",
+          "transaction_id": "auto-01M7ACZ9GB60J0PW3HTZK1VGY6",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses.addressesUpdated",
+            "uuid": "01M7ACYVC9VYY2DPPYBMCAP03F",
+            "depth": 3,
+            "definition": {
+              "action": "addressesUpdated",
+              "uuid": "01M7ACYVC9VYY2DPPYBMCAP03F",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571740708,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571740708
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-customer-addresses",
+          "transaction_id": "auto-01M7ACZ9GB60J0PW3HTZK1VGY6",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses.addressesUpdated",
+            "uuid": "01M7ACYVC9VYY2DPPYBMCAP03F",
+            "depth": 3,
+            "definition": {
+              "action": "addressesUpdated",
+              "uuid": "01M7ACYVC9VYY2DPPYBMCAP03F",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571740708,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571740708
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-customer-addresses",
+          "transaction_id": "auto-01M7ACZ9GB60J0PW3HTZK1VGY6",
+          "result": [
+            {
+              "id": "cuaddr_01M7ACZ80QHM8ZKSDW8SMBW06T",
+              "address_name": "Home",
+              "is_default_shipping": true,
+              "is_default_billing": true,
+              "company": null,
+              "first_name": null,
+              "last_name": null,
+              "address_1": "Street 1",
+              "address_2": null,
+              "city": "Munich",
+              "country_code": "de",
+              "province": null,
+              "postal_code": null,
+              "phone": null,
+              "metadata": null,
+              "customer_id": "cus_01M7ACZ3H5NWR2ASWQYA5ZF6RM",
+              "customer": {
+                "id": "cus_01M7ACZ3H5NWR2ASWQYA5ZF6RM"
+              },
+              "created_at": "2026-11-13T12:08:59.159Z",
+              "updated_at": "2026-11-13T12:09:00.699Z",
+              "deleted_at": null
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_addr_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ACZ9GB60J0PW3HTZK1VGY6",
+        "workflowId": "update-customer-addresses",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_addr_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "delete-customer-addresses",
+          "transaction_id": "auto-01M7ACZB06Z4877KF2EDY7R6HV"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-customer-addresses",
+          "transaction_id": "auto-01M7ACZB06Z4877KF2EDY7R6HV",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customer-addresses",
+            "uuid": "01M7ACYVC5Y8SKVBAYJMGXG7CK",
+            "depth": 1,
+            "definition": {
+              "action": "delete-customer-addresses",
+              "uuid": "01M7ACYVC5Y8SKVBAYJMGXG7CK",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571742215,
+            "next": [
+              "_root.delete-customer-addresses.addressesDeleted"
+            ],
+            "_v": 0,
+            "startedAt": 1794571742215
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-customer-addresses",
+          "transaction_id": "auto-01M7ACZB06Z4877KF2EDY7R6HV",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customer-addresses",
+            "uuid": "01M7ACYVC5Y8SKVBAYJMGXG7CK",
+            "depth": 1,
+            "definition": {
+              "action": "delete-customer-addresses",
+              "uuid": "01M7ACYVC5Y8SKVBAYJMGXG7CK",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571742215,
+            "next": [
+              "_root.delete-customer-addresses.addressesDeleted"
+            ],
+            "_v": 0,
+            "startedAt": 1794571742215
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-customer-addresses",
+          "transaction_id": "auto-01M7ACZB06Z4877KF2EDY7R6HV",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customer-addresses.addressesDeleted",
+            "uuid": "01M7ACYVC5ND5KBYHPXAGT27M0",
+            "depth": 2,
+            "definition": {
+              "action": "addressesDeleted",
+              "uuid": "01M7ACYVC5ND5KBYHPXAGT27M0",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571742241,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571742241
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-customer-addresses",
+          "transaction_id": "auto-01M7ACZB06Z4877KF2EDY7R6HV",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customer-addresses.addressesDeleted",
+            "uuid": "01M7ACYVC5ND5KBYHPXAGT27M0",
+            "depth": 2,
+            "definition": {
+              "action": "addressesDeleted",
+              "uuid": "01M7ACYVC5ND5KBYHPXAGT27M0",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571742241,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571742241
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "delete-customer-addresses",
+          "transaction_id": "auto-01M7ACZB06Z4877KF2EDY7R6HV",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_addr_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ACZB06Z4877KF2EDY7R6HV",
+        "workflowId": "delete-customer-addresses",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_group_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-customer-groups",
+          "transaction_id": "auto-01M7ACZCG2ZE5PMCEK741SJC4J"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customer-groups",
+          "transaction_id": "auto-01M7ACZCG2ZE5PMCEK741SJC4J",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-customer-groups",
+            "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+            "depth": 1,
+            "definition": {
+              "action": "create-customer-groups",
+              "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571743747,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571743747
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-customer-groups",
+          "transaction_id": "auto-01M7ACZCG2ZE5PMCEK741SJC4J",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-customer-groups",
+            "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+            "depth": 1,
+            "definition": {
+              "action": "create-customer-groups",
+              "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571743747,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571743747
+          },
+          "response": [
+            {
+              "id": "cusgroup_01M7ACZCG40ZKDE2CWYYRFTVAB",
+              "name": "WF VIP",
+              "metadata": {
+                "tier": 1
+              },
+              "created_by": null,
+              "created_at": "2026-11-13T12:09:03.749Z",
+              "updated_at": "2026-11-13T12:09:03.749Z",
+              "deleted_at": null,
+              "customers": []
+            }
+          ]
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-customer-groups",
+          "transaction_id": "auto-01M7ACZCG2ZE5PMCEK741SJC4J",
+          "result": [
+            {
+              "id": "cusgroup_01M7ACZCG40ZKDE2CWYYRFTVAB",
+              "name": "WF VIP",
+              "metadata": {
+                "tier": 1
+              },
+              "created_by": null,
+              "created_at": "2026-11-13T12:09:03.749Z",
+              "updated_at": "2026-11-13T12:09:03.749Z",
+              "deleted_at": null,
+              "customers": []
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_group_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ACZCG2ZE5PMCEK741SJC4J",
+        "workflowId": "create-customer-groups",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "grp": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customer_groups": [
+        {
+          "id": "cusgroup_01M7ACZCG40ZKDE2CWYYRFTVAB",
+          "name": "WF VIP"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "events_run_group_create_dup": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-customer-groups",
+          "transaction_id": "auto-01M7ACZDZJKA2X5864ZN0PRAJ6"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customer-groups",
+          "transaction_id": "auto-01M7ACZDZJKA2X5864ZN0PRAJ6",
+          "step": {
+            "id": "_root.create-customer-groups",
+            "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+            "depth": 1,
+            "definition": {
+              "action": "create-customer-groups",
+              "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571745268,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571745268
+          }
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "create-customer-groups",
+          "transaction_id": "auto-01M7ACZDZJKA2X5864ZN0PRAJ6",
+          "step": {
+            "id": "_root.create-customer-groups",
+            "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+            "depth": 1,
+            "definition": {
+              "action": "create-customer-groups",
+              "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571745272,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571745268
+          },
+          "errors": [
+            {
+              "action": "create-customer-groups",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Customer group with name: WF VIP, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:09:05.270Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "create-customer-groups",
+          "transaction_id": "auto-01M7ACZDZJKA2X5864ZN0PRAJ6"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-customer-groups",
+          "transaction_id": "auto-01M7ACZDZJKA2X5864ZN0PRAJ6",
+          "step": {
+            "id": "_root.create-customer-groups",
+            "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+            "depth": 1,
+            "definition": {
+              "action": "create-customer-groups",
+              "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571745272,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571745268
+          }
+        },
+        {
+          "event_type": "onCompensateStepSuccess",
+          "workflow_id": "create-customer-groups",
+          "transaction_id": "auto-01M7ACZDZJKA2X5864ZN0PRAJ6",
+          "step": {
+            "id": "_root.create-customer-groups",
+            "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+            "depth": 1,
+            "definition": {
+              "action": "create-customer-groups",
+              "uuid": "01M7ACYVCD5AV8M57JP05WPM07",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571745272,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571745268
+          },
+          "response": {}
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-customer-groups",
+          "transaction_id": "auto-01M7ACZDZJKA2X5864ZN0PRAJ6",
+          "errors": [
+            {
+              "action": "create-customer-groups",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Customer group with name: WF VIP, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:09:05.270Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_group_create_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Customer group with name: WF VIP, already exists."
+    }
+  },
+  "events_run_group_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-customer-groups",
+          "transaction_id": "auto-01M7ACZFEV3XAA148BNGEPD4E3"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-customer-groups",
+          "transaction_id": "auto-01M7ACZFEV3XAA148BNGEPD4E3",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-customer-groups",
+            "uuid": "01M7ACYVCCJZ6N59J7RCCZ9YT0",
+            "depth": 1,
+            "definition": {
+              "action": "update-customer-groups",
+              "uuid": "01M7ACYVCCJZ6N59J7RCCZ9YT0",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571746782,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571746782
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-customer-groups",
+          "transaction_id": "auto-01M7ACZFEV3XAA148BNGEPD4E3",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-customer-groups",
+            "uuid": "01M7ACYVCCJZ6N59J7RCCZ9YT0",
+            "depth": 1,
+            "definition": {
+              "action": "update-customer-groups",
+              "uuid": "01M7ACYVCCJZ6N59J7RCCZ9YT0",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571746782,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571746782
+          },
+          "response": [
+            {
+              "id": "cusgroup_01M7ACZCG40ZKDE2CWYYRFTVAB",
+              "name": "WF VIP 2",
+              "metadata": {
+                "tier": 1
+              },
+              "created_by": null,
+              "created_at": "2026-11-13T12:09:03.749Z",
+              "updated_at": "2026-11-13T12:09:06.786Z",
+              "deleted_at": null
+            }
+          ]
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-customer-groups",
+          "transaction_id": "auto-01M7ACZFEV3XAA148BNGEPD4E3",
+          "result": [
+            {
+              "id": "cusgroup_01M7ACZCG40ZKDE2CWYYRFTVAB",
+              "name": "WF VIP 2",
+              "metadata": {
+                "tier": 1
+              },
+              "created_by": null,
+              "created_at": "2026-11-13T12:09:03.749Z",
+              "updated_at": "2026-11-13T12:09:06.786Z",
+              "deleted_at": null
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_group_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ACZFEV3XAA148BNGEPD4E3",
+        "workflowId": "update-customer-groups",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_link_customers": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "link-customers-to-customer-group",
+          "transaction_id": "auto-01M7ACZGYEYG6M6RE0TTA79E07"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "link-customers-to-customer-group",
+          "transaction_id": "auto-01M7ACZGYEYG6M6RE0TTA79E07",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.link-customers-to-customer-group",
+            "uuid": "01M7ACYVCDHCTP6BVPXH5213TJ",
+            "depth": 1,
+            "definition": {
+              "action": "link-customers-to-customer-group",
+              "uuid": "01M7ACYVCDHCTP6BVPXH5213TJ",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571748306,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571748306
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "link-customers-to-customer-group",
+          "transaction_id": "auto-01M7ACZGYEYG6M6RE0TTA79E07",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.link-customers-to-customer-group",
+            "uuid": "01M7ACYVCDHCTP6BVPXH5213TJ",
+            "depth": 1,
+            "definition": {
+              "action": "link-customers-to-customer-group",
+              "uuid": "01M7ACYVCDHCTP6BVPXH5213TJ",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571748306,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571748306
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "link-customers-to-customer-group",
+          "transaction_id": "auto-01M7ACZGYEYG6M6RE0TTA79E07",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_link_customers": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ACZGYEYG6M6RE0TTA79E07",
+        "workflowId": "link-customers-to-customer-group",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_link_groups": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "link-customer-groups-to-customer",
+          "transaction_id": "auto-01M7ACZJECQ3T7P2KPBGY36524"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "link-customer-groups-to-customer",
+          "transaction_id": "auto-01M7ACZJECQ3T7P2KPBGY36524",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.link-customers-to-customer-group",
+            "uuid": "01M7ACYVCD67D2CNBX2N76NV81",
+            "depth": 1,
+            "definition": {
+              "action": "link-customers-to-customer-group",
+              "uuid": "01M7ACYVCD67D2CNBX2N76NV81",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571749840,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571749840
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "link-customer-groups-to-customer",
+          "transaction_id": "auto-01M7ACZJECQ3T7P2KPBGY36524",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.link-customers-to-customer-group",
+            "uuid": "01M7ACYVCD67D2CNBX2N76NV81",
+            "depth": 1,
+            "definition": {
+              "action": "link-customers-to-customer-group",
+              "uuid": "01M7ACYVCD67D2CNBX2N76NV81",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571749840,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571749840
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "link-customer-groups-to-customer",
+          "transaction_id": "auto-01M7ACZJECQ3T7P2KPBGY36524",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_link_groups": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ACZJECQ3T7P2KPBGY36524",
+        "workflowId": "link-customer-groups-to-customer",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_group_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "delete-customer-groups",
+          "transaction_id": "auto-01M7ACZKY0817JMJ1VMHJFWRJY"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-customer-groups",
+          "transaction_id": "auto-01M7ACZKY0817JMJ1VMHJFWRJY",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customer-groups",
+            "uuid": "01M7ACYVCC0PW648KVFAGGFF2M",
+            "depth": 1,
+            "definition": {
+              "action": "delete-customer-groups",
+              "uuid": "01M7ACYVCC0PW648KVFAGGFF2M",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571751362,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571751362
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-customer-groups",
+          "transaction_id": "auto-01M7ACZKY0817JMJ1VMHJFWRJY",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customer-groups",
+            "uuid": "01M7ACYVCC0PW648KVFAGGFF2M",
+            "depth": 1,
+            "definition": {
+              "action": "delete-customer-groups",
+              "uuid": "01M7ACYVCC0PW648KVFAGGFF2M",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571751362,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571751362
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "delete-customer-groups",
+          "transaction_id": "auto-01M7ACZKY0817JMJ1VMHJFWRJY",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_group_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ACZKY0817JMJ1VMHJFWRJY",
+        "workflowId": "delete-customer-groups",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "delete-customers",
+          "transaction_id": "auto-01M7ACZNDBBPHBA83KYZMP4NS3"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-customers",
+          "transaction_id": "auto-01M7ACZNDBBPHBA83KYZMP4NS3",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customers",
+            "uuid": "01M7ACYVC6XHD0FQSVZK3NM4C9",
+            "depth": 1,
+            "definition": {
+              "action": "delete-customers",
+              "uuid": "01M7ACYVC6XHD0FQSVZK3NM4C9",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571752876,
+            "next": [
+              "_root.delete-customers.customersDeleted"
+            ],
+            "_v": 0,
+            "startedAt": 1794571752876
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-customers",
+          "transaction_id": "auto-01M7ACZNDBBPHBA83KYZMP4NS3",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customers",
+            "uuid": "01M7ACYVC6XHD0FQSVZK3NM4C9",
+            "depth": 1,
+            "definition": {
+              "action": "delete-customers",
+              "uuid": "01M7ACYVC6XHD0FQSVZK3NM4C9",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571752876,
+            "next": [
+              "_root.delete-customers.customersDeleted"
+            ],
+            "_v": 0,
+            "startedAt": 1794571752876
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-customers",
+          "transaction_id": "auto-01M7ACZNDBBPHBA83KYZMP4NS3",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customers.customersDeleted",
+            "uuid": "01M7ACYVC6TET3B4BTACWR70Z8",
+            "depth": 2,
+            "definition": {
+              "action": "customersDeleted",
+              "uuid": "01M7ACYVC6TET3B4BTACWR70Z8",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571752889,
+            "next": [
+              "_root.delete-customers.customersDeleted.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794571752889
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-customers",
+          "transaction_id": "auto-01M7ACZNDBBPHBA83KYZMP4NS3",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customers.customersDeleted",
+            "uuid": "01M7ACYVC6TET3B4BTACWR70Z8",
+            "depth": 2,
+            "definition": {
+              "action": "customersDeleted",
+              "uuid": "01M7ACYVC6TET3B4BTACWR70Z8",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571752889,
+            "next": [
+              "_root.delete-customers.customersDeleted.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794571752889
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-customers",
+          "transaction_id": "auto-01M7ACZNDBBPHBA83KYZMP4NS3",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customers.customersDeleted.emit-event-step",
+            "uuid": "01M7ACYVC63T1SGNRE6EGRE6FR",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ACYVC63T1SGNRE6EGRE6FR",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571752889,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571752889
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-customers",
+          "transaction_id": "auto-01M7ACZNDBBPHBA83KYZMP4NS3",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-customers.customersDeleted.emit-event-step",
+            "uuid": "01M7ACYVC63T1SGNRE6EGRE6FR",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ACYVC63T1SGNRE6EGRE6FR",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794571752889,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794571752889
+          },
+          "response": {
+            "eventGroupId": "01M7ACZNDBKMFW04ZS44PQ2R4B",
+            "eventName": "customer.deleted"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "delete-customers",
+          "transaction_id": "auto-01M7ACZNDBBPHBA83KYZMP4NS3",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ACZNDBBPHBA83KYZMP4NS3",
+        "workflowId": "delete-customers",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "customers": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}

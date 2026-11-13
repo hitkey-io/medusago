@@ -237,12 +237,9 @@ func (s *ProductModuleService) updateOptions(ctx context.Context, data []*dal.Re
 		updated = append(updated, in)
 	}
 	// productOptionService_.upsertWithReplace(normalizedInput, { relations: ["values"] })
-	if _, err := s.Internal("ProductOption").UpsertWithReplace(ctx, updated, []string{"values"}); err != nil {
-		return nil, err
-	}
-	f2 := dal.NewRecord()
-	f2.Set("id", ids)
-	return s.Internal("ProductOption").List(ctx, f2, utilsmodulessdk.FindConfig{Relations: []string{"values"}})
+	// the entities upsertWithReplace returns: the normalized input with
+	// the ids of the values it created
+	return s.Internal("ProductOption").UpsertWithReplace(ctx, updated, []string{"values"})
 }
 
 // replaceOptionValues mirrors upsertWithReplace of the values relation

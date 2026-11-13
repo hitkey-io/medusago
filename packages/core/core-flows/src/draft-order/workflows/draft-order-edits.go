@@ -1029,3 +1029,9 @@ var CancelDraftOrderEditWorkflow = composer.CreateWorkflow("cancel-draft-order-e
 		}
 		return nil, releaseLock(e, orderID)
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	ComputeDraftOrderAdjustmentsWorkflow.InputFrom("order_id")
+	CancelDraftOrderEditWorkflow.InputFrom("order_id")
+}

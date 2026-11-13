@@ -1053,3 +1053,8 @@ var CancelBeginOrderClaimWorkflow = composer.CreateWorkflow("cancel-begin-order-
 			func() error { _, err := ordersteps.DeleteOrderShippingMethodsStep.Run(e, shippingToRemove); return err },
 		)
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	CancelBeginOrderClaimWorkflow.InputFrom("claim_id")
+}

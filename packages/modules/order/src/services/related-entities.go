@@ -24,6 +24,19 @@ func relatedVersionCondition() dal.RawCondition {
 // OrderExchange repositories (base-repository-find with isRelatedEntity).
 func (s *OrderModuleService) findRelated(ctx context.Context, className string, filters *dal.Record, config utilsmodulessdk.FindConfig, withCount bool) ([]*dal.Record, int, error) {
 	where := copyRecord(filters)
+	where.Delete("version")
+	fc := relatedFindConfig(className, config, withCount)
+	internal := s.Internal(className)
+	if withCount {
+		return internal.ListAndCount(ctx, where, fc)
+	}
+	rows, err := internal.List(ctx, where, fc)
+	return rows, len(rows), err
+}
+
+// relatedFindConfig builds the find of the version-aware related entity
+// repositories (populates, version conditions, strategy).
+func relatedFindConfig(className string, config utilsmodulessdk.FindConfig, withCount bool) utilsmodulessdk.FindConfig {
 	conf := utils.RepositoryConfig{
 		Fields:      append([]string(nil), config.Select...),
 		HasFields:   config.Select != nil,
@@ -31,7 +44,6 @@ func (s *OrderModuleService) findRelated(ctx context.Context, className string, 
 		HasPopulate: true,
 	}
 	utils.MapRepositoryToOrderModel(&conf, true)
-	where.Delete("version")
 
 	joined := !withCount && config.Take == nil && (config.Skip == nil || *config.Skip == 0)
 	populate := conf.Populate
@@ -109,12 +121,23 @@ func (s *OrderModuleService) findRelated(ctx context.Context, className string, 
 		}
 		fc.Select = fields
 	}
-	internal := s.Internal(className)
-	if withCount {
-		return internal.ListAndCount(ctx, where, fc)
+	return fc
+}
+
+// registerRelatedUpdateFind makes the updates of the related entities load
+// them with the version-aware find (the repositories override find, which
+// the internal service update uses).
+func registerRelatedUpdateFind(m *utilsmodulessdk.MedusaService) {
+	for _, className := range relatedSuffixes {
+		className := className
+		if svc := m.Internal(className); svc != nil {
+			svc.UpdateFind = func(c utilsmodulessdk.FindConfig) utilsmodulessdk.FindConfig {
+				fc := relatedFindConfig(className, c, false)
+				fc.Order = c.Order
+				return fc
+			}
+		}
 	}
-	rows, err := internal.List(ctx, where, fc)
-	return rows, len(rows), err
 }
 
 func (s *OrderModuleService) listRelated(ctx context.Context, className string, filters *dal.Record, config utilsmodulessdk.FindConfig, withCount bool) ([]*dal.Record, int, error) {
@@ -142,6 +165,9 @@ func (s *OrderModuleService) RetrieveRelated(ctx context.Context, className, id 
 
 // createOrderRelatedEntity mirrors createOrderRelatedEntity_.
 func (s *OrderModuleService) createOrderRelatedEntity(ctx context.Context, className string, data []*dal.Record) ([]*dal.Record, error) {
+	// one entity manager: the orders read for their version are the
+	// entities the created ones reference
+	ctx = dal.WithSharedIdentityMap(ctx)
 	var out []*dal.Record
 	err := s.InTransaction(ctx, func(m *utilsmodulessdk.MedusaService) error {
 		in := make([]*dal.Record, len(data))
@@ -233,6 +259,19 @@ func (s *OrderModuleService) CreateOrderShippingMethods(ctx context.Context, dat
 		created, err := m.Internal("OrderShipping").Create(ctx, rows)
 		if err != nil {
 			return err
+		}
+		// sm.map((s) => s.shipping_method): the created methods
+		nested := true
+		for _, c := range created {
+			if _, ok := get(c, "shipping_method").(*dal.Record); !ok {
+				nested = false
+			}
+		}
+		if nested {
+			for _, c := range created {
+				out = append(out, get(c, "shipping_method").(*dal.Record))
+			}
+			return nil
 		}
 		var ids []any
 		for _, c := range created {

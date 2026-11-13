@@ -63,9 +63,16 @@ func queryListWithOptions(e *composer.Execution, name, entity string, filters *d
 	return recs(res.Data), nil
 }
 
+// UpdateOrderTaxLinesOutput mirrors the workflow response
+// { itemTaxLines, shippingTaxLines }.
+type UpdateOrderTaxLinesOutput struct {
+	ItemTaxLines     []*dal.Record `json:"itemTaxLines"`
+	ShippingTaxLines []*dal.Record `json:"shippingTaxLines"`
+}
+
 // UpdateOrderTaxLinesWorkflow mirrors updateOrderTaxLinesWorkflow.
 var UpdateOrderTaxLinesWorkflow = composer.CreateWorkflow("update-order-tax-lines",
-	func(e *composer.Execution, in UpdateOrderTaxLinesInput) (*taxsteps.ItemTaxLines, error) {
+	func(e *composer.Execution, in UpdateOrderTaxLinesInput) (*UpdateOrderTaxLinesOutput, error) {
 		isFullOrder := in.ItemIDs == nil && in.ShippingMethodIDs == nil
 		fields := orderTaxFields
 		if isFullOrder {
@@ -129,5 +136,5 @@ var UpdateOrderTaxLinesWorkflow = composer.CreateWorkflow("update-order-tax-line
 		}); err != nil {
 			return nil, err
 		}
-		return &lines, nil
+		return &UpdateOrderTaxLinesOutput{ItemTaxLines: lines.LineItemTaxLines, ShippingTaxLines: lines.ShippingMethodsTaxLines}, nil
 	})

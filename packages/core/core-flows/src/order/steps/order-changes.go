@@ -99,9 +99,9 @@ func confirmOrderChangesInvoke(withResult bool) func(composer.StepExecutionConte
 	}
 }
 
-// ConfirmOrderChangesStep mirrors confirmOrderChanges (its output is not
-// kept).
-var ConfirmOrderChangesStep = composer.CreateStep("confirm-order-changes", confirmOrderChangesInvoke(false), undoConfirmOrderChanges)
+// ConfirmOrderChangesStep mirrors confirmOrderChanges: its output is the
+// confirmOrderChange result.
+var ConfirmOrderChangesStep = composer.CreateStep("confirm-order-changes", confirmOrderChangesInvoke(true), undoConfirmOrderChanges)
 
 // ConfirmOrderChangesWithResultStep is confirmOrderChanges with its output:
 // the confirmOrderChange result.

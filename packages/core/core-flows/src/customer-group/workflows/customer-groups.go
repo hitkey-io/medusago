@@ -7,10 +7,20 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 )
 
+// CreateCustomerGroupsInput mirrors CreateCustomerGroupsWorkflowInput.
+type CreateCustomerGroupsInput struct {
+	CustomersData []*dal.Record `json:"customersData"`
+}
+
+// DeleteCustomerGroupsInput mirrors DeleteCustomerGroupsWorkflowInput.
+type DeleteCustomerGroupsInput struct {
+	IDs []any `json:"ids"`
+}
+
 // CreateCustomerGroupsWorkflow mirrors createCustomerGroupsWorkflow.
 var CreateCustomerGroupsWorkflow = composer.CreateWorkflow("create-customer-groups",
-	func(e *composer.Execution, data []*dal.Record) ([]*dal.Record, error) {
-		return steps.CreateCustomerGroupsStep.Run(e, data)
+	func(e *composer.Execution, in CreateCustomerGroupsInput) ([]*dal.Record, error) {
+		return steps.CreateCustomerGroupsStep.Run(e, in.CustomersData)
 	})
 
 // UpdateCustomerGroupsWorkflow mirrors updateCustomerGroupsWorkflow.
@@ -21,8 +31,8 @@ var UpdateCustomerGroupsWorkflow = composer.CreateWorkflow("update-customer-grou
 
 // DeleteCustomerGroupsWorkflow mirrors deleteCustomerGroupsWorkflow.
 var DeleteCustomerGroupsWorkflow = composer.CreateWorkflow("delete-customer-groups",
-	func(e *composer.Execution, ids []any) (any, error) {
-		return steps.DeleteCustomerGroupStep.Run(e, ids)
+	func(e *composer.Execution, in DeleteCustomerGroupsInput) (any, error) {
+		return steps.DeleteCustomerGroupStep.Run(e, in.IDs)
 	})
 
 // LinkCustomersToCustomerGroupWorkflow mirrors linkCustomersToCustomerGroupWorkflow.

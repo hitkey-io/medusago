@@ -221,7 +221,34 @@ var promotionRelations = []string{
 func (s *PromotionModuleService) listPromotions(ctx context.Context, promotionIDs []any, relations []string) ([]*dal.Record, error) {
 	f := dal.NewRecord()
 	f.Set("id", promotionIDs)
-	return s.ListBySuffix(ctx, "Promotions", f, utilsmodulessdk.FindConfig{Relations: relations})
+	out, err := s.ListBySuffix(ctx, "Promotions", f, utilsmodulessdk.FindConfig{Relations: relations})
+	if err != nil {
+		return nil, err
+	}
+	// the application methods were created (or loaded) by the same entity
+	// manager before their rule collections: their promotion_id shadow key
+	// precedes the collections in the result of createPromotions /
+	// updatePromotions
+	for _, p := range out {
+		am, _ := get(p, "application_method").(*dal.Record)
+		if am == nil || !am.Has("promotion_id") || !am.Has("deleted_at") {
+			continue
+		}
+		reordered := dal.NewRecord()
+		v, _ := am.Get("promotion_id")
+		for _, k := range am.Keys() {
+			if k == "promotion_id" {
+				continue
+			}
+			x, _ := am.Get(k)
+			reordered.Set(k, x)
+			if k == "deleted_at" {
+				reordered.Set("promotion_id", v)
+			}
+		}
+		p.Set("application_method", reordered)
+	}
+	return out, nil
 }
 
 type methodRules struct {

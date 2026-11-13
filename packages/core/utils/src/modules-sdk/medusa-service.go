@@ -288,7 +288,7 @@ func (s *MedusaService) withDB(db dal.Querier) *MedusaService {
 	for name, svc := range s.byName {
 		repo := *svc.Repository
 		repo.DB = db
-		n := &InternalService{Repository: &repo}
+		n := &InternalService{Repository: &repo, UpdateFind: svc.UpdateFind}
 		copies[svc] = n
 		c.byName[name] = n
 	}

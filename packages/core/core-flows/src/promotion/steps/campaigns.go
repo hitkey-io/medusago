@@ -131,9 +131,9 @@ var DeleteCampaignsStep = commonsteps.SoftDeleteRecordsStep("delete-campaigns", 
 
 // LinkInput mirrors LinkWorkflowInput.
 type LinkInput struct {
-	ID     any
-	Add    []any
-	Remove []any
+	ID     any   `json:"id"`
+	Add    []any `json:"add,omitempty"`
+	Remove []any `json:"remove,omitempty"`
 }
 
 // AddCampaignPromotionsStep mirrors addCampaignPromotionsStep.
@@ -144,7 +144,7 @@ var AddCampaignPromotionsStep = composer.CreateStep("add-campaign-promotions",
 				return composer.StepResponse[any]{}, err
 			}
 		}
-		return composer.NewStepResponse[any](nil, any(in)), nil
+		return composer.NewNullStepResponse[any](any(in)), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		in, ok := data.(LinkInput)
@@ -163,7 +163,7 @@ var RemoveCampaignPromotionsStep = composer.CreateStep("remove-campaign-promotio
 				return composer.StepResponse[any]{}, err
 			}
 		}
-		return composer.NewStepResponse[any](nil, any(in)), nil
+		return composer.NewNullStepResponse[any](any(in)), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		in, ok := data.(LinkInput)

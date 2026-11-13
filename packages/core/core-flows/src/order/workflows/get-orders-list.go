@@ -76,7 +76,7 @@ var GetOrdersListWorkflow = composer.CreateWorkflow(GetOrdersListWorkflowID,
 				order.Delete("items")
 			}
 		}
-		return res, nil
+		return res.GraphResult, nil
 	})
 
 // GetOrdersList runs getOrdersListWorkflow (the routes run it like upstream).

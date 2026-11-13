@@ -1,6 +1,8 @@
 package workflows
 
 import (
+	"encoding/json"
+
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/product/steps"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
@@ -288,3 +290,35 @@ var UpdateProductsWorkflow = composer.CreateWorkflow("update-products",
 		}
 		return updated, nil
 	})
+
+// DecodeInput reads { selector, update } or { products } (the batch form)
+// with additional_data.
+func (in *UpdateProductsInput) DecodeInput(r *dal.Record) error {
+	if v, ok := r.Get("products"); ok {
+		in.Batch = true
+		in.Products = anyRecords(v)
+	} else {
+		in.Selector, _ = get(r, "selector").(*dal.Record)
+		in.Update, _ = get(r, "update").(*dal.Record)
+		if in.Update == nil {
+			in.Update = dal.NewRecord()
+		}
+	}
+	in.AdditionalData, _ = get(r, "additional_data").(*dal.Record)
+	return nil
+}
+
+// MarshalJSON writes the workflow input object.
+func (in UpdateProductsInput) MarshalJSON() ([]byte, error) {
+	out := dal.NewRecord()
+	if in.Batch {
+		out.Set("products", in.Products)
+	} else {
+		out.Set("selector", in.Selector)
+		out.Set("update", in.Update)
+	}
+	if in.AdditionalData != nil {
+		out.Set("additional_data", in.AdditionalData)
+	}
+	return json.Marshal(out)
+}

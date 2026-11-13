@@ -17,8 +17,8 @@ func hook(e *composer.Execution, name string, kv ...any) error {
 
 // CampaignsInput mirrors { campaignsData, additional_data }.
 type CampaignsInput struct {
-	CampaignsData  []*dal.Record
-	AdditionalData *dal.Record
+	CampaignsData  []*dal.Record `json:"campaignsData"`
+	AdditionalData *dal.Record   `json:"additional_data,omitempty"`
 }
 
 // CreateCampaignsWorkflow mirrors createCampaignsWorkflow.
@@ -60,3 +60,8 @@ var AddOrRemoveCampaignPromotionsWorkflow = composer.CreateWorkflow("add-or-remo
 		_, err := steps.RemoveCampaignPromotionsStep.Run(e, in)
 		return nil, err
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	DeleteCampaignsWorkflow.InputFrom("ids")
+}

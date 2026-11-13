@@ -42,6 +42,8 @@ import (
 
 	"github.com/oklog/ulid/v2"
 
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	eventbus "github.com/hitkey-io/medusago/packages/core/utils/src/event-bus"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 )
@@ -205,12 +207,22 @@ type Execution struct {
 	detacher *detacher
 	// partial is the result returned when the run detaches (the
 	// WorkflowResponse resolved from the steps that ran).
-	partial        any
+	partial any
+	// failedResult is what the workflow response resolves to when the run
+	// fails (the outputs of the steps that ran; SetFailedResult)
+	failedResult    any
+	hasFailedResult bool
+	// resultThrows: resolving the workflow response of a failed run throws
+	// (FailedResultThrows)
+	resultThrows   bool
 	rootWorkflowID string
 	rootOptions    WorkflowOptions
 	// subWorkflow: the workflow runs as a step of another one (parentExec)
 	subWorkflow bool
 	parentExec  *Execution
+	// ownOptions are the options of the workflow run as a step (its own
+	// checkpoints, see persistNested)
+	ownOptions WorkflowOptions
 	// replay is set when the run resumes a stored transaction
 	replay *replayState
 	// persistedRev is the journal revision of the last persist
@@ -334,6 +346,16 @@ func (s *Step[I, O]) Run(e *Execution, input I) (O, error) {
 	return s.invokeFrom(e, rec, action, input, 1, background)
 }
 
+// FailInput mirrors a step whose input is a transform() that throws: the
+// orchestrator begins the step and its handler fails with the error (the
+// step is compensated with undefined input like any failed step).
+func (s *Step[I, O]) FailInput(e *Execution, err error) (O, error) {
+	failing := *s
+	failing.invoke = func(StepExecutionContext, I) (StepResponse[O], error) { return StepResponse[O]{}, err }
+	var zero I
+	return failing.Run(e, zero)
+}
+
 // invokeFrom invokes the step handler from the given attempt (retries
 // included), waits for the response of an async step and settles the
 // step. retryStep re-invokes a waiting step through it.
@@ -451,6 +473,7 @@ func (s *Step[I, O]) settle(e *Execution, rec *stepRecord, res StepResponse[O], 
 		e.mu.Unlock()
 		e.afterDelivered(rec)
 		if s.Options.ContinueOnPermanentFailure {
+			e.journal.ignoreFailure()
 			return zero, nil
 		}
 		// the failed step is compensated too, with undefined input
@@ -503,6 +526,29 @@ type Workflow[I, O any] struct {
 	Options WorkflowOptions
 	body    func(*Execution, I) (O, error)
 	hooks   *hookRegistry
+	// engineFailure, when set, replaces the error of a failed engine run
+	// (see SetEngineFailure).
+	engineFailure func(err error) error
+	// inputKey: the Go body takes one property of the upstream input object
+	// (see InputFrom)
+	inputKey string
+}
+
+// InputFrom declares that the Go body of the workflow takes the property
+// key of the input object upstream receives (e.g. "return_id" of
+// { return_id }): a run by workflow id decodes that property.
+func (w *Workflow[I, O]) InputFrom(key string) *Workflow[I, O] {
+	w.inputKey = key
+	return w
+}
+
+// SetEngineFailure sets what a failed run started through the workflow
+// engine answers instead of its first error. Upstream the engine runs the
+// workflow with throwOnError false, so the return transforms of the
+// workflow still resolve after a failure; one dereferencing the output of a
+// step that never ran throws a TypeError, which replaces the step error.
+func (w *Workflow[I, O]) SetEngineFailure(f func(err error) error) {
+	w.engineFailure = f
 }
 
 // CreateWorkflow mirrors createWorkflow(id, composer).
@@ -604,6 +650,9 @@ func (w *Workflow[I, O]) RunWithInfo(ctx context.Context, c Container, input I, 
 		info := RunInfo{TransactionID: e.transactionID, RunID: e.journal.runID, State: state}
 		if r.err != nil {
 			var zero O
+			if e.resultThrows && e.journal.engineRun {
+				return zero, info, errFailedResultThrows
+			}
 			return zero, info, r.err
 		}
 		return r.out, info, nil
@@ -760,21 +809,28 @@ func (w *Workflow[I, O]) RunAsStepNamed(parent *Execution, name string, input I)
 			state = TransactionStateFailed
 		}
 		e.journal.setState(state)
+		e.persistNested(state)
 		parent.journal.fail(rec, err)
 		parent.mu.Lock()
 		parent.errors = append(parent.errors, err)
 		parent.mu.Unlock()
-		// the failed step is compensated too: the nested transaction
-		// already reverted itself
+		// the failed step is compensated too: its compensation cancels the
+		// nested transaction without a stored one to load, which throws
+		// (the nested transaction already reverted itself)
 		parent.pushCompensation(compensation{name: name, run: func() error {
 			parent.journal.compensateBegin(rec)
-			parent.journal.compensated(rec, nil, false)
-			return nil
+			var cerr error
+			if !async {
+				cerr = common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, fmt.Sprintf("Transaction %s could not be found.", e.journal.nestedTxID))
+			}
+			parent.journal.compensated(rec, cerr, false)
+			return cerr
 		}})
 		return zero, &stepFailed{err: err}
 	}
 	e.journal.skipUnreached()
 	e.journal.setState(TransactionStateDone)
+	e.persistNested(TransactionStateDone)
 	var compInput any = parent.transactionID
 	if !async {
 		result := map[string]any{"errors": []any{}, "transaction": e.nestedTransaction(w.ID, input), "thrownError": nil}
@@ -789,11 +845,39 @@ func (w *Workflow[I, O]) RunAsStepNamed(parent *Execution, name string, input I)
 	parent.pushCompensation(compensation{name: name, run: func() error {
 		parent.journal.compensateBegin(rec)
 		e.compensations = nested
-		e.compensate()
-		parent.journal.compensated(rec, nil, false)
-		return nil
+		cerr := e.compensateNested()
+		parent.journal.compensated(rec, cerr, false)
+		return cerr
 	}})
 	return out, nil
+}
+
+// compensateNested compensates a workflow run as a step that finished, the
+// way the compensation of its "-as-step" step cancels the nested
+// transaction (workflow(container).cancel({ transaction })): it ends
+// reverted, or failed when one of its compensations failed. A failed one
+// makes cancel() throw (isCancel only tolerates REVERTED): the first invoke
+// error of the nested transaction, none here, so new Error("Unknown
+// error"), which fails the compensation of the parent step.
+func (e *Execution) compensateNested() error {
+	// cancel() from the parent step: the nested flow metadata records it
+	// (LocalWorkflow.cancel: cancelingFromParentStep ??= context's)
+	e.journal.mu.Lock()
+	e.journal.cancelingFromParent = true
+	e.journal.mu.Unlock()
+	e.compensate()
+	e.journal.revertAll()
+	e.journal.mu.Lock()
+	failed := e.journal.hasFailed
+	e.journal.mu.Unlock()
+	if failed {
+		e.journal.setState(TransactionStateFailed)
+		e.persistNested(TransactionStateFailed)
+		return errors.New("Unknown error")
+	}
+	e.journal.setState(TransactionStateReverted)
+	e.persistNested(TransactionStateReverted)
+	return nil
 }
 
 // nestedExecution starts the execution of a workflow run as a step.
@@ -807,7 +891,7 @@ func (w *Workflow[I, O]) nestedExecution(parent *Execution, name string, input I
 	j.define(w.ID)
 	return &Execution{ctx: parent.ctx, container: parent.container, workflowID: w.ID, transactionID: parent.transactionID, eventGroupID: parent.eventGroupID, hooks: w.hooks,
 		journal: j, detacher: parent.detacher, rootWorkflowID: parent.rootWorkflowID, rootOptions: parent.rootOptions, subWorkflow: true,
-		parentExec: parent}
+		parentExec: parent, ownOptions: w.Options}
 }
 
 // nestedTransaction mirrors the serialized DistributedTransaction of a
@@ -853,9 +937,9 @@ func (w *Workflow[I, O]) replayAsStep(parent *Execution, name string, async bool
 		parent.pushCompensation(compensation{name: name, run: func() error {
 			parent.journal.compensateBegin(rec)
 			e.compensations = nested
-			e.compensate()
-			parent.journal.compensated(rec, nil, false)
-			return nil
+			cerr := e.compensateNested()
+			parent.journal.compensated(rec, cerr, false)
+			return cerr
 		}})
 		return out, true, nil
 	case st.invokeState == stepStateNotStarted || st.invokeState == "":
@@ -888,6 +972,28 @@ func SetPartialResult(e *Execution, v any) {
 	e.partial = v
 }
 
+// SetFailedResult sets what the workflow response resolves to if the run
+// fails afterwards: upstream the run (throwOnError: false) still resolves
+// the returned value from the outputs of the steps that ran (the onFinish
+// notification carries it).
+func SetFailedResult(e *Execution, v any) {
+	e.failedResult, e.hasFailedResult = v, true
+	e.resultThrows = false
+}
+
+// FailedResultThrows marks that resolving the workflow response of the run
+// throws if the run fails from here on (a transform reading the output of
+// a step that did not run): an engine run (throwOnError: false) then fails
+// with that TypeError instead of the step error, and its onFinish errors
+// end with it.
+func FailedResultThrows(e *Execution) {
+	e.resultThrows = true
+}
+
+// errFailedResultThrows is the TypeError of a response resolved after a
+// failed run (an unknown error for the API).
+var errFailedResultThrows = errors.New("Cannot read properties of undefined (reading 'map')")
+
 // TransactionStepTimeoutError mirrors TransactionStepTimeoutError.
 type TransactionStepTimeoutError struct{}
 
@@ -913,6 +1019,23 @@ func (e *Execution) emitFinish(out any, err error) {
 		if err == nil && !isNilOutput(out) {
 			ev.Result, ev.HasResult = out, true
 		}
-		ev.Errors, ev.HasErrors = append([]any{}, e.journal.errors...), true
+		if err != nil && e.hasFailedResult && !isNilOutput(e.failedResult) {
+			ev.Result, ev.HasResult = e.failedResult, true
+		}
+		if err != nil && e.resultThrows && e.journal.engineRun {
+			// the TypeError thrown resolving the response (JSON: {})
+			defer func() { ev.Errors = append(ev.Errors, dal.NewRecord()) }()
+		}
+		// transaction.getErrors(TransactionHandlerType.INVOKE)
+		errs := []any{}
+		for _, x := range e.journal.errors {
+			if r, ok := x.(*dal.Record); ok {
+				if h, _ := r.Get("handlerType"); h != "invoke" {
+					continue
+				}
+			}
+			errs = append(errs, x)
+		}
+		ev.Errors, ev.HasErrors = errs, true
 	})
 }

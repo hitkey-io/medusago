@@ -212,16 +212,25 @@ func (s *ProductModuleService) createCollections(ctx context.Context, data []*da
 	if err != nil {
 		return nil, err
 	}
+	out := make([]*dal.Record, len(created))
 	for i, c := range created {
+		id, _ := c.Get("id")
 		ids := productIDsOf(products[i])
 		if len(ids) > 0 {
-			id, _ := c.Get("id")
 			if err := s.setProductsCollection(ctx, ids, id); err != nil {
 				return nil, err
 			}
 		}
+		// the entities upsertWithReplace returns: the normalized input
+		// with its id (and the products given)
+		r := clone(input[i])
+		r.Set("id", id)
+		if products[i] != nil {
+			r.Set("products", products[i])
+		}
+		out[i] = r
 	}
-	return created, nil
+	return out, nil
 }
 
 func (s *ProductModuleService) setProductsCollection(ctx context.Context, ids []any, collectionID any) error {
@@ -350,7 +359,27 @@ func (s *ProductModuleService) updateCollections(ctx context.Context, data []*da
 			return nil, err
 		}
 	}
-	return updated, nil
+	// { ...collectionData, products: productsToUpdate ?? [] }: the spread
+	// updated entity lists its id after the other columns
+	out := make([]*dal.Record, len(updated))
+	for i, c := range updated {
+		r := clone(c)
+		id, _ := r.Get("id")
+		r.Delete("id")
+		r.Delete("products")
+		r.Set("id", id)
+		var products any = []any{}
+		for _, n := range normalized {
+			if nid, _ := n.Get("id"); nid == id {
+				if p, ok := n.Get("products"); ok && p != nil {
+					products = p
+				}
+			}
+		}
+		r.Set("products", products)
+		out[i] = r
+	}
+	return out, nil
 }
 
 // SoftDeleteProductOptions mirrors softDeleteProductOptions: options still

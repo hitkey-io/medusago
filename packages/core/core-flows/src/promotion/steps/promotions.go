@@ -1,6 +1,7 @@
 package steps
 
 import (
+	"encoding/json"
 	"fmt"
 
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
@@ -133,6 +134,48 @@ type RulesInput struct {
 	ID       any
 	Rules    []*dal.Record
 	RuleIDs  []any
+}
+
+// DecodeInput reads { rule_type, data: { id, rules | rule_ids } }.
+func (in *RulesInput) DecodeInput(r *dal.Record) error {
+	v, _ := r.Get("rule_type")
+	s, _ := v.(string)
+	in.RuleType = RuleType(s)
+	d, _ := r.Get("data")
+	data, _ := d.(*dal.Record)
+	if data == nil {
+		return nil
+	}
+	in.ID, _ = data.Get("id")
+	if rules, ok := data.Get("rules"); ok {
+		in.Rules = []*dal.Record{}
+		if list, ok := rules.([]any); ok {
+			for _, x := range list {
+				if rec, ok := x.(*dal.Record); ok {
+					in.Rules = append(in.Rules, rec)
+				}
+			}
+		}
+	}
+	if ids, ok := data.Get("rule_ids"); ok {
+		in.RuleIDs, _ = ids.([]any)
+	}
+	return nil
+}
+
+// MarshalJSON writes { rule_type, data: { id, rules | rule_ids } }.
+func (in RulesInput) MarshalJSON() ([]byte, error) {
+	data := dal.NewRecord()
+	data.Set("id", in.ID)
+	if in.Rules != nil || in.RuleIDs == nil {
+		data.Set("rules", in.Rules)
+	} else {
+		data.Set("rule_ids", in.RuleIDs)
+	}
+	out := dal.NewRecord()
+	out.Set("rule_type", string(in.RuleType))
+	out.Set("data", data)
+	return json.Marshal(out)
 }
 
 type addedRules struct {
@@ -287,25 +330,54 @@ var RemoveRulesFromPromotionsStep = composer.CreateStep("remove-rules-from-promo
 		}
 		return composer.NewStepResponse[any](nil, any(comp)), nil
 	},
-	func(ctx composer.StepExecutionContext, data any) error {
-		c, ok := data.(removedRules)
-		if !ok {
-			return nil
-		}
-		svc := Promotion(ctx.Container)
-		if len(c.promotion) > 0 {
-			if _, err := svc.AddPromotionRules(ctx.Context, c.id, c.promotion); err != nil {
-				return err
-			}
-		}
-		if len(c.buy) > 0 {
-			if _, err := svc.AddPromotionBuyRules(ctx.Context, c.id, c.buy); err != nil {
-				return err
-			}
-		}
-		if len(c.target) > 0 {
-			_, err := svc.AddPromotionBuyRules(ctx.Context, c.id, c.target)
+	RestoreRemovedRules)
+
+// RestoreRemovedRules is the compensation of removeRulesFromPromotionsStep:
+// the rules of the promotion as they were are added back.
+func RestoreRemovedRules(ctx composer.StepExecutionContext, data any) error {
+	c, ok := data.(removedRules)
+	if !ok {
+		return nil
+	}
+	svc := Promotion(ctx.Container)
+	if len(c.promotion) > 0 {
+		if _, err := svc.AddPromotionRules(ctx.Context, c.id, c.promotion); err != nil {
 			return err
 		}
-		return nil
-	})
+	}
+	if len(c.buy) > 0 {
+		if _, err := svc.AddPromotionBuyRules(ctx.Context, c.id, c.buy); err != nil {
+			return err
+		}
+	}
+	if len(c.target) > 0 {
+		_, err := svc.AddPromotionBuyRules(ctx.Context, c.id, c.target)
+		return err
+	}
+	return nil
+}
+
+// SnapshotRemovedRules returns what RestoreRemovedRules adds back after
+// the rules of in are removed (the compensation input of
+// removeRulesFromPromotionsStep).
+func SnapshotRemovedRules(ctx composer.StepExecutionContext, in RulesInput) (any, error) {
+	promotion, err := Promotion(ctx.Container).Internal("Promotion").Retrieve(ctx.Context, in.ID, utilsmodulessdk.FindConfig{Relations: []string{"rules.values", "application_method.target_rules.values", "application_method.buy_rules.values"}})
+	if err != nil {
+		return nil, err
+	}
+	am, _ := get(promotion, "application_method").(*dal.Record)
+	comp := removedRules{id: in.ID}
+	switch in.RuleType {
+	case RuleTypeRules:
+		comp.promotion = ruleAttributes(records(get(promotion, "rules")))
+	case RuleTypeBuyRules:
+		if am != nil {
+			comp.buy = ruleAttributes(records(get(am, "buy_rules")))
+		}
+	case RuleTypeTargetRules:
+		if am != nil {
+			comp.target = ruleAttributes(records(get(am, "target_rules")))
+		}
+	}
+	return comp, nil
+}

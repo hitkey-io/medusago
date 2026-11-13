@@ -78,3 +78,9 @@ var CreateInventoryItemsWorkflow = composer.CreateWorkflow("create-inventory-ite
 		}
 		return created, nil
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	CreateInventoryLevelsWorkflow.InputFrom("inventory_levels")
+	CreateInventoryItemsWorkflow.InputFrom("items")
+}

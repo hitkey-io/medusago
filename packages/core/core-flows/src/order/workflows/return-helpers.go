@@ -536,6 +536,8 @@ var CreateOrUpdateOrderPaymentCollectionWorkflow = composer.CreateWorkflow("crea
 			return nil, err
 		}
 		hasExisting := truthy(g(existing, "id"))
+		// updatedPaymentCollections || createdPaymentCollection
+		var result any
 		if hasExisting && !shouldRecreate && totals.Gte(pending, 0) {
 			sel := dal.NewRecord()
 			sel.Set("id", g(existing, "id"))
@@ -544,16 +546,22 @@ var CreateOrUpdateOrderPaymentCollectionWorkflow = composer.CreateWorkflow("crea
 			u := dal.NewRecord()
 			u.Set("selector", sel)
 			u.Set("update", upd)
-			if _, err := cartworkflows.UpdatePaymentCollectionStep.Run(e, u); err != nil {
+			updated, err := cartworkflows.UpdatePaymentCollectionStep.Run(e, u)
+			if err != nil {
 				return nil, err
 			}
+			result = updated
 		}
 		if (!hasExisting || shouldRecreate) && totals.Gt(pending, 0) {
 			ci := dal.NewRecord()
 			ci.Set("order_id", g(order, "id"))
 			ci.Set("amount", pending)
-			if _, err := CreateOrderPaymentCollectionWorkflow.RunAsStep(e, ci); err != nil {
+			created, err := CreateOrderPaymentCollectionWorkflow.RunAsStep(e, ci)
+			if err != nil {
 				return nil, err
+			}
+			if result == nil && created != nil {
+				result = created
 			}
 		}
 		if hasExisting && shouldRecreate && totals.Gt(pending, 0) {
@@ -561,7 +569,7 @@ var CreateOrUpdateOrderPaymentCollectionWorkflow = composer.CreateWorkflow("crea
 				return nil, err
 			}
 		}
-		return nil, nil
+		return result, nil
 	})
 
 // TranslateShippingOption mirrors getTranslatedShippingOptionsStep({
@@ -577,4 +585,9 @@ func TranslateShippingOption(e *composer.Execution, option *dal.Record, locale a
 		return nil, err
 	}
 	return out[0], nil
+}
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	CancelPaymentCollectionWorkflow.InputFrom("payment_collection_id")
 }

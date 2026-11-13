@@ -42,7 +42,7 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 // DELETE mirrors DELETE.
 func DELETE(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	id := req.Params["address_id"]
-	if _, err := workflows.DeleteCustomerAddressesWorkflow.Run(req.Ctx(), req.Scope, []any{id}); err != nil {
+	if _, err := workflows.DeleteCustomerAddressesWorkflow.Run(req.Ctx(), req.Scope, workflows.IDsInput{IDs: []any{id}}); err != nil {
 		return err
 	}
 	customer, err := customers.RefetchCustomer(req, req.Params["id"], req.QueryConfig.Fields)

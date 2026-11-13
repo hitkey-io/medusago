@@ -9,7 +9,7 @@ import (
 
 // POST mirrors POST /admin/orders/:id/archive.
 func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
-	if _, err := workflows.ArchiveOrderWorkflow.Run(req.Ctx(), req.Scope, []any{req.Params["id"]}); err != nil {
+	if _, err := workflows.ArchiveOrderWorkflow.Run(req.Ctx(), req.Scope, workflows.ArchiveOrdersInput{OrderIDs: []any{req.Params["id"]}}); err != nil {
 		return err
 	}
 	return orders.RespondOrder(req, res, req.Params["id"])

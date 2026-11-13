@@ -4,6 +4,7 @@ package steps
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -249,6 +250,10 @@ var ValidateSalesChannelStep = composer.CreateStep("validate-sales-channel",
 // ValidateCartStep mirrors validateCartStep.
 var ValidateCartStep = composer.CreateStep("validate-cart",
 	func(ctx composer.StepExecutionContext, cart *dal.Record) (composer.StepResponse[any], error) {
+		if cart == nil {
+			// cart.completed_at of an undefined cart
+			return composer.StepResponse[any]{}, errors.New("Cannot read properties of undefined (reading 'completed_at')")
+		}
 		if Has(cart, "completed_at") {
 			return composer.StepResponse[any]{}, invalid("Cart %v is already completed.", Get(cart, "id"))
 		}

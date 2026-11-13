@@ -65,6 +65,8 @@ type CreateProductVariantsInput struct {
 // CreateProductVariantsWorkflow mirrors createProductVariantsWorkflow.
 var CreateProductVariantsWorkflow = composer.CreateWorkflow("create-product-variants",
 	func(e *composer.Execution, input CreateProductVariantsInput) ([]*dal.Record, error) {
+		// the response transform maps the created variants and price sets
+		composer.FailedResultThrows(e)
 		variantsWithoutPrices := make([]*dal.Record, len(input.ProductVariants))
 		for i, v := range input.ProductVariants {
 			variantsWithoutPrices[i] = without(v, "prices")
@@ -168,13 +170,6 @@ var CreateProductVariantsWorkflow = composer.CreateWorkflow("create-product-vari
 		if err != nil {
 			return nil, err
 		}
-		pricingLinks := make([]steps.VariantPriceSetLink, len(created))
-		for i, v := range created {
-			pricingLinks[i] = steps.VariantPriceSetLink{VariantID: get(v, "id"), PriceSetID: get(priceSets[i], "id")}
-		}
-		if _, err := steps.CreateVariantPricingLinkStep.Run(e, pricingLinks); err != nil {
-			return nil, err
-		}
 		response := make([]*dal.Record, len(created))
 		for i, v := range created {
 			r := without(v)
@@ -184,6 +179,14 @@ var CreateProductVariantsWorkflow = composer.CreateWorkflow("create-product-vari
 			}
 			r.Set("prices", prices)
 			response[i] = r
+		}
+		composer.SetFailedResult(e, response)
+		pricingLinks := make([]steps.VariantPriceSetLink, len(created))
+		for i, v := range created {
+			pricingLinks[i] = steps.VariantPriceSetLink{VariantID: get(v, "id"), PriceSetID: get(priceSets[i], "id")}
+		}
+		if _, err := steps.CreateVariantPricingLinkStep.Run(e, pricingLinks); err != nil {
+			return nil, err
 		}
 		events := make([]any, len(response))
 		for i, v := range response {

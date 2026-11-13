@@ -35,7 +35,7 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 // DELETE mirrors DELETE.
 func DELETE(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	id := req.Params["id"]
-	if _, err := workflows.RemoveCustomerAccountWorkflow.Run(req.Ctx(), req.Scope, id); err != nil {
+	if _, err := workflows.RemoveCustomerAccountWorkflow.Run(req.Ctx(), req.Scope, workflows.RemoveCustomerAccountInput{CustomerID: id}); err != nil {
 		return err
 	}
 	out := dal.NewRecord()

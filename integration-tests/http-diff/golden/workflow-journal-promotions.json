@@ -1,0 +1,3217 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ1NzIzMTMsImV4cCI6MTc5NDY1ODcxM30.HPbqQstIl8IoiM6-lwaxg28nIZk8qFuljb0V-_Aoq-M"
+    }
+  },
+  "events_run_campaign_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGTC5BJDV63Z9RXED8B0Y"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGTC5BJDV63Z9RXED8B0Y",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-campaigns",
+            "uuid": "01M7ADGKRZT3YGKHY007474J84",
+            "depth": 1,
+            "definition": {
+              "action": "create-campaigns",
+              "uuid": "01M7ADGKRZT3YGKHY007474J84",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572315016,
+            "next": [
+              "_root.create-campaigns.campaignsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572315016
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGTC5BJDV63Z9RXED8B0Y",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-campaigns",
+            "uuid": "01M7ADGKRZT3YGKHY007474J84",
+            "depth": 1,
+            "definition": {
+              "action": "create-campaigns",
+              "uuid": "01M7ADGKRZT3YGKHY007474J84",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572315016,
+            "next": [
+              "_root.create-campaigns.campaignsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572315016
+          },
+          "response": [
+            {
+              "id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+              "name": "WF Campaign",
+              "description": "d",
+              "campaign_identifier": "wf-camp",
+              "starts_at": null,
+              "ends_at": null,
+              "budget": {
+                "id": "probudg_01M7ADGTCAY9E3FSFYVPZHA53N",
+                "type": "usage",
+                "currency_code": null,
+                "attribute": null,
+                "raw_limit": {
+                  "value": "10",
+                  "precision": 20
+                },
+                "raw_used": {
+                  "value": "0",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:18:35.019Z",
+                "updated_at": "2026-11-13T12:18:35.019Z",
+                "deleted_at": null,
+                "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                "limit": 10,
+                "used": 0
+              },
+              "created_at": "2026-11-13T12:18:35.019Z",
+              "updated_at": "2026-11-13T12:18:35.019Z",
+              "deleted_at": null,
+              "promotions": []
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGTC5BJDV63Z9RXED8B0Y",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-campaigns.campaignsCreated",
+            "uuid": "01M7ADGKRZSAT5KZYXGGADZT0C",
+            "depth": 2,
+            "definition": {
+              "action": "campaignsCreated",
+              "uuid": "01M7ADGKRZSAT5KZYXGGADZT0C",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572315038,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572315038
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGTC5BJDV63Z9RXED8B0Y",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-campaigns.campaignsCreated",
+            "uuid": "01M7ADGKRZSAT5KZYXGGADZT0C",
+            "depth": 2,
+            "definition": {
+              "action": "campaignsCreated",
+              "uuid": "01M7ADGKRZSAT5KZYXGGADZT0C",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572315038,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572315038
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGTC5BJDV63Z9RXED8B0Y",
+          "result": [
+            {
+              "id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+              "name": "WF Campaign",
+              "description": "d",
+              "campaign_identifier": "wf-camp",
+              "starts_at": null,
+              "ends_at": null,
+              "budget": {
+                "id": "probudg_01M7ADGTCAY9E3FSFYVPZHA53N",
+                "type": "usage",
+                "currency_code": null,
+                "attribute": null,
+                "raw_limit": {
+                  "value": "10",
+                  "precision": 20
+                },
+                "raw_used": {
+                  "value": "0",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:18:35.019Z",
+                "updated_at": "2026-11-13T12:18:35.019Z",
+                "deleted_at": null,
+                "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                "limit": 10,
+                "used": 0
+              },
+              "created_at": "2026-11-13T12:18:35.019Z",
+              "updated_at": "2026-11-13T12:18:35.019Z",
+              "deleted_at": null,
+              "promotions": []
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_campaign_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADGTC5BJDV63Z9RXED8B0Y",
+        "workflowId": "create-campaigns",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "camp": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "campaigns": [
+        {
+          "id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+          "name": "WF Campaign"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "events_run_campaign_create_dup": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGVWETQ23XTESQQ68JVYV"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGVWETQ23XTESQQ68JVYV",
+          "step": {
+            "id": "_root.create-campaigns",
+            "uuid": "01M7ADGKRZT3YGKHY007474J84",
+            "depth": 1,
+            "definition": {
+              "action": "create-campaigns",
+              "uuid": "01M7ADGKRZT3YGKHY007474J84",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572316562,
+            "next": [
+              "_root.create-campaigns.campaignsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572316562
+          }
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGVWETQ23XTESQQ68JVYV",
+          "step": {
+            "id": "_root.create-campaigns",
+            "uuid": "01M7ADGKRZT3YGKHY007474J84",
+            "depth": 1,
+            "definition": {
+              "action": "create-campaigns",
+              "uuid": "01M7ADGKRZT3YGKHY007474J84",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572316584,
+            "next": [
+              "_root.create-campaigns.campaignsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572316562
+          },
+          "errors": [
+            {
+              "action": "create-campaigns",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Promotion campaign with campaign_identifier: wf-camp, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:18:36.575Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGVWETQ23XTESQQ68JVYV"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGVWETQ23XTESQQ68JVYV",
+          "step": {
+            "id": "_root.create-campaigns",
+            "uuid": "01M7ADGKRZT3YGKHY007474J84",
+            "depth": 1,
+            "definition": {
+              "action": "create-campaigns",
+              "uuid": "01M7ADGKRZT3YGKHY007474J84",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572316584,
+            "next": [
+              "_root.create-campaigns.campaignsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572316562
+          }
+        },
+        {
+          "event_type": "onCompensateStepSuccess",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGVWETQ23XTESQQ68JVYV",
+          "step": {
+            "id": "_root.create-campaigns",
+            "uuid": "01M7ADGKRZT3YGKHY007474J84",
+            "depth": 1,
+            "definition": {
+              "action": "create-campaigns",
+              "uuid": "01M7ADGKRZT3YGKHY007474J84",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572316584,
+            "next": [
+              "_root.create-campaigns.campaignsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572316562
+          },
+          "response": {}
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-campaigns",
+          "transaction_id": "auto-01M7ADGVWETQ23XTESQQ68JVYV",
+          "errors": [
+            {
+              "action": "create-campaigns",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Promotion campaign with campaign_identifier: wf-camp, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:18:36.575Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_campaign_create_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Promotion campaign with campaign_identifier: wf-camp, already exists."
+    }
+  },
+  "events_run_campaign_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-campaigns",
+          "transaction_id": "auto-01M7ADGXCBVC1P0B6NWB6FG65N"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-campaigns",
+          "transaction_id": "auto-01M7ADGXCBVC1P0B6NWB6FG65N",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-campaigns",
+            "uuid": "01M7ADGKS10VR01P4GGHQ9H8AR",
+            "depth": 1,
+            "definition": {
+              "action": "update-campaigns",
+              "uuid": "01M7ADGKS10VR01P4GGHQ9H8AR",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572318098,
+            "next": [
+              "_root.update-campaigns.campaignsUpdated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572318098
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-campaigns",
+          "transaction_id": "auto-01M7ADGXCBVC1P0B6NWB6FG65N",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-campaigns",
+            "uuid": "01M7ADGKS10VR01P4GGHQ9H8AR",
+            "depth": 1,
+            "definition": {
+              "action": "update-campaigns",
+              "uuid": "01M7ADGKS10VR01P4GGHQ9H8AR",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572318098,
+            "next": [
+              "_root.update-campaigns.campaignsUpdated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572318098
+          },
+          "response": [
+            {
+              "id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+              "name": "WF Campaign",
+              "description": "updated",
+              "campaign_identifier": "wf-camp",
+              "starts_at": null,
+              "ends_at": null,
+              "budget": {
+                "id": "probudg_01M7ADGTCAY9E3FSFYVPZHA53N",
+                "type": "usage",
+                "currency_code": null,
+                "attribute": null,
+                "raw_limit": {
+                  "value": "20",
+                  "precision": 20
+                },
+                "raw_used": {
+                  "value": "0",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:18:35.019Z",
+                "updated_at": "2026-11-13T12:18:38.109Z",
+                "deleted_at": null,
+                "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                "limit": 20,
+                "used": 0
+              },
+              "created_at": "2026-11-13T12:18:35.019Z",
+              "updated_at": "2026-11-13T12:18:38.109Z",
+              "deleted_at": null,
+              "promotions": []
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-campaigns",
+          "transaction_id": "auto-01M7ADGXCBVC1P0B6NWB6FG65N",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-campaigns.campaignsUpdated",
+            "uuid": "01M7ADGKS1MPHEXFAP4YJG9Y2T",
+            "depth": 2,
+            "definition": {
+              "action": "campaignsUpdated",
+              "uuid": "01M7ADGKS1MPHEXFAP4YJG9Y2T",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572318126,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572318126
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-campaigns",
+          "transaction_id": "auto-01M7ADGXCBVC1P0B6NWB6FG65N",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-campaigns.campaignsUpdated",
+            "uuid": "01M7ADGKS1MPHEXFAP4YJG9Y2T",
+            "depth": 2,
+            "definition": {
+              "action": "campaignsUpdated",
+              "uuid": "01M7ADGKS1MPHEXFAP4YJG9Y2T",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572318126,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572318126
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-campaigns",
+          "transaction_id": "auto-01M7ADGXCBVC1P0B6NWB6FG65N",
+          "result": [
+            {
+              "id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+              "name": "WF Campaign",
+              "description": "updated",
+              "campaign_identifier": "wf-camp",
+              "starts_at": null,
+              "ends_at": null,
+              "budget": {
+                "id": "probudg_01M7ADGTCAY9E3FSFYVPZHA53N",
+                "type": "usage",
+                "currency_code": null,
+                "attribute": null,
+                "raw_limit": {
+                  "value": "20",
+                  "precision": 20
+                },
+                "raw_used": {
+                  "value": "0",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:18:35.019Z",
+                "updated_at": "2026-11-13T12:18:38.109Z",
+                "deleted_at": null,
+                "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                "limit": 20,
+                "used": 0
+              },
+              "created_at": "2026-11-13T12:18:35.019Z",
+              "updated_at": "2026-11-13T12:18:38.109Z",
+              "deleted_at": null,
+              "promotions": []
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_campaign_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADGXCBVC1P0B6NWB6FG65N",
+        "workflowId": "update-campaigns",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADGYWG3SPHZ972RDB0AQTE"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADGYWG3SPHZ972RDB0AQTE",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-promotions",
+            "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotions",
+              "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572319634,
+            "next": [
+              "_root.create-promotions.promotionsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572319634
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADGYWG3SPHZ972RDB0AQTE",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-promotions",
+            "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotions",
+              "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572319634,
+            "next": [
+              "_root.create-promotions.promotionsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572319634
+          },
+          "response": [
+            {
+              "id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+              "code": "WFPROMO",
+              "is_automatic": false,
+              "is_tax_inclusive": false,
+              "limit": null,
+              "used": 0,
+              "type": "standard",
+              "status": "draft",
+              "campaign_id": null,
+              "campaign": null,
+              "application_method": {
+                "id": "proappmet_01M7ADGYWP1YR6E4AG2SW50AFJ",
+                "currency_code": null,
+                "max_quantity": 2,
+                "apply_to_quantity": null,
+                "buy_rules_min_quantity": null,
+                "type": "percentage",
+                "target_type": "items",
+                "allocation": "each",
+                "target_selection_strategy": "most_expensive_first",
+                "raw_value": {
+                  "value": "10",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:18:39.639Z",
+                "updated_at": "2026-11-13T12:18:39.639Z",
+                "deleted_at": null,
+                "promotion_id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+                "target_rules": [
+                  {
+                    "id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                    "description": null,
+                    "attribute": "items.product.id",
+                    "operator": "in",
+                    "created_at": "2026-11-13T12:18:39.639Z",
+                    "updated_at": "2026-11-13T12:18:39.639Z",
+                    "deleted_at": null,
+                    "values": [
+                      {
+                        "id": "prorulval_01M7ADGYWQ4BSDTNB0PSN5CBA5",
+                        "value": "prod_x",
+                        "promotion_rule_id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                        "created_at": "2026-11-13T12:18:39.639Z",
+                        "updated_at": "2026-11-13T12:18:39.639Z",
+                        "deleted_at": null
+                      }
+                    ]
+                  }
+                ],
+                "buy_rules": [],
+                "value": 10
+              },
+              "metadata": null,
+              "created_at": "2026-11-13T12:18:39.639Z",
+              "updated_at": "2026-11-13T12:18:39.639Z",
+              "deleted_at": null,
+              "rules": [
+                {
+                  "id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                  "description": null,
+                  "attribute": "currency_code",
+                  "operator": "in",
+                  "created_at": "2026-11-13T12:18:39.639Z",
+                  "updated_at": "2026-11-13T12:18:39.639Z",
+                  "deleted_at": null,
+                  "values": [
+                    {
+                      "id": "prorulval_01M7ADGYWPYT5EDRADXMDCVC8S",
+                      "value": "eur",
+                      "promotion_rule_id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                      "created_at": "2026-11-13T12:18:39.639Z",
+                      "updated_at": "2026-11-13T12:18:39.639Z",
+                      "deleted_at": null
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADGYWG3SPHZ972RDB0AQTE",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-promotions.promotionsCreated",
+            "uuid": "01M7ADGKRZV0F20C3V51HQTZH7",
+            "depth": 2,
+            "definition": {
+              "action": "promotionsCreated",
+              "uuid": "01M7ADGKRZV0F20C3V51HQTZH7",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572319661,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572319661
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADGYWG3SPHZ972RDB0AQTE",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-promotions.promotionsCreated",
+            "uuid": "01M7ADGKRZV0F20C3V51HQTZH7",
+            "depth": 2,
+            "definition": {
+              "action": "promotionsCreated",
+              "uuid": "01M7ADGKRZV0F20C3V51HQTZH7",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572319661,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572319661
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADGYWG3SPHZ972RDB0AQTE",
+          "result": [
+            {
+              "id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+              "code": "WFPROMO",
+              "is_automatic": false,
+              "is_tax_inclusive": false,
+              "limit": null,
+              "used": 0,
+              "type": "standard",
+              "status": "draft",
+              "campaign_id": null,
+              "campaign": null,
+              "application_method": {
+                "id": "proappmet_01M7ADGYWP1YR6E4AG2SW50AFJ",
+                "currency_code": null,
+                "max_quantity": 2,
+                "apply_to_quantity": null,
+                "buy_rules_min_quantity": null,
+                "type": "percentage",
+                "target_type": "items",
+                "allocation": "each",
+                "target_selection_strategy": "most_expensive_first",
+                "raw_value": {
+                  "value": "10",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:18:39.639Z",
+                "updated_at": "2026-11-13T12:18:39.639Z",
+                "deleted_at": null,
+                "promotion_id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+                "target_rules": [
+                  {
+                    "id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                    "description": null,
+                    "attribute": "items.product.id",
+                    "operator": "in",
+                    "created_at": "2026-11-13T12:18:39.639Z",
+                    "updated_at": "2026-11-13T12:18:39.639Z",
+                    "deleted_at": null,
+                    "values": [
+                      {
+                        "id": "prorulval_01M7ADGYWQ4BSDTNB0PSN5CBA5",
+                        "value": "prod_x",
+                        "promotion_rule_id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                        "created_at": "2026-11-13T12:18:39.639Z",
+                        "updated_at": "2026-11-13T12:18:39.639Z",
+                        "deleted_at": null
+                      }
+                    ]
+                  }
+                ],
+                "buy_rules": [],
+                "value": 10
+              },
+              "metadata": null,
+              "created_at": "2026-11-13T12:18:39.639Z",
+              "updated_at": "2026-11-13T12:18:39.639Z",
+              "deleted_at": null,
+              "rules": [
+                {
+                  "id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                  "description": null,
+                  "attribute": "currency_code",
+                  "operator": "in",
+                  "created_at": "2026-11-13T12:18:39.639Z",
+                  "updated_at": "2026-11-13T12:18:39.639Z",
+                  "deleted_at": null,
+                  "values": [
+                    {
+                      "id": "prorulval_01M7ADGYWPYT5EDRADXMDCVC8S",
+                      "value": "eur",
+                      "promotion_rule_id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                      "created_at": "2026-11-13T12:18:39.639Z",
+                      "updated_at": "2026-11-13T12:18:39.639Z",
+                      "deleted_at": null
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADGYWG3SPHZ972RDB0AQTE",
+        "workflowId": "create-promotions",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "promo": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotions": [
+        {
+          "id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+          "code": "WFPROMO",
+          "rules": [
+            {
+              "id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8"
+            }
+          ]
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "events_run_create_bad": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADH0CKY6WQW8CK8RMXFRRT"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADH0CKY6WQW8CK8RMXFRRT",
+          "step": {
+            "id": "_root.create-promotions",
+            "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotions",
+              "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572321174,
+            "next": [
+              "_root.create-promotions.promotionsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572321174
+          }
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADH0CKY6WQW8CK8RMXFRRT",
+          "step": {
+            "id": "_root.create-promotions",
+            "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotions",
+              "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572321179,
+            "next": [
+              "_root.create-promotions.promotionsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572321174
+          },
+          "errors": [
+            {
+              "action": "create-promotions",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Promotion with code: WFPROMO, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:18:41.177Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADH0CKY6WQW8CK8RMXFRRT"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADH0CKY6WQW8CK8RMXFRRT",
+          "step": {
+            "id": "_root.create-promotions",
+            "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotions",
+              "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572321179,
+            "next": [
+              "_root.create-promotions.promotionsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572321174
+          }
+        },
+        {
+          "event_type": "onCompensateStepSuccess",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADH0CKY6WQW8CK8RMXFRRT",
+          "step": {
+            "id": "_root.create-promotions",
+            "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotions",
+              "uuid": "01M7ADGKRZ3D285M7TF7SAPKKV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572321179,
+            "next": [
+              "_root.create-promotions.promotionsCreated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572321174
+          },
+          "response": {}
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-promotions",
+          "transaction_id": "auto-01M7ADH0CKY6WQW8CK8RMXFRRT",
+          "errors": [
+            {
+              "action": "create-promotions",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Promotion with code: WFPROMO, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:18:41.177Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_create_bad": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Promotion with code: WFPROMO, already exists."
+    }
+  },
+  "events_run_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-promotions",
+          "transaction_id": "auto-01M7ADH1VYGBJQA9QSZ0ZPD7TN"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-promotions",
+          "transaction_id": "auto-01M7ADH1VYGBJQA9QSZ0ZPD7TN",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-promotions",
+            "uuid": "01M7ADGKS4586PTJ3EKKNC9VCW",
+            "depth": 1,
+            "definition": {
+              "action": "get-promotions",
+              "uuid": "01M7ADGKS4586PTJ3EKKNC9VCW",
+              "noCompensation": true,
+              "async": false,
+              "compensateAsync": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572322689,
+            "next": [
+              "_root.get-promotions.update-promotions"
+            ],
+            "_v": 0,
+            "startedAt": 1794572322689
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-promotions",
+          "transaction_id": "auto-01M7ADH1VYGBJQA9QSZ0ZPD7TN",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-promotions",
+            "uuid": "01M7ADGKS4586PTJ3EKKNC9VCW",
+            "depth": 1,
+            "definition": {
+              "action": "get-promotions",
+              "uuid": "01M7ADGKS4586PTJ3EKKNC9VCW",
+              "noCompensation": true,
+              "async": false,
+              "compensateAsync": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572322689,
+            "next": [
+              "_root.get-promotions.update-promotions"
+            ],
+            "_v": 0,
+            "startedAt": 1794572322689
+          },
+          "response": [
+            {
+              "id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+              "status": "draft"
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-promotions",
+          "transaction_id": "auto-01M7ADH1VYGBJQA9QSZ0ZPD7TN",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-promotions.update-promotions",
+            "uuid": "01M7ADGKS4RXVTHR8QDRKQ7CCQ",
+            "depth": 2,
+            "definition": {
+              "action": "update-promotions",
+              "uuid": "01M7ADGKS4RXVTHR8QDRKQ7CCQ",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572322692,
+            "next": [
+              "_root.get-promotions.update-promotions.update-promotions-status-as-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572322692
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-promotions",
+          "transaction_id": "auto-01M7ADH1VYGBJQA9QSZ0ZPD7TN",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-promotions.update-promotions",
+            "uuid": "01M7ADGKS4RXVTHR8QDRKQ7CCQ",
+            "depth": 2,
+            "definition": {
+              "action": "update-promotions",
+              "uuid": "01M7ADGKS4RXVTHR8QDRKQ7CCQ",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572322692,
+            "next": [
+              "_root.get-promotions.update-promotions.update-promotions-status-as-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572322692
+          },
+          "response": [
+            {
+              "id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+              "code": "WFPROMO",
+              "is_automatic": false,
+              "is_tax_inclusive": false,
+              "limit": null,
+              "used": 0,
+              "type": "standard",
+              "status": "draft",
+              "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+              "campaign": {
+                "id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                "name": "WF Campaign",
+                "description": "updated",
+                "campaign_identifier": "wf-camp",
+                "starts_at": null,
+                "ends_at": null,
+                "budget": {
+                  "id": "probudg_01M7ADGTCAY9E3FSFYVPZHA53N",
+                  "type": "usage",
+                  "currency_code": null,
+                  "attribute": null,
+                  "raw_limit": {
+                    "value": "20",
+                    "precision": 20
+                  },
+                  "raw_used": {
+                    "value": "0",
+                    "precision": 20
+                  },
+                  "created_at": "2026-11-13T12:18:35.019Z",
+                  "updated_at": "2026-11-13T12:18:38.109Z",
+                  "deleted_at": null,
+                  "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                  "limit": 20,
+                  "used": 0
+                },
+                "created_at": "2026-11-13T12:18:35.019Z",
+                "updated_at": "2026-11-13T12:18:38.109Z",
+                "deleted_at": null
+              },
+              "application_method": {
+                "id": "proappmet_01M7ADGYWP1YR6E4AG2SW50AFJ",
+                "currency_code": null,
+                "max_quantity": 2,
+                "apply_to_quantity": null,
+                "buy_rules_min_quantity": null,
+                "type": "percentage",
+                "target_type": "items",
+                "allocation": "each",
+                "target_selection_strategy": "most_expensive_first",
+                "raw_value": {
+                  "value": "10",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:18:39.639Z",
+                "updated_at": "2026-11-13T12:18:39.639Z",
+                "deleted_at": null,
+                "promotion_id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+                "target_rules": [
+                  {
+                    "id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                    "description": null,
+                    "attribute": "items.product.id",
+                    "operator": "in",
+                    "created_at": "2026-11-13T12:18:39.639Z",
+                    "updated_at": "2026-11-13T12:18:39.639Z",
+                    "deleted_at": null,
+                    "values": [
+                      {
+                        "id": "prorulval_01M7ADGYWQ4BSDTNB0PSN5CBA5",
+                        "value": "prod_x",
+                        "promotion_rule_id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                        "created_at": "2026-11-13T12:18:39.639Z",
+                        "updated_at": "2026-11-13T12:18:39.639Z",
+                        "deleted_at": null
+                      }
+                    ]
+                  }
+                ],
+                "value": 10
+              },
+              "metadata": null,
+              "created_at": "2026-11-13T12:18:39.639Z",
+              "updated_at": "2026-11-13T12:18:42.700Z",
+              "deleted_at": null,
+              "rules": [
+                {
+                  "id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                  "description": null,
+                  "attribute": "currency_code",
+                  "operator": "in",
+                  "created_at": "2026-11-13T12:18:39.639Z",
+                  "updated_at": "2026-11-13T12:18:39.639Z",
+                  "deleted_at": null,
+                  "values": [
+                    {
+                      "id": "prorulval_01M7ADGYWPYT5EDRADXMDCVC8S",
+                      "value": "eur",
+                      "promotion_rule_id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                      "created_at": "2026-11-13T12:18:39.639Z",
+                      "updated_at": "2026-11-13T12:18:39.639Z",
+                      "deleted_at": null
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-promotions",
+          "transaction_id": "auto-01M7ADH1VYGBJQA9QSZ0ZPD7TN",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-promotions.update-promotions.update-promotions-status-as-step",
+            "uuid": "01M7ADGKS4G2XR4XEY6SK4NF0T",
+            "depth": 3,
+            "definition": {
+              "action": "update-promotions-status-as-step",
+              "name": "update-promotions-status-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKS4G2XR4XEY6SK4NF0T",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572322720,
+            "next": [
+              "_root.get-promotions.update-promotions.update-promotions-status-as-step.promotionsUpdated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572322720
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-promotions",
+          "transaction_id": "auto-01M7ADH1VYGBJQA9QSZ0ZPD7TN",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-promotions.update-promotions.update-promotions-status-as-step",
+            "uuid": "01M7ADGKS4G2XR4XEY6SK4NF0T",
+            "depth": 3,
+            "definition": {
+              "action": "update-promotions-status-as-step",
+              "name": "update-promotions-status-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKS4G2XR4XEY6SK4NF0T",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572322720,
+            "next": [
+              "_root.get-promotions.update-promotions.update-promotions-status-as-step.promotionsUpdated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572322720
+          },
+          "response": [
+            {
+              "id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+              "code": "WFPROMO",
+              "is_automatic": false,
+              "is_tax_inclusive": false,
+              "limit": null,
+              "used": 0,
+              "type": "standard",
+              "status": "active",
+              "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+              "campaign": {
+                "id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                "name": "WF Campaign",
+                "description": "updated",
+                "campaign_identifier": "wf-camp",
+                "starts_at": null,
+                "ends_at": null,
+                "budget": {
+                  "id": "probudg_01M7ADGTCAY9E3FSFYVPZHA53N",
+                  "type": "usage",
+                  "currency_code": null,
+                  "attribute": null,
+                  "raw_limit": {
+                    "value": "20",
+                    "precision": 20
+                  },
+                  "raw_used": {
+                    "value": "0",
+                    "precision": 20
+                  },
+                  "created_at": "2026-11-13T12:18:35.019Z",
+                  "updated_at": "2026-11-13T12:18:38.109Z",
+                  "deleted_at": null,
+                  "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                  "limit": 20,
+                  "used": 0
+                },
+                "created_at": "2026-11-13T12:18:35.019Z",
+                "updated_at": "2026-11-13T12:18:38.109Z",
+                "deleted_at": null
+              },
+              "application_method": {
+                "id": "proappmet_01M7ADGYWP1YR6E4AG2SW50AFJ",
+                "currency_code": null,
+                "max_quantity": 2,
+                "apply_to_quantity": null,
+                "buy_rules_min_quantity": null,
+                "type": "percentage",
+                "target_type": "items",
+                "allocation": "each",
+                "target_selection_strategy": "most_expensive_first",
+                "raw_value": {
+                  "value": "10",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:18:39.639Z",
+                "updated_at": "2026-11-13T12:18:39.639Z",
+                "deleted_at": null,
+                "promotion_id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+                "target_rules": [
+                  {
+                    "id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                    "description": null,
+                    "attribute": "items.product.id",
+                    "operator": "in",
+                    "created_at": "2026-11-13T12:18:39.639Z",
+                    "updated_at": "2026-11-13T12:18:39.639Z",
+                    "deleted_at": null,
+                    "values": [
+                      {
+                        "id": "prorulval_01M7ADGYWQ4BSDTNB0PSN5CBA5",
+                        "value": "prod_x",
+                        "promotion_rule_id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                        "created_at": "2026-11-13T12:18:39.639Z",
+                        "updated_at": "2026-11-13T12:18:39.639Z",
+                        "deleted_at": null
+                      }
+                    ]
+                  }
+                ],
+                "value": 10
+              },
+              "metadata": null,
+              "created_at": "2026-11-13T12:18:39.639Z",
+              "updated_at": "2026-11-13T12:18:42.727Z",
+              "deleted_at": null,
+              "rules": [
+                {
+                  "id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                  "description": null,
+                  "attribute": "currency_code",
+                  "operator": "in",
+                  "created_at": "2026-11-13T12:18:39.639Z",
+                  "updated_at": "2026-11-13T12:18:39.639Z",
+                  "deleted_at": null,
+                  "values": [
+                    {
+                      "id": "prorulval_01M7ADGYWPYT5EDRADXMDCVC8S",
+                      "value": "eur",
+                      "promotion_rule_id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                      "created_at": "2026-11-13T12:18:39.639Z",
+                      "updated_at": "2026-11-13T12:18:39.639Z",
+                      "deleted_at": null
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-promotions",
+          "transaction_id": "auto-01M7ADH1VYGBJQA9QSZ0ZPD7TN",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-promotions.update-promotions.update-promotions-status-as-step.promotionsUpdated",
+            "uuid": "01M7ADGKS4REX8EEM2MHNZ2DJM",
+            "depth": 4,
+            "definition": {
+              "action": "promotionsUpdated",
+              "uuid": "01M7ADGKS4REX8EEM2MHNZ2DJM",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572322736,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572322736
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-promotions",
+          "transaction_id": "auto-01M7ADH1VYGBJQA9QSZ0ZPD7TN",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-promotions.update-promotions.update-promotions-status-as-step.promotionsUpdated",
+            "uuid": "01M7ADGKS4REX8EEM2MHNZ2DJM",
+            "depth": 4,
+            "definition": {
+              "action": "promotionsUpdated",
+              "uuid": "01M7ADGKS4REX8EEM2MHNZ2DJM",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572322736,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572322736
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-promotions",
+          "transaction_id": "auto-01M7ADH1VYGBJQA9QSZ0ZPD7TN",
+          "result": [
+            {
+              "id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+              "code": "WFPROMO",
+              "is_automatic": false,
+              "is_tax_inclusive": false,
+              "limit": null,
+              "used": 0,
+              "type": "standard",
+              "status": "draft",
+              "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+              "campaign": {
+                "id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                "name": "WF Campaign",
+                "description": "updated",
+                "campaign_identifier": "wf-camp",
+                "starts_at": null,
+                "ends_at": null,
+                "budget": {
+                  "id": "probudg_01M7ADGTCAY9E3FSFYVPZHA53N",
+                  "type": "usage",
+                  "currency_code": null,
+                  "attribute": null,
+                  "raw_limit": {
+                    "value": "20",
+                    "precision": 20
+                  },
+                  "raw_used": {
+                    "value": "0",
+                    "precision": 20
+                  },
+                  "created_at": "2026-11-13T12:18:35.019Z",
+                  "updated_at": "2026-11-13T12:18:38.109Z",
+                  "deleted_at": null,
+                  "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                  "limit": 20,
+                  "used": 0
+                },
+                "created_at": "2026-11-13T12:18:35.019Z",
+                "updated_at": "2026-11-13T12:18:38.109Z",
+                "deleted_at": null
+              },
+              "application_method": {
+                "id": "proappmet_01M7ADGYWP1YR6E4AG2SW50AFJ",
+                "currency_code": null,
+                "max_quantity": 2,
+                "apply_to_quantity": null,
+                "buy_rules_min_quantity": null,
+                "type": "percentage",
+                "target_type": "items",
+                "allocation": "each",
+                "target_selection_strategy": "most_expensive_first",
+                "raw_value": {
+                  "value": "10",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:18:39.639Z",
+                "updated_at": "2026-11-13T12:18:39.639Z",
+                "deleted_at": null,
+                "promotion_id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+                "target_rules": [
+                  {
+                    "id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                    "description": null,
+                    "attribute": "items.product.id",
+                    "operator": "in",
+                    "created_at": "2026-11-13T12:18:39.639Z",
+                    "updated_at": "2026-11-13T12:18:39.639Z",
+                    "deleted_at": null,
+                    "values": [
+                      {
+                        "id": "prorulval_01M7ADGYWQ4BSDTNB0PSN5CBA5",
+                        "value": "prod_x",
+                        "promotion_rule_id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                        "created_at": "2026-11-13T12:18:39.639Z",
+                        "updated_at": "2026-11-13T12:18:39.639Z",
+                        "deleted_at": null
+                      }
+                    ]
+                  }
+                ],
+                "value": 10
+              },
+              "metadata": null,
+              "created_at": "2026-11-13T12:18:39.639Z",
+              "updated_at": "2026-11-13T12:18:42.700Z",
+              "deleted_at": null,
+              "rules": [
+                {
+                  "id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                  "description": null,
+                  "attribute": "currency_code",
+                  "operator": "in",
+                  "created_at": "2026-11-13T12:18:39.639Z",
+                  "updated_at": "2026-11-13T12:18:39.639Z",
+                  "deleted_at": null,
+                  "values": [
+                    {
+                      "id": "prorulval_01M7ADGYWPYT5EDRADXMDCVC8S",
+                      "value": "eur",
+                      "promotion_rule_id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                      "created_at": "2026-11-13T12:18:39.639Z",
+                      "updated_at": "2026-11-13T12:18:39.639Z",
+                      "deleted_at": null
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADH1VYGBJQA9QSZ0ZPD7TN",
+        "workflowId": "update-promotions",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_status": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-promotions-status",
+          "transaction_id": "auto-01M7ADH3CHEWQXZ9BMBKZR9ES7"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-promotions-status",
+          "transaction_id": "auto-01M7ADH3CHEWQXZ9BMBKZR9ES7",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-promotions-validation",
+            "uuid": "01M7ADGKS3R1R15F50EZSAQWXC",
+            "depth": 1,
+            "definition": {
+              "action": "update-promotions-validation",
+              "uuid": "01M7ADGKS3R1R15F50EZSAQWXC",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572324244,
+            "next": [
+              "_root.update-promotions-validation.update-promotions"
+            ],
+            "_v": 0,
+            "startedAt": 1794572324244
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-promotions-status",
+          "transaction_id": "auto-01M7ADH3CHEWQXZ9BMBKZR9ES7",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-promotions-validation",
+            "uuid": "01M7ADGKS3R1R15F50EZSAQWXC",
+            "depth": 1,
+            "definition": {
+              "action": "update-promotions-validation",
+              "uuid": "01M7ADGKS3R1R15F50EZSAQWXC",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572324244,
+            "next": [
+              "_root.update-promotions-validation.update-promotions"
+            ],
+            "_v": 0,
+            "startedAt": 1794572324244
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-promotions-status",
+          "transaction_id": "auto-01M7ADH3CHEWQXZ9BMBKZR9ES7",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-promotions-validation.update-promotions",
+            "uuid": "01M7ADGKS3Z7H5S99PK5RGS9N6",
+            "depth": 2,
+            "definition": {
+              "action": "update-promotions",
+              "uuid": "01M7ADGKS3Z7H5S99PK5RGS9N6",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572324244,
+            "next": [
+              "_root.update-promotions-validation.update-promotions.promotionStatusUpdated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572324244
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-promotions-status",
+          "transaction_id": "auto-01M7ADH3CHEWQXZ9BMBKZR9ES7",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-promotions-validation.update-promotions",
+            "uuid": "01M7ADGKS3Z7H5S99PK5RGS9N6",
+            "depth": 2,
+            "definition": {
+              "action": "update-promotions",
+              "uuid": "01M7ADGKS3Z7H5S99PK5RGS9N6",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572324244,
+            "next": [
+              "_root.update-promotions-validation.update-promotions.promotionStatusUpdated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572324244
+          },
+          "response": [
+            {
+              "id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+              "code": "WFPROMO",
+              "is_automatic": false,
+              "is_tax_inclusive": false,
+              "limit": null,
+              "used": 0,
+              "type": "standard",
+              "status": "inactive",
+              "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+              "campaign": {
+                "id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                "name": "WF Campaign",
+                "description": "updated",
+                "campaign_identifier": "wf-camp",
+                "starts_at": null,
+                "ends_at": null,
+                "budget": {
+                  "id": "probudg_01M7ADGTCAY9E3FSFYVPZHA53N",
+                  "type": "usage",
+                  "currency_code": null,
+                  "attribute": null,
+                  "raw_limit": {
+                    "value": "20",
+                    "precision": 20
+                  },
+                  "raw_used": {
+                    "value": "0",
+                    "precision": 20
+                  },
+                  "created_at": "2026-11-13T12:18:35.019Z",
+                  "updated_at": "2026-11-13T12:18:38.109Z",
+                  "deleted_at": null,
+                  "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                  "limit": 20,
+                  "used": 0
+                },
+                "created_at": "2026-11-13T12:18:35.019Z",
+                "updated_at": "2026-11-13T12:18:38.109Z",
+                "deleted_at": null
+              },
+              "application_method": {
+                "id": "proappmet_01M7ADGYWP1YR6E4AG2SW50AFJ",
+                "currency_code": null,
+                "max_quantity": 2,
+                "apply_to_quantity": null,
+                "buy_rules_min_quantity": null,
+                "type": "percentage",
+                "target_type": "items",
+                "allocation": "each",
+                "target_selection_strategy": "most_expensive_first",
+                "raw_value": {
+                  "value": "10",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:18:39.639Z",
+                "updated_at": "2026-11-13T12:18:39.639Z",
+                "deleted_at": null,
+                "promotion_id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+                "target_rules": [
+                  {
+                    "id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                    "description": null,
+                    "attribute": "items.product.id",
+                    "operator": "in",
+                    "created_at": "2026-11-13T12:18:39.639Z",
+                    "updated_at": "2026-11-13T12:18:39.639Z",
+                    "deleted_at": null,
+                    "values": [
+                      {
+                        "id": "prorulval_01M7ADGYWQ4BSDTNB0PSN5CBA5",
+                        "value": "prod_x",
+                        "promotion_rule_id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                        "created_at": "2026-11-13T12:18:39.639Z",
+                        "updated_at": "2026-11-13T12:18:39.639Z",
+                        "deleted_at": null
+                      }
+                    ]
+                  }
+                ],
+                "value": 10
+              },
+              "metadata": null,
+              "created_at": "2026-11-13T12:18:39.639Z",
+              "updated_at": "2026-11-13T12:18:44.250Z",
+              "deleted_at": null,
+              "rules": [
+                {
+                  "id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                  "description": null,
+                  "attribute": "currency_code",
+                  "operator": "in",
+                  "created_at": "2026-11-13T12:18:39.639Z",
+                  "updated_at": "2026-11-13T12:18:39.639Z",
+                  "deleted_at": null,
+                  "values": [
+                    {
+                      "id": "prorulval_01M7ADGYWPYT5EDRADXMDCVC8S",
+                      "value": "eur",
+                      "promotion_rule_id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                      "created_at": "2026-11-13T12:18:39.639Z",
+                      "updated_at": "2026-11-13T12:18:39.639Z",
+                      "deleted_at": null
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-promotions-status",
+          "transaction_id": "auto-01M7ADH3CHEWQXZ9BMBKZR9ES7",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-promotions-validation.update-promotions.promotionStatusUpdated",
+            "uuid": "01M7ADGKS3B9MSKGH4F0G2X415",
+            "depth": 3,
+            "definition": {
+              "action": "promotionStatusUpdated",
+              "uuid": "01M7ADGKS3B9MSKGH4F0G2X415",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572324260,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572324260
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-promotions-status",
+          "transaction_id": "auto-01M7ADH3CHEWQXZ9BMBKZR9ES7",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-promotions-validation.update-promotions.promotionStatusUpdated",
+            "uuid": "01M7ADGKS3B9MSKGH4F0G2X415",
+            "depth": 3,
+            "definition": {
+              "action": "promotionStatusUpdated",
+              "uuid": "01M7ADGKS3B9MSKGH4F0G2X415",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572324260,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572324260
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-promotions-status",
+          "transaction_id": "auto-01M7ADH3CHEWQXZ9BMBKZR9ES7",
+          "result": [
+            {
+              "id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+              "code": "WFPROMO",
+              "is_automatic": false,
+              "is_tax_inclusive": false,
+              "limit": null,
+              "used": 0,
+              "type": "standard",
+              "status": "inactive",
+              "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+              "campaign": {
+                "id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                "name": "WF Campaign",
+                "description": "updated",
+                "campaign_identifier": "wf-camp",
+                "starts_at": null,
+                "ends_at": null,
+                "budget": {
+                  "id": "probudg_01M7ADGTCAY9E3FSFYVPZHA53N",
+                  "type": "usage",
+                  "currency_code": null,
+                  "attribute": null,
+                  "raw_limit": {
+                    "value": "20",
+                    "precision": 20
+                  },
+                  "raw_used": {
+                    "value": "0",
+                    "precision": 20
+                  },
+                  "created_at": "2026-11-13T12:18:35.019Z",
+                  "updated_at": "2026-11-13T12:18:38.109Z",
+                  "deleted_at": null,
+                  "campaign_id": "procamp_01M7ADGTCA88G2JTMRB2T8MMKM",
+                  "limit": 20,
+                  "used": 0
+                },
+                "created_at": "2026-11-13T12:18:35.019Z",
+                "updated_at": "2026-11-13T12:18:38.109Z",
+                "deleted_at": null
+              },
+              "application_method": {
+                "id": "proappmet_01M7ADGYWP1YR6E4AG2SW50AFJ",
+                "currency_code": null,
+                "max_quantity": 2,
+                "apply_to_quantity": null,
+                "buy_rules_min_quantity": null,
+                "type": "percentage",
+                "target_type": "items",
+                "allocation": "each",
+                "target_selection_strategy": "most_expensive_first",
+                "raw_value": {
+                  "value": "10",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:18:39.639Z",
+                "updated_at": "2026-11-13T12:18:39.639Z",
+                "deleted_at": null,
+                "promotion_id": "promo_01M7ADGYWNP0RCGHA4NGTAXJ3Y",
+                "target_rules": [
+                  {
+                    "id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                    "description": null,
+                    "attribute": "items.product.id",
+                    "operator": "in",
+                    "created_at": "2026-11-13T12:18:39.639Z",
+                    "updated_at": "2026-11-13T12:18:39.639Z",
+                    "deleted_at": null,
+                    "values": [
+                      {
+                        "id": "prorulval_01M7ADGYWQ4BSDTNB0PSN5CBA5",
+                        "value": "prod_x",
+                        "promotion_rule_id": "prorul_01M7ADGYWQCDQ6EJT17605QB4C",
+                        "created_at": "2026-11-13T12:18:39.639Z",
+                        "updated_at": "2026-11-13T12:18:39.639Z",
+                        "deleted_at": null
+                      }
+                    ]
+                  }
+                ],
+                "value": 10
+              },
+              "metadata": null,
+              "created_at": "2026-11-13T12:18:39.639Z",
+              "updated_at": "2026-11-13T12:18:44.250Z",
+              "deleted_at": null,
+              "rules": [
+                {
+                  "id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                  "description": null,
+                  "attribute": "currency_code",
+                  "operator": "in",
+                  "created_at": "2026-11-13T12:18:39.639Z",
+                  "updated_at": "2026-11-13T12:18:39.639Z",
+                  "deleted_at": null,
+                  "values": [
+                    {
+                      "id": "prorulval_01M7ADGYWPYT5EDRADXMDCVC8S",
+                      "value": "eur",
+                      "promotion_rule_id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                      "created_at": "2026-11-13T12:18:39.639Z",
+                      "updated_at": "2026-11-13T12:18:39.639Z",
+                      "deleted_at": null
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_status": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADH3CHEWQXZ9BMBKZR9ES7",
+        "workflowId": "update-promotions-status",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_batch_rules": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH4W7NWF474K8PKCVEW80"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH4W7NWF474K8PKCVEW80",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotion-rules-workflow-as-step",
+              "name": "create-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572325769,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572325769
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH4W7NWF474K8PKCVEW80",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+            "depth": 1,
+            "definition": {
+              "action": "update-promotion-rules-workflow-as-step",
+              "name": "update-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572325769,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572325769
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH4W7NWF474K8PKCVEW80",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-promotion-rules-workflow",
+            "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+            "depth": 1,
+            "definition": {
+              "action": "delete-promotion-rules-workflow",
+              "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572325769,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572325769
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH4W7NWF474K8PKCVEW80",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotion-rules-workflow-as-step",
+              "name": "create-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572325769,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572325769
+          },
+          "response": [
+            {
+              "id": "prorul_01M7ADH4WFMQV7NXBJG9BKWBE9",
+              "description": null,
+              "attribute": "customer.groups.id",
+              "operator": "in",
+              "created_at": "2026-11-13T12:18:45.775Z",
+              "updated_at": "2026-11-13T12:18:45.775Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "id": "prorulval_01M7ADH4WF4RXZ8CFD5QQT2QSX",
+                  "value": "cusgroup_x",
+                  "promotion_rule_id": "prorul_01M7ADH4WFMQV7NXBJG9BKWBE9",
+                  "created_at": "2026-11-13T12:18:45.775Z",
+                  "updated_at": "2026-11-13T12:18:45.775Z",
+                  "deleted_at": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH4W7NWF474K8PKCVEW80",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-promotion-rules-workflow",
+            "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+            "depth": 1,
+            "definition": {
+              "action": "delete-promotion-rules-workflow",
+              "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572325769,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572325769
+          },
+          "response": []
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH4W7NWF474K8PKCVEW80",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+            "depth": 1,
+            "definition": {
+              "action": "update-promotion-rules-workflow-as-step",
+              "name": "update-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572325769,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572325769
+          },
+          "response": [
+            {
+              "id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+              "description": null,
+              "attribute": "currency_code",
+              "operator": "in",
+              "created_at": "2026-11-13T12:18:39.639Z",
+              "updated_at": "2026-11-13T12:18:39.639Z",
+              "deleted_at": null,
+              "values": [
+                {
+                  "id": "prorulval_01M7ADH4WK3KP75E10HV32KBJ0",
+                  "value": "eur",
+                  "promotion_rule_id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                  "created_at": "2026-11-13T12:18:45.782Z",
+                  "updated_at": "2026-11-13T12:18:45.782Z",
+                  "deleted_at": null
+                },
+                {
+                  "id": "prorulval_01M7ADH4WKHGWW78KNMB2C1B7W",
+                  "value": "usd",
+                  "promotion_rule_id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                  "created_at": "2026-11-13T12:18:45.782Z",
+                  "updated_at": "2026-11-13T12:18:45.782Z",
+                  "deleted_at": null
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH4W7NWF474K8PKCVEW80",
+          "result": {
+            "created": [
+              {
+                "id": "prorul_01M7ADH4WFMQV7NXBJG9BKWBE9",
+                "description": null,
+                "attribute": "customer.groups.id",
+                "operator": "in",
+                "created_at": "2026-11-13T12:18:45.775Z",
+                "updated_at": "2026-11-13T12:18:45.775Z",
+                "deleted_at": null,
+                "values": [
+                  {
+                    "id": "prorulval_01M7ADH4WF4RXZ8CFD5QQT2QSX",
+                    "value": "cusgroup_x",
+                    "promotion_rule_id": "prorul_01M7ADH4WFMQV7NXBJG9BKWBE9",
+                    "created_at": "2026-11-13T12:18:45.775Z",
+                    "updated_at": "2026-11-13T12:18:45.775Z",
+                    "deleted_at": null
+                  }
+                ]
+              }
+            ],
+            "updated": [
+              {
+                "id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                "description": null,
+                "attribute": "currency_code",
+                "operator": "in",
+                "created_at": "2026-11-13T12:18:39.639Z",
+                "updated_at": "2026-11-13T12:18:39.639Z",
+                "deleted_at": null,
+                "values": [
+                  {
+                    "id": "prorulval_01M7ADH4WK3KP75E10HV32KBJ0",
+                    "value": "eur",
+                    "promotion_rule_id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                    "created_at": "2026-11-13T12:18:45.782Z",
+                    "updated_at": "2026-11-13T12:18:45.782Z",
+                    "deleted_at": null
+                  },
+                  {
+                    "id": "prorulval_01M7ADH4WKHGWW78KNMB2C1B7W",
+                    "value": "usd",
+                    "promotion_rule_id": "prorul_01M7ADGYWPSCJF0PQ3QNRAQ0Y8",
+                    "created_at": "2026-11-13T12:18:45.782Z",
+                    "updated_at": "2026-11-13T12:18:45.782Z",
+                    "deleted_at": null
+                  }
+                ]
+              }
+            ],
+            "deleted": []
+          },
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_batch_rules": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADH4W7NWF474K8PKCVEW80",
+        "workflowId": "batch-promotion-rules",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_batch_rules_bad": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.create-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotion-rules-workflow-as-step",
+              "name": "create-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572327298,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.update-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+            "depth": 1,
+            "definition": {
+              "action": "update-promotion-rules-workflow-as-step",
+              "name": "update-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572327298,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.delete-promotion-rules-workflow",
+            "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+            "depth": 1,
+            "definition": {
+              "action": "delete-promotion-rules-workflow",
+              "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572327298,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.create-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotion-rules-workflow-as-step",
+              "name": "create-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572327298,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          },
+          "response": []
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.update-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+            "depth": 1,
+            "definition": {
+              "action": "update-promotion-rules-workflow-as-step",
+              "name": "update-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 1,
+            "lastAttempt": 1794572327298,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          },
+          "errors": [
+            {
+              "action": "update-promotion-rules-workflow-as-step",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Promotion rules with id - prorul_missing not found",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:18:47.305Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.delete-promotion-rules-workflow",
+            "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+            "depth": 1,
+            "definition": {
+              "action": "delete-promotion-rules-workflow",
+              "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572327311,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          },
+          "response": []
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.create-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotion-rules-workflow-as-step",
+              "name": "create-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572327311,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.update-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+            "depth": 1,
+            "definition": {
+              "action": "update-promotion-rules-workflow-as-step",
+              "name": "update-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572327311,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.delete-promotion-rules-workflow",
+            "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+            "depth": 1,
+            "definition": {
+              "action": "delete-promotion-rules-workflow",
+              "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572327311,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          }
+        },
+        {
+          "event_type": "onCompensateStepSuccess",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.create-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+            "depth": 1,
+            "definition": {
+              "action": "create-promotion-rules-workflow-as-step",
+              "name": "create-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYT7ZSNRNA0YHVZSYS",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572327311,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          },
+          "response": {}
+        },
+        {
+          "event_type": "onCompensateStepFailure",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.update-promotion-rules-workflow-as-step",
+            "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+            "depth": 1,
+            "definition": {
+              "action": "update-promotion-rules-workflow-as-step",
+              "name": "update-promotion-rules-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADGKRYZBHV76GG5XS48P2J",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 1,
+            "lastAttempt": 1794572327311,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          },
+          "errors": [
+            {
+              "action": "update-promotion-rules-workflow-as-step",
+              "handlerType": "compensate",
+              "error": {
+                "message": "Transaction update-promotion-rules-workflow-as-step-auto-01M7ADH6C01ZYX1K7F8AAA5JJE could not be found.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "not_found",
+                "date": "2026-11-13T12:18:47.313Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateStepSuccess",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "step": {
+            "id": "_root.delete-promotion-rules-workflow",
+            "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+            "depth": 1,
+            "definition": {
+              "action": "delete-promotion-rules-workflow",
+              "uuid": "01M7ADGKRY33FX2TPMAPCFY3YN",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572327311,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572327298
+          },
+          "response": {}
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "batch-promotion-rules",
+          "transaction_id": "auto-01M7ADH6C01ZYX1K7F8AAA5JJE",
+          "result": {
+            "created": [],
+            "deleted": []
+          },
+          "errors": [
+            {
+              "action": "update-promotion-rules-workflow-as-step",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Promotion rules with id - prorul_missing not found",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:18:47.305Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_batch_rules_bad": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Promotion rules with id - prorul_missing not found"
+    }
+  },
+  "events_run_campaign_remove": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "add-or-remove-campaign-promotions",
+          "transaction_id": "auto-01M7ADH7W15DF6C7N7NBQH5P59"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "add-or-remove-campaign-promotions",
+          "transaction_id": "auto-01M7ADH7W15DF6C7N7NBQH5P59",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.add-campaign-promotions",
+            "uuid": "01M7ADGKRW62YGZ5NHC854A12R",
+            "depth": 1,
+            "definition": {
+              "action": "add-campaign-promotions",
+              "uuid": "01M7ADGKRW62YGZ5NHC854A12R",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572328835,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572328835
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "add-or-remove-campaign-promotions",
+          "transaction_id": "auto-01M7ADH7W15DF6C7N7NBQH5P59",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.remove-campaign-promotions",
+            "uuid": "01M7ADGKRWVRV60J77YBZ0F55Q",
+            "depth": 1,
+            "definition": {
+              "action": "remove-campaign-promotions",
+              "uuid": "01M7ADGKRWVRV60J77YBZ0F55Q",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572328835,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572328835
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "add-or-remove-campaign-promotions",
+          "transaction_id": "auto-01M7ADH7W15DF6C7N7NBQH5P59",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.add-campaign-promotions",
+            "uuid": "01M7ADGKRW62YGZ5NHC854A12R",
+            "depth": 1,
+            "definition": {
+              "action": "add-campaign-promotions",
+              "uuid": "01M7ADGKRW62YGZ5NHC854A12R",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572328835,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572328835
+          },
+          "response": null
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "add-or-remove-campaign-promotions",
+          "transaction_id": "auto-01M7ADH7W15DF6C7N7NBQH5P59",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.remove-campaign-promotions",
+            "uuid": "01M7ADGKRWVRV60J77YBZ0F55Q",
+            "depth": 1,
+            "definition": {
+              "action": "remove-campaign-promotions",
+              "uuid": "01M7ADGKRWVRV60J77YBZ0F55Q",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572328835,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572328835
+          },
+          "response": null
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "add-or-remove-campaign-promotions",
+          "transaction_id": "auto-01M7ADH7W15DF6C7N7NBQH5P59",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_campaign_remove": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADH7W15DF6C7N7NBQH5P59",
+        "workflowId": "add-or-remove-campaign-promotions",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "delete-promotions",
+          "transaction_id": "auto-01M7ADH9BH4B59SP98J741E45Z"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-promotions",
+          "transaction_id": "auto-01M7ADH9BH4B59SP98J741E45Z",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-promotions",
+            "uuid": "01M7ADGKS1C9KZBNRGCVMF4NEQ",
+            "depth": 1,
+            "definition": {
+              "action": "delete-promotions",
+              "uuid": "01M7ADGKS1C9KZBNRGCVMF4NEQ",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572330358,
+            "next": [
+              "_root.delete-promotions.promotionsDeleted"
+            ],
+            "_v": 0,
+            "startedAt": 1794572330358
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-promotions",
+          "transaction_id": "auto-01M7ADH9BH4B59SP98J741E45Z",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-promotions",
+            "uuid": "01M7ADGKS1C9KZBNRGCVMF4NEQ",
+            "depth": 1,
+            "definition": {
+              "action": "delete-promotions",
+              "uuid": "01M7ADGKS1C9KZBNRGCVMF4NEQ",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572330358,
+            "next": [
+              "_root.delete-promotions.promotionsDeleted"
+            ],
+            "_v": 0,
+            "startedAt": 1794572330358
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-promotions",
+          "transaction_id": "auto-01M7ADH9BH4B59SP98J741E45Z",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-promotions.promotionsDeleted",
+            "uuid": "01M7ADGKS1DG93NAA8SGY61NDX",
+            "depth": 2,
+            "definition": {
+              "action": "promotionsDeleted",
+              "uuid": "01M7ADGKS1DG93NAA8SGY61NDX",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572330370,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572330370
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-promotions",
+          "transaction_id": "auto-01M7ADH9BH4B59SP98J741E45Z",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-promotions.promotionsDeleted",
+            "uuid": "01M7ADGKS1DG93NAA8SGY61NDX",
+            "depth": 2,
+            "definition": {
+              "action": "promotionsDeleted",
+              "uuid": "01M7ADGKS1DG93NAA8SGY61NDX",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572330370,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572330370
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "delete-promotions",
+          "transaction_id": "auto-01M7ADH9BH4B59SP98J741E45Z",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADH9BH4B59SP98J741E45Z",
+        "workflowId": "delete-promotions",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_campaign_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "delete-campaigns",
+          "transaction_id": "auto-01M7ADHAV5W24SQFJXV312DG86"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-campaigns",
+          "transaction_id": "auto-01M7ADHAV5W24SQFJXV312DG86",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-campaigns",
+            "uuid": "01M7ADGKRZK6BRFNZ3VCXSN7K1",
+            "depth": 1,
+            "definition": {
+              "action": "delete-campaigns",
+              "uuid": "01M7ADGKRZK6BRFNZ3VCXSN7K1",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572331880,
+            "next": [
+              "_root.delete-campaigns.campaignsDeleted"
+            ],
+            "_v": 0,
+            "startedAt": 1794572331880
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-campaigns",
+          "transaction_id": "auto-01M7ADHAV5W24SQFJXV312DG86",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-campaigns",
+            "uuid": "01M7ADGKRZK6BRFNZ3VCXSN7K1",
+            "depth": 1,
+            "definition": {
+              "action": "delete-campaigns",
+              "uuid": "01M7ADGKRZK6BRFNZ3VCXSN7K1",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572331880,
+            "next": [
+              "_root.delete-campaigns.campaignsDeleted"
+            ],
+            "_v": 0,
+            "startedAt": 1794572331880
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-campaigns",
+          "transaction_id": "auto-01M7ADHAV5W24SQFJXV312DG86",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-campaigns.campaignsDeleted",
+            "uuid": "01M7ADGKRZ1YQVWKQRVD6AC9E6",
+            "depth": 2,
+            "definition": {
+              "action": "campaignsDeleted",
+              "uuid": "01M7ADGKRZ1YQVWKQRVD6AC9E6",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572331888,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572331888
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-campaigns",
+          "transaction_id": "auto-01M7ADHAV5W24SQFJXV312DG86",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-campaigns.campaignsDeleted",
+            "uuid": "01M7ADGKRZ1YQVWKQRVD6AC9E6",
+            "depth": 2,
+            "definition": {
+              "action": "campaignsDeleted",
+              "uuid": "01M7ADGKRZ1YQVWKQRVD6AC9E6",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572331888,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572331888
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "delete-campaigns",
+          "transaction_id": "auto-01M7ADHAV5W24SQFJXV312DG86",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_campaign_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADHAV5W24SQFJXV312DG86",
+        "workflowId": "delete-campaigns",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "promotions": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}

@@ -23,8 +23,8 @@ var DeleteCustomerGroupStep = commonsteps.SoftDeleteRecordsStep("delete-customer
 
 // UpdateCustomerGroupsStepInput mirrors UpdateCustomerGroupStepInput.
 type UpdateCustomerGroupsStepInput struct {
-	Selector *dal.Record
-	Update   *dal.Record
+	Selector *dal.Record `json:"selector"`
+	Update   *dal.Record `json:"update"`
 }
 
 // UpdateCustomerGroupsStep mirrors updateCustomerGroupsStep.
@@ -117,9 +117,9 @@ func RemoveCustomerFromGroup(ctx context.Context, svc commonsteps.ModuleService,
 
 // LinkInput mirrors LinkWorkflowInput.
 type LinkInput struct {
-	ID     string
-	Add    []string
-	Remove []string
+	ID     string   `json:"id"`
+	Add    []string `json:"add,omitempty"`
+	Remove []string `json:"remove,omitempty"`
 }
 
 type linkCompensation struct {

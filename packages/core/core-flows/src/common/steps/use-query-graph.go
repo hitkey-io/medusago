@@ -2,6 +2,8 @@
 package steps
 
 import (
+	"encoding/json"
+
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
@@ -22,6 +24,58 @@ type UseQueryGraphStepInput struct {
 type QueryGraphResult struct {
 	Data     any         `json:"data,omitempty"`
 	Metadata *dal.Record `json:"metadata,omitempty"`
+	// remote: upstream runs the step as a useRemoteQueryStep, whose output
+	// is the rows (or the row) themselves
+	remote bool
+}
+
+// MarshalJSON writes { data, metadata } like a query.graph result, or the
+// rows of a remote query step.
+func (r QueryGraphResult) MarshalJSON() ([]byte, error) {
+	if r.remote {
+		return json.Marshal(r.Data)
+	}
+	out := dal.NewRecord()
+	if r.Data != nil {
+		out.Set("data", r.Data)
+	}
+	if r.Metadata != nil {
+		out.Set("metadata", r.Metadata)
+	}
+	return json.Marshal(out)
+}
+
+// isRemoteQueryStep reports whether upstream runs the step of the running
+// workflow as a useRemoteQueryStep.
+func isRemoteQueryStep(ctx composer.StepExecutionContext) bool {
+	return remoteQuerySteps[ctx.WorkflowID][ctx.StepName]
+}
+
+// RemoteQueryResult is the output of UseRemoteQueryStep: the rows (the
+// first row with List false), or { rows, metadata } for a paginated query.
+type RemoteQueryResult struct {
+	*query.GraphResult
+	single bool
+}
+
+// MarshalJSON writes the result of the remote query.
+func (r RemoteQueryResult) MarshalJSON() ([]byte, error) {
+	if r.GraphResult == nil {
+		return []byte("null"), nil
+	}
+	if r.Metadata != nil {
+		out := dal.NewRecord()
+		out.Set("rows", r.Data)
+		out.Set("metadata", r.Metadata)
+		return json.Marshal(out)
+	}
+	if r.single {
+		if len(r.Data) == 0 {
+			return []byte("null"), nil
+		}
+		return json.Marshal(r.Data[0])
+	}
+	return json.Marshal(r.Data)
 }
 
 // QueryOf resolves Query from a container.
@@ -37,7 +91,7 @@ var UseQueryGraphStep = composer.CreateStep("use-query-graph-step",
 		if err != nil {
 			return composer.StepResponse[QueryGraphResult]{}, err
 		}
-		out := QueryGraphResult{Data: res.Data, Metadata: res.Metadata}
+		out := QueryGraphResult{Data: res.Data, Metadata: res.Metadata, remote: isRemoteQueryStep(ctx)}
 		if in.IsList != nil && !*in.IsList {
 			if len(res.Data) > 0 {
 				out.Data = res.Data[0]
@@ -62,7 +116,7 @@ type RemoteStepInput struct {
 // UseRemoteQueryStep mirrors useRemoteQueryStep: the rows (or the first
 // row when List is false); paginated queries return { rows, metadata }.
 var UseRemoteQueryStep = composer.CreateStep("use-remote-query",
-	func(ctx composer.StepExecutionContext, in RemoteStepInput) (composer.StepResponse[*query.GraphResult], error) {
+	func(ctx composer.StepExecutionContext, in RemoteStepInput) (composer.StepResponse[RemoteQueryResult], error) {
 		obj := query.RemoteQueryObjectFromString(query.RemoteQueryObjectConfig{EntryPoint: in.EntryPoint, Fields: in.Fields, Variables: in.Variables})
 		opts := joiner.Options{ThrowIfKeyNotFound: in.ThrowIfKeyNotFound}
 		if in.ThrowIfKeyNotFound {
@@ -70,14 +124,15 @@ var UseRemoteQueryStep = composer.CreateStep("use-remote-query",
 		}
 		res, err := QueryOf(ctx.Container).RemoteQuery(ctx.Context, obj, opts)
 		if err != nil {
-			return composer.StepResponse[*query.GraphResult]{}, err
+			return composer.StepResponse[RemoteQueryResult]{}, err
 		}
-		if in.List != nil && !*in.List {
+		single := in.List != nil && !*in.List
+		if single {
 			if len(res.Data) > 0 {
 				res.Data = res.Data[:1]
 			}
 		}
-		return composer.NewStepResponse(res), nil
+		return composer.NewStepResponse(RemoteQueryResult{GraphResult: res, single: single}), nil
 	}, nil)
 
 // RemoteQuery mirrors remoteQuery(remoteQueryObjectFromString({ entryPoint,

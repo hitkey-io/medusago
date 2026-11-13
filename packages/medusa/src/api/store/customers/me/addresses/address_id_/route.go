@@ -61,7 +61,7 @@ func DELETE(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error
 	if _, err := findAddress(req, id, req.Params["address_id"], []string{"id"}); err != nil {
 		return err
 	}
-	if _, err := workflows.DeleteCustomerAddressesWorkflow.Run(req.Ctx(), req.Scope, []any{req.Params["address_id"]}); err != nil {
+	if _, err := workflows.DeleteCustomerAddressesWorkflow.Run(req.Ctx(), req.Scope, workflows.IDsInput{IDs: []any{req.Params["address_id"]}}); err != nil {
 		return err
 	}
 	c, err := customers.RefetchCustomer(req, id)

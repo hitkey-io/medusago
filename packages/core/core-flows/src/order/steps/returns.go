@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	utilsmodulessdk "github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
@@ -15,7 +16,7 @@ type returnOps interface {
 	CreateReturnItems(ctx context.Context, data []*dal.Record) ([]*dal.Record, error)
 	DeleteReturnItems(ctx context.Context, ids []any) error
 	CreateOrderShippingMethods(ctx context.Context, data []*dal.Record) ([]*dal.Record, error)
-	SoftDeleteOrderShippingMethods(ctx context.Context, ids []any) error
+	SoftDeleteOrderShippingMethods(ctx context.Context, ids []any) (any, error)
 	RestoreOrderShippingMethods(ctx context.Context, ids []any) error
 	PreviewOrderChange(ctx context.Context, orderID string) (*dal.Record, error)
 	UpsertOrderShippingMethodTaxLines(ctx context.Context, taxLines []*dal.Record) ([]*dal.Record, error)
@@ -149,12 +150,15 @@ func softDeleteStep(name, className string) *composer.Step[[]any, any] {
 					list = append(list, id)
 				}
 			}
+			// ids.length ? service.softDelete<X>(ids) : []
+			var deleted any = []any{}
 			if len(list) > 0 {
-				if _, err := returnsOf(ctx.Container).Internal(className).SoftDelete(ctx.Context, list); err != nil {
+				var err error
+				if deleted, err = commonsteps.SoftDeleteVia(ctx.Context, returnsOf(ctx.Container), "softDelete"+utilsmodulessdk.Pluralize(className), className, list); err != nil {
 					return composer.StepResponse[any]{}, err
 				}
 			}
-			return composer.NewStepResponse[any](nil, any(in)), nil
+			return composer.NewStepResponse[any](deleted, any(in)), nil
 		},
 		func(ctx composer.StepExecutionContext, data any) error {
 			list, _ := data.([]any)
@@ -175,10 +179,11 @@ var DeleteOrderChangesStep = softDeleteStep("delete-order-change", "OrderChange"
 // DeleteOrderShippingMethodsStep mirrors deleteOrderShippingMethods.
 var DeleteOrderShippingMethodsStep = composer.CreateStep("delete-order-shipping-methods",
 	func(ctx composer.StepExecutionContext, in []any) (composer.StepResponse[any], error) {
-		if err := returnsOf(ctx.Container).SoftDeleteOrderShippingMethods(ctx.Context, in); err != nil {
+		deleted, err := returnsOf(ctx.Container).SoftDeleteOrderShippingMethods(ctx.Context, in)
+		if err != nil {
 			return composer.StepResponse[any]{}, err
 		}
-		return composer.NewStepResponse[any](nil, any(in)), nil
+		return composer.NewStepResponse[any](deleted, any(in)), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		list, _ := data.([]any)

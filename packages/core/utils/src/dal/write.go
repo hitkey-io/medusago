@@ -441,7 +441,33 @@ func (r *Repository) insertRow(ctx context.Context, e *dml.Entity, data Row) err
 		ph = append(ph, fmt.Sprintf("$%d", len(args)))
 	}
 	sql := fmt.Sprintf("insert into %s (%s) values (%s)", quote(e.Meta.Collection), strings.Join(cols, ", "), strings.Join(ph, ", "))
-	return r.exec(ctx, sql, args...)
+	// the database generates the autoincrement columns not given: MikroORM
+	// reads them back (returning) onto the created entity
+	var generated []string
+	for _, mp := range e.Meta.Properties {
+		if mp.Autoincrement && len(mp.FieldNames) > 0 && (mp.Persist == nil || *mp.Persist) {
+			if _, ok := data[mp.FieldNames[0]]; !ok && !slices.Contains(generated, mp.FieldNames[0]) {
+				generated = append(generated, mp.FieldNames[0])
+			}
+		}
+	}
+	if len(generated) == 0 {
+		return r.exec(ctx, sql, args...)
+	}
+	quoted := make([]string, len(generated))
+	for i, c := range generated {
+		quoted[i] = quote(c)
+	}
+	rows, err := QueryRows(ctx, r.DB, sql+" returning "+strings.Join(quoted, ", "), args...)
+	if err != nil {
+		return MapDBError(err)
+	}
+	if len(rows) > 0 {
+		for _, c := range generated {
+			data[c] = rows[0][c]
+		}
+	}
+	return nil
 }
 
 // Create mirrors repository.create + flush: every input becomes an entity,
@@ -532,9 +558,17 @@ func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, i
 	for column := range inst.initChanged {
 		data[column] = inserted[column]
 	}
+	// values the @OnInit hooks add (InventoryLevel available_quantity) are
+	// absent from an entity em.create built
+	for column := range data {
+		if _, ok := inserted[column]; !ok {
+			delete(data, column)
+		}
+	}
 	inst.initChanged = nil
 	inst.data = data
 	inst.created = true
+	inst.unsetFKs = unsetForeignKeys(e, input)
 	// the nested to-one entities created with it are set on the entity
 	for name, child := range nestedToOne {
 		inst.relations[name] = child
@@ -549,6 +583,10 @@ func (r *Repository) create(ctx context.Context, e *dml.Entity, input *Record, i
 		if !ok {
 			continue
 		}
+		if inst.inputCollections == nil {
+			inst.inputCollections = map[string]bool{}
+		}
+		inst.inputCollections[mp.Name] = true
 		items, _ := value.([]any)
 		join, err := r.Schema.ResolveJoin(e, mp.Name)
 		if err != nil {
@@ -1292,12 +1330,14 @@ func (r *Repository) assignOneToManyCollections(ctx context.Context, inst *insta
 		// MikroORM flushes the inserts before the updates (physical order).
 		idm := identityMap{}
 		var updates []func() error
+		var assigned []*instance
 		for _, it := range items {
 			id, _ := it.Get("id")
 			if row, ok := existing[fmt.Sprint(id)]; ok && id != nil {
 				child := &instance{entity: target, data: row, relations: map[string]any{}}
 				item := it
 				updates = append(updates, func() error { return r.applyScalarUpdate(ctx, child, item, false) })
+				assigned = append(assigned, child)
 				continue
 			}
 			n := NewRecord()
@@ -1306,14 +1346,23 @@ func (r *Repository) assignOneToManyCollections(ctx context.Context, inst *insta
 				n.Set(k, v)
 			}
 			setChildFK(target, n, fkColumn, parentValue)
-			if _, err := r.create(ctx, target, n, idm); err != nil {
+			child, err := r.create(ctx, target, n, idm)
+			if err != nil {
 				return err
 			}
+			assigned = append(assigned, child)
 		}
 		for _, u := range updates {
 			if err := u(); err != nil {
 				return err
 			}
+		}
+		// the initialized collection now holds the assigned items
+		if _, loaded := inst.relations[mp.Name]; loaded {
+			if assigned == nil {
+				assigned = []*instance{}
+			}
+			inst.relations[mp.Name] = assigned
 		}
 	}
 	return nil
@@ -1367,6 +1416,31 @@ func (r *Repository) softRemoveCascades(e *dml.Entity) []string {
 		}
 		if slices.Contains(target.Cascades.Delete, inverse) {
 			out = append(out, p.Name)
+		}
+	}
+	return out
+}
+
+// unsetForeignKeys returns the mapToPk foreign key properties the input of
+// a created entity gives neither directly nor through the relation sharing
+// its column.
+func unsetForeignKeys(e *dml.Entity, input *Record) map[string]bool {
+	var out map[string]bool
+	for _, p := range e.Meta.Properties {
+		if !p.MapToPk || len(p.FieldNames) == 0 {
+			continue
+		}
+		given := input.Has(p.Name) || input.Has(p.FieldNames[0])
+		for _, q := range e.Meta.Properties {
+			if q.Name != p.Name && len(q.FieldNames) > 0 && q.FieldNames[0] == p.FieldNames[0] && input.Has(q.Name) {
+				given = true
+			}
+		}
+		if !given {
+			if out == nil {
+				out = map[string]bool{}
+			}
+			out[p.Name] = true
 		}
 	}
 	return out

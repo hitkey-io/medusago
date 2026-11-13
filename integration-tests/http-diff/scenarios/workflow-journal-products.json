@@ -1,0 +1,1106 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "pk",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/api-keys",
+  "body": {
+   "title": "Store",
+   "type": "publishable"
+  }
+ },
+ {
+  "name": "channels",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/sales-channels?order=name&fields=id,name"
+ },
+ {
+  "name": "events_run_create",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-products/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g101",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-products/run",
+  "body": {
+   "input": {
+    "products": [
+     {
+      "title": "WF Shirt",
+      "handle": "wf-shirt",
+      "status": "published",
+      "options": [
+       {
+        "title": "Size",
+        "values": [
+         "S",
+         "M"
+        ]
+       }
+      ],
+      "variants": [
+       {
+        "title": "S",
+        "sku": "WF-S",
+        "options": {
+         "Size": "S"
+        },
+        "prices": [
+         {
+          "currency_code": "eur",
+          "amount": 10
+         }
+        ]
+       },
+       {
+        "title": "M",
+        "sku": "WF-M",
+        "options": {
+         "Size": "M"
+        },
+        "prices": [
+         {
+          "currency_code": "eur",
+          "amount": 12
+         },
+         {
+          "currency_code": "usd",
+          "amount": 14
+         }
+        ]
+       }
+      ],
+      "sales_channels": [
+       {
+        "id": "{{channels.sales_channels.0.id}}"
+       }
+      ],
+      "metadata": {
+       "k": "v"
+      }
+     }
+    ]
+   }
+  },
+  "parallel": "g101",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_create_bad",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-products/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g102",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_bad",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-products/run",
+  "body": {
+   "input": {
+    "products": [
+     {
+      "title": "WF Bad",
+      "options": [
+       {
+        "title": "Size",
+        "values": [
+         "S"
+        ]
+       }
+      ],
+      "variants": [
+       {
+        "title": "X",
+        "options": {
+         "Size": "XL"
+        },
+        "prices": []
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "parallel": "g102",
+  "delay_ms": 1500
+ },
+ {
+  "name": "prod_a",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/products?handle=wf-shirt&fields=id"
+ },
+ {
+  "name": "run_create_b",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-products/run",
+  "body": {
+   "input": {
+    "products": [
+     {
+      "title": "WF Mug",
+      "handle": "wf-mug",
+      "options": [
+       {
+        "title": "Color",
+        "values": [
+         "Red",
+         "Blue"
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  }
+ },
+ {
+  "name": "prod_b",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/products?handle=wf-mug&fields=id"
+ },
+ {
+  "name": "vars",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/products/{{prod_a.products.0.id}}/variants?order=sku&fields=id,sku"
+ },
+ {
+  "name": "events_run_update_selector",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-products/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g103",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update_selector",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-products/run",
+  "body": {
+   "input": {
+    "selector": {
+     "id": "{{prod_a.products.0.id}}"
+    },
+    "update": {
+     "subtitle": "sub",
+     "metadata": {
+      "x": 1
+     }
+    }
+   }
+  },
+  "parallel": "g103",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_update_products",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-products/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g104",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update_products",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-products/run",
+  "body": {
+   "input": {
+    "products": [
+     {
+      "id": "{{prod_a.products.0.id}}",
+      "title": "WF Shirt 2"
+     }
+    ]
+   }
+  },
+  "parallel": "g104",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_update_variants",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-product-variants/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g105",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update_variants",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-product-variants/run",
+  "body": {
+   "input": {
+    "selector": {
+     "id": "{{vars.variants.1.id}}"
+    },
+    "update": {
+     "title": "Small"
+    }
+   }
+  },
+  "parallel": "g105",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_create_variants",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-variants/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g106",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_variants",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-variants/run",
+  "body": {
+   "input": {
+    "product_variants": [
+     {
+      "product_id": "{{prod_b.products.0.id}}",
+      "title": "Red",
+      "sku": "WF-B-RED",
+      "options": {
+       "Color": "Red"
+      },
+      "prices": [
+       {
+        "currency_code": "eur",
+        "amount": 5
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "parallel": "g106",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_create_variants_bad",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-variants/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g107",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_variants_bad",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-variants/run",
+  "body": {
+   "input": {
+    "product_variants": [
+     {
+      "product_id": "{{prod_b.products.0.id}}",
+      "title": "Green",
+      "options": {
+       "Color": "Green"
+      },
+      "prices": []
+     }
+    ]
+   }
+  },
+  "parallel": "g107",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_delete_variants",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-product-variants/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g108",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_delete_variants",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-product-variants/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{vars.variants.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g108",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_create_options",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-options/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g109",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_options",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-options/run",
+  "body": {
+   "input": {
+    "product_options": [
+     {
+      "title": "Fit",
+      "values": [
+       "Slim",
+       "Wide"
+      ]
+     }
+    ]
+   }
+  },
+  "parallel": "g109",
+  "delay_ms": 1500
+ },
+ {
+  "name": "opts",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/product-options?title=Fit&fields=id"
+ },
+ {
+  "name": "events_run_update_options",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-product-options/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g110",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update_options",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-product-options/run",
+  "body": {
+   "input": {
+    "selector": {
+     "id": "{{opts.product_options.0.id}}"
+    },
+    "update": {
+     "title": "Fit2"
+    }
+   }
+  },
+  "parallel": "g110",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_delete_options",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-product-options/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g111",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_delete_options",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-product-options/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{opts.product_options.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g111",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_create_types",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-types/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g112",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_types",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-types/run",
+  "body": {
+   "input": {
+    "product_types": [
+     {
+      "value": "wf-type",
+      "metadata": {
+       "a": 1
+      }
+     }
+    ]
+   }
+  },
+  "parallel": "g112",
+  "delay_ms": 1500
+ },
+ {
+  "name": "types",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/product-types?value=wf-type&fields=id"
+ },
+ {
+  "name": "events_run_update_types",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-product-types/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g113",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update_types",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-product-types/run",
+  "body": {
+   "input": {
+    "selector": {
+     "id": "{{types.product_types.0.id}}"
+    },
+    "update": {
+     "value": "wf-type-2"
+    }
+   }
+  },
+  "parallel": "g113",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_delete_types",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-product-types/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g114",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_delete_types",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-product-types/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{types.product_types.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g114",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_create_tags",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-tags/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g115",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_tags",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-tags/run",
+  "body": {
+   "input": {
+    "product_tags": [
+     {
+      "value": "wf-tag"
+     }
+    ]
+   }
+  },
+  "parallel": "g115",
+  "delay_ms": 1500
+ },
+ {
+  "name": "tags",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/product-tags?value=wf-tag&fields=id"
+ },
+ {
+  "name": "events_run_update_tags",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-product-tags/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g116",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update_tags",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-product-tags/run",
+  "body": {
+   "input": {
+    "selector": {
+     "id": "{{tags.product_tags.0.id}}"
+    },
+    "update": {
+     "value": "wf-tag-2"
+    }
+   }
+  },
+  "parallel": "g116",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_delete_tags",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-product-tags/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g117",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_delete_tags",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-product-tags/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{tags.product_tags.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g117",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_create_collections",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-collections/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g118",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_collections",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-collections/run",
+  "body": {
+   "input": {
+    "collections": [
+     {
+      "title": "WF Collection",
+      "handle": "wf-collection"
+     }
+    ]
+   }
+  },
+  "parallel": "g118",
+  "delay_ms": 1500
+ },
+ {
+  "name": "cols",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/collections?handle=wf-collection&fields=id"
+ },
+ {
+  "name": "events_run_update_collections",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-collections/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g119",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update_collections",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-collections/run",
+  "body": {
+   "input": {
+    "selector": {
+     "id": "{{cols.collections.0.id}}"
+    },
+    "update": {
+     "title": "WF Collection 2"
+    }
+   }
+  },
+  "parallel": "g119",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_link_collection",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-link-products-to-collection/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g120",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_link_collection",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-link-products-to-collection/run",
+  "body": {
+   "input": {
+    "id": "{{cols.collections.0.id}}",
+    "add": [
+     "{{prod_a.products.0.id}}"
+    ],
+    "remove": []
+   }
+  },
+  "parallel": "g120",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_delete_collections",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-collections/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g121",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_delete_collections",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-collections/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{cols.collections.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g121",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_create_categories",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-categories/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g122",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_categories",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-product-categories/run",
+  "body": {
+   "input": {
+    "product_categories": [
+     {
+      "name": "WF Cat",
+      "handle": "wf-cat",
+      "is_active": true
+     }
+    ]
+   }
+  },
+  "parallel": "g122",
+  "delay_ms": 1500
+ },
+ {
+  "name": "cats",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/product-categories?handle=wf-cat&fields=id"
+ },
+ {
+  "name": "events_run_update_categories",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-product-categories/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g123",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update_categories",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-product-categories/run",
+  "body": {
+   "input": {
+    "selector": {
+     "id": "{{cats.product_categories.0.id}}"
+    },
+    "update": {
+     "description": "desc"
+    }
+   }
+  },
+  "parallel": "g123",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_link_category",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-link-products-to-category/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g124",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_link_category",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-link-products-to-category/run",
+  "body": {
+   "input": {
+    "id": "{{cats.product_categories.0.id}}",
+    "add": [
+     "{{prod_a.products.0.id}}"
+    ],
+    "remove": []
+   }
+  },
+  "parallel": "g124",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_delete_categories",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-product-categories/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g125",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_delete_categories",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-product-categories/run",
+  "body": {
+   "input": [
+    "{{cats.product_categories.0.id}}"
+   ]
+  },
+  "parallel": "g125",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_batch",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-products/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g126",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_batch",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-products/run",
+  "body": {
+   "input": {
+    "create": [
+     {
+      "title": "WF Batch",
+      "handle": "wf-batch",
+      "options": [
+       {
+        "title": "Size",
+        "values": [
+         "One"
+        ]
+       }
+      ]
+     }
+    ],
+    "update": [
+     {
+      "id": "{{prod_b.products.0.id}}",
+      "status": "draft"
+     }
+    ],
+    "delete": []
+   }
+  },
+  "parallel": "g126",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_delete_products",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-products/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g127",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_delete_products",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-products/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{prod_a.products.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g127",
+  "delay_ms": 1500
+ },
+ {
+  "name": "after",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/products?handle[]=wf-shirt&handle[]=wf-mug&handle[]=wf-batch&order=handle&fields=handle,title,status,subtitle,variants.sku"
+ }
+]

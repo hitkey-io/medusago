@@ -1,0 +1,3452 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ1NzIwNTcsImV4cCI6MTc5NDY1ODQ1N30.DBvv2HYlfsl5cpO7-GzP8-tb7SOhB2wOcIsZsBzDQcM"
+    }
+  },
+  "locations": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_locations": [
+        {
+          "id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "events_run_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD90Q356WQ2C5TPC6XWZ0Q"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD90Q356WQ2C5TPC6XWZ0Q",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-inventory-items",
+            "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+            "depth": 1,
+            "definition": {
+              "action": "create-inventory-items",
+              "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572059368,
+            "next": [
+              "_root.create-inventory-items.create-inventory-levels-workflow-as-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572059368
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD90Q356WQ2C5TPC6XWZ0Q",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-inventory-items",
+            "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+            "depth": 1,
+            "definition": {
+              "action": "create-inventory-items",
+              "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572059368,
+            "next": [
+              "_root.create-inventory-items.create-inventory-levels-workflow-as-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572059368
+          },
+          "response": [
+            {
+              "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "sku": "WF-SKU-1",
+              "origin_country": null,
+              "hs_code": null,
+              "mid_code": null,
+              "material": null,
+              "unit_of_measure": null,
+              "weight": null,
+              "length": null,
+              "height": null,
+              "width": null,
+              "requires_shipping": true,
+              "description": null,
+              "title": "WF item",
+              "thumbnail": null,
+              "metadata": {
+                "k": "v"
+              },
+              "created_at": "2026-11-13T12:14:19.370Z",
+              "updated_at": "2026-11-13T12:14:19.370Z",
+              "deleted_at": null,
+              "location_levels": [],
+              "reservation_items": [],
+              "reserved_quantity": null,
+              "stocked_quantity": null
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD90Q356WQ2C5TPC6XWZ0Q",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-inventory-items.create-inventory-levels-workflow-as-step",
+            "uuid": "01M7AD8Q8W3T3VNGT3X07AWAQH",
+            "depth": 2,
+            "definition": {
+              "action": "create-inventory-levels-workflow-as-step",
+              "name": "create-inventory-levels-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7AD8Q8W3T3VNGT3X07AWAQH",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572059386,
+            "next": [
+              "_root.create-inventory-items.create-inventory-levels-workflow-as-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572059386
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD90Q356WQ2C5TPC6XWZ0Q",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-inventory-items.create-inventory-levels-workflow-as-step",
+            "uuid": "01M7AD8Q8W3T3VNGT3X07AWAQH",
+            "depth": 2,
+            "definition": {
+              "action": "create-inventory-levels-workflow-as-step",
+              "name": "create-inventory-levels-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7AD8Q8W3T3VNGT3X07AWAQH",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572059386,
+            "next": [
+              "_root.create-inventory-items.create-inventory-levels-workflow-as-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572059386
+          },
+          "response": [
+            {
+              "id": "ilev_01M7AD90QY4B78GVBVA26NW3PT",
+              "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+              "metadata": null,
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "raw_stocked_quantity": {
+                "value": "5",
+                "precision": 20
+              },
+              "raw_reserved_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "raw_incoming_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "created_at": "2026-11-13T12:14:19.390Z",
+              "updated_at": "2026-11-13T12:14:19.390Z",
+              "deleted_at": null,
+              "stocked_quantity": 5,
+              "reserved_quantity": 0,
+              "incoming_quantity": 0
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD90Q356WQ2C5TPC6XWZ0Q",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-inventory-items.create-inventory-levels-workflow-as-step.emit-event-step",
+            "uuid": "01M7AD8Q8WCJN6929ME4EPNPXM",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8WCJN6929ME4EPNPXM",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572059400,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572059400
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD90Q356WQ2C5TPC6XWZ0Q",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-inventory-items.create-inventory-levels-workflow-as-step.emit-event-step",
+            "uuid": "01M7AD8Q8WCJN6929ME4EPNPXM",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8WCJN6929ME4EPNPXM",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572059400,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572059400
+          },
+          "response": {
+            "eventGroupId": "01M7AD90Q4A4ERYXEZ43XGWB5R",
+            "eventName": "inventory-item.created"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD90Q356WQ2C5TPC6XWZ0Q",
+          "result": [
+            {
+              "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "sku": "WF-SKU-1",
+              "origin_country": null,
+              "hs_code": null,
+              "mid_code": null,
+              "material": null,
+              "unit_of_measure": null,
+              "weight": null,
+              "length": null,
+              "height": null,
+              "width": null,
+              "requires_shipping": true,
+              "description": null,
+              "title": "WF item",
+              "thumbnail": null,
+              "metadata": {
+                "k": "v"
+              },
+              "created_at": "2026-11-13T12:14:19.370Z",
+              "updated_at": "2026-11-13T12:14:19.370Z",
+              "deleted_at": null,
+              "location_levels": [],
+              "reservation_items": [],
+              "reserved_quantity": null,
+              "stocked_quantity": null
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7AD90Q356WQ2C5TPC6XWZ0Q",
+        "workflowId": "create-inventory-items-workflow",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "inv": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_items": [
+        {
+          "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+          "sku": "WF-SKU-1"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "events_run_create_dup": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD927E3M1YV2WERGD5ZRMR"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD927E3M1YV2WERGD5ZRMR",
+          "step": {
+            "id": "_root.create-inventory-items",
+            "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+            "depth": 1,
+            "definition": {
+              "action": "create-inventory-items",
+              "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572060912,
+            "next": [
+              "_root.create-inventory-items.create-inventory-levels-workflow-as-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572060912
+          }
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD927E3M1YV2WERGD5ZRMR",
+          "step": {
+            "id": "_root.create-inventory-items",
+            "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+            "depth": 1,
+            "definition": {
+              "action": "create-inventory-items",
+              "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572060926,
+            "next": [
+              "_root.create-inventory-items.create-inventory-levels-workflow-as-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572060912
+          },
+          "errors": [
+            {
+              "action": "create-inventory-items",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Inventory item with sku: WF-SKU-1, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:14:20.921Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD927E3M1YV2WERGD5ZRMR"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD927E3M1YV2WERGD5ZRMR",
+          "step": {
+            "id": "_root.create-inventory-items",
+            "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+            "depth": 1,
+            "definition": {
+              "action": "create-inventory-items",
+              "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572060926,
+            "next": [
+              "_root.create-inventory-items.create-inventory-levels-workflow-as-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572060912
+          }
+        },
+        {
+          "event_type": "onCompensateStepSuccess",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD927E3M1YV2WERGD5ZRMR",
+          "step": {
+            "id": "_root.create-inventory-items",
+            "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+            "depth": 1,
+            "definition": {
+              "action": "create-inventory-items",
+              "uuid": "01M7AD8Q8W91QZFQB994B0JJ6S",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572060926,
+            "next": [
+              "_root.create-inventory-items.create-inventory-levels-workflow-as-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572060912
+          },
+          "response": {}
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD927E3M1YV2WERGD5ZRMR",
+          "errors": [
+            {
+              "action": "create-inventory-items",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Inventory item with sku: WF-SKU-1, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:14:20.921Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_create_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Inventory item with sku: WF-SKU-1, already exists."
+    }
+  },
+  "events_run_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD93PYP22Q3QN7Q463NQPR"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD93PYP22Q3QN7Q463NQPR",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-items-step",
+            "uuid": "01M7AD8Q8Y2R46WESGSGWCGENX",
+            "depth": 1,
+            "definition": {
+              "action": "update-inventory-items-step",
+              "uuid": "01M7AD8Q8Y2R46WESGSGWCGENX",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572062432,
+            "next": [
+              "_root.update-inventory-items-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572062432
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD93PYP22Q3QN7Q463NQPR",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-items-step",
+            "uuid": "01M7AD8Q8Y2R46WESGSGWCGENX",
+            "depth": 1,
+            "definition": {
+              "action": "update-inventory-items-step",
+              "uuid": "01M7AD8Q8Y2R46WESGSGWCGENX",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572062432,
+            "next": [
+              "_root.update-inventory-items-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572062432
+          },
+          "response": [
+            {
+              "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "sku": "WF-SKU-1",
+              "origin_country": null,
+              "hs_code": null,
+              "mid_code": null,
+              "material": null,
+              "unit_of_measure": null,
+              "weight": 10,
+              "length": null,
+              "height": null,
+              "width": null,
+              "requires_shipping": true,
+              "description": null,
+              "title": "WF item 2",
+              "thumbnail": null,
+              "metadata": {
+                "k": "v"
+              },
+              "created_at": "2026-11-13T12:14:19.370Z",
+              "updated_at": "2026-11-13T12:14:22.435Z",
+              "deleted_at": null,
+              "reserved_quantity": null,
+              "stocked_quantity": null
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD93PYP22Q3QN7Q463NQPR",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-items-step.emit-event-step",
+            "uuid": "01M7AD8Q8YBADC2XN1574WXP1V",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8YBADC2XN1574WXP1V",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572062443,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572062443
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD93PYP22Q3QN7Q463NQPR",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-items-step.emit-event-step",
+            "uuid": "01M7AD8Q8YBADC2XN1574WXP1V",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8YBADC2XN1574WXP1V",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572062443,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572062443
+          },
+          "response": {
+            "eventGroupId": "01M7AD93PY56JD882F7HWD3VCP",
+            "eventName": "inventory-item.updated"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-inventory-items-workflow",
+          "transaction_id": "auto-01M7AD93PYP22Q3QN7Q463NQPR",
+          "result": [
+            {
+              "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "sku": "WF-SKU-1",
+              "origin_country": null,
+              "hs_code": null,
+              "mid_code": null,
+              "material": null,
+              "unit_of_measure": null,
+              "weight": 10,
+              "length": null,
+              "height": null,
+              "width": null,
+              "requires_shipping": true,
+              "description": null,
+              "title": "WF item 2",
+              "thumbnail": null,
+              "metadata": {
+                "k": "v"
+              },
+              "created_at": "2026-11-13T12:14:19.370Z",
+              "updated_at": "2026-11-13T12:14:22.435Z",
+              "deleted_at": null,
+              "reserved_quantity": null,
+              "stocked_quantity": null
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7AD93PYP22Q3QN7Q463NQPR",
+        "workflowId": "update-inventory-items-workflow",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "loc2": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "stock_location": {
+        "id": "sloc_01M7AD93QF2H48G2YDKXFXFNCH"
+      }
+    }
+  },
+  "events_run_levels_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD956KG92SA17SV0CWTKAP"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD956KG92SA17SV0CWTKAP",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-inventory-levels-step",
+            "uuid": "01M7AD8Q8WZ0JTJ6JCE58KGB14",
+            "depth": 1,
+            "definition": {
+              "action": "validate-inventory-levels-step",
+              "uuid": "01M7AD8Q8WZ0JTJ6JCE58KGB14",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572063958,
+            "next": [
+              "_root.validate-inventory-levels-step.create-inventory-levels"
+            ],
+            "_v": 0,
+            "startedAt": 1794572063958
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD956KG92SA17SV0CWTKAP",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-inventory-levels-step",
+            "uuid": "01M7AD8Q8WZ0JTJ6JCE58KGB14",
+            "depth": 1,
+            "definition": {
+              "action": "validate-inventory-levels-step",
+              "uuid": "01M7AD8Q8WZ0JTJ6JCE58KGB14",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572063958,
+            "next": [
+              "_root.validate-inventory-levels-step.create-inventory-levels"
+            ],
+            "_v": 0,
+            "startedAt": 1794572063958
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD956KG92SA17SV0CWTKAP",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-inventory-levels-step.create-inventory-levels",
+            "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+            "depth": 2,
+            "definition": {
+              "action": "create-inventory-levels",
+              "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572063960,
+            "next": [
+              "_root.validate-inventory-levels-step.create-inventory-levels.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572063960
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD956KG92SA17SV0CWTKAP",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-inventory-levels-step.create-inventory-levels",
+            "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+            "depth": 2,
+            "definition": {
+              "action": "create-inventory-levels",
+              "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572063960,
+            "next": [
+              "_root.validate-inventory-levels-step.create-inventory-levels.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572063960
+          },
+          "response": [
+            {
+              "id": "ilev_01M7AD956RXV3PYJ9FY6NZMWER",
+              "location_id": "sloc_01M7AD93QF2H48G2YDKXFXFNCH",
+              "metadata": null,
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "raw_stocked_quantity": {
+                "value": "3",
+                "precision": 20
+              },
+              "raw_reserved_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "raw_incoming_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "created_at": "2026-11-13T12:14:23.961Z",
+              "updated_at": "2026-11-13T12:14:23.961Z",
+              "deleted_at": null,
+              "stocked_quantity": 3,
+              "reserved_quantity": 0,
+              "incoming_quantity": 0
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD956KG92SA17SV0CWTKAP",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-inventory-levels-step.create-inventory-levels.emit-event-step",
+            "uuid": "01M7AD8Q8WXC2155Y503TTMFXP",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8WXC2155Y503TTMFXP",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572063969,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572063969
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD956KG92SA17SV0CWTKAP",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-inventory-levels-step.create-inventory-levels.emit-event-step",
+            "uuid": "01M7AD8Q8WXC2155Y503TTMFXP",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8WXC2155Y503TTMFXP",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572063969,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572063969
+          },
+          "response": {
+            "eventGroupId": "01M7AD956MKYAV1T2PCFNN9FDR",
+            "eventName": "inventory-level.created"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD956KG92SA17SV0CWTKAP",
+          "result": [
+            {
+              "id": "ilev_01M7AD956RXV3PYJ9FY6NZMWER",
+              "location_id": "sloc_01M7AD93QF2H48G2YDKXFXFNCH",
+              "metadata": null,
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "raw_stocked_quantity": {
+                "value": "3",
+                "precision": 20
+              },
+              "raw_reserved_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "raw_incoming_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "created_at": "2026-11-13T12:14:23.961Z",
+              "updated_at": "2026-11-13T12:14:23.961Z",
+              "deleted_at": null,
+              "stocked_quantity": 3,
+              "reserved_quantity": 0,
+              "incoming_quantity": 0
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_levels_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7AD956KG92SA17SV0CWTKAP",
+        "workflowId": "create-inventory-levels-workflow",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_levels_create_dup": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD96P1ZKNXXNN1AE72K7W8"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD96P1ZKNXXNN1AE72K7W8",
+          "step": {
+            "id": "_root.validate-inventory-levels-step",
+            "uuid": "01M7AD8Q8WZ0JTJ6JCE58KGB14",
+            "depth": 1,
+            "definition": {
+              "action": "validate-inventory-levels-step",
+              "uuid": "01M7AD8Q8WZ0JTJ6JCE58KGB14",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572065475,
+            "next": [
+              "_root.validate-inventory-levels-step.create-inventory-levels"
+            ],
+            "_v": 0,
+            "startedAt": 1794572065475
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD96P1ZKNXXNN1AE72K7W8",
+          "step": {
+            "id": "_root.validate-inventory-levels-step",
+            "uuid": "01M7AD8Q8WZ0JTJ6JCE58KGB14",
+            "depth": 1,
+            "definition": {
+              "action": "validate-inventory-levels-step",
+              "uuid": "01M7AD8Q8WZ0JTJ6JCE58KGB14",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572065475,
+            "next": [
+              "_root.validate-inventory-levels-step.create-inventory-levels"
+            ],
+            "_v": 0,
+            "startedAt": 1794572065475
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD96P1ZKNXXNN1AE72K7W8",
+          "step": {
+            "id": "_root.validate-inventory-levels-step.create-inventory-levels",
+            "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+            "depth": 2,
+            "definition": {
+              "action": "create-inventory-levels",
+              "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572065476,
+            "next": [
+              "_root.validate-inventory-levels-step.create-inventory-levels.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572065476
+          }
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD96P1ZKNXXNN1AE72K7W8",
+          "step": {
+            "id": "_root.validate-inventory-levels-step.create-inventory-levels",
+            "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+            "depth": 2,
+            "definition": {
+              "action": "create-inventory-levels",
+              "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572065480,
+            "next": [
+              "_root.validate-inventory-levels-step.create-inventory-levels.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572065476
+          },
+          "errors": [
+            {
+              "action": "create-inventory-levels",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Inventory level with inventory_item_id: iitem_01M7AD90QAHNFEFY5H6ENQ6F97, location_id: sloc_01M7AD93QF2H48G2YDKXFXFNCH, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:14:25.478Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD96P1ZKNXXNN1AE72K7W8"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD96P1ZKNXXNN1AE72K7W8",
+          "step": {
+            "id": "_root.validate-inventory-levels-step.create-inventory-levels",
+            "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+            "depth": 2,
+            "definition": {
+              "action": "create-inventory-levels",
+              "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572065480,
+            "next": [
+              "_root.validate-inventory-levels-step.create-inventory-levels.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572065476
+          }
+        },
+        {
+          "event_type": "onCompensateStepSuccess",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD96P1ZKNXXNN1AE72K7W8",
+          "step": {
+            "id": "_root.validate-inventory-levels-step.create-inventory-levels",
+            "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+            "depth": 2,
+            "definition": {
+              "action": "create-inventory-levels",
+              "uuid": "01M7AD8Q8W4GPYTAPCYYBWQQCE",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572065480,
+            "next": [
+              "_root.validate-inventory-levels-step.create-inventory-levels.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572065476
+          },
+          "response": {}
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD96P1ZKNXXNN1AE72K7W8",
+          "errors": [
+            {
+              "action": "create-inventory-levels",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Inventory level with inventory_item_id: iitem_01M7AD90QAHNFEFY5H6ENQ6F97, location_id: sloc_01M7AD93QF2H48G2YDKXFXFNCH, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:14:25.478Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_levels_create_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Inventory level with inventory_item_id: iitem_01M7AD90QAHNFEFY5H6ENQ6F97, location_id: sloc_01M7AD93QF2H48G2YDKXFXFNCH, already exists."
+    }
+  },
+  "events_run_levels_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9858A4VKNB5XZ8XWT674"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9858A4VKNB5XZ8XWT674",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-levels-step",
+            "uuid": "01M7AD8Q8Y79GJQVGW1RQASCDB",
+            "depth": 1,
+            "definition": {
+              "action": "update-inventory-levels-step",
+              "uuid": "01M7AD8Q8Y79GJQVGW1RQASCDB",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572066986,
+            "next": [
+              "_root.update-inventory-levels-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572066986
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9858A4VKNB5XZ8XWT674",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-levels-step",
+            "uuid": "01M7AD8Q8Y79GJQVGW1RQASCDB",
+            "depth": 1,
+            "definition": {
+              "action": "update-inventory-levels-step",
+              "uuid": "01M7AD8Q8Y79GJQVGW1RQASCDB",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572066986,
+            "next": [
+              "_root.update-inventory-levels-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572066986
+          },
+          "response": [
+            {
+              "id": "ilev_01M7AD956RXV3PYJ9FY6NZMWER",
+              "location_id": "sloc_01M7AD93QF2H48G2YDKXFXFNCH",
+              "metadata": null,
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "inventory_item": {
+                "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+                "reserved_quantity": null,
+                "stocked_quantity": null
+              },
+              "raw_stocked_quantity": {
+                "value": "4",
+                "precision": 20
+              },
+              "raw_reserved_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "raw_incoming_quantity": {
+                "value": "1",
+                "precision": 20
+              },
+              "created_at": "2026-11-13T12:14:23.961Z",
+              "updated_at": "2026-11-13T12:14:26.991Z",
+              "deleted_at": null,
+              "available_quantity": 3,
+              "stocked_quantity": 4,
+              "reserved_quantity": 0,
+              "incoming_quantity": 1
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9858A4VKNB5XZ8XWT674",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-levels-step.emit-event-step",
+            "uuid": "01M7AD8Q8Y6PRD3TXJSB46CM1E",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8Y6PRD3TXJSB46CM1E",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572067003,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572067003
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9858A4VKNB5XZ8XWT674",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-levels-step.emit-event-step",
+            "uuid": "01M7AD8Q8Y6PRD3TXJSB46CM1E",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8Y6PRD3TXJSB46CM1E",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572067003,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572067003
+          },
+          "response": {
+            "eventGroupId": "01M7AD9858H2FKGA6PHD3H60KG",
+            "eventName": "inventory-level.updated"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9858A4VKNB5XZ8XWT674",
+          "result": [
+            {
+              "id": "ilev_01M7AD956RXV3PYJ9FY6NZMWER",
+              "location_id": "sloc_01M7AD93QF2H48G2YDKXFXFNCH",
+              "metadata": null,
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "inventory_item": {
+                "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+                "reserved_quantity": null,
+                "stocked_quantity": null
+              },
+              "raw_stocked_quantity": {
+                "value": "4",
+                "precision": 20
+              },
+              "raw_reserved_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "raw_incoming_quantity": {
+                "value": "1",
+                "precision": 20
+              },
+              "created_at": "2026-11-13T12:14:23.961Z",
+              "updated_at": "2026-11-13T12:14:26.991Z",
+              "deleted_at": null,
+              "available_quantity": 3,
+              "stocked_quantity": 4,
+              "reserved_quantity": 0,
+              "incoming_quantity": 1
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_levels_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7AD9858A4VKNB5XZ8XWT674",
+        "workflowId": "update-inventory-levels-workflow",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_levels_batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-inventory-levels",
+            "uuid": "01M7AD8Q8T3JFCS1PEKF0FKKG8",
+            "depth": 1,
+            "definition": {
+              "action": "create-inventory-levels",
+              "uuid": "01M7AD8Q8T3JFCS1PEKF0FKKG8",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572068512,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572068512
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-levels-step",
+            "uuid": "01M7AD8Q8T3DTWDY9FWWZVTG75",
+            "depth": 1,
+            "definition": {
+              "action": "update-inventory-levels-step",
+              "uuid": "01M7AD8Q8T3DTWDY9FWWZVTG75",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572068512,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572068512
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-inventory-levels-workflow-as-step",
+            "uuid": "01M7AD8Q8T7CVQG14KPM6YC6JN",
+            "depth": 1,
+            "definition": {
+              "action": "delete-inventory-levels-workflow-as-step",
+              "name": "delete-inventory-levels-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7AD8Q8T7CVQG14KPM6YC6JN",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572068512,
+            "next": [
+              "_root.delete-inventory-levels-workflow-as-step.emit-inventory-level-created",
+              "_root.delete-inventory-levels-workflow-as-step.emit-inventory-level-updated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572068512
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-inventory-levels",
+            "uuid": "01M7AD8Q8T3JFCS1PEKF0FKKG8",
+            "depth": 1,
+            "definition": {
+              "action": "create-inventory-levels",
+              "uuid": "01M7AD8Q8T3JFCS1PEKF0FKKG8",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572068512,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572068512
+          },
+          "response": []
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-inventory-levels-workflow-as-step",
+            "uuid": "01M7AD8Q8T7CVQG14KPM6YC6JN",
+            "depth": 1,
+            "definition": {
+              "action": "delete-inventory-levels-workflow-as-step",
+              "name": "delete-inventory-levels-workflow-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7AD8Q8T7CVQG14KPM6YC6JN",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572068512,
+            "next": [
+              "_root.delete-inventory-levels-workflow-as-step.emit-inventory-level-created",
+              "_root.delete-inventory-levels-workflow-as-step.emit-inventory-level-updated"
+            ],
+            "_v": 0,
+            "startedAt": 1794572068512
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-levels-step",
+            "uuid": "01M7AD8Q8T3DTWDY9FWWZVTG75",
+            "depth": 1,
+            "definition": {
+              "action": "update-inventory-levels-step",
+              "uuid": "01M7AD8Q8T3DTWDY9FWWZVTG75",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572068512,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572068512
+          },
+          "response": [
+            {
+              "id": "ilev_01M7AD90QY4B78GVBVA26NW3PT",
+              "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+              "metadata": null,
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "inventory_item": {
+                "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+                "reserved_quantity": null,
+                "stocked_quantity": null
+              },
+              "raw_stocked_quantity": {
+                "value": "9",
+                "precision": 20
+              },
+              "raw_reserved_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "raw_incoming_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "created_at": "2026-11-13T12:14:19.390Z",
+              "updated_at": "2026-11-13T12:14:28.520Z",
+              "deleted_at": null,
+              "available_quantity": 5,
+              "stocked_quantity": 9,
+              "reserved_quantity": 0,
+              "incoming_quantity": 0
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-inventory-levels-workflow-as-step.emit-inventory-level-created",
+            "uuid": "01M7AD8Q8T8HDQF96SAW6JK310",
+            "depth": 2,
+            "definition": {
+              "action": "emit-inventory-level-created",
+              "uuid": "01M7AD8Q8T8HDQF96SAW6JK310",
+              "noCompensation": false,
+              "async": false,
+              "compensateAsync": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572068524,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572068524
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-inventory-levels-workflow-as-step.emit-inventory-level-updated",
+            "uuid": "01M7AD8Q8TR4H97NHW082BSKGF",
+            "depth": 2,
+            "definition": {
+              "action": "emit-inventory-level-updated",
+              "uuid": "01M7AD8Q8TR4H97NHW082BSKGF",
+              "noCompensation": false,
+              "async": false,
+              "compensateAsync": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572068524,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572068524
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-inventory-levels-workflow-as-step.emit-inventory-level-created",
+            "uuid": "01M7AD8Q8T8HDQF96SAW6JK310",
+            "depth": 2,
+            "definition": {
+              "action": "emit-inventory-level-created",
+              "uuid": "01M7AD8Q8T8HDQF96SAW6JK310",
+              "noCompensation": false,
+              "async": false,
+              "compensateAsync": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572068524,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572068524
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-inventory-levels-workflow-as-step.emit-inventory-level-updated",
+            "uuid": "01M7AD8Q8TR4H97NHW082BSKGF",
+            "depth": 2,
+            "definition": {
+              "action": "emit-inventory-level-updated",
+              "uuid": "01M7AD8Q8TR4H97NHW082BSKGF",
+              "noCompensation": false,
+              "async": false,
+              "compensateAsync": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572068524,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572068524
+          },
+          "response": {
+            "eventGroupId": "01M7AD99MYYYAHKSVBSCFXZP79",
+            "eventName": "inventory-level.updated"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "batch-inventory-item-levels-workflow",
+          "transaction_id": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+          "result": {
+            "created": [],
+            "updated": [
+              {
+                "id": "ilev_01M7AD90QY4B78GVBVA26NW3PT",
+                "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+                "metadata": null,
+                "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+                "inventory_item": {
+                  "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+                  "reserved_quantity": null,
+                  "stocked_quantity": null
+                },
+                "raw_stocked_quantity": {
+                  "value": "9",
+                  "precision": 20
+                },
+                "raw_reserved_quantity": {
+                  "value": "0",
+                  "precision": 20
+                },
+                "raw_incoming_quantity": {
+                  "value": "0",
+                  "precision": 20
+                },
+                "created_at": "2026-11-13T12:14:19.390Z",
+                "updated_at": "2026-11-13T12:14:28.520Z",
+                "deleted_at": null,
+                "available_quantity": 5,
+                "stocked_quantity": 9,
+                "reserved_quantity": 0,
+                "incoming_quantity": 0
+              }
+            ],
+            "deleted": []
+          },
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_levels_batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7AD99MXYHSX3K5FHV0CKK8C",
+        "workflowId": "batch-inventory-item-levels-workflow",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "levels": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_levels": [
+        {
+          "id": "ilev_01M7AD956RXV3PYJ9FY6NZMWER"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "events_run_res_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-reservations-workflow",
+          "transaction_id": "auto-01M7AD9B4HAZQSZBJFYHYZV69E"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-reservations-workflow",
+          "transaction_id": "auto-01M7AD9B4HAZQSZBJFYHYZV69E",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-reservations-step",
+            "uuid": "01M7AD8Q8Z4SBQ7A6ZQ45VSJKC",
+            "depth": 1,
+            "definition": {
+              "action": "create-reservations-step",
+              "uuid": "01M7AD8Q8Z4SBQ7A6ZQ45VSJKC",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572070035,
+            "next": [
+              "_root.create-reservations-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572070035
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-reservations-workflow",
+          "transaction_id": "auto-01M7AD9B4HAZQSZBJFYHYZV69E",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-reservations-step",
+            "uuid": "01M7AD8Q8Z4SBQ7A6ZQ45VSJKC",
+            "depth": 1,
+            "definition": {
+              "action": "create-reservations-step",
+              "uuid": "01M7AD8Q8Z4SBQ7A6ZQ45VSJKC",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572070035,
+            "next": [
+              "_root.create-reservations-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572070035
+          },
+          "response": [
+            {
+              "id": "resitem_01M7AD9B4PXY6GYCMQ4FR6VG1N",
+              "line_item_id": null,
+              "allow_backorder": false,
+              "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+              "raw_quantity": {
+                "value": "2",
+                "precision": 20
+              },
+              "external_id": null,
+              "description": "wf hold",
+              "created_by": null,
+              "metadata": {
+                "r": 1
+              },
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "created_at": "2026-11-13T12:14:30.040Z",
+              "updated_at": "2026-11-13T12:14:30.040Z",
+              "deleted_at": null,
+              "quantity": 2
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-reservations-workflow",
+          "transaction_id": "auto-01M7AD9B4HAZQSZBJFYHYZV69E",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-reservations-step.emit-event-step",
+            "uuid": "01M7AD8Q8ZT68FB830CWQS3QWW",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8ZT68FB830CWQS3QWW",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572070052,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572070052
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-reservations-workflow",
+          "transaction_id": "auto-01M7AD9B4HAZQSZBJFYHYZV69E",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-reservations-step.emit-event-step",
+            "uuid": "01M7AD8Q8ZT68FB830CWQS3QWW",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8ZT68FB830CWQS3QWW",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572070052,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572070052
+          },
+          "response": {
+            "eventGroupId": "01M7AD9B4H47DWBEQPYXMZ2GHB",
+            "eventName": "reservation-item.created"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-reservations-workflow",
+          "transaction_id": "auto-01M7AD9B4HAZQSZBJFYHYZV69E",
+          "result": [
+            {
+              "id": "resitem_01M7AD9B4PXY6GYCMQ4FR6VG1N",
+              "line_item_id": null,
+              "allow_backorder": false,
+              "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+              "raw_quantity": {
+                "value": "2",
+                "precision": 20
+              },
+              "external_id": null,
+              "description": "wf hold",
+              "created_by": null,
+              "metadata": {
+                "r": 1
+              },
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "created_at": "2026-11-13T12:14:30.040Z",
+              "updated_at": "2026-11-13T12:14:30.040Z",
+              "deleted_at": null,
+              "quantity": 2
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_res_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7AD9B4HAZQSZBJFYHYZV69E",
+        "workflowId": "create-reservations-workflow",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "res": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "reservations": [
+        {
+          "id": "resitem_01M7AD9B4PXY6GYCMQ4FR6VG1N"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 20
+    }
+  },
+  "events_run_res_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9CM8H2RDZTKAEMJB9FKS"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9CM8H2RDZTKAEMJB9FKS",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-reservations-step",
+            "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+            "depth": 1,
+            "definition": {
+              "action": "update-reservations-step",
+              "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572071562,
+            "next": [
+              "_root.update-reservations-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572071562
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9CM8H2RDZTKAEMJB9FKS",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-reservations-step",
+            "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+            "depth": 1,
+            "definition": {
+              "action": "update-reservations-step",
+              "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572071562,
+            "next": [
+              "_root.update-reservations-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572071562
+          },
+          "response": [
+            {
+              "id": "resitem_01M7AD9B4PXY6GYCMQ4FR6VG1N",
+              "line_item_id": null,
+              "allow_backorder": false,
+              "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+              "raw_quantity": {
+                "value": "3",
+                "precision": 20
+              },
+              "external_id": null,
+              "description": "more",
+              "created_by": null,
+              "metadata": {
+                "r": 1
+              },
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "inventory_item": {
+                "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+                "reserved_quantity": null,
+                "stocked_quantity": null
+              },
+              "created_at": "2026-11-13T12:14:30.040Z",
+              "updated_at": "2026-11-13T12:14:31.567Z",
+              "deleted_at": null,
+              "quantity": 3
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9CM8H2RDZTKAEMJB9FKS",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-reservations-step.emit-event-step",
+            "uuid": "01M7AD8Q907ANKSH7FXP90ZXS0",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q907ANKSH7FXP90ZXS0",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572071576,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572071576
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9CM8H2RDZTKAEMJB9FKS",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-reservations-step.emit-event-step",
+            "uuid": "01M7AD8Q907ANKSH7FXP90ZXS0",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q907ANKSH7FXP90ZXS0",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572071576,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572071576
+          },
+          "response": {
+            "eventGroupId": "01M7AD9CM8DQFPN0CFB9T1HKH7",
+            "eventName": "reservation-item.updated"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9CM8H2RDZTKAEMJB9FKS",
+          "result": [
+            {
+              "id": "resitem_01M7AD9B4PXY6GYCMQ4FR6VG1N",
+              "line_item_id": null,
+              "allow_backorder": false,
+              "location_id": "sloc_01M70XZZY3P5TA8QCJV5KPJCKX",
+              "raw_quantity": {
+                "value": "3",
+                "precision": 20
+              },
+              "external_id": null,
+              "description": "more",
+              "created_by": null,
+              "metadata": {
+                "r": 1
+              },
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "inventory_item": {
+                "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+                "reserved_quantity": null,
+                "stocked_quantity": null
+              },
+              "created_at": "2026-11-13T12:14:30.040Z",
+              "updated_at": "2026-11-13T12:14:31.567Z",
+              "deleted_at": null,
+              "quantity": 3
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_res_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7AD9CM8H2RDZTKAEMJB9FKS",
+        "workflowId": "update-reservations-workflow",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_res_update_bad": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9E3SKXBHR45WJGVKYQY9"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9E3SKXBHR45WJGVKYQY9",
+          "step": {
+            "id": "_root.update-reservations-step",
+            "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+            "depth": 1,
+            "definition": {
+              "action": "update-reservations-step",
+              "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572073083,
+            "next": [
+              "_root.update-reservations-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572073083
+          }
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9E3SKXBHR45WJGVKYQY9",
+          "step": {
+            "id": "_root.update-reservations-step",
+            "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+            "depth": 1,
+            "definition": {
+              "action": "update-reservations-step",
+              "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572073087,
+            "next": [
+              "_root.update-reservations-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572073083
+          },
+          "errors": [
+            {
+              "action": "update-reservations-step",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Reservation item with id resitem_missing not found",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:14:33.085Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9E3SKXBHR45WJGVKYQY9"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9E3SKXBHR45WJGVKYQY9",
+          "step": {
+            "id": "_root.update-reservations-step",
+            "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+            "depth": 1,
+            "definition": {
+              "action": "update-reservations-step",
+              "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572073087,
+            "next": [
+              "_root.update-reservations-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572073083
+          }
+        },
+        {
+          "event_type": "onCompensateStepSuccess",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9E3SKXBHR45WJGVKYQY9",
+          "step": {
+            "id": "_root.update-reservations-step",
+            "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+            "depth": 1,
+            "definition": {
+              "action": "update-reservations-step",
+              "uuid": "01M7AD8Q90YHKA9MP6VKB2F3WM",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572073087,
+            "next": [
+              "_root.update-reservations-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572073083
+          },
+          "response": {}
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-reservations-workflow",
+          "transaction_id": "auto-01M7AD9E3SKXBHR45WJGVKYQY9",
+          "errors": [
+            {
+              "action": "update-reservations-step",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Reservation item with id resitem_missing not found",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:14:33.085Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_res_update_bad": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Reservation item with id resitem_missing not found"
+    }
+  },
+  "events_run_res_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "delete-reservations",
+          "transaction_id": "auto-01M7AD9FJZ2P4KTE95HR7DZKYT"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-reservations",
+          "transaction_id": "auto-01M7AD9FJZ2P4KTE95HR7DZKYT",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-reservations",
+            "uuid": "01M7AD8Q8ZD9WYZM8QFG37E8BY",
+            "depth": 1,
+            "definition": {
+              "action": "delete-reservations",
+              "uuid": "01M7AD8Q8ZD9WYZM8QFG37E8BY",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572074593,
+            "next": [
+              "_root.delete-reservations.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572074593
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-reservations",
+          "transaction_id": "auto-01M7AD9FJZ2P4KTE95HR7DZKYT",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-reservations",
+            "uuid": "01M7AD8Q8ZD9WYZM8QFG37E8BY",
+            "depth": 1,
+            "definition": {
+              "action": "delete-reservations",
+              "uuid": "01M7AD8Q8ZD9WYZM8QFG37E8BY",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572074593,
+            "next": [
+              "_root.delete-reservations.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572074593
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-reservations",
+          "transaction_id": "auto-01M7AD9FJZ2P4KTE95HR7DZKYT",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-reservations.emit-event-step",
+            "uuid": "01M7AD8Q8ZF7MDPV9ECG4NEVZ5",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8ZF7MDPV9ECG4NEVZ5",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572074608,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572074608
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-reservations",
+          "transaction_id": "auto-01M7AD9FJZ2P4KTE95HR7DZKYT",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-reservations.emit-event-step",
+            "uuid": "01M7AD8Q8ZF7MDPV9ECG4NEVZ5",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8ZF7MDPV9ECG4NEVZ5",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572074608,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572074608
+          },
+          "response": {
+            "eventGroupId": "01M7AD9FJZCRPMNJG31R05V3XY",
+            "eventName": "reservation-item.deleted"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "delete-reservations",
+          "transaction_id": "auto-01M7AD9FJZ2P4KTE95HR7DZKYT",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_res_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7AD9FJZ2P4KTE95HR7DZKYT",
+        "workflowId": "delete-reservations",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_levels_delete_stocked": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9H2GF7F8FJSKQHQ5T1QB"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9H2GF7F8FJSKQHQ5T1QB",
+          "step": {
+            "id": "_root.use-remote-query",
+            "uuid": "01M7AD8Q8TE7WHVF2YGN1BM2GR",
+            "depth": 1,
+            "definition": {
+              "action": "use-remote-query",
+              "uuid": "01M7AD8Q8TE7WHVF2YGN1BM2GR",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572076114,
+            "next": [
+              "_root.use-remote-query.validate-inventory-levels-delete"
+            ],
+            "_v": 0,
+            "startedAt": 1794572076114
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9H2GF7F8FJSKQHQ5T1QB",
+          "step": {
+            "id": "_root.use-remote-query",
+            "uuid": "01M7AD8Q8TE7WHVF2YGN1BM2GR",
+            "depth": 1,
+            "definition": {
+              "action": "use-remote-query",
+              "uuid": "01M7AD8Q8TE7WHVF2YGN1BM2GR",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572076120,
+            "next": [
+              "_root.use-remote-query.validate-inventory-levels-delete"
+            ],
+            "_v": 0,
+            "startedAt": 1794572076114
+          },
+          "response": [
+            {
+              "id": "ilev_01M7AD956RXV3PYJ9FY6NZMWER",
+              "stocked_quantity": 4,
+              "reserved_quantity": 0,
+              "location_id": "sloc_01M7AD93QF2H48G2YDKXFXFNCH"
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9H2GF7F8FJSKQHQ5T1QB",
+          "step": {
+            "id": "_root.use-remote-query.validate-inventory-levels-delete",
+            "uuid": "01M7AD8Q8TCVCAYBSWB76WXPNG",
+            "depth": 2,
+            "definition": {
+              "action": "validate-inventory-levels-delete",
+              "uuid": "01M7AD8Q8TCVCAYBSWB76WXPNG",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572076120,
+            "next": [
+              "_root.use-remote-query.validate-inventory-levels-delete.delete-entities-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572076116
+          }
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9H2GF7F8FJSKQHQ5T1QB",
+          "step": {
+            "id": "_root.use-remote-query.validate-inventory-levels-delete",
+            "uuid": "01M7AD8Q8TCVCAYBSWB76WXPNG",
+            "depth": 2,
+            "definition": {
+              "action": "validate-inventory-levels-delete",
+              "uuid": "01M7AD8Q8TCVCAYBSWB76WXPNG",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572076120,
+            "next": [
+              "_root.use-remote-query.validate-inventory-levels-delete.delete-entities-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572076116
+          },
+          "errors": [
+            {
+              "action": "validate-inventory-levels-delete",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Cannot remove Inventory Levels for sloc_01M7AD93QF2H48G2YDKXFXFNCH because there are stocked items at the locations. Use force flag to delete anyway.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "not_allowed",
+                "date": "2026-11-13T12:14:36.116Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9H2GF7F8FJSKQHQ5T1QB"
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9H2GF7F8FJSKQHQ5T1QB",
+          "errors": [
+            {
+              "action": "validate-inventory-levels-delete",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Cannot remove Inventory Levels for sloc_01M7AD93QF2H48G2YDKXFXFNCH because there are stocked items at the locations. Use force flag to delete anyway.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "not_allowed",
+                "date": "2026-11-13T12:14:36.116Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_levels_delete_stocked": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_allowed",
+      "message": "Cannot remove Inventory Levels for sloc_01M7AD93QF2H48G2YDKXFXFNCH because there are stocked items at the locations. Use force flag to delete anyway."
+    }
+  },
+  "events_run_levels_zero": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9JHRNVCHGK10KKJ4BDDJ"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9JHRNVCHGK10KKJ4BDDJ",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-levels-step",
+            "uuid": "01M7AD8Q8Y79GJQVGW1RQASCDB",
+            "depth": 1,
+            "definition": {
+              "action": "update-inventory-levels-step",
+              "uuid": "01M7AD8Q8Y79GJQVGW1RQASCDB",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572077626,
+            "next": [
+              "_root.update-inventory-levels-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572077626
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9JHRNVCHGK10KKJ4BDDJ",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-levels-step",
+            "uuid": "01M7AD8Q8Y79GJQVGW1RQASCDB",
+            "depth": 1,
+            "definition": {
+              "action": "update-inventory-levels-step",
+              "uuid": "01M7AD8Q8Y79GJQVGW1RQASCDB",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572077626,
+            "next": [
+              "_root.update-inventory-levels-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572077626
+          },
+          "response": [
+            {
+              "id": "ilev_01M7AD956RXV3PYJ9FY6NZMWER",
+              "location_id": "sloc_01M7AD93QF2H48G2YDKXFXFNCH",
+              "metadata": null,
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "inventory_item": {
+                "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+                "reserved_quantity": null,
+                "stocked_quantity": null
+              },
+              "raw_stocked_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "raw_reserved_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "raw_incoming_quantity": {
+                "value": "1",
+                "precision": 20
+              },
+              "created_at": "2026-11-13T12:14:23.961Z",
+              "updated_at": "2026-11-13T12:14:37.631Z",
+              "deleted_at": null,
+              "available_quantity": 4,
+              "stocked_quantity": 0,
+              "reserved_quantity": 0,
+              "incoming_quantity": 1
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9JHRNVCHGK10KKJ4BDDJ",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-levels-step.emit-event-step",
+            "uuid": "01M7AD8Q8Y6PRD3TXJSB46CM1E",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8Y6PRD3TXJSB46CM1E",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572077636,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572077636
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9JHRNVCHGK10KKJ4BDDJ",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-inventory-levels-step.emit-event-step",
+            "uuid": "01M7AD8Q8Y6PRD3TXJSB46CM1E",
+            "depth": 2,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8Y6PRD3TXJSB46CM1E",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572077636,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572077636
+          },
+          "response": {
+            "eventGroupId": "01M7AD9JHR14WWYKYHZ910TBF3",
+            "eventName": "inventory-level.updated"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9JHRNVCHGK10KKJ4BDDJ",
+          "result": [
+            {
+              "id": "ilev_01M7AD956RXV3PYJ9FY6NZMWER",
+              "location_id": "sloc_01M7AD93QF2H48G2YDKXFXFNCH",
+              "metadata": null,
+              "inventory_item_id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+              "inventory_item": {
+                "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+                "reserved_quantity": null,
+                "stocked_quantity": null
+              },
+              "raw_stocked_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "raw_reserved_quantity": {
+                "value": "0",
+                "precision": 20
+              },
+              "raw_incoming_quantity": {
+                "value": "1",
+                "precision": 20
+              },
+              "created_at": "2026-11-13T12:14:23.961Z",
+              "updated_at": "2026-11-13T12:14:37.631Z",
+              "deleted_at": null,
+              "available_quantity": 4,
+              "stocked_quantity": 0,
+              "reserved_quantity": 0,
+              "incoming_quantity": 1
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_levels_zero": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7AD9JHRNVCHGK10KKJ4BDDJ",
+        "workflowId": "update-inventory-levels-workflow",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_levels_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9M13A8ZJRPQ0S1VKWNZ5"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9M13A8ZJRPQ0S1VKWNZ5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-remote-query",
+            "uuid": "01M7AD8Q8TE7WHVF2YGN1BM2GR",
+            "depth": 1,
+            "definition": {
+              "action": "use-remote-query",
+              "uuid": "01M7AD8Q8TE7WHVF2YGN1BM2GR",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572079141,
+            "next": [
+              "_root.use-remote-query.validate-inventory-levels-delete"
+            ],
+            "_v": 0,
+            "startedAt": 1794572079141
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9M13A8ZJRPQ0S1VKWNZ5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-remote-query",
+            "uuid": "01M7AD8Q8TE7WHVF2YGN1BM2GR",
+            "depth": 1,
+            "definition": {
+              "action": "use-remote-query",
+              "uuid": "01M7AD8Q8TE7WHVF2YGN1BM2GR",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572079141,
+            "next": [
+              "_root.use-remote-query.validate-inventory-levels-delete"
+            ],
+            "_v": 0,
+            "startedAt": 1794572079141
+          },
+          "response": [
+            {
+              "id": "ilev_01M7AD956RXV3PYJ9FY6NZMWER",
+              "stocked_quantity": 0,
+              "reserved_quantity": 0,
+              "location_id": "sloc_01M7AD93QF2H48G2YDKXFXFNCH"
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9M13A8ZJRPQ0S1VKWNZ5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-remote-query.validate-inventory-levels-delete",
+            "uuid": "01M7AD8Q8TCVCAYBSWB76WXPNG",
+            "depth": 2,
+            "definition": {
+              "action": "validate-inventory-levels-delete",
+              "uuid": "01M7AD8Q8TCVCAYBSWB76WXPNG",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572079142,
+            "next": [
+              "_root.use-remote-query.validate-inventory-levels-delete.delete-entities-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572079142
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9M13A8ZJRPQ0S1VKWNZ5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-remote-query.validate-inventory-levels-delete",
+            "uuid": "01M7AD8Q8TCVCAYBSWB76WXPNG",
+            "depth": 2,
+            "definition": {
+              "action": "validate-inventory-levels-delete",
+              "uuid": "01M7AD8Q8TCVCAYBSWB76WXPNG",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572079142,
+            "next": [
+              "_root.use-remote-query.validate-inventory-levels-delete.delete-entities-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572079142
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9M13A8ZJRPQ0S1VKWNZ5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-remote-query.validate-inventory-levels-delete.delete-entities-step",
+            "uuid": "01M7AD8Q8TNDB2KXDS8X56K499",
+            "depth": 3,
+            "definition": {
+              "action": "delete-entities-step",
+              "uuid": "01M7AD8Q8TNDB2KXDS8X56K499",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572079142,
+            "next": [
+              "_root.use-remote-query.validate-inventory-levels-delete.delete-entities-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572079142
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9M13A8ZJRPQ0S1VKWNZ5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-remote-query.validate-inventory-levels-delete.delete-entities-step",
+            "uuid": "01M7AD8Q8TNDB2KXDS8X56K499",
+            "depth": 3,
+            "definition": {
+              "action": "delete-entities-step",
+              "uuid": "01M7AD8Q8TNDB2KXDS8X56K499",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572079142,
+            "next": [
+              "_root.use-remote-query.validate-inventory-levels-delete.delete-entities-step.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572079142
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9M13A8ZJRPQ0S1VKWNZ5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-remote-query.validate-inventory-levels-delete.delete-entities-step.emit-event-step",
+            "uuid": "01M7AD8Q8T30H0RQ68JGXBYX0Q",
+            "depth": 4,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8T30H0RQ68JGXBYX0Q",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572079147,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572079147
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9M13A8ZJRPQ0S1VKWNZ5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-remote-query.validate-inventory-levels-delete.delete-entities-step.emit-event-step",
+            "uuid": "01M7AD8Q8T30H0RQ68JGXBYX0Q",
+            "depth": 4,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8T30H0RQ68JGXBYX0Q",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572079147,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572079147
+          },
+          "response": {
+            "eventGroupId": "01M7AD9M13AD5YEYM6J8D15Y6V",
+            "eventName": "inventory-level.deleted"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "delete-inventory-levels-workflow",
+          "transaction_id": "auto-01M7AD9M13A8ZJRPQ0S1VKWNZ5",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_levels_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7AD9M13A8ZJRPQ0S1VKWNZ5",
+        "workflowId": "delete-inventory-levels-workflow",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-query-graph-step",
+            "uuid": "01M7AD8Q8XTNA75WJBHWN2TSX5",
+            "depth": 1,
+            "definition": {
+              "action": "use-query-graph-step",
+              "uuid": "01M7AD8Q8XTNA75WJBHWN2TSX5",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572080659,
+            "next": [
+              "_root.use-query-graph-step.validate-inventory-item-delete"
+            ],
+            "_v": 0,
+            "startedAt": 1794572080659
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-query-graph-step",
+            "uuid": "01M7AD8Q8XTNA75WJBHWN2TSX5",
+            "depth": 1,
+            "definition": {
+              "action": "use-query-graph-step",
+              "uuid": "01M7AD8Q8XTNA75WJBHWN2TSX5",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572080659,
+            "next": [
+              "_root.use-query-graph-step.validate-inventory-item-delete"
+            ],
+            "_v": 0,
+            "startedAt": 1794572080659
+          },
+          "response": {
+            "data": [
+              {
+                "id": "iitem_01M7AD90QAHNFEFY5H6ENQ6F97",
+                "reserved_quantity": 0
+              }
+            ]
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-query-graph-step.validate-inventory-item-delete",
+            "uuid": "01M7AD8Q8X72NR2055DF3CM2GY",
+            "depth": 2,
+            "definition": {
+              "action": "validate-inventory-item-delete",
+              "uuid": "01M7AD8Q8X72NR2055DF3CM2GY",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572080664,
+            "next": [
+              "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572080664
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-query-graph-step.validate-inventory-item-delete",
+            "uuid": "01M7AD8Q8X72NR2055DF3CM2GY",
+            "depth": 2,
+            "definition": {
+              "action": "validate-inventory-item-delete",
+              "uuid": "01M7AD8Q8X72NR2055DF3CM2GY",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572080664,
+            "next": [
+              "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572080664
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step",
+            "uuid": "01M7AD8Q8XEGN1NB394H1HBHBT",
+            "depth": 3,
+            "definition": {
+              "action": "delete-inventory-item-step",
+              "uuid": "01M7AD8Q8XEGN1NB394H1HBHBT",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572080664,
+            "next": [
+              "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step.remove-remote-links"
+            ],
+            "_v": 0,
+            "startedAt": 1794572080664
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step",
+            "uuid": "01M7AD8Q8XEGN1NB394H1HBHBT",
+            "depth": 3,
+            "definition": {
+              "action": "delete-inventory-item-step",
+              "uuid": "01M7AD8Q8XEGN1NB394H1HBHBT",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572080664,
+            "next": [
+              "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step.remove-remote-links"
+            ],
+            "_v": 0,
+            "startedAt": 1794572080664
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step.remove-remote-links",
+            "uuid": "01M7AD8Q8X90PAMRPQ3H2Z335K",
+            "depth": 4,
+            "definition": {
+              "action": "remove-remote-links",
+              "uuid": "01M7AD8Q8X90PAMRPQ3H2Z335K",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572080693,
+            "next": [
+              "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step.remove-remote-links.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572080693
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step.remove-remote-links",
+            "uuid": "01M7AD8Q8X90PAMRPQ3H2Z335K",
+            "depth": 4,
+            "definition": {
+              "action": "remove-remote-links",
+              "uuid": "01M7AD8Q8X90PAMRPQ3H2Z335K",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572080693,
+            "next": [
+              "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step.remove-remote-links.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572080693
+          },
+          "response": {
+            "inventory": {
+              "inventory_item_id": [
+                "iitem_01M7AD90QAHNFEFY5H6ENQ6F97"
+              ]
+            }
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step.remove-remote-links.emit-event-step",
+            "uuid": "01M7AD8Q8X3XCVHTGD6GEAC6KE",
+            "depth": 5,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8X3XCVHTGD6GEAC6KE",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572080697,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572080697
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.use-query-graph-step.validate-inventory-item-delete.delete-inventory-item-step.remove-remote-links.emit-event-step",
+            "uuid": "01M7AD8Q8X3XCVHTGD6GEAC6KE",
+            "depth": 5,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7AD8Q8X3XCVHTGD6GEAC6KE",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572080697,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572080697
+          },
+          "response": {
+            "eventGroupId": "01M7AD9NGFSYTVAM8RPJB9WYXD",
+            "eventName": "inventory-item.deleted"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "delete-inventory-item-workflow",
+          "transaction_id": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+          "result": [
+            "iitem_01M7AD90QAHNFEFY5H6ENQ6F97"
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7AD9NGFWHX9PRVQ3870KA2D",
+        "workflowId": "delete-inventory-item-workflow",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "inventory_items": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 20
+    }
+  }
+}

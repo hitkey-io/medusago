@@ -214,10 +214,11 @@ func (s *CartModuleService) CreateCarts(ctx context.Context, data []*dal.Record)
 					for _, k := range []string{"items", "credit_lines", "shipping_methods"} {
 						c.Set(k, []any{})
 					}
+					// (after the collections: assigned at the flush)
 					for _, k := range []string{"shipping_address_id", "billing_address_id"} {
-						if !c.Has(k) {
-							c.Set(k, nil)
-						}
+						v, _ := c.Get(k)
+						c.Delete(k)
+						c.Set(k, v)
 					}
 					out = append(out, c)
 				}

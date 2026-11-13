@@ -27,6 +27,19 @@ func withEntityID(e *dml.Entity, data *Record) *Record {
 		v, _ := data.Get(k)
 		out.Set(k, v)
 	}
+	// { ...data, ...created.__helper.__bignumberdata, id }: the raw values
+	// of the BigNumber fields given
+	bigNumbers := bigNumberFields(e)
+	for _, k := range data.Keys() {
+		v, _ := data.Get(k)
+		if !bigNumbers[k] || v == nil {
+			continue
+		}
+		row := Row{}
+		if err := bigNumberColumns(row, k, v); err == nil {
+			out.Set("raw_"+k, row["raw_"+k])
+		}
+	}
 	if id, ok := out.Get("id"); !ok || id == nil || id == "" {
 		out.Set("id", newEntityID(e))
 	}

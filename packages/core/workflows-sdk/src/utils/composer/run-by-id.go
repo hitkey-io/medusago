@@ -19,11 +19,20 @@ func registerRunner[I, O any](w *Workflow[I, O]) {
 	registryMu.Lock()
 	runners[w.ID] = func(ctx context.Context, c Container, input any, opts RunOptions) (any, RunInfo, error) {
 		var in I
+		if w.inputKey != "" {
+			if r, ok := input.(*dal.Record); ok {
+				input, _ = r.Get(w.inputKey)
+			}
+		}
 		if err := DecodeInput(input, &in); err != nil {
 			return nil, RunInfo{}, err
 		}
 		opts.Notify = true
-		return w.RunWithInfo(ctx, c, in, opts)
+		out, info, err := w.RunWithInfo(ctx, c, in, opts)
+		if err != nil && w.engineFailure != nil {
+			err = w.engineFailure(err)
+		}
+		return out, info, err
 	}
 	registerResumer(w)
 	registryMu.Unlock()

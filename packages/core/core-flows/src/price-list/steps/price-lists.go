@@ -123,7 +123,12 @@ var ValidatePriceListsStep = composer.CreateStep("validate-price-lists",
 		if len(diff) > 0 {
 			return composer.StepResponse[any]{}, common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, fmt.Sprintf("Price lists with id: %s was not found", strings.Join(diff, ", ")))
 		}
-		return composer.NewStepResponse[any](nil), nil
+		// priceListMap: the price lists by id
+		byID := dal.NewRecord()
+		for _, l := range lists {
+			byID.Set(fmt.Sprint(get(l, "id")), l)
+		}
+		return composer.NewStepResponse[any](byID), nil
 	}, nil)
 
 // PriceListsStepInput is { data, variant_price_map }.

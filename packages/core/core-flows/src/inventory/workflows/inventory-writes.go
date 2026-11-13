@@ -166,17 +166,17 @@ var DeleteInventoryLevelsWorkflow = composer.CreateWorkflow("delete-inventory-le
 
 // BatchInventoryItemLevelsInput mirrors BatchInventoryItemLevelsWorkflowInput.
 type BatchInventoryItemLevelsInput struct {
-	Create []*dal.Record
-	Update []*dal.Record
-	Delete []any
-	Force  bool
+	Create []*dal.Record `json:"create"`
+	Update []*dal.Record `json:"update"`
+	Delete []any         `json:"delete"`
+	Force  bool          `json:"force,omitempty"`
 }
 
 // BatchInventoryItemLevelsResult mirrors the workflow output.
 type BatchInventoryItemLevelsResult struct {
-	Created []*dal.Record
-	Updated []*dal.Record
-	Deleted []any
+	Created []*dal.Record `json:"created"`
+	Updated []*dal.Record `json:"updated"`
+	Deleted []any         `json:"deleted"`
 }
 
 // BatchInventoryItemLevelsWorkflow mirrors batchInventoryItemLevelsWorkflow.
@@ -229,3 +229,9 @@ var BatchInventoryItemLevelsWorkflow = composer.CreateWorkflow("batch-inventory-
 		out.Deleted = input.Delete
 		return out, err
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	UpdateInventoryItemsWorkflow.InputFrom("updates")
+	UpdateInventoryLevelsWorkflow.InputFrom("updates")
+}

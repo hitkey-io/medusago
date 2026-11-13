@@ -443,6 +443,7 @@ func (s *Step[I, O]) replayStep(e *Execution, action string, noComp bool, input 
 		return out, true, ferr
 	case (st.invokeState == stepStateFailed || st.invokeState == stepStateTimeout) && s.Options.ContinueOnPermanentFailure:
 		e.journal.restore(action, s.Options, noComp, st)
+		e.journal.ignoreFailure()
 		return zero, true, nil
 	case st.invokeState == stepStateNotStarted || st.invokeState == "":
 		// not run yet (a Node.js flow lists every step)

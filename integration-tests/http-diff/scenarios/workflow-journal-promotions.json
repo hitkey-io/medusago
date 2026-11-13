@@ -1,0 +1,508 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "events_run_campaign_create",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-campaigns/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g1",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_campaign_create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-campaigns/run",
+  "body": {
+   "input": {
+    "campaignsData": [
+     {
+      "name": "WF Campaign",
+      "campaign_identifier": "wf-camp",
+      "description": "d",
+      "budget": {
+       "type": "usage",
+       "limit": 10
+      }
+     }
+    ],
+    "additional_data": {
+     "c": 1
+    }
+   }
+  },
+  "parallel": "g1",
+  "delay_ms": 1500
+ },
+ {
+  "name": "camp",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/campaigns?q=WF&fields=id,name"
+ },
+ {
+  "name": "events_run_campaign_create_dup",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-campaigns/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g2",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_campaign_create_dup",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-campaigns/run",
+  "body": {
+   "input": {
+    "campaignsData": [
+     {
+      "name": "WF Campaign 2",
+      "campaign_identifier": "wf-camp"
+     }
+    ]
+   }
+  },
+  "parallel": "g2",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_campaign_update",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-campaigns/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g3",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_campaign_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-campaigns/run",
+  "body": {
+   "input": {
+    "campaignsData": [
+     {
+      "id": "{{camp.campaigns.0.id}}",
+      "description": "updated",
+      "budget": {
+       "limit": 20
+      }
+     }
+    ]
+   }
+  },
+  "parallel": "g3",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_create",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-promotions/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g4",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-promotions/run",
+  "body": {
+   "input": {
+    "promotionsData": [
+     {
+      "code": "WFPROMO",
+      "type": "standard",
+      "status": "draft",
+      "is_automatic": false,
+      "application_method": {
+       "type": "percentage",
+       "target_type": "items",
+       "allocation": "each",
+       "value": 10,
+       "max_quantity": 2,
+       "target_rules": [
+        {
+         "attribute": "items.product.id",
+         "operator": "in",
+         "values": [
+          "prod_x"
+         ]
+        }
+       ]
+      },
+      "rules": [
+       {
+        "attribute": "currency_code",
+        "operator": "in",
+        "values": [
+         "eur"
+        ]
+       }
+      ]
+     }
+    ],
+    "additional_data": {
+     "p": 1
+    }
+   }
+  },
+  "parallel": "g4",
+  "delay_ms": 1500
+ },
+ {
+  "name": "promo",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/promotions?code=WFPROMO&fields=id,code,rules.id"
+ },
+ {
+  "name": "events_run_create_bad",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-promotions/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g5",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_bad",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-promotions/run",
+  "body": {
+   "input": {
+    "promotionsData": [
+     {
+      "code": "WFPROMO",
+      "type": "standard",
+      "application_method": {
+       "type": "fixed",
+       "target_type": "order",
+       "value": 5,
+       "currency_code": "eur"
+      }
+     }
+    ]
+   }
+  },
+  "parallel": "g5",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_update",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-promotions/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g6",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-promotions/run",
+  "body": {
+   "input": {
+    "promotionsData": [
+     {
+      "id": "{{promo.promotions.0.id}}",
+      "status": "active",
+      "campaign_id": "{{camp.campaigns.0.id}}"
+     }
+    ]
+   }
+  },
+  "parallel": "g6",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_status",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-promotions-status/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g7",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_status",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-promotions-status/run",
+  "body": {
+   "input": {
+    "promotionsData": [
+     {
+      "id": "{{promo.promotions.0.id}}",
+      "status": "inactive"
+     }
+    ]
+   }
+  },
+  "parallel": "g7",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_batch_rules",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-promotion-rules/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g8",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_batch_rules",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-promotion-rules/run",
+  "body": {
+   "input": {
+    "id": "{{promo.promotions.0.id}}",
+    "rule_type": "rules",
+    "create": [
+     {
+      "attribute": "customer.groups.id",
+      "operator": "in",
+      "values": [
+       "cusgroup_x"
+      ]
+     }
+    ],
+    "update": [
+     {
+      "id": "{{promo.promotions.0.rules.0.id}}",
+      "attribute": "currency_code",
+      "operator": "in",
+      "values": [
+       "eur",
+       "usd"
+      ]
+     }
+    ],
+    "delete": []
+   }
+  },
+  "parallel": "g8",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_batch_rules_bad",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-promotion-rules/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g9",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt",
+   "events.*.step.failures"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_batch_rules_bad",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-promotion-rules/run",
+  "body": {
+   "input": {
+    "id": "{{promo.promotions.0.id}}",
+    "rule_type": "rules",
+    "create": [],
+    "update": [
+     {
+      "id": "prorul_missing",
+      "values": [
+       "x"
+      ]
+     }
+    ],
+    "delete": []
+   }
+  },
+  "parallel": "g9",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_campaign_remove",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/add-or-remove-campaign-promotions/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g10",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_campaign_remove",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/add-or-remove-campaign-promotions/run",
+  "body": {
+   "input": {
+    "id": "{{camp.campaigns.0.id}}",
+    "add": [],
+    "remove": [
+     "{{promo.promotions.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g10",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_delete",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-promotions/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g11",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_delete",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-promotions/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{promo.promotions.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g11",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_campaign_delete",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-campaigns/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g12",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_campaign_delete",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-campaigns/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{camp.campaigns.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g12",
+  "delay_ms": 1500
+ },
+ {
+  "name": "after",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/promotions?code=WFPROMO&fields=id"
+ }
+]

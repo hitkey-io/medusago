@@ -1,6 +1,7 @@
 package composer
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"sync"
@@ -103,7 +104,17 @@ type journal struct {
 	payload    any
 	errors     []any
 	hasAsync   bool
-	hasFailed  bool
+	// hasFailed: a compensation failed (the transaction ends FAILED); the
+	// flow's hasFailedSteps only reports ignored failures
+	// (continueOnPermanentFailure / skipOnPermanentFailure, set once every
+	// step completed)
+	hasFailed bool
+	// hasFailedSteps mirrors flow.hasFailedSteps; ignoredFailure records
+	// the ignored failures until the run completes
+	hasFailedSteps bool
+	ignoredFailure bool
+	// cancelingFromParent: a nested run cancelled from its parent step
+	cancelingFromParent bool
 	// hasSkipped: a step returned StepResponse.skip()
 	hasSkipped bool
 	waiting    bool
@@ -201,11 +212,23 @@ func (j *journal) takePending(action string) *stepRecord {
 	return list[0]
 }
 
+// ignoreFailure records a failure the step ignores
+// (continueOnPermanentFailure): flow.hasFailedSteps once the run completes.
+func (j *journal) ignoreFailure() {
+	j.mu.Lock()
+	j.ignoredFailure = true
+	j.mu.Unlock()
+}
+
 // skipUnreached mirrors the steps of a when() whose condition was false:
 // a finished run marks the steps of its graph that did not run skipped.
 func (j *journal) skipUnreached() {
 	j.mu.Lock()
 	defer j.mu.Unlock()
+	// checkAllSteps: every step completed, hasIgnoredFailure -> hasFailedSteps
+	if j.ignoredFailure {
+		j.hasFailedSteps = true
+	}
 	now := nowMillis()
 	for _, r := range j.steps {
 		if !r.predefined || r.invokeState != stepStateNotStarted {
@@ -322,6 +345,24 @@ func (j *journal) restore(action string, opts StepOptions, noCompensation bool, 
 	return r
 }
 
+// snapshot returns the JSON form of a value (ordered records, arrays,
+// primitives): what the context holds once the step finished. A value
+// that cannot be encoded is kept as is.
+func snapshot(v any) any {
+	if v == nil {
+		return nil
+	}
+	b, err := json.Marshal(v)
+	if err != nil {
+		return v
+	}
+	out, err := dal.DecodeOrderedJSON(b)
+	if err != nil {
+		return v
+	}
+	return out
+}
+
 func stepResponseEnvelope(output any, hasOutput bool, compInput any, hasComp bool) map[string]any {
 	resp := map[string]any{"__type": symbolStepResponse}
 	if hasOutput {
@@ -343,10 +384,18 @@ func (j *journal) succeed(r *stepRecord, output any, hasOutput bool, compInput a
 	case r.hasRaw:
 		j.invoke[r.action] = r.raw
 	default:
-		if !hasComp && hasOutput {
+		// the context keeps the values as they were when the step finished
+		// (upstream resolves step inputs into copies: a later step never
+		// changes an earlier output)
+		snap := snapshot(output)
+		switch {
+		case !hasComp && hasOutput:
 			// new StepResponse(output): compensateInput defaults to the output
-			compInput, hasComp = output, true
+			compInput, hasComp = snap, true
+		case hasComp:
+			compInput = snapshot(compInput)
 		}
+		output = snap
 		j.invoke[r.action] = stepResponseEnvelope(output, hasOutput, compInput, hasComp)
 	}
 	j.emit("onStepSuccess", r, func(ev *WorkflowEvent) { ev.Response, ev.HasResponse = output, hasOutput })
@@ -360,6 +409,7 @@ func (j *journal) succeedRaw(r *stepRecord, output any) {
 	j.rev++
 	r.invokeState, r.invokeStatus = stepStateDone, stepStatusOK
 	r.lastAttempt = nowMillis()
+	output = snapshot(output)
 	j.invoke[r.action] = map[string]any{"__type": symbolWorkflowData, "output": output}
 	j.emit("onStepSuccess", r, func(ev *WorkflowEvent) { ev.Response, ev.HasResponse = output, true })
 }
@@ -470,6 +520,8 @@ func (j *journal) compensateBegin(r *stepRecord) {
 	defer j.mu.Unlock()
 	j.rev++
 	r.compState, r.compStatus = stepStateCompensating, stepStatusWaiting
+	r.stepFailed = true
+	r.lastAttempt = nowMillis()
 	j.emit("onStepBegin", r, nil)
 }
 
@@ -479,6 +531,7 @@ func (j *journal) compensated(r *stepRecord, err error, response bool) {
 	j.rev++
 	if err != nil {
 		r.compState, r.compStatus = stepStateFailed, stepStatusPermanent
+		r.failures++
 		j.hasFailed = true
 		j.errors = append(j.errors, stepError(r.action, "compensate", err))
 		errs := j.errorsFor(r.action, "compensate")
@@ -500,7 +553,22 @@ func (j *journal) compensated(r *stepRecord, err error, response bool) {
 func (j *journal) emitRun(eventType string, fill func(*WorkflowEvent)) {
 	j.mu.Lock()
 	defer j.mu.Unlock()
+	if eventType == "onCompensateBegin" {
+		j.flagStepsToRevert()
+	}
 	j.emit(eventType, nil, fill)
+}
+
+// flagStepsToRevert mirrors flagStepsToRevert when the compensation
+// begins: every step that finished (or failed permanently) begins its
+// compensation (stepFailed; caller holds j.mu).
+func (j *journal) flagStepsToRevert() {
+	for _, r := range j.steps {
+		if r.invokeState == stepStateDone || r.invokeState == stepStateTimeout || r.invokeStatus == stepStatusPermanent {
+			r.stepFailed = true
+			r.failures = 0
+		}
+	}
 }
 
 func (j *journal) setState(state string) {
@@ -593,6 +661,9 @@ func (j *journal) flow(workflowID, transactionID, eventGroupID string, opts Work
 	if j.nested {
 		metadata["parentStepIdempotencyKey"] = j.parentStepKey
 		metadata["preventReleaseEvents"] = true
+		if j.cancelingFromParent {
+			metadata["cancelingFromParentStep"] = true
+		}
 		transactionID = j.nestedTxID
 	}
 	definition := j.definitionTree(j.root)
@@ -603,7 +674,7 @@ func (j *journal) flow(workflowID, transactionID, eventGroupID string, opts Work
 		"_v": j.version, "runId": j.runID, "state": j.state, "steps": steps, "modelId": workflowID, "options": options,
 		"metadata":  metadata,
 		"startedAt": j.startedAt, "definition": definition, "timedOutAt": nil, "hasAsyncSteps": j.hasAsync,
-		"transactionId": transactionID, "hasFailedSteps": j.hasFailed, "hasSkippedSteps": j.hasSkipped, "hasWaitingSteps": j.waiting,
+		"transactionId": transactionID, "hasFailedSteps": j.hasFailedSteps, "hasSkippedSteps": j.hasSkipped, "hasWaitingSteps": j.waiting,
 		"hasRevertedSteps": hasReverted, "hasSkippedOnFailureSteps": false,
 	}
 	if j.cancelledAt != 0 {

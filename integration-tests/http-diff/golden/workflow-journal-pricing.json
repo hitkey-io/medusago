@@ -1,0 +1,2182 @@
+{
+  "login": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ1NzIyMDgsImV4cCI6MTc5NDY1ODYwOH0.dF2VRAjKl-WUmyV2Q-BL56GHsHMReyH1_u84HRv2X8o"
+    }
+  },
+  "variants": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "variants": [
+        {
+          "id": "variant_01M70Y000GM1QZKX7G9P8G7G1S",
+          "sku": "PANTS-L"
+        }
+      ],
+      "count": 5,
+      "offset": 0,
+      "limit": 1
+    }
+  },
+  "events_run_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-price-lists",
+          "transaction_id": "auto-01M7ADDKR6Z7GEB3AREHRW3879"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-price-lists",
+          "transaction_id": "auto-01M7ADDKR6Z7GEB3AREHRW3879",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links",
+            "uuid": "01M7ADD70APB4PJ13TXFVEPYW6",
+            "depth": 1,
+            "definition": {
+              "action": "validate-variant-price-links",
+              "uuid": "01M7ADD70APB4PJ13TXFVEPYW6",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572209951,
+            "next": [
+              "_root.validate-variant-price-links.create-price-lists"
+            ],
+            "_v": 0,
+            "startedAt": 1794572209951
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-price-lists",
+          "transaction_id": "auto-01M7ADDKR6Z7GEB3AREHRW3879",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links",
+            "uuid": "01M7ADD70APB4PJ13TXFVEPYW6",
+            "depth": 1,
+            "definition": {
+              "action": "validate-variant-price-links",
+              "uuid": "01M7ADD70APB4PJ13TXFVEPYW6",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572209951,
+            "next": [
+              "_root.validate-variant-price-links.create-price-lists"
+            ],
+            "_v": 0,
+            "startedAt": 1794572209951
+          },
+          "response": {
+            "variant_01M70Y000GM1QZKX7G9P8G7G1S": "pset_01M70Y0015KG6TB5NVSGRSMH4X"
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-price-lists",
+          "transaction_id": "auto-01M7ADDKR6Z7GEB3AREHRW3879",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links.create-price-lists",
+            "uuid": "01M7ADD70AWBXFW49VE3ZZWBH6",
+            "depth": 2,
+            "definition": {
+              "action": "create-price-lists",
+              "uuid": "01M7ADD70AWBXFW49VE3ZZWBH6",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572209961,
+            "next": [
+              "_root.validate-variant-price-links.create-price-lists.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572209961
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-price-lists",
+          "transaction_id": "auto-01M7ADDKR6Z7GEB3AREHRW3879",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links.create-price-lists",
+            "uuid": "01M7ADD70AWBXFW49VE3ZZWBH6",
+            "depth": 2,
+            "definition": {
+              "action": "create-price-lists",
+              "uuid": "01M7ADD70AWBXFW49VE3ZZWBH6",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572209961,
+            "next": [
+              "_root.validate-variant-price-links.create-price-lists.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572209961
+          },
+          "response": [
+            {
+              "id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+              "title": "WF PL",
+              "description": "wf list",
+              "status": "active",
+              "type": "sale",
+              "starts_at": null,
+              "ends_at": null,
+              "rules_count": 0,
+              "metadata": null,
+              "created_at": "2026-11-13T12:16:49.967Z",
+              "updated_at": "2026-11-13T12:16:49.967Z",
+              "deleted_at": null,
+              "prices": [
+                {
+                  "id": "price_01M7ADDKSEH4QKN6A7K4DPPNZD",
+                  "title": null,
+                  "currency_code": "eur",
+                  "rules_count": 0,
+                  "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
+                  "price_list_id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+                  "raw_amount": {
+                    "value": "5",
+                    "precision": 20
+                  },
+                  "raw_min_quantity": null,
+                  "raw_max_quantity": null,
+                  "created_at": "2026-11-13T12:16:49.967Z",
+                  "updated_at": "2026-11-13T12:16:49.967Z",
+                  "deleted_at": null,
+                  "price_rules": [],
+                  "amount": 5,
+                  "min_quantity": null,
+                  "max_quantity": null
+                }
+              ],
+              "price_list_rules": []
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-price-lists",
+          "transaction_id": "auto-01M7ADDKR6Z7GEB3AREHRW3879",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links.create-price-lists.emit-event-step",
+            "uuid": "01M7ADD70AK5CZP2XAX3NY5TE9",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ADD70AK5CZP2XAX3NY5TE9",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572210004,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572210004
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-price-lists",
+          "transaction_id": "auto-01M7ADDKR6Z7GEB3AREHRW3879",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links.create-price-lists.emit-event-step",
+            "uuid": "01M7ADD70AK5CZP2XAX3NY5TE9",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ADD70AK5CZP2XAX3NY5TE9",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572210004,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572210004
+          },
+          "response": {
+            "eventGroupId": "01M7ADDKR63X4NCMN1N2PFPQ6S",
+            "eventName": "price-list.created"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-price-lists",
+          "transaction_id": "auto-01M7ADDKR6Z7GEB3AREHRW3879",
+          "result": [
+            {
+              "id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+              "title": "WF PL",
+              "description": "wf list",
+              "status": "active",
+              "type": "sale",
+              "starts_at": null,
+              "ends_at": null,
+              "rules_count": 0,
+              "metadata": null,
+              "created_at": "2026-11-13T12:16:49.967Z",
+              "updated_at": "2026-11-13T12:16:49.967Z",
+              "deleted_at": null,
+              "prices": [
+                {
+                  "id": "price_01M7ADDKSEH4QKN6A7K4DPPNZD",
+                  "title": null,
+                  "currency_code": "eur",
+                  "rules_count": 0,
+                  "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
+                  "price_list_id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+                  "raw_amount": {
+                    "value": "5",
+                    "precision": 20
+                  },
+                  "raw_min_quantity": null,
+                  "raw_max_quantity": null,
+                  "created_at": "2026-11-13T12:16:49.967Z",
+                  "updated_at": "2026-11-13T12:16:49.967Z",
+                  "deleted_at": null,
+                  "price_rules": [],
+                  "amount": 5,
+                  "min_quantity": null,
+                  "max_quantity": null
+                }
+              ],
+              "price_list_rules": []
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADDKR6Z7GEB3AREHRW3879",
+        "workflowId": "create-price-lists",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "pl": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_lists": [
+        {
+          "id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+          "title": "WF PL",
+          "prices": [
+            {
+              "id": "price_01M7ADDKSEH4QKN6A7K4DPPNZD"
+            }
+          ]
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 50
+    }
+  },
+  "events_run_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDNA7DEDADWD4T796HWN0"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDNA7DEDADWD4T796HWN0",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-price-lists",
+            "uuid": "01M7ADD70BKB8AA6JS1NX9B8GG",
+            "depth": 1,
+            "definition": {
+              "action": "validate-price-lists",
+              "uuid": "01M7ADD70BKB8AA6JS1NX9B8GG",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572211530,
+            "next": [
+              "_root.validate-price-lists.update-price-lists"
+            ],
+            "_v": 0,
+            "startedAt": 1794572211530
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDNA7DEDADWD4T796HWN0",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-price-lists",
+            "uuid": "01M7ADD70BKB8AA6JS1NX9B8GG",
+            "depth": 1,
+            "definition": {
+              "action": "validate-price-lists",
+              "uuid": "01M7ADD70BKB8AA6JS1NX9B8GG",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572211530,
+            "next": [
+              "_root.validate-price-lists.update-price-lists"
+            ],
+            "_v": 0,
+            "startedAt": 1794572211530
+          },
+          "response": {
+            "plist_01M7ADDKSERN6BGQA3F6N3V6GM": {
+              "id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+              "title": "WF PL",
+              "description": "wf list",
+              "status": "active",
+              "type": "sale",
+              "starts_at": null,
+              "ends_at": null,
+              "rules_count": 0,
+              "metadata": null,
+              "created_at": "2026-11-13T12:16:49.967Z",
+              "updated_at": "2026-11-13T12:16:49.967Z",
+              "deleted_at": null
+            }
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDNA7DEDADWD4T796HWN0",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-price-lists.update-price-lists",
+            "uuid": "01M7ADD70B8T5BYYF8D82M6P1S",
+            "depth": 2,
+            "definition": {
+              "action": "update-price-lists",
+              "uuid": "01M7ADD70B8T5BYYF8D82M6P1S",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572211532,
+            "next": [
+              "_root.validate-price-lists.update-price-lists.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572211532
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDNA7DEDADWD4T796HWN0",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-price-lists.update-price-lists",
+            "uuid": "01M7ADD70B8T5BYYF8D82M6P1S",
+            "depth": 2,
+            "definition": {
+              "action": "update-price-lists",
+              "uuid": "01M7ADD70B8T5BYYF8D82M6P1S",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572211532,
+            "next": [
+              "_root.validate-price-lists.update-price-lists.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572211532
+          },
+          "response": [
+            {
+              "id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+              "title": "WF PL 2",
+              "status": "draft"
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDNA7DEDADWD4T796HWN0",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-price-lists.update-price-lists.emit-event-step",
+            "uuid": "01M7ADD70BHFNBASWP8AXNFJ1V",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ADD70BHFNBASWP8AXNFJ1V",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572211582,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572211582
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDNA7DEDADWD4T796HWN0",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-price-lists.update-price-lists.emit-event-step",
+            "uuid": "01M7ADD70BHFNBASWP8AXNFJ1V",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ADD70BHFNBASWP8AXNFJ1V",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572211582,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572211582
+          },
+          "response": {
+            "eventGroupId": "01M7ADDNA7HQ68V5C5048KEQYT",
+            "eventName": "price-list.updated"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDNA7DEDADWD4T796HWN0",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADDNA7DEDADWD4T796HWN0",
+        "workflowId": "update-price-lists",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_update_bad": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDPV166DQJ8PPNRHCDET4"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDPV166DQJ8PPNRHCDET4",
+          "step": {
+            "id": "_root.validate-price-lists",
+            "uuid": "01M7ADD70BKB8AA6JS1NX9B8GG",
+            "depth": 1,
+            "definition": {
+              "action": "validate-price-lists",
+              "uuid": "01M7ADD70BKB8AA6JS1NX9B8GG",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572213093,
+            "next": [
+              "_root.validate-price-lists.update-price-lists"
+            ],
+            "_v": 0,
+            "startedAt": 1794572213093
+          }
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDPV166DQJ8PPNRHCDET4",
+          "step": {
+            "id": "_root.validate-price-lists",
+            "uuid": "01M7ADD70BKB8AA6JS1NX9B8GG",
+            "depth": 1,
+            "definition": {
+              "action": "validate-price-lists",
+              "uuid": "01M7ADD70BKB8AA6JS1NX9B8GG",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572213150,
+            "next": [
+              "_root.validate-price-lists.update-price-lists"
+            ],
+            "_v": 0,
+            "startedAt": 1794572213093
+          },
+          "errors": [
+            {
+              "action": "validate-price-lists",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Price lists with id: plist_missing was not found",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "not_found",
+                "date": "2026-11-13T12:16:53.096Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDPV166DQJ8PPNRHCDET4"
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-price-lists",
+          "transaction_id": "auto-01M7ADDPV166DQJ8PPNRHCDET4",
+          "errors": [
+            {
+              "action": "validate-price-lists",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Price lists with id: plist_missing was not found",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "not_found",
+                "date": "2026-11-13T12:16:53.096Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_update_bad": {
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "not_found",
+      "message": "Price lists with id: plist_missing was not found"
+    }
+  },
+  "events_run_batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "batch-price-list-prices",
+          "transaction_id": "auto-01M7ADDRC04FBJTS3VW96J0DM5"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-price-list-prices",
+          "transaction_id": "auto-01M7ADDRC04FBJTS3VW96J0DM5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-price-list-prices-as-step",
+            "uuid": "01M7ADD70A56XCFPRVBCV2EVH9",
+            "depth": 1,
+            "definition": {
+              "action": "create-price-list-prices-as-step",
+              "name": "create-price-list-prices-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADD70A56XCFPRVBCV2EVH9",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572214658,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572214658
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-price-list-prices",
+          "transaction_id": "auto-01M7ADDRC04FBJTS3VW96J0DM5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-price-list-prices-as-step",
+            "uuid": "01M7ADD70A175FF7WPPJ38Q538",
+            "depth": 1,
+            "definition": {
+              "action": "update-price-list-prices-as-step",
+              "name": "update-price-list-prices-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADD70A175FF7WPPJ38Q538",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572214658,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572214658
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "batch-price-list-prices",
+          "transaction_id": "auto-01M7ADDRC04FBJTS3VW96J0DM5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.remove-price-list-prices-as-step",
+            "uuid": "01M7ADD70AREQ4JXZ7HCNEDY8Y",
+            "depth": 1,
+            "definition": {
+              "action": "remove-price-list-prices-as-step",
+              "name": "remove-price-list-prices-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADD70AREQ4JXZ7HCNEDY8Y",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572214658,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572214658
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-price-list-prices",
+          "transaction_id": "auto-01M7ADDRC04FBJTS3VW96J0DM5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.remove-price-list-prices-as-step",
+            "uuid": "01M7ADD70AREQ4JXZ7HCNEDY8Y",
+            "depth": 1,
+            "definition": {
+              "action": "remove-price-list-prices-as-step",
+              "name": "remove-price-list-prices-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADD70AREQ4JXZ7HCNEDY8Y",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572214658,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572214658
+          },
+          "response": []
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-price-list-prices",
+          "transaction_id": "auto-01M7ADDRC04FBJTS3VW96J0DM5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-price-list-prices-as-step",
+            "uuid": "01M7ADD70A56XCFPRVBCV2EVH9",
+            "depth": 1,
+            "definition": {
+              "action": "create-price-list-prices-as-step",
+              "name": "create-price-list-prices-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADD70A56XCFPRVBCV2EVH9",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572214658,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572214658
+          },
+          "response": [
+            {
+              "amount": 7,
+              "currency_code": "usd",
+              "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
+              "price_list_id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+              "raw_amount": {
+                "value": "7",
+                "precision": 20
+              },
+              "id": "price_01M7ADDRCF4SHM50G0GS9XMCN3"
+            }
+          ]
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "batch-price-list-prices",
+          "transaction_id": "auto-01M7ADDRC04FBJTS3VW96J0DM5",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-price-list-prices-as-step",
+            "uuid": "01M7ADD70A175FF7WPPJ38Q538",
+            "depth": 1,
+            "definition": {
+              "action": "update-price-list-prices-as-step",
+              "name": "update-price-list-prices-as-step",
+              "async": false,
+              "nested": false,
+              "uuid": "01M7ADD70A175FF7WPPJ38Q538",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572214658,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572214658
+          },
+          "response": [
+            {
+              "id": "price_01M7ADDKSEH4QKN6A7K4DPPNZD",
+              "amount": 6,
+              "currency_code": "eur",
+              "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
+              "price_list_id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+              "raw_amount": {
+                "value": "6",
+                "precision": 20
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "batch-price-list-prices",
+          "transaction_id": "auto-01M7ADDRC04FBJTS3VW96J0DM5",
+          "result": {
+            "created": [
+              {
+                "amount": 7,
+                "currency_code": "usd",
+                "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
+                "price_list_id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+                "raw_amount": {
+                  "value": "7",
+                  "precision": 20
+                },
+                "id": "price_01M7ADDRCF4SHM50G0GS9XMCN3"
+              }
+            ],
+            "updated": [
+              {
+                "id": "price_01M7ADDKSEH4QKN6A7K4DPPNZD",
+                "amount": 6,
+                "currency_code": "eur",
+                "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
+                "price_list_id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+                "raw_amount": {
+                  "value": "6",
+                  "precision": 20
+                }
+              }
+            ],
+            "deleted": []
+          },
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_batch": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADDRC04FBJTS3VW96J0DM5",
+        "workflowId": "batch-price-list-prices",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_create_prices": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-price-list-prices",
+          "transaction_id": "auto-01M7ADDSWMTP27XJBX5CWYVYFC"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-price-list-prices",
+          "transaction_id": "auto-01M7ADDSWMTP27XJBX5CWYVYFC",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-price-lists",
+            "uuid": "01M7ADD708NZJQ2ZZ6FMX0Y7XR",
+            "depth": 1,
+            "definition": {
+              "action": "validate-price-lists",
+              "uuid": "01M7ADD708NZJQ2ZZ6FMX0Y7XR",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572216215,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572216215
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-price-list-prices",
+          "transaction_id": "auto-01M7ADDSWMTP27XJBX5CWYVYFC",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links",
+            "uuid": "01M7ADD708KRQKAMAA6HBJTR7C",
+            "depth": 1,
+            "definition": {
+              "action": "validate-variant-price-links",
+              "uuid": "01M7ADD708KRQKAMAA6HBJTR7C",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572216215,
+            "next": [
+              "_root.validate-variant-price-links.create-price-list-prices"
+            ],
+            "_v": 0,
+            "startedAt": 1794572216215
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-price-list-prices",
+          "transaction_id": "auto-01M7ADDSWMTP27XJBX5CWYVYFC",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-price-lists",
+            "uuid": "01M7ADD708NZJQ2ZZ6FMX0Y7XR",
+            "depth": 1,
+            "definition": {
+              "action": "validate-price-lists",
+              "uuid": "01M7ADD708NZJQ2ZZ6FMX0Y7XR",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572216215,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572216215
+          },
+          "response": {
+            "plist_01M7ADDKSERN6BGQA3F6N3V6GM": {
+              "id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+              "title": "WF PL 2",
+              "description": "wf list",
+              "status": "draft",
+              "type": "sale",
+              "starts_at": null,
+              "ends_at": null,
+              "rules_count": 0,
+              "metadata": null,
+              "created_at": "2026-11-13T12:16:49.967Z",
+              "updated_at": "2026-11-13T12:16:51.544Z",
+              "deleted_at": null
+            }
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-price-list-prices",
+          "transaction_id": "auto-01M7ADDSWMTP27XJBX5CWYVYFC",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links",
+            "uuid": "01M7ADD708KRQKAMAA6HBJTR7C",
+            "depth": 1,
+            "definition": {
+              "action": "validate-variant-price-links",
+              "uuid": "01M7ADD708KRQKAMAA6HBJTR7C",
+              "noCompensation": true,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572216215,
+            "next": [
+              "_root.validate-variant-price-links.create-price-list-prices"
+            ],
+            "_v": 0,
+            "startedAt": 1794572216215
+          },
+          "response": {
+            "variant_01M70Y000GM1QZKX7G9P8G7G1S": "pset_01M70Y0015KG6TB5NVSGRSMH4X"
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-price-list-prices",
+          "transaction_id": "auto-01M7ADDSWMTP27XJBX5CWYVYFC",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links.create-price-list-prices",
+            "uuid": "01M7ADD708Z34173D1S9C2KD5P",
+            "depth": 2,
+            "definition": {
+              "action": "create-price-list-prices",
+              "uuid": "01M7ADD708Z34173D1S9C2KD5P",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572216218,
+            "next": [
+              "_root.validate-variant-price-links.create-price-list-prices.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572216218
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-price-list-prices",
+          "transaction_id": "auto-01M7ADDSWMTP27XJBX5CWYVYFC",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links.create-price-list-prices",
+            "uuid": "01M7ADD708Z34173D1S9C2KD5P",
+            "depth": 2,
+            "definition": {
+              "action": "create-price-list-prices",
+              "uuid": "01M7ADD708Z34173D1S9C2KD5P",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572216218,
+            "next": [
+              "_root.validate-variant-price-links.create-price-list-prices.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572216218
+          },
+          "response": [
+            {
+              "amount": 9,
+              "currency_code": "dkk",
+              "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
+              "price_list_id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+              "raw_amount": {
+                "value": "9",
+                "precision": 20
+              },
+              "id": "price_01M7ADDSWY1VHT4DQN1TB8CN9P"
+            }
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-price-list-prices",
+          "transaction_id": "auto-01M7ADDSWMTP27XJBX5CWYVYFC",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links.create-price-list-prices.emit-event-step",
+            "uuid": "01M7ADD70848TJE4SVDYWZSFSR",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ADD70848TJE4SVDYWZSFSR",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572216243,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572216243
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-price-list-prices",
+          "transaction_id": "auto-01M7ADDSWMTP27XJBX5CWYVYFC",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.validate-variant-price-links.create-price-list-prices.emit-event-step",
+            "uuid": "01M7ADD70848TJE4SVDYWZSFSR",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ADD70848TJE4SVDYWZSFSR",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572216243,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572216243
+          },
+          "response": {
+            "eventGroupId": "01M7ADDSWMYJF8Y3893WK4QHVR",
+            "eventName": "price-list.prices_added"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-price-list-prices",
+          "transaction_id": "auto-01M7ADDSWMTP27XJBX5CWYVYFC",
+          "result": [
+            {
+              "amount": 9,
+              "currency_code": "dkk",
+              "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
+              "price_list_id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+              "raw_amount": {
+                "value": "9",
+                "precision": 20
+              },
+              "id": "price_01M7ADDSWY1VHT4DQN1TB8CN9P"
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_create_prices": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADDSWMTP27XJBX5CWYVYFC",
+        "workflowId": "create-price-list-prices",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_remove_prices": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "remove-price-list-prices",
+          "transaction_id": "auto-01M7ADDVCN98AQAKTT0W6967C4"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "remove-price-list-prices",
+          "transaction_id": "auto-01M7ADDVCN98AQAKTT0W6967C4",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-price-list-prices-to-remove",
+            "uuid": "01M7ADD709ENQ99BZ8047B7ZTF",
+            "depth": 1,
+            "definition": {
+              "action": "get-price-list-prices-to-remove",
+              "uuid": "01M7ADD709ENQ99BZ8047B7ZTF",
+              "noCompensation": true,
+              "async": false,
+              "compensateAsync": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572217751,
+            "next": [
+              "_root.get-price-list-prices-to-remove.remove-price-list-prices"
+            ],
+            "_v": 0,
+            "startedAt": 1794572217751
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "remove-price-list-prices",
+          "transaction_id": "auto-01M7ADDVCN98AQAKTT0W6967C4",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-price-list-prices-to-remove",
+            "uuid": "01M7ADD709ENQ99BZ8047B7ZTF",
+            "depth": 1,
+            "definition": {
+              "action": "get-price-list-prices-to-remove",
+              "uuid": "01M7ADD709ENQ99BZ8047B7ZTF",
+              "noCompensation": true,
+              "async": false,
+              "compensateAsync": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572217751,
+            "next": [
+              "_root.get-price-list-prices-to-remove.remove-price-list-prices"
+            ],
+            "_v": 0,
+            "startedAt": 1794572217751
+          },
+          "response": {
+            "data": [
+              {
+                "id": "price_01M7ADDKSEH4QKN6A7K4DPPNZD",
+                "price_list_id": "plist_01M7ADDKSERN6BGQA3F6N3V6GM",
+                "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X"
+              }
+            ]
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "remove-price-list-prices",
+          "transaction_id": "auto-01M7ADDVCN98AQAKTT0W6967C4",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-price-list-prices-to-remove.remove-price-list-prices",
+            "uuid": "01M7ADD709MZ9WA9TMNKAM6Y4F",
+            "depth": 2,
+            "definition": {
+              "action": "remove-price-list-prices",
+              "uuid": "01M7ADD709MZ9WA9TMNKAM6Y4F",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572217753,
+            "next": [
+              "_root.get-price-list-prices-to-remove.remove-price-list-prices.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572217753
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "remove-price-list-prices",
+          "transaction_id": "auto-01M7ADDVCN98AQAKTT0W6967C4",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-price-list-prices-to-remove.remove-price-list-prices",
+            "uuid": "01M7ADD709MZ9WA9TMNKAM6Y4F",
+            "depth": 2,
+            "definition": {
+              "action": "remove-price-list-prices",
+              "uuid": "01M7ADD709MZ9WA9TMNKAM6Y4F",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572217753,
+            "next": [
+              "_root.get-price-list-prices-to-remove.remove-price-list-prices.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572217753
+          },
+          "response": [
+            "price_01M7ADDKSEH4QKN6A7K4DPPNZD"
+          ]
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "remove-price-list-prices",
+          "transaction_id": "auto-01M7ADDVCN98AQAKTT0W6967C4",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-price-list-prices-to-remove.remove-price-list-prices.emit-event-step",
+            "uuid": "01M7ADD709DTN50JFHFJXPRDAX",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ADD709DTN50JFHFJXPRDAX",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572217780,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572217780
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "remove-price-list-prices",
+          "transaction_id": "auto-01M7ADDVCN98AQAKTT0W6967C4",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.get-price-list-prices-to-remove.remove-price-list-prices.emit-event-step",
+            "uuid": "01M7ADD709DTN50JFHFJXPRDAX",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ADD709DTN50JFHFJXPRDAX",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572217780,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572217780
+          },
+          "response": {
+            "eventGroupId": "01M7ADDVCNDMEBR4C44T6SXCMD",
+            "eventName": "price-list.prices_removed"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "remove-price-list-prices",
+          "transaction_id": "auto-01M7ADDVCN98AQAKTT0W6967C4",
+          "result": [
+            "price_01M7ADDKSEH4QKN6A7K4DPPNZD"
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_remove_prices": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADDVCN98AQAKTT0W6967C4",
+        "workflowId": "remove-price-list-prices",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "delete-price-lists",
+          "transaction_id": "auto-01M7ADDWWNYKCX15YKF3G6PP02"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-price-lists",
+          "transaction_id": "auto-01M7ADDWWNYKCX15YKF3G6PP02",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-price-lists",
+            "uuid": "01M7ADD70AASH0PJ6RPVTZNM3W",
+            "depth": 1,
+            "definition": {
+              "action": "delete-price-lists",
+              "uuid": "01M7ADD70AASH0PJ6RPVTZNM3W",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572219287,
+            "next": [
+              "_root.delete-price-lists.remove-remote-links"
+            ],
+            "_v": 0,
+            "startedAt": 1794572219287
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-price-lists",
+          "transaction_id": "auto-01M7ADDWWNYKCX15YKF3G6PP02",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-price-lists",
+            "uuid": "01M7ADD70AASH0PJ6RPVTZNM3W",
+            "depth": 1,
+            "definition": {
+              "action": "delete-price-lists",
+              "uuid": "01M7ADD70AASH0PJ6RPVTZNM3W",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572219287,
+            "next": [
+              "_root.delete-price-lists.remove-remote-links"
+            ],
+            "_v": 0,
+            "startedAt": 1794572219287
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-price-lists",
+          "transaction_id": "auto-01M7ADDWWNYKCX15YKF3G6PP02",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-price-lists.remove-remote-links",
+            "uuid": "01M7ADD70A10GGR5XNZVHBX330",
+            "depth": 2,
+            "definition": {
+              "action": "remove-remote-links",
+              "uuid": "01M7ADD70A10GGR5XNZVHBX330",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572219306,
+            "next": [
+              "_root.delete-price-lists.remove-remote-links.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572219306
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-price-lists",
+          "transaction_id": "auto-01M7ADDWWNYKCX15YKF3G6PP02",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-price-lists.remove-remote-links",
+            "uuid": "01M7ADD70A10GGR5XNZVHBX330",
+            "depth": 2,
+            "definition": {
+              "action": "remove-remote-links",
+              "uuid": "01M7ADD70A10GGR5XNZVHBX330",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572219306,
+            "next": [
+              "_root.delete-price-lists.remove-remote-links.emit-event-step"
+            ],
+            "_v": 0,
+            "startedAt": 1794572219306
+          },
+          "response": {
+            "pricing": {
+              "price_list_id": [
+                "plist_01M7ADDKSERN6BGQA3F6N3V6GM"
+              ]
+            }
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-price-lists",
+          "transaction_id": "auto-01M7ADDWWNYKCX15YKF3G6PP02",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-price-lists.remove-remote-links.emit-event-step",
+            "uuid": "01M7ADD70AXRBR7P0CS3TBRJPE",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ADD70AXRBR7P0CS3TBRJPE",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572219306,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572219306
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-price-lists",
+          "transaction_id": "auto-01M7ADDWWNYKCX15YKF3G6PP02",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-price-lists.remove-remote-links.emit-event-step",
+            "uuid": "01M7ADD70AXRBR7P0CS3TBRJPE",
+            "depth": 3,
+            "definition": {
+              "action": "emit-event-step",
+              "uuid": "01M7ADD70AXRBR7P0CS3TBRJPE",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572219306,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572219306
+          },
+          "response": {
+            "eventGroupId": "01M7ADDWWN8BHMX6H10PVFQ8Z1",
+            "eventName": "price-list.deleted"
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "delete-price-lists",
+          "transaction_id": "auto-01M7ADDWWNYKCX15YKF3G6PP02",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADDWWNYKCX15YKF3G6PP02",
+        "workflowId": "delete-price-lists",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_pref_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-price-preferences",
+          "transaction_id": "auto-01M7ADDYCAM6CGCY1CMQZTQH4G"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-price-preferences",
+          "transaction_id": "auto-01M7ADDYCAM6CGCY1CMQZTQH4G",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-price-preferences",
+            "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+            "depth": 1,
+            "definition": {
+              "action": "create-price-preferences",
+              "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572220812,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572220812
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-price-preferences",
+          "transaction_id": "auto-01M7ADDYCAM6CGCY1CMQZTQH4G",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.create-price-preferences",
+            "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+            "depth": 1,
+            "definition": {
+              "action": "create-price-preferences",
+              "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572220812,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572220812
+          },
+          "response": [
+            {
+              "id": "prpref_01M7ADDYCDW75P8TRWHRE9G3N9",
+              "attribute": "currency_code",
+              "value": "jpy",
+              "is_tax_inclusive": true,
+              "created_at": "2026-11-13T12:17:00.813Z",
+              "updated_at": "2026-11-13T12:17:00.813Z",
+              "deleted_at": null
+            }
+          ]
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-price-preferences",
+          "transaction_id": "auto-01M7ADDYCAM6CGCY1CMQZTQH4G",
+          "result": [
+            {
+              "id": "prpref_01M7ADDYCDW75P8TRWHRE9G3N9",
+              "attribute": "currency_code",
+              "value": "jpy",
+              "is_tax_inclusive": true,
+              "created_at": "2026-11-13T12:17:00.813Z",
+              "updated_at": "2026-11-13T12:17:00.813Z",
+              "deleted_at": null
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_pref_create": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADDYCAM6CGCY1CMQZTQH4G",
+        "workflowId": "create-price-preferences",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "pref": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_preferences": [
+        {
+          "id": "prpref_01M7ADDYCDW75P8TRWHRE9G3N9"
+        }
+      ],
+      "count": 1,
+      "offset": 0,
+      "limit": 300
+    }
+  },
+  "events_run_pref_create_dup": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "create-price-preferences",
+          "transaction_id": "auto-01M7ADDZVV480Y1AF2GKYNGDBN"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-price-preferences",
+          "transaction_id": "auto-01M7ADDZVV480Y1AF2GKYNGDBN",
+          "step": {
+            "id": "_root.create-price-preferences",
+            "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+            "depth": 1,
+            "definition": {
+              "action": "create-price-preferences",
+              "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572222334,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572222334
+          }
+        },
+        {
+          "event_type": "onStepFailure",
+          "workflow_id": "create-price-preferences",
+          "transaction_id": "auto-01M7ADDZVV480Y1AF2GKYNGDBN",
+          "step": {
+            "id": "_root.create-price-preferences",
+            "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+            "depth": 1,
+            "definition": {
+              "action": "create-price-preferences",
+              "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572222361,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572222334
+          },
+          "errors": [
+            {
+              "action": "create-price-preferences",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Price preference with attribute: currency_code, value: jpy, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:17:02.350Z"
+              }
+            }
+          ]
+        },
+        {
+          "event_type": "onCompensateBegin",
+          "workflow_id": "create-price-preferences",
+          "transaction_id": "auto-01M7ADDZVV480Y1AF2GKYNGDBN"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "create-price-preferences",
+          "transaction_id": "auto-01M7ADDZVV480Y1AF2GKYNGDBN",
+          "step": {
+            "id": "_root.create-price-preferences",
+            "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+            "depth": 1,
+            "definition": {
+              "action": "create-price-preferences",
+              "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572222361,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572222334
+          }
+        },
+        {
+          "event_type": "onCompensateStepSuccess",
+          "workflow_id": "create-price-preferences",
+          "transaction_id": "auto-01M7ADDZVV480Y1AF2GKYNGDBN",
+          "step": {
+            "id": "_root.create-price-preferences",
+            "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+            "depth": 1,
+            "definition": {
+              "action": "create-price-preferences",
+              "uuid": "01M7ADD6TZWNXC6Q3XJFBTSNGV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572222361,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572222334
+          },
+          "response": {}
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "create-price-preferences",
+          "transaction_id": "auto-01M7ADDZVV480Y1AF2GKYNGDBN",
+          "errors": [
+            {
+              "action": "create-price-preferences",
+              "handlerType": "invoke",
+              "error": {
+                "message": "Price preference with attribute: currency_code, value: jpy, already exists.",
+                "name": "Error",
+                "__isMedusaError": true,
+                "type": "invalid_data",
+                "date": "2026-11-13T12:17:02.350Z"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "run_pref_create_dup": {
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "type": "invalid_data",
+      "message": "Price preference with attribute: currency_code, value: jpy, already exists."
+    }
+  },
+  "events_run_pref_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "update-price-preferences",
+          "transaction_id": "auto-01M7ADE1BVXFT5GNX3RW0NM6DW"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "update-price-preferences",
+          "transaction_id": "auto-01M7ADE1BVXFT5GNX3RW0NM6DW",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-price-preferences",
+            "uuid": "01M7ADD6TZ1WEXZC71FP46DWS6",
+            "depth": 1,
+            "definition": {
+              "action": "update-price-preferences",
+              "uuid": "01M7ADD6TZ1WEXZC71FP46DWS6",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572223870,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572223870
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "update-price-preferences",
+          "transaction_id": "auto-01M7ADE1BVXFT5GNX3RW0NM6DW",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.update-price-preferences",
+            "uuid": "01M7ADD6TZ1WEXZC71FP46DWS6",
+            "depth": 1,
+            "definition": {
+              "action": "update-price-preferences",
+              "uuid": "01M7ADD6TZ1WEXZC71FP46DWS6",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572223870,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572223870
+          },
+          "response": [
+            {
+              "id": "prpref_01M7ADDYCDW75P8TRWHRE9G3N9",
+              "attribute": "currency_code",
+              "value": "jpy",
+              "is_tax_inclusive": false,
+              "created_at": "2026-11-13T12:17:00.813Z",
+              "updated_at": "2026-11-13T12:17:03.875Z",
+              "deleted_at": null
+            }
+          ]
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "update-price-preferences",
+          "transaction_id": "auto-01M7ADE1BVXFT5GNX3RW0NM6DW",
+          "result": [
+            {
+              "id": "prpref_01M7ADDYCDW75P8TRWHRE9G3N9",
+              "attribute": "currency_code",
+              "value": "jpy",
+              "is_tax_inclusive": false,
+              "created_at": "2026-11-13T12:17:00.813Z",
+              "updated_at": "2026-11-13T12:17:03.875Z",
+              "deleted_at": null
+            }
+          ],
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_pref_update": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADE1BVXFT5GNX3RW0NM6DW",
+        "workflowId": "update-price-preferences",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "events_run_pref_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/event-stream",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "events": [
+        {
+          "event_type": "onBegin",
+          "workflow_id": "delete-price-preferences",
+          "transaction_id": "auto-01M7ADE2VD19HDDKMCAHAE6KX8"
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-price-preferences",
+          "transaction_id": "auto-01M7ADE2VD19HDDKMCAHAE6KX8",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-price-preferences",
+            "uuid": "01M7ADD6V0FQHKWHJGZ1EBD9PV",
+            "depth": 1,
+            "definition": {
+              "action": "delete-price-preferences",
+              "uuid": "01M7ADD6V0FQHKWHJGZ1EBD9PV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572225390,
+            "next": [
+              "_root.delete-price-preferences.remove-remote-links"
+            ],
+            "_v": 0,
+            "startedAt": 1794572225390
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-price-preferences",
+          "transaction_id": "auto-01M7ADE2VD19HDDKMCAHAE6KX8",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-price-preferences",
+            "uuid": "01M7ADD6V0FQHKWHJGZ1EBD9PV",
+            "depth": 1,
+            "definition": {
+              "action": "delete-price-preferences",
+              "uuid": "01M7ADD6V0FQHKWHJGZ1EBD9PV",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572225390,
+            "next": [
+              "_root.delete-price-preferences.remove-remote-links"
+            ],
+            "_v": 0,
+            "startedAt": 1794572225390
+          }
+        },
+        {
+          "event_type": "onStepBegin",
+          "workflow_id": "delete-price-preferences",
+          "transaction_id": "auto-01M7ADE2VD19HDDKMCAHAE6KX8",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-price-preferences.remove-remote-links",
+            "uuid": "01M7ADD6V0071MV6AZYMVJ4V1N",
+            "depth": 2,
+            "definition": {
+              "action": "remove-remote-links",
+              "uuid": "01M7ADD6V0071MV6AZYMVJ4V1N",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572225402,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572225402
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "delete-price-preferences",
+          "transaction_id": "auto-01M7ADE2VD19HDDKMCAHAE6KX8",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.delete-price-preferences.remove-remote-links",
+            "uuid": "01M7ADD6V0071MV6AZYMVJ4V1N",
+            "depth": 2,
+            "definition": {
+              "action": "remove-remote-links",
+              "uuid": "01M7ADD6V0071MV6AZYMVJ4V1N",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794572225402,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794572225402
+          },
+          "response": {
+            "pricing": {
+              "price_preference_id": [
+                "prpref_01M7ADDYCDW75P8TRWHRE9G3N9"
+              ]
+            }
+          }
+        },
+        {
+          "event_type": "onFinish",
+          "workflow_id": "delete-price-preferences",
+          "transaction_id": "auto-01M7ADE2VD19HDDKMCAHAE6KX8",
+          "errors": []
+        }
+      ]
+    }
+  },
+  "run_pref_delete": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "acknowledgement": {
+        "transactionId": "auto-01M7ADE2VD19HDDKMCAHAE6KX8",
+        "workflowId": "delete-price-preferences",
+        "hasFinished": true,
+        "hasFailed": false
+      }
+    }
+  },
+  "after": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin"
+    },
+    "body": {
+      "price_lists": [],
+      "count": 0,
+      "offset": 0,
+      "limit": 50
+    }
+  }
+}

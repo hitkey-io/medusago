@@ -14,9 +14,9 @@ type BatchProductVariantsInput struct {
 
 // BatchProductVariantsOutput mirrors BatchProductVariantsWorkflowOutput.
 type BatchProductVariantsOutput struct {
-	Created []*dal.Record
-	Updated []*dal.Record
-	Deleted []any
+	Created []*dal.Record `json:"created"`
+	Updated []*dal.Record `json:"updated"`
+	Deleted []any         `json:"deleted"`
 }
 
 // BatchProductVariantsWorkflow mirrors batchProductVariantsWorkflow.

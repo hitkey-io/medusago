@@ -153,7 +153,12 @@ var UpdateProductVariantsWorkflow = composer.CreateWorkflow("update-product-vari
 					}
 				}
 			}
-			r.Set("price_set", set)
+			if set != nil {
+				r.Set("price_set", set)
+			} else {
+				// price_set: undefined is not serialized
+				r.Delete("price_set")
+			}
 			response[i] = r
 		}
 		if _, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "product-variant.updated", Data: idEvents(response)}); err != nil {

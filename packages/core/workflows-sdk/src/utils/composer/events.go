@@ -290,6 +290,10 @@ func (j *journal) emit(eventType string, r *stepRecord, fill func(*WorkflowEvent
 	if fill != nil {
 		fill(&ev)
 	}
+	if ev.HasResult {
+		// the run's result as it is when the run finishes
+		ev.Result = snapshot(ev.Result)
+	}
 	j.events(ev)
 }
 

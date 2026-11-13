@@ -15,9 +15,9 @@ type BatchProductsInput struct {
 
 // BatchProductsOutput mirrors BatchWorkflowOutput<ProductDTO>.
 type BatchProductsOutput struct {
-	Created []*dal.Record
-	Updated []*dal.Record
-	Deleted []any
+	Created []*dal.Record `json:"created"`
+	Updated []*dal.Record `json:"updated"`
+	Deleted []any         `json:"deleted"`
 }
 
 // BatchProductsWorkflow mirrors batchProductsWorkflow.

@@ -109,6 +109,33 @@ func (e *Execution) persist(state string) {
 }
 
 // removeExecution deletes the stored execution (deleteFromDb).
+// persistNested stores the checkpoint of a workflow run as a step when its
+// own options store it (store or retentionTime): upstream the nested
+// transaction saves its checkpoints under its own key (its workflow id,
+// "<step name>-<parent transaction id>"), and a finished one is kept even
+// without a retention time because its flow has a parentStepIdempotencyKey.
+func (e *Execution) persistNested(state string) {
+	if e.parentExec == nil || !(e.ownOptions.Store || e.ownOptions.RetentionTime > 0) {
+		return
+	}
+	store := executionStore(e.container)
+	if store == nil {
+		return
+	}
+	row := ExecutionRow{
+		WorkflowID: e.workflowID, TransactionID: e.journal.nestedTxID, RunID: e.journal.runID, State: state,
+		Execution: e.journal.flow(e.workflowID, e.transactionID, e.eventGroupID, e.ownOptions),
+		Context:   e.journal.context(),
+	}
+	if e.ownOptions.RetentionTime > 0 {
+		rt := e.ownOptions.RetentionTime
+		row.RetentionTime = &rt
+	}
+	if err := store.SaveExecution(context.WithoutCancel(e.ctx), row); err != nil {
+		slog.Error(fmt.Sprintf("failed to save workflow execution %s:%s: %v", e.workflowID, e.journal.nestedTxID, err))
+	}
+}
+
 func (e *Execution) removeExecution() {
 	store := executionStore(e.container)
 	if store == nil {

@@ -60,7 +60,7 @@ var prepareVariantsAndItemsWithPricesStep = composer.CreateStep("prepare-variant
 				byID[Str(v, "id")] = v
 			}
 		}
-		var lineItems []*dal.Record
+		lineItems := []*dal.Record{}
 		for _, item := range in.items {
 			idLike := itemIDLike(item)
 			ps := in.priceSets[idLike]

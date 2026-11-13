@@ -865,6 +865,12 @@ func (p *placeholders) normalize(v any) any {
 				// workflow journal timestamps (Date.now())
 				out.Set(k, "<timestamp>")
 			default:
+				if g, kind := isGenerated(k); g && kind == "id" {
+					// objects keyed by generated ids (workflow step
+					// outputs keyed by shipping option id)
+					out.Set(p.of(k), p.normalize(x))
+					continue
+				}
 				out.Set(k, p.normalize(x))
 			}
 		}
@@ -1072,7 +1078,7 @@ func goServer(t *testing.T, scenario string) string {
 			HTTP:           config.HttpConfig{AdminCors: "http://localhost:5173", AuthCors: "http://localhost:5173", StoreCors: "http://localhost:8000"},
 			SessionOptions: scenarioSessionOptions(),
 		}, Modules: scenarioModules(), Plugins: scenarioPlugins()})
-		app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, Routes: append(append(append(routes, scenarioRoutes()...), indexQueryRoutes()...), workflowEngineOpsRoutes()...), OnLoad: append(scenarioHooks(t), registerEventsCapture)})
+		app, err := loaders.InitializeWithOptions(context.Background(), cfg, loaders.Options{Middlewares: projectMiddlewares, Routes: append(append(append(routes, scenarioRoutes()...), indexQueryRoutes()...), append(workflowEngineOpsRoutes(), workflowRunRoutes()...)...), OnLoad: append(scenarioHooks(t), registerEventsCapture)})
 		if err != nil {
 			t.Fatal(err)
 		}

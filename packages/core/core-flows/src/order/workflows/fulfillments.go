@@ -1,6 +1,7 @@
 package workflows
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -278,6 +279,8 @@ var CreateOrderFulfillmentWorkflow = composer.CreateWorkflow("create-order-fulfi
 		if err != nil {
 			return nil, err
 		}
+		// new WorkflowResponse(fulfillment)
+		composer.SetFailedResult(e, fulfillment)
 		registerItems := []any{}
 		for _, i := range orderItems {
 			qty := g(i, "quantity")
@@ -320,6 +323,8 @@ var CreateOrderFulfillmentWorkflow = composer.CreateWorkflow("create-order-fulfi
 
 		toDelete, toUpdate, adjustments, err := prepareFulfillmentInventoryUpdate(reservations, order, input, inputItemsMap, orderItems)
 		if err != nil {
+			// the transform resolving the step's input throws
+			_, err = inventorysteps.AdjustInventoryLevelsStep.FailInput(e, err)
 			return nil, err
 		}
 		adjustedLevels, err := inventorysteps.AdjustInventoryLevelsStep.Run(e, adjustments)
@@ -949,3 +954,50 @@ var CancelOrderFulfillmentWorkflow = composer.CreateWorkflow("cancel-order-fulfi
 	})
 
 var _ = toAnyList
+
+// The inputs below are the request body plus the route parameters
+// upstream ({ ...body, order_id, ... }): a run by workflow id decodes them
+// from that object and the journal stores it as the payload.
+
+// DecodeInput reads { order_id, ...body }.
+func (in *CreateOrderFulfillmentInput) DecodeInput(r *dal.Record) error {
+	in.OrderID, _ = g(r, "order_id").(string)
+	in.Input = r
+	return nil
+}
+
+// MarshalJSON writes the workflow input object.
+func (in CreateOrderFulfillmentInput) MarshalJSON() ([]byte, error) { return json.Marshal(in.Input) }
+
+// DecodeInput reads { order_id, fulfillment_id, ...body }.
+func (in *CreateOrderShipmentInput) DecodeInput(r *dal.Record) error {
+	in.OrderID, _ = g(r, "order_id").(string)
+	in.FulfillmentID, _ = g(r, "fulfillment_id").(string)
+	in.Input = r
+	return nil
+}
+
+// MarshalJSON writes the workflow input object.
+func (in CreateOrderShipmentInput) MarshalJSON() ([]byte, error) { return json.Marshal(in.Input) }
+
+// DecodeInput reads { order_id, fulfillment_id, ...body }.
+func (in *CancelOrderFulfillmentInput) DecodeInput(r *dal.Record) error {
+	in.OrderID, _ = g(r, "order_id").(string)
+	in.FulfillmentID, _ = g(r, "fulfillment_id").(string)
+	in.Input = r
+	return nil
+}
+
+// MarshalJSON writes the workflow input object.
+func (in CancelOrderFulfillmentInput) MarshalJSON() ([]byte, error) { return json.Marshal(in.Input) }
+
+// DecodeInput reads the workflow input object.
+func (in *CreateReturnShippingMethodInput) DecodeInput(r *dal.Record) error {
+	in.Input = r
+	return nil
+}
+
+// MarshalJSON writes the workflow input object.
+func (in CreateReturnShippingMethodInput) MarshalJSON() ([]byte, error) {
+	return json.Marshal(in.Input)
+}

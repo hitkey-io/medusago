@@ -31,8 +31,8 @@ var CreatePricePreferencesStep = composer.CreateStep("create-price-preferences",
 
 // UpdatePricePreferencesInput mirrors UpdatePricePreferencesWorkflowInput.
 type UpdatePricePreferencesInput struct {
-	Selector *dal.Record
-	Update   *dal.Record
+	Selector *dal.Record `json:"selector"`
+	Update   *dal.Record `json:"update"`
 }
 
 // UpdatePricePreferencesStep mirrors updatePricePreferencesStep.

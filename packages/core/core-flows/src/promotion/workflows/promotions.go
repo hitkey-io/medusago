@@ -9,8 +9,8 @@ import (
 
 // PromotionsInput mirrors { promotionsData, additional_data }.
 type PromotionsInput struct {
-	PromotionsData []*dal.Record
-	AdditionalData *dal.Record
+	PromotionsData []*dal.Record `json:"promotionsData"`
+	AdditionalData *dal.Record   `json:"additional_data,omitempty"`
 }
 
 // CreatePromotionsWorkflow mirrors createPromotionsWorkflow.
@@ -120,20 +120,46 @@ var DeletePromotionRulesWorkflow = composer.CreateWorkflow("delete-promotion-rul
 		return nil, err
 	})
 
+// deletePromotionRulesWorkflowStep mirrors deletePromotionRulesWorkflowStep:
+// a step running deletePromotionRulesWorkflow as a workflow of its own; its
+// output is the rule ids and its compensation cancels that run (the
+// removed rules are added back).
+var deletePromotionRulesWorkflowStep = composer.CreateStep("delete-promotion-rules-workflow",
+	func(ctx composer.StepExecutionContext, in steps.RulesInput) (composer.StepResponse[[]any], error) {
+		restore, err := steps.SnapshotRemovedRules(ctx, in)
+		if err != nil {
+			restore = nil
+		}
+		if _, err := DeletePromotionRulesWorkflow.Run(ctx.Context, ctx.Container, in); err != nil {
+			return composer.StepResponse[[]any]{}, err
+		}
+		ids := in.RuleIDs
+		if ids == nil {
+			ids = []any{}
+		}
+		return composer.NewStepResponse(ids, restore), nil
+	},
+	func(ctx composer.StepExecutionContext, data any) error {
+		if data == nil {
+			return nil
+		}
+		return steps.RestoreRemovedRules(ctx, data)
+	})
+
 // BatchPromotionRulesInput mirrors BatchPromotionRulesWorkflowInput.
 type BatchPromotionRulesInput struct {
-	ID       any
-	RuleType steps.RuleType
-	Create   []*dal.Record
-	Update   []*dal.Record
-	Delete   []any
+	ID       any            `json:"id"`
+	RuleType steps.RuleType `json:"rule_type"`
+	Create   []*dal.Record  `json:"create,omitempty"`
+	Update   []*dal.Record  `json:"update,omitempty"`
+	Delete   []any          `json:"delete,omitempty"`
 }
 
 // BatchPromotionRulesResult mirrors BatchPromotionRulesWorkflowOutput.
 type BatchPromotionRulesResult struct {
-	Created []*dal.Record
-	Updated []*dal.Record
-	Deleted []any
+	Created []*dal.Record `json:"created"`
+	Updated []*dal.Record `json:"updated"`
+	Deleted []any         `json:"deleted"`
 }
 
 // BatchPromotionRulesWorkflow mirrors batchPromotionRulesWorkflow (the
@@ -153,22 +179,42 @@ var BatchPromotionRulesWorkflow = composer.CreateWorkflow("batch-promotion-rules
 			del = []any{}
 		}
 		var created, updated []*dal.Record
+		var deleted []any
+		var createErr, updateErr, deleteErr error
 		err := composer.Parallelize(
 			func() (err error) {
-				created, err = CreatePromotionRulesWorkflow.RunAsStep(e, steps.RulesInput{RuleType: in.RuleType, ID: in.ID, Rules: create})
-				return err
+				created, createErr = CreatePromotionRulesWorkflow.RunAsStep(e, steps.RulesInput{RuleType: in.RuleType, ID: in.ID, Rules: create})
+				return createErr
 			},
 			func() (err error) {
-				updated, err = UpdatePromotionRulesWorkflow.RunAsStep(e, update)
-				return err
+				updated, updateErr = UpdatePromotionRulesWorkflow.RunAsStep(e, update)
+				return updateErr
 			},
 			func() error {
-				_, err := DeletePromotionRulesWorkflow.RunAsStep(e, steps.RulesInput{RuleType: in.RuleType, ID: in.ID, RuleIDs: del})
-				return err
+				deleted, deleteErr = deletePromotionRulesWorkflowStep.Run(e, steps.RulesInput{RuleType: in.RuleType, ID: in.ID, RuleIDs: del})
+				return deleteErr
 			},
 		)
 		if err != nil {
+			// the response resolves from the branches that succeeded
+			res := dal.NewRecord()
+			if createErr == nil {
+				res.Set("created", created)
+			}
+			if updateErr == nil {
+				res.Set("updated", updated)
+			}
+			if deleteErr == nil {
+				res.Set("deleted", deleted)
+			}
+			composer.SetFailedResult(e, res)
 			return BatchPromotionRulesResult{}, err
 		}
 		return BatchPromotionRulesResult{Created: created, Updated: updated, Deleted: del}, nil
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	DeletePromotionsWorkflow.InputFrom("ids")
+	UpdatePromotionRulesWorkflow.InputFrom("data")
+}

@@ -32,8 +32,13 @@ func hook(e *composer.Execution, name string, kv ...any) error {
 
 // CreateCustomersInput mirrors CreateCustomersWorkflowInput.
 type CreateCustomersInput struct {
-	CustomersData  []*dal.Record
-	AdditionalData *dal.Record
+	CustomersData  []*dal.Record `json:"customersData"`
+	AdditionalData *dal.Record   `json:"additional_data,omitempty"`
+}
+
+// IDsInput mirrors the { ids } input of the delete workflows.
+type IDsInput struct {
+	IDs []any `json:"ids"`
 }
 
 // CreateCustomersWorkflow mirrors createCustomersWorkflow.
@@ -54,9 +59,9 @@ var CreateCustomersWorkflow = composer.CreateWorkflow("create-customers",
 
 // UpdateCustomersInput mirrors UpdateCustomersWorkflowInput.
 type UpdateCustomersInput struct {
-	Selector       *dal.Record
-	Update         *dal.Record
-	AdditionalData *dal.Record
+	Selector       *dal.Record `json:"selector"`
+	Update         *dal.Record `json:"update"`
+	AdditionalData *dal.Record `json:"additional_data,omitempty"`
 }
 
 // UpdateCustomersWorkflow mirrors updateCustomersWorkflow.
@@ -77,7 +82,8 @@ var UpdateCustomersWorkflow = composer.CreateWorkflow("update-customers",
 
 // DeleteCustomersWorkflow mirrors deleteCustomersWorkflow.
 var DeleteCustomersWorkflow = composer.CreateWorkflow("delete-customers",
-	func(e *composer.Execution, ids []any) (any, error) {
+	func(e *composer.Execution, in IDsInput) (any, error) {
+		ids := in.IDs
 		if _, err := steps.DeleteCustomersStep.Run(e, ids); err != nil {
 			return nil, err
 		}
@@ -90,8 +96,8 @@ var DeleteCustomersWorkflow = composer.CreateWorkflow("delete-customers",
 
 // CreateCustomerAddressesInput mirrors CreateCustomerAddressesWorkflowInput.
 type CreateCustomerAddressesInput struct {
-	Addresses      []*dal.Record
-	AdditionalData *dal.Record
+	Addresses      []*dal.Record `json:"addresses"`
+	AdditionalData *dal.Record   `json:"additional_data,omitempty"`
 }
 
 // CreateCustomerAddressesWorkflow mirrors createCustomerAddressesWorkflow.
@@ -142,7 +148,8 @@ var UpdateCustomerAddressesWorkflow = composer.CreateWorkflow("update-customer-a
 
 // DeleteCustomerAddressesWorkflow mirrors deleteCustomerAddressesWorkflow.
 var DeleteCustomerAddressesWorkflow = composer.CreateWorkflow("delete-customer-addresses",
-	func(e *composer.Execution, ids []any) (any, error) {
+	func(e *composer.Execution, in IDsInput) (any, error) {
+		ids := in.IDs
 		if _, err := steps.DeleteCustomerAddressesStep.Run(e, ids); err != nil {
 			return nil, err
 		}
@@ -159,8 +166,14 @@ var getCustomerAuthIdentityStep = composer.CreateStep("get-customer-auth-identit
 	}, nil)
 
 // RemoveCustomerAccountWorkflow mirrors removeCustomerAccountWorkflow.
+// RemoveCustomerAccountInput mirrors RemoveCustomerAccountWorkflowInput.
+type RemoveCustomerAccountInput struct {
+	CustomerID string `json:"customerId"`
+}
+
 var RemoveCustomerAccountWorkflow = composer.CreateWorkflow("remove-customer-account",
-	func(e *composer.Execution, customerID string) (string, error) {
+	func(e *composer.Execution, in RemoveCustomerAccountInput) (string, error) {
+		customerID := in.CustomerID
 		f := dal.NewRecord()
 		f.Set("id", customerID)
 		isList := false
@@ -170,7 +183,7 @@ var RemoveCustomerAccountWorkflow = composer.CreateWorkflow("remove-customer-acc
 		if err != nil {
 			return "", err
 		}
-		if _, err := DeleteCustomersWorkflow.RunAsStep(e, []any{customerID}); err != nil {
+		if _, err := DeleteCustomersWorkflow.RunAsStep(e, IDsInput{IDs: []any{customerID}}); err != nil {
 			return "", err
 		}
 		customer, _ := q.Data.(*dal.Record)

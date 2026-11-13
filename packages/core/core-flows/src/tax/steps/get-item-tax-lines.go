@@ -22,8 +22,8 @@ type GetItemTaxLinesInput struct {
 
 // ItemTaxLines mirrors the step output.
 type ItemTaxLines struct {
-	LineItemTaxLines        []*dal.Record
-	ShippingMethodsTaxLines []*dal.Record
+	LineItemTaxLines        []*dal.Record `json:"lineItemTaxLines"`
+	ShippingMethodsTaxLines []*dal.Record `json:"shippingMethodsTaxLines"`
 }
 
 func g(r *dal.Record, k string) any {

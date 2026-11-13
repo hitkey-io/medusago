@@ -69,3 +69,10 @@ var DeleteReservationsByLineItemsWorkflow = composer.CreateWorkflow("delete-rese
 		_, err = commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "reservation-item.deleted", Data: idEvents(deleted)})
 		return nil, err
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	CreateReservationsWorkflow.InputFrom("reservations")
+	UpdateReservationsWorkflow.InputFrom("updates")
+	DeleteReservationsWorkflow.InputFrom("ids")
+}

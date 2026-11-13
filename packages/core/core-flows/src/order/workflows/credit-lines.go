@@ -314,3 +314,8 @@ var AuthorizePaymentSessionForOrderWorkflow = composer.CreateWorkflow("authorize
 		}
 		return payment, nil
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	ListShippingOptionsForOrderWorkflow.InputFrom("order_id")
+}

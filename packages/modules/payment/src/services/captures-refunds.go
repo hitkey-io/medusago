@@ -148,7 +148,7 @@ func (s *PaymentModuleService) capturePayment(ctx context.Context, data *dal.Rec
 	if err := s.maybeUpdatePaymentCollection(ctx, get(payment, "payment_collection_id")); err != nil {
 		return nil, err
 	}
-	return s.Internal("Payment").Retrieve(context.Background(), get(payment, "id"), utilsmodulessdk.FindConfig{Relations: []string{"captures"}})
+	return s.Internal("Payment").Retrieve(ctx, get(payment, "id"), utilsmodulessdk.FindConfig{Relations: []string{"captures"}})
 }
 
 // RefundPayment mirrors refundPayment.
@@ -283,7 +283,7 @@ func (s *PaymentModuleService) RefundPayment(ctx context.Context, data *dal.Reco
 			return nil, err
 		}
 	}
-	return s.Internal("Payment").Retrieve(context.Background(), get(payment, "id"), utilsmodulessdk.FindConfig{Relations: []string{"refunds"}})
+	return s.Internal("Payment").Retrieve(ctx, get(payment, "id"), utilsmodulessdk.FindConfig{Relations: []string{"refunds"}})
 }
 
 // CancelPayment mirrors cancelPayment.

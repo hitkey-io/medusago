@@ -1,0 +1,487 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "events_run_create",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-customers/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g1",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-customers/run",
+  "body": {
+   "input": {
+    "customersData": [
+     {
+      "email": "wf-cust@example.test",
+      "first_name": "Wf",
+      "last_name": "Cust",
+      "metadata": {
+       "k": "v"
+      }
+     }
+    ],
+    "additional_data": {
+     "src": "wf"
+    }
+   }
+  },
+  "parallel": "g1",
+  "delay_ms": 1500
+ },
+ {
+  "name": "cus",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/customers?email=wf-cust@example.test&fields=id,email"
+ },
+ {
+  "name": "events_run_create_dup",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-customers/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g2",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_dup",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-customers/run",
+  "body": {
+   "input": {
+    "customersData": [
+     {
+      "email": "wf-cust@example.test"
+     }
+    ]
+   }
+  },
+  "parallel": "g2",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_update",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-customers/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g3",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-customers/run",
+  "body": {
+   "input": {
+    "selector": {
+     "id": "{{cus.customers.0.id}}"
+    },
+    "update": {
+     "first_name": "Updated",
+     "company_name": "ACME"
+    },
+    "additional_data": {
+     "a": 1
+    }
+   }
+  },
+  "parallel": "g3",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_addr_create",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-customer-addresses/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g4",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_addr_create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-customer-addresses/run",
+  "body": {
+   "input": {
+    "addresses": [
+     {
+      "customer_id": "{{cus.customers.0.id}}",
+      "address_name": "Home",
+      "address_1": "Street 1",
+      "city": "Berlin",
+      "country_code": "de",
+      "is_default_shipping": true
+     }
+    ]
+   }
+  },
+  "parallel": "g4",
+  "delay_ms": 1500
+ },
+ {
+  "name": "addrs",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/customers/{{cus.customers.0.id}}/addresses?fields=id,address_name"
+ },
+ {
+  "name": "events_run_addr_update",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-customer-addresses/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g5",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_addr_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-customer-addresses/run",
+  "body": {
+   "input": {
+    "selector": {
+     "id": "{{addrs.addresses.0.id}}",
+     "customer_id": "{{cus.customers.0.id}}"
+    },
+    "update": {
+     "city": "Munich",
+     "is_default_billing": true
+    }
+   }
+  },
+  "parallel": "g5",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_addr_delete",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-customer-addresses/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g6",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_addr_delete",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-customer-addresses/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{addrs.addresses.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g6",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_group_create",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-customer-groups/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g7",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_group_create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-customer-groups/run",
+  "body": {
+   "input": {
+    "customersData": [
+     {
+      "name": "WF VIP",
+      "metadata": {
+       "tier": 1
+      }
+     }
+    ]
+   }
+  },
+  "parallel": "g7",
+  "delay_ms": 1500
+ },
+ {
+  "name": "grp",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/customer-groups?name=WF%20VIP&fields=id,name"
+ },
+ {
+  "name": "events_run_group_create_dup",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-customer-groups/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g8",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_group_create_dup",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-customer-groups/run",
+  "body": {
+   "input": {
+    "customersData": [
+     {
+      "name": "WF VIP"
+     }
+    ]
+   }
+  },
+  "parallel": "g8",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_group_update",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-customer-groups/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g9",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_group_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-customer-groups/run",
+  "body": {
+   "input": {
+    "selector": {
+     "id": "{{grp.customer_groups.0.id}}"
+    },
+    "update": {
+     "name": "WF VIP 2"
+    }
+   }
+  },
+  "parallel": "g9",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_link_customers",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/link-customers-to-customer-group/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g10",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_link_customers",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/link-customers-to-customer-group/run",
+  "body": {
+   "input": {
+    "id": "{{grp.customer_groups.0.id}}",
+    "add": [
+     "{{cus.customers.0.id}}"
+    ],
+    "remove": []
+   }
+  },
+  "parallel": "g10",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_link_groups",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/link-customer-groups-to-customer/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g11",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_link_groups",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/link-customer-groups-to-customer/run",
+  "body": {
+   "input": {
+    "id": "{{cus.customers.0.id}}",
+    "add": [],
+    "remove": [
+     "{{grp.customer_groups.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g11",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_group_delete",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-customer-groups/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g12",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_group_delete",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-customer-groups/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{grp.customer_groups.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g12",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_delete",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-customers/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g13",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_delete",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-customers/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{cus.customers.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g13",
+  "delay_ms": 1500
+ },
+ {
+  "name": "after",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/customers?email=wf-cust@example.test&fields=id"
+ }
+]

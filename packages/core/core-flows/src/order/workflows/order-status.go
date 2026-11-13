@@ -26,12 +26,15 @@ func idEvents(ids []any) []any {
 	return out
 }
 
+// CompleteOrdersInput mirrors CompleteOrdersWorkflowInput.
+type CompleteOrdersInput struct {
+	OrderIDs       []any `json:"orderIds"`
+	AdditionalData any   `json:"additional_data,omitempty"`
+}
+
 // CompleteOrderWorkflow mirrors completeOrderWorkflow.
 var CompleteOrderWorkflow = composer.CreateWorkflow("complete-order-workflow",
-	func(e *composer.Execution, in struct {
-		OrderIDs       []any
-		AdditionalData any
-	}) ([]*dal.Record, error) {
+	func(e *composer.Execution, in CompleteOrdersInput) ([]*dal.Record, error) {
 		completed, err := ordersteps.CompleteOrdersStep.Run(e, in.OrderIDs)
 		if err != nil {
 			return nil, err
@@ -45,9 +48,15 @@ var CompleteOrderWorkflow = composer.CreateWorkflow("complete-order-workflow",
 		return completed, composer.CreateHook(e, "ordersCompleted", hook)
 	})
 
+// ArchiveOrdersInput mirrors ArchiveOrdersWorkflowInput.
+type ArchiveOrdersInput struct {
+	OrderIDs []any `json:"orderIds"`
+}
+
 // ArchiveOrderWorkflow mirrors archiveOrderWorkflow.
 var ArchiveOrderWorkflow = composer.CreateWorkflow("archive-order-workflow",
-	func(e *composer.Execution, ids []any) ([]*dal.Record, error) {
+	func(e *composer.Execution, in ArchiveOrdersInput) ([]*dal.Record, error) {
+		ids := in.OrderIDs
 		if _, err := commonsteps.EmitEventStep.Run(e, commonsteps.EmitEventStepInput{EventName: "order.archived", Data: idEvents(ids)}); err != nil {
 			return nil, err
 		}

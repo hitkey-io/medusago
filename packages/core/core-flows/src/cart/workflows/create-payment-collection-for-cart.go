@@ -66,7 +66,7 @@ var UpdatePaymentCollectionStep = composer.CreateStep("update-payment-collection
 	func(ctx composer.StepExecutionContext, in *dal.Record) (composer.StepResponse[any], error) {
 		sel, update := Rec(in, "selector"), Rec(in, "update")
 		if !IsPresent(in) || !IsPresent(sel) {
-			return composer.NewStepResponse[any](nil, any([]*dal.Record{})), nil
+			return composer.NewStepResponse[any]([]any{}, any([]*dal.Record{})), nil
 		}
 		svc := paymentsteps.PaymentOf(ctx.Container)
 		prev, err := svc.ListBySuffix(ctx.Context, "PaymentCollections", sel, utilsmodulessdk.FindConfig{Select: append([]string{"id"}, update.Keys()...)})
@@ -77,10 +77,16 @@ var UpdatePaymentCollectionStep = composer.CreateStep("update-payment-collection
 		if code, ok := Get(u, "currency_code").(string); ok && code != "" {
 			u.Set("currency_code", strings.ToLower(code))
 		}
-		if _, err := commonsteps.UpdateBySelector(ctx.Context, svc, "PaymentCollection", sel, u); err != nil {
+		updated, err := commonsteps.UpdateBySelector(ctx.Context, svc, "PaymentCollection", sel, u)
+		if err != nil {
 			return composer.StepResponse[any]{}, err
 		}
-		return composer.NewStepResponse[any](nil, any(prev)), nil
+		// updatePaymentCollections(selector, data) serializes result[0]
+		// (data is not an array)
+		if len(updated) == 0 {
+			return composer.NewStepResponse[any](nil, any(prev)), nil
+		}
+		return composer.NewStepResponse[any](updated[0], any(prev)), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		prev, _ := data.([]*dal.Record)
@@ -115,4 +121,9 @@ func refreshPaymentCollection(e *composer.Execution, cart *dal.Record) error {
 		func() error { _, err := paymentworkflows.DeletePaymentSessionsWorkflow.RunAsStep(e, ids); return err },
 		func() error { _, err := UpdatePaymentCollectionStep.Run(e, update); return err },
 	)
+}
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	CreatePaymentCollectionForCartWorkflow.InputFrom("cart_id")
 }

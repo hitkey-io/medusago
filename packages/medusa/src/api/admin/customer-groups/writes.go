@@ -61,7 +61,7 @@ func POST(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 		in.Set(k, v)
 	}
 	in.Set("created_by", req.AuthString("actor_id"))
-	result, err := workflows.CreateCustomerGroupsWorkflow.Run(req.Ctx(), req.Scope, []*dal.Record{in})
+	result, err := workflows.CreateCustomerGroupsWorkflow.Run(req.Ctx(), req.Scope, workflows.CreateCustomerGroupsInput{CustomersData: []*dal.Record{in}})
 	if err != nil {
 		return err
 	}

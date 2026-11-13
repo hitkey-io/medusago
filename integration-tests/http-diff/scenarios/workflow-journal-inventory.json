@@ -1,0 +1,578 @@
+[
+ {
+  "name": "login",
+  "method": "POST",
+  "path": "/auth/user/emailpass",
+  "body": {
+   "email": "admin@medusa-test.com",
+   "password": "supersecret"
+  }
+ },
+ {
+  "name": "locations",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/stock-locations?fields=id"
+ },
+ {
+  "name": "events_run_create",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-inventory-items-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g1",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-inventory-items-workflow/run",
+  "body": {
+   "input": {
+    "items": [
+     {
+      "sku": "WF-SKU-1",
+      "title": "WF item",
+      "requires_shipping": true,
+      "metadata": {
+       "k": "v"
+      },
+      "location_levels": [
+       {
+        "location_id": "{{locations.stock_locations.0.id}}",
+        "stocked_quantity": 5
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "parallel": "g1",
+  "delay_ms": 1500
+ },
+ {
+  "name": "inv",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/inventory-items?sku=WF-SKU-1&fields=id,sku"
+ },
+ {
+  "name": "events_run_create_dup",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-inventory-items-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g2",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_create_dup",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-inventory-items-workflow/run",
+  "body": {
+   "input": {
+    "items": [
+     {
+      "sku": "WF-SKU-1"
+     }
+    ]
+   }
+  },
+  "parallel": "g2",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_update",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-inventory-items-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g3",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-inventory-items-workflow/run",
+  "body": {
+   "input": {
+    "updates": [
+     {
+      "id": "{{inv.inventory_items.0.id}}",
+      "title": "WF item 2",
+      "weight": 10
+     }
+    ]
+   }
+  },
+  "parallel": "g3",
+  "delay_ms": 1500
+ },
+ {
+  "name": "loc2",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/stock-locations?fields=id",
+  "body": {
+   "name": "WF location"
+  }
+ },
+ {
+  "name": "events_run_levels_create",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-inventory-levels-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g4",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_levels_create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-inventory-levels-workflow/run",
+  "body": {
+   "input": {
+    "inventory_levels": [
+     {
+      "inventory_item_id": "{{inv.inventory_items.0.id}}",
+      "location_id": "{{loc2.stock_location.id}}",
+      "stocked_quantity": 3
+     }
+    ]
+   }
+  },
+  "parallel": "g4",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_levels_create_dup",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-inventory-levels-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g5",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_levels_create_dup",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-inventory-levels-workflow/run",
+  "body": {
+   "input": {
+    "inventory_levels": [
+     {
+      "inventory_item_id": "{{inv.inventory_items.0.id}}",
+      "location_id": "{{loc2.stock_location.id}}",
+      "stocked_quantity": 3
+     }
+    ]
+   }
+  },
+  "parallel": "g5",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_levels_update",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-inventory-levels-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g6",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_levels_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-inventory-levels-workflow/run",
+  "body": {
+   "input": {
+    "updates": [
+     {
+      "inventory_item_id": "{{inv.inventory_items.0.id}}",
+      "location_id": "{{loc2.stock_location.id}}",
+      "stocked_quantity": 4,
+      "incoming_quantity": 1
+     }
+    ]
+   }
+  },
+  "parallel": "g6",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_levels_batch",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-inventory-item-levels-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g7",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_levels_batch",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/batch-inventory-item-levels-workflow/run",
+  "body": {
+   "input": {
+    "create": [],
+    "update": [
+     {
+      "inventory_item_id": "{{inv.inventory_items.0.id}}",
+      "location_id": "{{locations.stock_locations.0.id}}",
+      "stocked_quantity": 9
+     }
+    ],
+    "delete": []
+   }
+  },
+  "parallel": "g7",
+  "delay_ms": 1500
+ },
+ {
+  "name": "levels",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/inventory-items/{{inv.inventory_items.0.id}}/location-levels?location_id={{loc2.stock_location.id}}&fields=id"
+ },
+ {
+  "name": "events_run_res_create",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-reservations-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g8",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_res_create",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/create-reservations-workflow/run",
+  "body": {
+   "input": {
+    "reservations": [
+     {
+      "inventory_item_id": "{{inv.inventory_items.0.id}}",
+      "location_id": "{{locations.stock_locations.0.id}}",
+      "quantity": 2,
+      "description": "wf hold",
+      "metadata": {
+       "r": 1
+      }
+     }
+    ]
+   }
+  },
+  "parallel": "g8",
+  "delay_ms": 1500
+ },
+ {
+  "name": "res",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/reservations?inventory_item_id={{inv.inventory_items.0.id}}&fields=id"
+ },
+ {
+  "name": "events_run_res_update",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-reservations-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g9",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_res_update",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-reservations-workflow/run",
+  "body": {
+   "input": {
+    "updates": [
+     {
+      "id": "{{res.reservations.0.id}}",
+      "quantity": 3,
+      "description": "more"
+     }
+    ]
+   }
+  },
+  "parallel": "g9",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_res_update_bad",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-reservations-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g10",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_res_update_bad",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-reservations-workflow/run",
+  "body": {
+   "input": {
+    "updates": [
+     {
+      "id": "resitem_missing",
+      "quantity": 1
+     }
+    ]
+   }
+  },
+  "parallel": "g10",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_res_delete",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-reservations/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g11",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_res_delete",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-reservations/run",
+  "body": {
+   "input": {
+    "ids": [
+     "{{res.reservations.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g11",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_levels_delete_stocked",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-inventory-levels-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g12",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack",
+   "events.*.step.stepFailed",
+   "events.*.step.retryRescheduledAt"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_levels_delete_stocked",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-inventory-levels-workflow/run",
+  "body": {
+   "input": {
+    "id": [
+     "{{levels.inventory_levels.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g12",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_levels_zero",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-inventory-levels-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g13",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_levels_zero",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/update-inventory-levels-workflow/run",
+  "body": {
+   "input": {
+    "updates": [
+     {
+      "inventory_item_id": "{{inv.inventory_items.0.id}}",
+      "location_id": "{{loc2.stock_location.id}}",
+      "stocked_quantity": 0
+     }
+    ]
+   }
+  },
+  "parallel": "g13",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_levels_delete",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-inventory-levels-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g14",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_levels_delete",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-inventory-levels-workflow/run",
+  "body": {
+   "input": {
+    "id": [
+     "{{levels.inventory_levels.0.id}}"
+    ]
+   }
+  },
+  "parallel": "g14",
+  "delay_ms": 1500
+ },
+ {
+  "name": "events_run_delete",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-inventory-item-workflow/subscribe",
+  "sse_until": "onFinish",
+  "parallel": "g15",
+  "ignore": [
+   "events.*.step.invoke",
+   "events.*.step.compensate",
+   "events.*.errors.*.error.stack"
+  ],
+  "unordered": [
+   "events"
+  ]
+ },
+ {
+  "name": "run_delete",
+  "method": "POST",
+  "bearer": "login",
+  "path": "/admin/workflows-executions/delete-inventory-item-workflow/run",
+  "body": {
+   "input": [
+    "{{inv.inventory_items.0.id}}"
+   ]
+  },
+  "parallel": "g15",
+  "delay_ms": 1500
+ },
+ {
+  "name": "after",
+  "method": "GET",
+  "bearer": "login",
+  "path": "/admin/inventory-items?sku=WF-SKU-1&fields=id"
+ }
+]

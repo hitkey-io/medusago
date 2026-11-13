@@ -77,8 +77,8 @@ func (s *FulfillmentModuleService) CreateFulfillment(ctx context.Context, data *
 		_, _ = s.Internal("Fulfillment").Delete(ctx, []any{id})
 		return nil, err
 	}
-	fulfillment.Set("data", resData)
-	fulfillment.Set("labels", resLabels)
+	// the update loads its own instance: the created entity serialized
+	// keeps the data and labels it was created with
 	return fulfillment, nil
 }
 
@@ -232,8 +232,8 @@ func (s *FulfillmentModuleService) CreateReturnFulfillment(ctx context.Context, 
 		_, _ = s.Internal("Fulfillment").Delete(ctx, []any{id})
 		return nil, err
 	}
-	fulfillment.Set("data", resData)
-	fulfillment.Set("labels", resLabels)
+	// the update loads its own instance: the created entity serialized
+	// keeps the data and labels it was created with
 	return fulfillment, nil
 }
 

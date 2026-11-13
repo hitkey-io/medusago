@@ -393,7 +393,9 @@ func (s *PaymentModuleService) maybeUpdatePaymentCollection(ctx context.Context,
 		u.Set("status", "completed")
 		u.Set("completed_at", dal.Now())
 	}
-	_, err = s.Internal("PaymentCollection").Update(ctx, []any{u})
+	// the collection the caller's entity manager loaded keeps the values
+	// read above (upstream returns it with its stale status)
+	_, err = s.Internal("PaymentCollection").Update(dal.WithFreshIdentityMap(ctx), []any{u})
 	return err
 }
 

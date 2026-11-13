@@ -781,3 +781,8 @@ var CancelReturnRequestWorkflow = composer.CreateWorkflow("cancel-return-request
 			func() error { _, err := ordersteps.DeleteOrderShippingMethodsStep.Run(e, shippingToRemove); return err },
 		)
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	CancelReturnRequestWorkflow.InputFrom("return_id")
+}

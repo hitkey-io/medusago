@@ -503,3 +503,8 @@ var RemoveReturnShippingMethodWorkflow = composer.CreateWorkflow("remove-return-
 		}
 		return previewFor(e, g(orderReturn, "order_id"))
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	CancelReturnReceiveWorkflow.InputFrom("return_id")
+}

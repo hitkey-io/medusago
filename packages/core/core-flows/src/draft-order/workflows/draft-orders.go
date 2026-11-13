@@ -435,3 +435,10 @@ var ConvertDraftOrderWorkflow = composer.CreateWorkflow("convert-draft-order",
 		}
 		return updated, nil
 	})
+
+// The Go bodies take one property of the upstream input object.
+func init() {
+	RefreshPendingDraftOrderShippingMethodsWorkflow.InputFrom("order_id")
+	RefreshConfirmedDraftOrderShippingMethodsWorkflow.InputFrom("order_id")
+	ConvertDraftOrderWorkflow.InputFrom("id")
+}
