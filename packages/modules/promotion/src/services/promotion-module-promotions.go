@@ -294,23 +294,74 @@ func (s *PromotionModuleService) CreatePromotions(ctx context.Context, data []*d
 			promotion.Set("campaign_id", campaignID)
 			promotionsData = append(promotionsData, promotion)
 		}
+		// Upstream creates the campaigns after the promotions and their
+		// application methods, linking the promotions in memory before the
+		// unit of work is flushed: the link is part of the promotion insert
+		// (no promotion update) and the flush, ordered from the campaigns the
+		// promotions reference, inserts campaigns, promotions, application
+		// methods, then budgets. Here the application methods are validated
+		// first (as upstream does before creating the campaigns), then the
+		// campaigns with their budgets are created and the promotions are
+		// inserted with their campaign_id: the same rows and the same flush
+		// order of the mutation events.
+		for _, d := range data {
+			code := str(get(d, "code"))
+			method := methodByCode[code]
+			if method == nil {
+				continue
+			}
+			target := recordsOf(get(method, "target_rules"))
+			buy := recordsOf(get(method, "buy_rules"))
+			m := copyRecord(method, "target_rules", "buy_rules")
+			if get(m, "target_type") == "order" && len(target) > 0 {
+				return badData("Target rules for application method with target type (order) is not allowed")
+			}
+			if get(d, "type") == "buyget" && len(buy) == 0 {
+				return badData("Buy rules are required for buyget promotion type")
+			}
+			if get(d, "type") == "buyget" && len(target) == 0 {
+				return badData("Target rules are required for buyget promotion type")
+			}
+			if err := validateApplicationMethodAttributes(m, d); err != nil {
+				return err
+			}
+		}
+		if len(campaignByCode) > 0 {
+			var input []*dal.Record
+			var codes []string
+			for _, d := range data {
+				code := str(get(d, "code"))
+				if c := campaignByCode[code]; c != nil {
+					input = append(input, c)
+					codes = append(codes, code)
+				}
+			}
+			createdCampaigns, err := createCampaigns(ctx, tx, input)
+			if err != nil {
+				return err
+			}
+			for i, code := range codes {
+				for _, cc := range createdCampaigns {
+					if get(cc, "campaign_identifier") == get(input[i], "campaign_identifier") {
+						for _, pd := range promotionsData {
+							if str(get(pd, "code")) == code {
+								pd.Set("campaign_id", get(cc, "id"))
+							}
+						}
+						break
+					}
+				}
+			}
+		}
 		var err error
 		created, err = tx.Internal("Promotion").Create(ctx, promotionsData)
 		if err != nil {
 			return err
 		}
-		type pendingCampaign struct {
-			data      *dal.Record
-			promotion any
-		}
-		var campaigns []pendingCampaign
 		var methods []*dal.Record
 		rulesByPromotion := map[string]methodRules{}
 		for _, promotion := range created {
 			code := str(get(promotion, "code"))
-			if c := campaignByCode[code]; c != nil {
-				campaigns = append(campaigns, pendingCampaign{data: c, promotion: get(promotion, "id")})
-			}
 			if method := methodByCode[code]; method != nil {
 				target := recordsOf(get(method, "target_rules"))
 				buy := recordsOf(get(method, "buy_rules"))
@@ -342,29 +393,6 @@ func (s *PromotionModuleService) CreatePromotions(ctx context.Context, data []*d
 			createdMethods, err = tx.Internal("ApplicationMethod").Create(ctx, methods)
 			if err != nil {
 				return err
-			}
-		}
-		if len(campaigns) > 0 {
-			input := make([]*dal.Record, len(campaigns))
-			for i, c := range campaigns {
-				input[i] = c.data
-			}
-			createdCampaigns, err := t.CreateCampaigns(ctx, input)
-			if err != nil {
-				return err
-			}
-			for _, c := range campaigns {
-				for _, cc := range createdCampaigns {
-					if get(cc, "campaign_identifier") == get(c.data, "campaign_identifier") {
-						u := dal.NewRecord()
-						u.Set("id", c.promotion)
-						u.Set("campaign_id", get(cc, "id"))
-						if _, err := tx.Internal("Promotion").Update(ctx, []any{u}); err != nil {
-							return err
-						}
-						break
-					}
-				}
 			}
 		}
 		promotionTypes := map[string]any{}

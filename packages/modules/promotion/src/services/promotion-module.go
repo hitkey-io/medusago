@@ -106,6 +106,21 @@ func validateCampaignBudgetData(b *dal.Record) error {
 func (s *PromotionModuleService) CreateCampaigns(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
 	var created []*dal.Record
 	err := s.InTransaction(ctx, func(tx *utilsmodulessdk.MedusaService) error {
+		var err error
+		created, err = createCampaigns(ctx, tx, data)
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return s.listCampaigns(ctx, ids(created))
+}
+
+// createCampaigns mirrors createCampaigns_: the campaigns and their budgets
+// (the created campaign rows, nothing is read back).
+func createCampaigns(ctx context.Context, tx *utilsmodulessdk.MedusaService, data []*dal.Record) ([]*dal.Record, error) {
+	var created []*dal.Record
+	err := func() error {
 		budgets := map[string]*dal.Record{}
 		campaigns := make([]*dal.Record, len(data))
 		for i, d := range data {
@@ -138,11 +153,8 @@ func (s *PromotionModuleService) CreateCampaigns(ctx context.Context, data []*da
 			}
 		}
 		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	return s.listCampaigns(ctx, ids(created))
+	}()
+	return created, err
 }
 
 // UpdateCampaigns mirrors updateCampaigns.
