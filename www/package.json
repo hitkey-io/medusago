@@ -4,7 +4,7 @@
   "type": "module",
   "version": "0.0.0",
   "scripts": {
-    "prep": "bun scripts/generate-sidebars.mjs",
+    "prep": "bun scripts/generate-sidebars.mjs && bun scripts/copy-assets.mjs",
     "dev": "bun run prep && bunx --bun astro dev",
     "build": "bun run prep && bunx --bun astro build && bun scripts/check-links.mjs",
     "preview": "bunx --bun astro preview"

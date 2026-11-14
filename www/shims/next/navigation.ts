@@ -2,7 +2,11 @@
 import { useEffect, useState } from "react"
 
 // Like Next.js, usePathname() returns the path without the app's basePath.
-const stripBase = (path: string) => {
+// Next.js normalises away the trailing slash that static hosting adds.
+const noTrailingSlash = (path: string) => (path.length > 1 ? path.replace(/\/+$/, "") : path)
+
+const stripBase = (rawPath: string) => {
+  const path = noTrailingSlash(rawPath)
   const base = (globalThis as { __BASE_PATH__?: string }).__BASE_PATH__ || ""
   if (base && (path === base || path.startsWith(base + "/"))) {
     return path.slice(base.length) || "/"

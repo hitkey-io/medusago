@@ -20,7 +20,15 @@ function walk(dir, rel = "") {
     return d.name === "page.mdx" ? [rel] : []
   })
 }
-const pages = args[0] === "--all" ? walk(path.join(upstream, appDir)).sort() : args
+const allPages = args.some((a) => a === "--all" || a.endsWith("/**")) ? walk(path.join(upstream, appDir)).sort() : []
+const pages = args.flatMap((a) => {
+  if (a === "--all") return allPages
+  if (a.endsWith("/**")) {
+    const prefix = a.slice(0, -3)
+    return allPages.filter((p) => p === prefix || p.startsWith(prefix + "/"))
+  }
+  return [a]
+})
 
 const ENTERPRISE = [/^settings\/roles/, /^settings\/policies/, /^enterprise(\/|$)/]
 // Targeted edits for features MedusaGo does not include (RBAC, SSO). Each entry:

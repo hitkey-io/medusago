@@ -1,20 +1,23 @@
 ---
 import "~/styles/globals.css"
 import PageApp from "~/components/PageApp"
-import { sections } from "~/config/sections"
+import { sections, type SectionKey } from "~/config/sections"
 
 export function getStaticPaths() {
-  const files = import.meta.glob("/content/user-guide/**/page.mdx")
+  const files = import.meta.glob("/content/**/page.mdx")
   return Object.keys(files).map((file) => {
-    const slug = file.replace("/content/user-guide/", "").replace(/\/?page\.mdx$/, "")
-    return { params: { slug: slug || undefined }, props: { file } }
+    const [, , section, ...rest] = file.split("/")
+    rest.pop() // page.mdx
+    return {
+      params: { path: [section, ...rest].join("/") },
+      props: { file, section },
+    }
   })
 }
 
-const { file } = Astro.props
-const slug = Astro.params.slug
-const path = "/user-guide" + (slug ? "/" + slug : "")
-const config = sections["user-guide"]
+const { file, section } = Astro.props as { file: string; section: SectionKey }
+const path = "/" + Astro.params.path
+const config = sections[section]
 ---
 <html lang="en" class="h-full w-full">
   <head>
@@ -28,6 +31,6 @@ const config = sections["user-guide"]
     <title>{config.titleSuffix}</title>
   </head>
   <body class="h-screen w-full overflow-hidden">
-    <PageApp client:load file={file} section="user-guide" path={path} />
+    <PageApp client:load file={file} section={section} path={path} />
   </body>
 </html>
