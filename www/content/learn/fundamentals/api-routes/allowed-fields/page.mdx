@@ -1,0 +1,153 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Allowed Fields in API Routes`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about allowed fields in API routes, how to set them on custom API routes, and how to override them for Medusa's API routes.
+
+## What are Allowed Fields?
+
+An API route's `fields` query parameter accepts any field or relation name by default, including custom [linked data models](!docs!/learn/fundamentals/module-links) that you add after the route is created.
+
+To restrict which fields and relations a route can retrieve, set the `Allowed` property of the route's query configuration, the second parameter of the `ValidateAndTransformQuery` middleware. Once you set `Allowed`, a client can only request a field whose full path appears in that slice. A relation in `Allowed` doesn't grant access to the fields nested under it. MedusaGo silently removes every other field from the query before it executes.
+
+<Note title="Tip">
+
+Set `Allowed` even on your custom API routes, not only on Medusa's routes. Since the `fields` query parameter is open by default, a route without `Allowed` exposes every relation you link to its underlying data model, including relations you add later without realizing they're now reachable through that route.
+
+</Note>
+
+`Allowed` is different than `Disallowed`:
+
+- `Allowed` is an opt-in list. Without it, a route retrieves any field a client requests.
+- `Disallowed` is a deny list that is always enforced, even for fields in the `Allowed` list. Medusa's API routes don't set it, so use it on your own routes to block a path segment that the allowed list would otherwise let through.
+
+---
+
+## How to Set Allowed Fields in Custom API Routes?
+
+To restrict the fields and relations retrievable by a custom API route, set `Allowed` in the `QueryConfig` you pass to `ValidateAndTransformQuery`:
+
+```go title="src/api/store/custom/query-config.go" file="api/allowed_fields.go" region="query-config"
+```
+
+The `QueryConfig` has the following properties:
+
+- `Defaults`: The fields retrieved when the request doesn't have a `fields` parameter.
+- `IsList`: Whether the route returns a list. If so, `req.QueryConfig.Pagination` has the `skip`, `take`, and `order` values, based on the `limit`, `offset`, and `order` query parameters.
+- `Allowed`: The only fields and relations that the route can retrieve.
+
+Then, apply the `ValidateAndTransformQuery` middleware with this configuration:
+
+```go title="src/api/middlewares.go" file="api/allowed_fields.go" region="middlewares"
+```
+
+In this example, `CreateFindParams` creates the schema of the query parameters that list routes accept: `fields`, `limit`, `offset`, `order`, and `with_deleted`. It's in the `medusa/src/api/utils` package.
+
+The middleware sets the fields to retrieve in `req.QueryConfig.Fields`, and the pagination in `req.QueryConfig.Pagination`. The route handler passes them to Query:
+
+```go title="src/api/store/custom/route.go" file="api/allowed_fields.go" region="handler"
+```
+
+In this example, a request to `GET /store/custom?fields=*metadata` doesn't retrieve the `metadata` field, since it's not in the `Allowed` slice, even though the underlying data model has a `metadata` property.
+
+An entry in `Allowed` only matches a requested field equal to it. MedusaGo normalizes the `*` and `.*` prefixes and suffixes before it compares the paths, so `variants` in `Allowed` also allows `*variants`. It rejects `variants.options` and `variants.prices`, unless you add those exact paths to the slice as well.
+
+MedusaGo strips a rejected field silently. The request still succeeds, but the response doesn't include the field.
+
+<Note>
+
+If a request has the `fields` parameter, the `id` field is always added to it. So, add `id` to `Allowed` as well, otherwise it's removed.
+
+The `order` query parameter is the exception. If you sort by a field that isn't in `Allowed`, the request fails with a `400` error.
+
+</Note>
+
+### Allowed Fields and the Relations Limit
+
+An allowed field must also comply with the `HTTP.StoreRelationsLimit` configuration, which caps how many relations a Store API route expands in one request. It's `3` by default. The two restrictions are separate:
+
+- `Allowed` controls which paths a client can request.
+- `HTTP.StoreRelationsLimit` controls how deep those paths can go.
+
+So, adding a path to `Allowed` doesn't exempt it from the limit. MedusaGo counts every segment of a path that selects a whole relation, such as `*items.variant.options`, and every segment but the last of a path that selects a property, such as `items.variant.title`. Both count as three relations.
+
+<Note title="Important">
+
+A path that exceeds the limit fails the request with a `400` error, unlike a path that isn't in `Allowed`, which MedusaGo strips silently. A route can also set a lower or higher limit than the application-wide configuration with the `StoreRelationsLimit` property of its `QueryConfig`, in which case the route's limit applies.
+
+</Note>
+
+For example, this configuration allows requests to expand one relation only:
+
+```go title="src/api/store/custom/query-config.go" file="api/allowed_fields.go" region="relations-limit"
+```
+
+The limit is only checked for routes that start with `/store`.
+
+---
+
+## Disallowed Fields
+
+To block a path segment even if it's in the `Allowed` slice, set `Disallowed`. MedusaGo removes any requested field that has one of the segments you list, ignoring the case:
+
+```go title="src/api/store/custom/query-config.go" file="api/allowed_fields.go" region="disallowed"
+```
+
+In this example, a request with `fields=id,variants.prices` doesn't retrieve `variants.prices`, since `prices` is disallowed.
+
+---
+
+## API Routes that Restrict Retrievable Fields
+
+Some of Medusa's API routes already set `Allowed`, which means you can't pass your custom linked data models in the `fields` query parameter of these routes. They're restricted to keep them performant and secure.
+
+Every [Store API route](!api!/store) sets `Allowed`. Each route allows its default fields and a small set of extra fields and relations, and rejects everything else. Refer to the API reference of an API route for its full list of allowed fields.
+
+A few [Admin API routes](!api!/admin) also restrict the fields and relations you can retrieve. Refer to the API reference of an API route to find out whether it does.
+
+---
+
+## How to Override Allowed Fields of Medusa's API Routes?
+
+For the routes mentioned above, you need to override the allowed fields and relations to be retrieved. You can do this by applying a [global middleware](!docs!/learn/fundamentals/api-routes/middlewares) to those routes.
+
+Since every Store API route restricts its retrievable fields, retrieving a custom linked data model through a Store API route always requires this override.
+
+<Note title="Warning" type="warning">
+
+Only add the specific fields and relations that the client needs. A broad entry, such as a relation that pulls in multiple relations, or a sensitive relation like an order, a payment, or another customer, exposes that data to anyone who calls the route. Store API routes are public, so treat every path you add to `Allowed` as data you're willing to publish.
+
+</Note>
+
+For example, to allow retrieving the `b2b_company` of a customer using the Get Customer Store API route, add the following middleware configuration:
+
+```go title="src/api/middlewares.go" file="api/allowed_fields.go" region="allow-fields"
+```
+
+In this example, you apply the `AllowFields` middleware, from the `framework/src/http/middlewares` package, to the Get Customer Store API route. The middleware adds `b2b_company` to the fields and relations that the route already allows.
+
+`AllowFields` accepts one or more slices of field paths, such as `middlewares.AllowFields([]string{"b2b_company", "b2b_company.name"})`. Pass the normalized field path, without a `*`, `+`, or `.*` prefix or suffix.
+
+Each `AllowFields` middleware adds to what the route and the other middlewares allow, so several plugins or middlewares can each expose their own fields on the same route.
+
+You can now retrieve the `b2b_company` field using the `fields` query parameter of the Get Customer Store API route:
+
+```bash
+curl 'http://localhost:9000/store/customers/me?fields=*b2b_company' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+In this example, you retrieve the `b2b_company` relation of the customer using the `fields` query parameter.
+
+<Note title="Important">
+
+This approach only works using a global middleware, which has no `Methods`. It doesn't work in a route middleware.
+
+</Note>

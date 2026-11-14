@@ -10,7 +10,7 @@ In this guide, you'll learn what an application method is in the Promotion Modul
 
 ## What is an Application Method?
 
-The [ApplicationMethod data model](/references/promotion/models/ApplicationMethod) defines how a promotion is applied. It has the following properties that determine its behavior:
+The ApplicationMethod data model defines how a promotion is applied. It has the following properties that determine its behavior:
 
 <Table>
   <Table.Header>
@@ -218,7 +218,7 @@ If the promotion belongs to a [campaign](../campaign/page.mdx) with a spend-base
 
 When the promotion is applied to a cart item or a shipping method (in other words, when `target_type` is `items` or `shipping_methods`), you can restrict which items/shipping methods the promotion is applied to.
 
-The `ApplicationMethod` data model has a collection of [PromotionRule](/references/promotion/models/PromotionRule) records to restrict which items or shipping methods the promotion applies to. The `target_rules` property in the `ApplicationMethod` represents this relation.
+The `ApplicationMethod` data model has a collection of PromotionRule records to restrict which items or shipping methods the promotion applies to. The `target_rules` property in the `ApplicationMethod` represents this relation.
 
 
 In this example, the promotion is only applied to product variants in the cart that have the SKU `SHIRT`.

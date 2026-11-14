@@ -1,0 +1,123 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Framework`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about the MedusaGo Framework, its concepts and tools, and how the chapters of this documentation map to them.
+
+## What is the MedusaGo Framework?
+
+MedusaGo's [Commerce Modules](!resources!/commerce-modules) provide the commerce features of an application, such as products, carts, and orders. The MedusaGo Framework is the set of tools that you use to build your own features on top of them, and to extend the existing ones, in Go.
+
+It's the Go implementation of the Medusa Framework. The tools have the same concepts and the same names, and they behave the same, so the API routes that you write are served like Medusa's, and the data you create is stored in the same tables. What differs is the language: where Medusa uses JavaScript objects and classes, MedusaGo uses Go types and functions. The chapters of this documentation show the Go API of each tool.
+
+A MedusaGo application compiles to one binary that serves the HTTP API and the Medusa Admin. It uses PostgreSQL for its data.
+
+---
+
+## Framework Concepts and Tools
+
+The framework is made of the following tools. Each of them has its chapter:
+
+| Concept | What it is |
+| --- | --- |
+| [Modules](!docs!/learn/fundamentals/modules) | Reusable packages of functionality, each with its own data models, service, and migrations. You build custom features as modules. |
+| [Data models](!docs!/learn/fundamentals/data-models) | The tables of a module, defined in Go with the Data Model Language. MedusaGo generates the migrations from them. |
+| [Service factory](!docs!/learn/fundamentals/modules/service-factory) | The generated methods that create, read, update, and delete the records of a module's data models. |
+| [API routes](!docs!/learn/fundamentals/api-routes) | The HTTP endpoints of your features, with the middlewares, validation, and authentication around them. |
+| [Workflows](!docs!/learn/fundamentals/workflows) | Series of steps that run an operation, with rollback of the steps that completed when a later one fails. |
+| [Medusa container](!docs!/learn/fundamentals/medusa-container) | The registry of the application's resources, such as module services, that your code resolves by key. |
+| [Module links](!docs!/learn/fundamentals/module-links) | Associations between data models of different modules, which keep the modules isolated. |
+| [Query](!docs!/learn/fundamentals/query) | Retrieves data across modules and their links. |
+| [Events and subscribers](!docs!/learn/fundamentals/events-and-subscribers) | Events that the application emits, and functions that react to them. |
+| [Scheduled jobs](!docs!/learn/fundamentals/scheduled-jobs) | Tasks that run periodically. |
+| [Custom CLI scripts](!docs!/learn/fundamentals/custom-cli-scripts) | Functions that you run once from the command line, with the application's resources. |
+| [Plugins](!docs!/learn/fundamentals/plugins) | Packages of customisations that you reuse across applications. |
+| [Admin customisations](!docs!/learn/fundamentals/admin) | Widgets and pages that extend the Medusa Admin. They're written in React and TypeScript. |
+
+---
+
+## Structure of a MedusaGo Project
+
+A project created with `create-medusago-app` has a backend in the `apps/backend` directory. It's a Go module, with:
+
+- `main.go`: the entry point of the application. It calls `cli.Run`, which runs the commands you use in these documentation: `go run . develop`, `go run . db:migrate`, `go run . exec`, and so on.
+- `medusa-config.go`: the configurations of the application. They're Go code, as `config.InputConfig` values, with the database, the modules, and other options.
+
+Your customisations are Go packages in the module. The chapters of this documentation place them in directories that mirror the layout of Medusa:
+
+```plain
+src
+├── modules      # modules, such as blog
+├── links        # module links
+├── api          # API routes and middlewares
+├── workflows    # workflows and their steps
+├── scripts      # custom CLI scripts
+└── ...
+```
+
+The layout is a convention: Go resolves your code by its imports. What the application needs, you register in `main.go` and `medusa-config.go`: modules in the configuration, scripts, routes, and hooks in the options of `cli.Run`, and links by calling their functions before it.
+
+```go title="main.go" file="modules/app/main.go" region="main"
+```
+
+Learn more in the [Configurations chapter](!docs!/learn/configurations/medusa-config).
+
+---
+
+## Build Custom Features
+
+To build a custom feature, such as a blog or a loyalty programme, you create:
+
+1. A [module](!docs!/learn/fundamentals/modules) with the [data models](!docs!/learn/fundamentals/data-models) and the service of the feature.
+2. A [workflow](!docs!/learn/fundamentals/workflows) that implements the operation of the feature, with its steps.
+3. An [API route](!docs!/learn/fundamentals/api-routes) that runs the workflow.
+
+The [Customisation tutorial](!docs!/learn/customization/custom-features) builds a feature this way, step by step.
+
+---
+
+## Extend Existing Features
+
+To extend a Commerce Module without changing it, you use:
+
+- [Module links](!docs!/learn/fundamentals/module-links) to associate your module's data models with its data models, such as the products.
+- [Query](!docs!/learn/fundamentals/query) to retrieve the linked data together.
+- [Workflow hooks](!docs!/learn/fundamentals/workflows/workflow-hooks) to run your code inside Medusa's own flows, and [events and subscribers](!docs!/learn/fundamentals/events-and-subscribers) to react to what happens in the application.
+
+---
+
+## Integrate Third-Party Services
+
+To integrate a service that has an API, such as a shipping carrier or a CRM, you put the integration in a module and call it from [workflows](!docs!/learn/fundamentals/workflows). A workflow orchestrates operations across systems: when a step fails, the compensation functions of the steps that completed undo their changes. Learn more in the [Workflows chapters](!docs!/learn/fundamentals/workflows).
+
+---
+
+## Automate Tasks
+
+To run a task periodically, such as syncing products with another system every day, you create a [scheduled job](!docs!/learn/fundamentals/scheduled-jobs). To run one once, such as [seeding data](!docs!/learn/fundamentals/custom-cli-scripts/seed-data), you write a [custom CLI script](!docs!/learn/fundamentals/custom-cli-scripts).
+
+---
+
+## Re-Use Customisations Across Applications
+
+To share a module, its API routes, workflows, and admin customisations, you package them in a [plugin](!docs!/learn/fundamentals/plugins).
+
+---
+
+## Differences From the Medusa Framework
+
+If you know the Medusa Framework, these are the main differences you'll meet in the Go API:
+
+- Data is `*dal.Record` values, ordered maps that encode to JSON like JavaScript objects, instead of plain objects. Filters, configurations, and results use them.
+- The generated methods of a module's service, such as `listPosts`, are called by name with `Call`, or through the internal service of a data model, as Go has no methods generated at run time.
+- Modules, module links, scripts, and routes are registered with Go code, in `medusa-config.go` and `main.go`, not by scanning directories. The stock `medusa` binary, which reads `medusa-config.json`, runs the modules that ship with MedusaGo.
+- A module's loaders don't receive the container.
+- Data migration scripts of a project aren't supported: use a migration with Go code, or a custom CLI script.
+
+Each chapter notes these limits where they apply.

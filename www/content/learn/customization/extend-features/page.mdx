@@ -1,0 +1,29 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Extend Core Commerce Features`,
+}
+
+# {metadata.title}
+
+In the upcoming chapters, you'll learn about the concepts and tools to extend MedusaGo's core commerce features.
+
+In other commerce platforms, you extend core features and models through hacky workarounds that can introduce unexpected issues and side effects across the platform. It also makes your application difficult to maintain and upgrade in the long run.
+
+The MedusaGo Framework and orchestration tools mitigate these issues while supporting all your customization needs:
+
+- [Module Links](!docs!/learn/fundamentals/module-links): Link data models of different modules without building direct dependencies, ensuring that the MedusaGo application integrates your modules without side effects.
+- [Workflow Hooks](!docs!/learn/fundamentals/workflows/workflow-hooks): inject custom functionalities into a workflow at predefined points, called hooks. This allows you to perform custom actions as a part of a core workflow without hacky workarounds.
+- Additional Data in API Routes: the core API routes that run workflows with hooks accept an `additional_data` request body parameter. It's passed to the underlying workflow's hooks, where you can manage your custom data as part of an existing flow.
+
+---
+
+## Next Chapters: Link Brands to Products Example
+
+The next chapters explain how to use the tools mentioned above with step-by-step guides. You'll continue with the [brands example from the previous chapters](!docs!/learn/customization/custom-features) to:
+
+- Link brands from the custom [Brand Module](!docs!/learn/customization/custom-features/module) to products from MedusaGo's [Product Module](!resources!/commerce-modules/product).
+- Extend the core product-creation workflow and the API route that uses it to allow setting the brand of a newly created product.
+- Retrieve a product's associated brand's details.

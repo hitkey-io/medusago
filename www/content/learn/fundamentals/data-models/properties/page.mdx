@@ -1,0 +1,166 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Data Model Properties`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about the different property types you can use in a data model and how to configure a data model's properties.
+
+## Data Model's Default Properties
+
+By default, MedusaGo adds the following properties to every data model:
+
+- `created_at`: a date-time property that holds the date the record was created.
+- `updated_at`: a date-time property that holds the date the record was last updated.
+- `deleted_at`: a nullable date-time property that holds the date the record was [soft-deleted](!docs!/learn/fundamentals/modules/service-factory#delete-softdelete-and-restore-methods), and `null` for a record that isn't.
+
+You can't define a property with one of these names. `dml.Define` panics if you do.
+
+---
+
+## Property Types
+
+You create a property with a function of the `dml` package. The function's name tells the property's type, and each returns a builder that you configure with modifiers, such as `Nullable()`.
+
+The following table lists the property types, the column type they create in PostgreSQL, and the values you set and read in a `*dal.Record`:
+
+| Function | Column type | Value in a record |
+| --- | --- | --- |
+| `dml.Id()` | `text` | `string` |
+| `dml.Text()` | `text` | `string` |
+| `dml.Number()` | `integer` | a number |
+| `dml.Float()` | `real` | `float64` |
+| `dml.BigNumber()` | `numeric`, and a `raw_<name>` `jsonb` column | a number or a numeric string |
+| `dml.Boolean()` | `boolean` | `bool` |
+| `dml.Enum(values...)` | `text`, with a check constraint on the values | `string` |
+| `dml.DateTime()` | `timestamptz` | a `time.Time` when read; a `time.Time` or an RFC 3339 string to set |
+| `dml.JSON()` | `jsonb` | any JSON value |
+| `dml.Array()` | `text[]` | `[]any` of strings |
+| `dml.Autoincrement()` | `serial` | a number |
+
+For example, a data model that uses every type:
+
+```go title="src/modules/blog/properties.go" file="modules/blog/properties.go" region="property-types"
+```
+
+### id
+
+The `id` property holds the primary key of the record. Pass the `Prefix` option so that the IDs of the data model are recognisable, such as `post_01J2...`, and so that MedusaGo maps an ID to its data model. If you don't set a prefix, the ID is a bare ULID.
+
+When you create a record without an `id`, MedusaGo generates one.
+
+### text
+
+The `text` property holds a string of any length.
+
+### number and float
+
+The `number` property is an integer, and `float` is a floating-point number. Use `bigNumber` for values that need precision, such as money.
+
+### bigNumber
+
+The `bigNumber` property holds a number that needs precision, such as an amount of money. It's stored as a `numeric` column, and MedusaGo rounds its value to 20 significant digits, like Medusa does. MedusaGo adds a `raw_<name>` JSON column, such as `raw_price`, that holds the value and its precision.
+
+### boolean
+
+The `boolean` property holds `true` or `false`.
+
+### enum
+
+The `enum` property holds one of the values you pass to `dml.Enum`. The values can be strings, and the table has a check constraint that rejects any other value.
+
+### dateTime
+
+The `dateTime` property holds a date and time, stored with its time zone. When you set one, pass a `time.Time`, or a string in the [RFC 3339](https://www.rfc-editor.org/rfc/rfc3339) format, such as `2026-11-14T10:30:00Z`.
+
+### json
+
+The `json` property holds any JSON value: an object, a list, a string, a number, or a boolean. It's stored as `jsonb`.
+
+When you update a record, a JSON object that you pass is merged with the stored object, key by key, and its nested objects are merged the same way.
+
+### array
+
+The `array` property holds a list of strings, stored as a `text[]` column.
+
+### autoincrement
+
+The `autoincrement` property is a number that the database increases for each record, stored as a `serial` column. It isn't set on creation, as the database generates it.
+
+---
+
+## Set Primary Key Property
+
+Use the `PrimaryKey` modifier to make a property the data model's primary key. A data model has an `id` primary key in most cases, but you can use another property:
+
+```go title="src/modules/blog/properties.go" file="modules/blog/properties.go" region="primary-key"
+```
+
+You can set the modifier on more than one property, to create a composite primary key:
+
+```go title="src/modules/blog/properties.go" file="modules/blog/properties.go" region="composite-primary-key"
+```
+
+To update or delete a record of such a data model, pass the values of all the properties of the key in a record, such as `rec("post_id", "post_123", "period", "2026-11")`.
+
+---
+
+## Property Modifiers
+
+The builders of the properties have modifiers that configure them. Each modifier returns a new builder, so you chain them:
+
+```go title="src/modules/blog/properties.go" file="modules/blog/properties.go" region="property-modifiers"
+```
+
+The following sections describe each modifier.
+
+### Make Property Optional
+
+By default, a property is required: the column is `not null`, and creating a record without it fails. Use the `Nullable` modifier to make the property optional. The column accepts `null`, and a record created without the property has `null` in it.
+
+### Property Default Value
+
+Use the `Default` modifier to set the value that a new record gets for a property you don't set. Pass a value that matches the type of the property: a number, a string, a boolean, or for an `array` or `json` property, a list or an object.
+
+The default value is part of the table's definition, so the database applies it too.
+
+### Unique Property
+
+Use the `Unique` modifier to prevent two records from having the same value in the property. It creates a unique index. The index only covers records that aren't soft-deleted, so you can reuse the value of a deleted record.
+
+Pass a name to set the name of the index, as in `Unique("IDX_reference_code")`. Without a name, it's `IDX_<table>_<property>_unique`.
+
+### Define Database Index on Property
+
+Use the `Index` modifier to create a database index on the property, which speeds up the queries that filter or sort by it. Like the unique index, it only covers the records that aren't soft-deleted:
+
+```go title="src/modules/blog/properties.go" file="modules/blog/properties.go" region="named-index"
+```
+
+For an index over many properties, or an index with a condition, use the data model's `WithIndexes` method. Learn more in the [Indexes chapter](!docs!/learn/fundamentals/data-models/indexes).
+
+### Define a Searchable Property
+
+Use the `Searchable` modifier on a `text` or `number` property to include it in the search of the `q` filter. A list method with the `q` filter returns the records where a searchable property contains the search term, ignoring the case:
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="call-search"
+```
+
+The call above returns the posts whose `title`, which is searchable in the `Post` data model, contains `medusa`. If several properties are searchable, a match in any of them is enough.
+
+You can also make a [relationship](!docs!/learn/fundamentals/data-models/relationships#searchable-relationships) searchable.
+
+### Computed Property
+
+Use the `Computed` modifier to indicate that a property is computed. MedusaGo doesn't store a computed property: it creates no column for it in the migrations, and it doesn't set its value when you retrieve records. You compute and set the value in your own code, for example in a method of your service.
+
+### Make Property Translatable
+
+Use the `Translatable` modifier on a `text` property to mark that its value can have a translation for each locale. It only has an effect when the Translation Module is enabled, which needs the `translation` [feature flag](!docs!/learn/debugging-and-testing/feature-flags).
+
+```go title="src/modules/blog/properties.go" file="modules/blog/properties.go" region="translatable"
+```

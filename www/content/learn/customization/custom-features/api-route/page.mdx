@@ -1,0 +1,198 @@
+---
+generate_toc: true
+---
+
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `Guide: Create Brand API Route`,
+}
+
+# {metadata.title}
+
+In the previous two chapters, you created a [Brand Module](!docs!/learn/customization/custom-features/module) that added the concepts of brands to your application, then created a [workflow to create a brand](!docs!/learn/customization/custom-features/workflow). In this chapter, you'll expose an API route that allows admin users to create a brand using the workflow from the previous chapter.
+
+An API Route is an endpoint that acts as an entry point for other clients to interact with your MedusaGo customizations, such as the admin dashboard, storefronts, or third-party systems.
+
+The MedusaGo core application provides a set of [admin](!api!/admin) and [store](!api!/store) API routes out-of-the-box. You can also create custom API routes to expose your custom functionalities.
+
+<Prerequisites
+  items={[
+    {
+      text: "createBrandWorkflow",
+      link: "/learn/customization/custom-features/workflow"
+    }
+  ]}
+/>
+
+## 1. Create the API Route
+
+You create an API route handler as a function in a Go file under a sub-directory of the `src/api` directory. The handler is a function with the signature `func(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error`.
+
+<Note>
+
+Learn more about API routes [in this guide](!docs!/learn/fundamentals/api-routes).
+
+</Note>
+
+So, to create the handler of the API route at `/admin/brands`, create the file `src/api/admin/brands/route.go` with the following content:
+
+```go title="src/api/admin/brands/route.go" file="tutorial/src/api/admin/brands/route.go" region="post"
+```
+
+You create a handler function whose name, `POST`, is the HTTP method of the API route you're exposing.
+
+The function receives two parameters: a `MedusaRequest` object to access request details, and a `MedusaResponse` object to return or manipulate the response. The `MedusaRequest` object's `Scope` property is the [container](!docs!/learn/fundamentals/medusa-container) that holds Framework tools and custom and core modules' services.
+
+In the API route's handler, you execute the `CreateBrandWorkflow` by calling its `Run` method with a context, the container `req.Scope`, and the workflow's input. `req.Ctx()` is the context of the request that you pass to the workflow. You get the brand's name from the request body's validated parameters, which you receive in the `ValidatedBody` property of `MedusaRequest`. It's a `*dal.Record` once the validation middleware, which you'll add next, validates the body.
+
+You return a JSON response with the created brand using the `res.JSON` method. If the workflow fails, you return its error, and MedusaGo's error handler creates the response.
+
+Then, at the end of the file, export the route file's handlers in a `Route` variable: `var Route = medusahttp.Route{POST: POST}`. `Route` has a property for each HTTP method. You'll add the handler of the `GET` method in a later chapter. The path of the route isn't in the file: you set it when you register the route in step 4.
+
+---
+
+## 2. Create Validation Schema
+
+The API route you created accepts the brand's name in the request body. So, you'll create a schema used to validate incoming request body parameters.
+
+MedusaGo uses a validation library inspired by [Zod](https://zod.dev/) to create validation schemas, in the `zod` package of the Framework. These schemas are then used to validate incoming request bodies or query parameters.
+
+<Note>
+
+Learn more about API route validation in [this chapter](!docs!/learn/fundamentals/api-routes/validation).
+
+</Note>
+
+You create a validation schema in a Go file under a sub-directory of the `src/api` directory. So, create the file `src/api/admin/brands/validators.go` with the following content:
+
+```go title="src/api/admin/brands/validators.go" file="tutorial/src/api/admin/brands/validators.go"
+```
+
+You export a validation schema that expects in the request body an object having a `name` property whose value is a string.
+
+---
+
+## 3. Add Validation Middleware
+
+A middleware is a function executed before the route handler when a request is sent to an API Route. It's useful to guard API routes, parse custom request body types, and apply validation on an API route.
+
+<Note>
+
+Learn more about middlewares in [this chapter](!docs!/learn/fundamentals/api-routes/middlewares).
+
+</Note>
+
+MedusaGo provides a `ValidateAndTransformBody` middleware, in the `http/utils` package of the Framework, that accepts a validation schema and returns a response error if a request is sent with body parameters that don't satisfy the validation schema.
+
+Create the file `src/api/admin/brands/middlewares.go` with the following content to add the validation middleware on the API route you created in the previous steps:
+
+```go title="src/api/admin/brands/middlewares.go" file="tutorial/src/api/admin/brands/middlewares.go" region="middlewares"
+```
+
+You define the middlewares as a list of `medusahttp.MiddlewareRoute` values. In the middleware route, you define three properties:
+
+- `Matcher`: a string or regular expression indicating the API route path to apply the middleware on. You pass the create brand's route `/admin/brands`.
+- `Methods`: the HTTP methods to restrict the middleware to, which is `POST`.
+- `Middlewares`: the list of middlewares to apply on the route. You pass the `ValidateAndTransformBody` middleware, passing it the schema you created earlier. The schema is wrapped by `httputils.Schema`, as the middleware accepts a function that returns the schema of a request.
+
+The MedusaGo application will now validate the body parameters of `POST` requests sent to `/admin/brands` to ensure they match the validation schema. If not, an error is returned in the response specifying the issues to fix in the request body, such as `Invalid request: Field 'name' is required`.
+
+---
+
+## 4. Register the Routes and Middlewares
+
+Unlike in Medusa, MedusaGo doesn't scan the `src/api` directory for route files and middlewares: you register them with the application, so that you control which ones it loads.
+
+Create the file `src/api/routes.go` with the following content, to list the route files of your project. Each one has the path of the route and its handlers:
+
+```go title="src/api/routes.go" file="tutorial/src/api/routes.go" region="routes"
+```
+
+Then, in `src/api/middlewares.go`, export the list of middlewares of your project. For now, it's the middlewares of the brands routes: `var Middlewares = brands.Middlewares`.
+
+Finally, pass both lists to the CLI in `main.go`, with the `Routes` and `Middlewares` options:
+
+```go title="main.go" file="tutorial/main.go" region="main"
+```
+
+The `main` function also defines the module links and consumes a workflow hook, which you'll add in the next chapters. For now, pass only the `Config`, `Routes`, and `Middlewares` options.
+
+---
+
+## Test API Route
+
+To test out the API route, start the MedusaGo application with the following command:
+
+```bash
+go run . develop
+```
+
+Since the `/admin/brands` API route has an `/admin` prefix, it's only accessible by authenticated admin users.
+
+So, to retrieve an authenticated token of your admin user, send a `POST` request to the `/auth/user/emailpass` API Route:
+
+```bash
+curl -X POST 'http://localhost:9000/auth/user/emailpass' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+    "email": "admin@medusa-test.com",
+    "password": "supersecret"
+}'
+```
+
+Make sure to replace the email and password with your admin user's credentials.
+
+<Note title="Tip">
+
+Don't have an admin user? Refer to [this guide](!docs!/learn/installation#create-medusa-admin-user).
+
+</Note>
+
+Then, send a `POST` request to `/admin/brands`, passing the token received from the previous request in the `Authorization` header:
+
+```bash
+curl -X POST 'http://localhost:9000/admin/brands' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer {token}' \
+--data '{
+    "name": "Acme"
+}'
+```
+
+This returns the created brand in the response:
+
+```json title="Example Response"
+{
+  "brand": {
+    "id": "01J7AX9ES4X113HKY6C681KDZJ",
+    "name": "Acme",
+    "created_at": "2024-09-09T08:09:34.244Z",
+    "updated_at": "2024-09-09T08:09:34.244Z"
+  }
+}
+```
+
+### Troubleshooting
+
+#### Returned Empty Array or No Validation
+
+If you sent a request to the API route and the body isn't validated, or the route returns a `404` error, make sure you've passed the `Routes` and `Middlewares` of your project to `cli.Run` in `main.go`. This is a common mistake that can lead to the route or the middleware not being applied.
+
+---
+
+## Summary
+
+By following the previous example chapters, you implemented a custom feature that allows admin users to create a brand. You did that by:
+
+1. Creating a module that defines and manages a `brand` table in the database.
+2. Creating a workflow that uses the module's service to create a brand record, and implements the compensation logic to delete that brand in case an error occurs.
+3. Creating an API route that allows admin users to create a brand.
+
+---
+
+## Next Steps: Associate Brand with Product
+
+Now that you have brands in your MedusaGo application, you want to associate a brand with a product, which is defined in the [Product Module](!resources!/commerce-modules/product).
+
+In the next chapters, you'll learn how to build associations between data models defined in different modules.

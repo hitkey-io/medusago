@@ -8,7 +8,7 @@ In this document, you’ll learn about the main concepts related to carts in Med
 
 ## Cart
 
-A cart is the selection of product variants that a customer intends to purchase. It is represented by the [Cart data model](/references/cart/models/Cart).
+A cart is the selection of product variants that a customer intends to purchase. It is represented by the Cart data model.
 
 A cart holds information about:
 
@@ -34,7 +34,7 @@ Refer to the [Translation Module](../../translation/page.mdx) to learn more abou
 
 ### Cart Currency
 
-A cart's currency is determined by its region. When you create a cart using the [createCartWorkflow](/references/medusa-workflows/createCartWorkflow), if you provide a `currency_code`, it must match the `currency_code` of the cart's region. Otherwise, an error is thrown.
+A cart's currency is determined by its region. When you create a cart using the createCartWorkflow, if you provide a `currency_code`, it must match the `currency_code` of the cart's region. Otherwise, an error is thrown.
 
 If you don't provide a `currency_code`, the cart will use the region's currency automatically.
 
@@ -48,7 +48,7 @@ This behavior is enforced since [Medusa v2.21.0](https://github.com/medusajs/med
 
 ## Line Items
 
-A line item, represented by the [LineItem](/references/cart/models/LineItem) data model, is a quantity of a product variant added to the cart. A cart has multiple line items.
+A line item, represented by the LineItem data model, is a quantity of a product variant added to the cart. A cart has multiple line items.
 
 <Note>
 
@@ -62,14 +62,14 @@ A line item stores some of the product variant’s properties, such as the `prod
 
 ## Shipping and Billing Addresses
 
-A cart has a shipping and billing address. Both of these addresses are represented by the [Address data model](/references/cart/models/Address).
+A cart has a shipping and billing address. Both of these addresses are represented by the Address data model.
 
 
 ---
 
 ## Shipping Methods
 
-A shipping method, represented by the [ShippingMethod data model](/references/cart/models/ShippingMethod), is used to fulfill the items in the cart after the order is placed. A cart can have multiple shipping methods, which is useful when items have different shipping profiles or require different fulfillment providers.
+A shipping method, represented by the ShippingMethod data model, is used to fulfill the items in the cart after the order is placed. A cart can have multiple shipping methods, which is useful when items have different shipping profiles or require different fulfillment providers.
 
 In the MedusaGo application, the shipping method is created from a shipping option, available through the [Fulfillment Module](../../fulfillment/page.mdx). Its ID is stored in the `shipping_option_id` property of the method.
 

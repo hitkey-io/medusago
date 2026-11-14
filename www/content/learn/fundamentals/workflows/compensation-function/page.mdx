@@ -1,0 +1,122 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Compensation Function`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn what a compensation function is and how to add it to a step.
+
+## What is a Compensation Function
+
+A compensation function rolls back or undoes changes made by a step when an error occurs in the workflow.
+
+For example, if a step creates a record, the compensation function deletes the record when an error occurs later in the workflow.
+
+By using compensation functions, you provide a mechanism that guarantees data consistency in your application and across systems.
+
+---
+
+## How to add a Compensation Function?
+
+A compensation function is passed as a third parameter to the `composer.CreateStep` function.
+
+For example, create the file `src/workflows/hello-world.go` with the following content:
+
+```go title="src/workflows/hello-world.go" file="workflows/compensation/compensation.go" region="step1"
+```
+
+Each step can have a compensation function. It receives the step's context and the data the step passed to it, and returns an error if it fails to undo the changes. The compensation function only runs if an error occurs throughout the workflow.
+
+---
+
+## Test the Compensation Function
+
+Create a step in the same `src/workflows/hello-world.go` file that returns an error:
+
+```go title="src/workflows/hello-world.go" file="workflows/compensation/compensation.go" region="step2"
+```
+
+Then, create a workflow that uses the steps:
+
+```go title="src/workflows/hello-world.go" file="workflows/compensation/compensation.go" region="workflow"
+```
+
+Finally, execute the workflow from an API route, as explained in the [Workflows chapter](!docs!/learn/fundamentals/workflows#3-execute-the-workflow), and send a request to it.
+
+In the application's logs, you'll see:
+
+- `Hello from step one!`, indicating that the first step ran successfully.
+- `Oops! Rolling back my changes...`, indicating that the second step failed and the compensation function of the first step ran consequently.
+
+The compensation functions run in the reverse order of the steps. The workflow's `Run` method returns the error of the step that failed.
+
+<Note>
+
+The compensation function of the step that failed runs too, so that a step that made some changes before it failed can undo them. It receives `nil` as its data, since the step didn't return a response. Check the data before you use it.
+
+</Note>
+
+---
+
+## Pass Input to Compensation Function
+
+If a step creates a record, the compensation function must receive the ID of the record to remove it.
+
+To pass input to the compensation function, pass a second parameter to `composer.NewStepResponse` in the step's response.
+
+For example:
+
+```go title="src/workflows/hello-world.go" file="workflows/compensation/compensation.go" region="input"
+```
+
+In this example, the step passes a map as a second parameter to `NewStepResponse`.
+
+The compensation function receives it as its second parameter, with the type `any`. It uses a type assertion to get the map back, and uses its `message` key to log a message.
+
+If you don't pass a second parameter, the compensation function receives the step's output instead.
+
+<Note title="Tip">
+
+If you run the workflow synchronously, the compensation function receives the same Go value the step passed. However, when a workflow resumes from a [stored execution](!docs!/learn/fundamentals/workflows/store-executions), for example after an [async step](!docs!/learn/fundamentals/workflows/long-running-workflow) completes in another process, the data comes back decoded from JSON: objects are `*dal.Record` values, arrays are `[]any`, and numbers are `float64`. So, pass simple data to the compensation function, such as the ID of a record, and assert its type carefully.
+
+</Note>
+
+---
+
+## Resolve Resources from the Container
+
+The compensation function receives the step's context as a first parameter, and the data as a second one. The context has a `Container` property that you use to resolve resources from the [container](!docs!/learn/fundamentals/medusa-container).
+
+For example:
+
+```go title="src/workflows/hello-world.go" file="workflows/compensation/compensation.go" region="container"
+```
+
+In this example, you use the `Container` property of the context to resolve the logger. You then use the logger to log a message.
+
+---
+
+## Handle Step Errors in Loops
+
+Consider you have a module that integrates a third-party ERP system, and you're creating a workflow that deletes items in that ERP. You may have a step that loops over the IDs of the items to retrieve each item's data, store it, then delete the item.
+
+If an error occurs in the loop, the step returns the error without the response. So, its compensation function receives `nil` and can't restore the items that were already deleted.
+
+To handle this, undo what the step did before you return the error. Keep what you delete in a variable, and restore it if a deletion fails:
+
+```go title="src/workflows/delete-items.go" file="workflows/compensation/partial.go" region="partial"
+```
+
+In this example, if deleting an item fails, the step restores the items it deleted so far, then returns the error. The error stops the workflow and triggers the compensation functions of the steps that ran before it.
+
+If the step succeeds, it passes the items it deleted to the compensation function, which restores them if an error occurs later in the workflow.
+
+<Note>
+
+For more details on error handling in workflows and steps, check the [Handling Errors chapter](!docs!/learn/fundamentals/workflows/errors).
+
+</Note>

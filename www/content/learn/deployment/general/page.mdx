@@ -1,0 +1,261 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `General MedusaGo Application Deployment Guide`,
+}
+
+# {metadata.title}
+
+In this guide, you'll learn the general steps to deploy your MedusaGo application. How you apply these steps depend on your chosen hosting provider or platform.
+
+<Prerequisites items={[
+  {
+    text: "A MedusaGo application that you can build.",
+    link: "/learn/installation"
+  },
+]} />
+
+## What You'll Deploy
+
+When you deploy the MedusaGo application, you need to deploy the following resources:
+
+1. PostgreSQL database: This is the database that will hold your application's data.
+2. Redis database: This is the database that will store the server's sessions, and that the Redis modules use to share work between instances.
+3. MedusaGo application in [server and worker mode](!docs!/learn/production/worker-mode), where:
+    - The server mode handles incoming API requests and serving the Medusa Admin dashboard.
+    - The worker mode handles background tasks, such as scheduled jobs and subscribers.
+
+So, when choosing a hosting provider, make sure it supports running these resources.
+
+---
+
+## 1. Configure MedusaGo Application
+
+### Worker Mode
+
+You set the worker mode of an instance with the `MEDUSA_WORKER_MODE` environment variable. You don't need to change your configuration. Later, you'll set a different value of the variable for each instance.
+
+Learn more about worker mode in the [Worker Mode chapter](!docs!/learn/production/worker-mode).
+
+### Configure Medusa Admin
+
+The Medusa Admin is served by the MedusaGo server. So, you need to disable it in the worker instance only.
+
+To disable the Medusa Admin in the worker instance while keeping it enabled in the server instance, add the following to your `medusa-config.go`:
+
+```go title="medusa-config.go" file="config/admin.go" region="admin-disable"
+```
+
+Later, you'll set different values of the `DISABLE_MEDUSA_ADMIN` environment variable for each instance.
+
+### Configure Redis URL
+
+The `redisUrl` configuration specifies the connection URL to Redis, which stores the server's sessions. Without it, sessions are kept in memory, so they're lost when an instance restarts and aren't shared between instances.
+
+<Note>
+
+Learn more in the [MedusaGo Configurations documentation](!docs!/learn/configurations/medusa-config#redisurl).
+
+</Note>
+
+Add the following to your `medusa-config.go`:
+
+```go title="medusa-config.go" file="config/project-config.go" region="redis-session"
+```
+
+In production, the session cookie is `Secure` by default, so the server only sets it on requests that arrive over HTTPS. If a proxy or load balancer terminates TLS, make sure it sends the `X-Forwarded-Proto: https` header.
+
+---
+
+## 2. Add a Predeploy Step
+
+Before you start the MedusaGo application in production, you should always run migrations and sync links. The `db:migrate` command does both, and also runs data migration scripts.
+
+Run the following command from the `.medusa/server` directory before each deployment of the server instance:
+
+```bash title=".medusa/server"
+NODE_ENV=production ./medusa db:migrate
+```
+
+---
+
+## 3. Install Production Modules and Providers
+
+By default, your MedusaGo application uses modules and providers useful for development, such as the in-process Event Module and the Local File Module Provider.
+
+It’s highly recommended to instead use modules and providers suitable for production, including:
+
+- Redis Caching Module
+- Redis Event Module
+- Redis Workflow Engine Module
+- Redis Locking Module Provider
+- PostHog Analytics Module Provider (If you're using analytics in your application. You can also use other analytics module providers that are production-ready).
+- S3 File Module Provider (or other file module providers that are production-ready).
+- SendGrid Notification Module Provider (or other notification module providers that are production-ready).
+
+Then, add these modules in your `medusa-config.go`:
+
+```go title="medusa-config.go" file="config/modules.go" region="production-modules"
+```
+
+The Event and Workflow Engine Modules are what let the server and worker instances share work. Learn about the module options in the [Module Configurations](!docs!/learn/configurations/medusa-config#module-configurations-modules) section, which also shows how to configure the S3 file provider.
+
+---
+
+## 4. Create PostgreSQL and Redis Databases
+
+Your MedusaGo application must connect to PostgreSQL and Redis databases. So, before you deploy it, create production PostgreSQL and Redis databases.
+
+After hosting both databases, keep their connection URLs for the next steps.
+
+<Note title="Tip">
+
+Every instance opens its own pool of PostgreSQL connections. Make sure the total across your instances stays below your database's connection limit. You can set the pool size of an instance with the `pool_max_conns` parameter of `DATABASE_URL`, such as `postgres://user:password@host/medusa?pool_max_conns=10`.
+
+</Note>
+
+---
+
+## 5. Build the Application
+
+Run the [build command](!docs!/learn/build) in your CI pipeline or on a build machine that has Go installed:
+
+```bash
+go run . build
+```
+
+The `.medusa/server` directory contains everything the server needs. Copy it to your deployment target, or include it in your container image.
+
+---
+
+## 6. Deploy MedusaGo Application in Server Mode
+
+As mentioned earlier, you'll deploy two instances of your MedusaGo application: one in server mode, and the other in worker mode.
+
+The deployment steps depend on your hosting provider. This section provides the general steps to perform during the deployment.
+
+### Set Environment Variables
+
+When setting the environment variables of the application, set the following variables:
+
+```bash
+NODE_ENV=production
+COOKIE_SECRET=supersecret # TODO GENERATE SECURE SECRET
+JWT_SECRET=supersecret  # TODO GENERATE SECURE SECRET
+STORE_CORS= # STOREFRONT URL
+ADMIN_CORS= # ADMIN URL
+AUTH_CORS= # STOREFRONT AND ADMIN URLS, SEPARATED BY COMMAS
+DISABLE_MEDUSA_ADMIN=false
+MEDUSA_WORKER_MODE=server
+PORT=9000
+DATABASE_URL= # POSTGRES DATABASE URL
+REDIS_URL= # REDIS DATABASE URL
+```
+
+Where:
+
+- The value of `COOKIE_SECRET` and `JWT_SECRET` must be a randomly generated secret. If they aren't set, MedusaGo falls back to `supersecret` without warning, which isn't secure.
+- `STORE_CORS`'s value is the URL of your storefront. If you don’t have it yet, you can skip adding it for now.
+- `ADMIN_CORS`'s value is the URL of the admin dashboard, which is the same as the server application. You can add it later if you don't currently have it.
+- `AUTH_CORS`'s value is the URLs of any application authenticating users, customers, or other actor types, such as the storefront and admin URLs. The URLs are separated by commas. If you don’t have the URLs yet, you can set its value later.
+- Set `DISABLE_MEDUSA_ADMIN`'s value to `false` so that the server serves the admin.
+- Set the PostgreSQL database's connection URL as the value of `DATABASE_URL`.
+- Set the Redis database's connection URL as the value of `REDIS_URL`.
+
+The variables are read by the `medusa-config.go` you've set up in the previous steps. Add any other relevant variables, such as for integrations and Infrastructure Modules. Learn more in the [Environment Variables chapter](!docs!/learn/fundamentals/environment-variables).
+
+### Set Start Command
+
+The production build outputs the application to `.medusa/server`. So, you must run the executable from that directory, which also lets the server find the `public/admin` build.
+
+If your hosting provider doesn't support setting a current-working directory, set the start command to the following:
+
+```bash
+cd .medusa/server && ./medusa db:migrate && ./medusa start
+```
+
+Notice that you run `db:migrate` before starting the application to run migrations and sync links whenever there's an update.
+
+### Set Backend URL in Admin Configuration
+
+The Medusa Admin is served by the server, and it sends requests to the URL in the `MEDUSA_BACKEND_URL` environment variable, which defaults to `/` (the origin that serves the dashboard). You only need to set it if the dashboard is served from a different origin than the API.
+
+After you’ve obtained the application’s URL, in your hosting provider, add or modify the following environment variables for the instance in server mode:
+
+```bash
+ADMIN_CORS= # MEDUSAGO APPLICATION URL
+AUTH_CORS= # ADD MEDUSAGO APPLICATION URL
+MEDUSA_BACKEND_URL= # URL TO DEPLOYED MEDUSAGO APPLICATION
+```
+
+Where you set the value of `ADMIN_CORS` and `MEDUSA_BACKEND_URL` to the application’s URL, and you add the URL to `AUTH_CORS`. Since the admin options are applied when the server starts, you only need to restart the deployment for the changes to take effect. You don't need to rebuild.
+
+<Note title="Tip">
+
+Remember to separate URLs in `AUTH_CORS` by commas.
+
+</Note>
+
+---
+
+## 7. Deploy MedusaGo Application in Worker Mode
+
+Next, you'll deploy the application in worker mode.
+
+As explained in the previous section, the deployment steps depend on your hosting provider. This section provides the general steps to perform during the deployment.
+
+### Set Environment Variables
+
+When setting the environment variables of the application, set the following variables:
+
+```bash
+NODE_ENV=production
+COOKIE_SECRET=supersecret # TODO GENERATE SECURE SECRET
+JWT_SECRET=supersecret  # TODO GENERATE SECURE SECRET
+DISABLE_MEDUSA_ADMIN=true
+MEDUSA_WORKER_MODE=worker
+PORT=9000
+DATABASE_URL= # POSTGRES DATABASE URL
+REDIS_URL= # REDIS DATABASE URL
+```
+
+Where:
+
+- The value of `COOKIE_SECRET` and `JWT_SECRET` must be a randomly generated secret.
+- Set `DISABLE_MEDUSA_ADMIN`'s value to `true` so that the worker doesn't serve the admin.
+- Set the PostgreSQL database's connection URL as the value of `DATABASE_URL`.
+- Set the Redis database's connection URL as the value of `REDIS_URL`.
+
+Feel free to add any other relevant environment variables, such as for integrations and Infrastructure Modules.
+
+### Set Start Command
+
+Run the executable from the `.medusa/server` directory. You don't need to run the migrations again:
+
+```bash
+cd .medusa/server && ./medusa start
+```
+
+---
+
+## 8. Test Deployed Application
+
+Once the application is deployed and live, go to `<APP_URL>/health`, where `<APP_URL>` is the URL of the application in server mode. If the deployment was successful, you’ll see the `OK` response.
+
+The Medusa Admin is also available at `<APP_URL>/app`.
+
+---
+
+## Create Admin User
+
+If your hosting provider supports running commands in your application's directory, run the following command from `.medusa/server` to create an admin user:
+
+```bash
+./medusa user -e admin-medusa@test.com -p supersecret
+```
+
+Replace the email `admin-medusa@test.com` and password `supersecret` with the credentials you want.
+
+You can use these credentials to log into the Medusa Admin dashboard.

@@ -1,0 +1,115 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Events and Subscribers`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about MedusaGo's event system, and how to handle events with subscribers.
+
+## Handle Core Commerce Flows with Events
+
+When building commerce digital applications, you'll often need to perform an action after a commerce operation is performed. For example, sending an order confirmation email when the customer places an order, or syncing data that's updated in Medusa to a third-party system.
+
+MedusaGo emits events when core commerce features are performed, and you can listen to and handle these events in asynchronous functions. You can think of MedusaGo's events like you'd think about webhooks in other commerce platforms, but instead of having to set up separate applications to handle webhooks, your efforts only go into writing the logic right in your MedusaGo codebase.
+
+You listen to an event in a subscriber, which is an asynchronous function that's executed when its associated event is emitted.
+
+Subscribers are useful to perform actions that aren't integral to the original flow. For example, you can handle the `order.placed` event in a subscriber that sends a confirmation email to the customer. The subscriber has no impact on the original order-placement flow, as it's executed outside of it.
+
+<Note>
+
+If the action you're performing is integral to the main flow of the core commerce feature, use [workflow hooks](!docs!/learn/fundamentals/workflows/workflow-hooks) instead.
+
+</Note>
+
+---
+
+## How to Create a Subscriber?
+
+A subscriber is a function of type `Subscriber` from the `utils/src/event-bus` package. It receives a `context.Context` and the `eventbus.Event` that was emitted, and returns an error if it fails to handle it.
+
+For example, this subscriber handles the `order.placed` event. It's created by a function that receives the [Medusa container](!docs!/learn/fundamentals/medusa-container), which the subscriber uses to resolve resources:
+
+```go title="src/subscribers/order-placed.go" file="events/subscribers.go" region="order-placed"
+```
+
+This subscriber function:
+
+- Receives the container, and returns the function that handles the event. The returned function is executed whenever the event is emitted.
+- Receives the `event`, which has the event's details. The data payload of the event is in `event.Data`, which has the order's ID in this case. The [Event Data Payload](!docs!/learn/fundamentals/events-and-subscribers/data-payload) chapter explains the event's properties.
+- Resolves the logger from the container and logs a message. Then, assuming you have a [workflow](!docs!/learn/fundamentals/workflows) that sends an order confirmation email, it executes it, and returns the error that the workflow returns, if any.
+
+### Register the Subscriber
+
+MedusaGo doesn't scan the file system for subscribers. You subscribe to an event with the event module's `Subscribe` method, in a function that you pass in the `OnLoad` option of the CLI. The CLI runs these functions after the application is loaded, and before it starts serving requests.
+
+For example:
+
+```go title="src/subscribers/subscribers.go" file="events/subscribers.go" region="register"
+```
+
+The function resolves the event module from the container of the application with the `utilsmodulessdk.EVENT_BUS` key. The event module's service implements `Subscribable`, which has the `Subscribe` method. The method accepts:
+
+1. The name of the event to listen to. Use `*` to listen to every event.
+2. The subscriber function.
+
+To listen to multiple events in the same subscriber, call `Subscribe` for each event with the same function.
+
+Then, pass the registration function in the `main.go` file of your application:
+
+```go title="main.go" file="events/wiring.go" region="options"
+```
+
+<Note title="Tip">
+
+The `OnLoad` hooks also run for the CLI commands that load the application, such as `exec` and `user`, so a subscriber is registered in them too.
+
+</Note>
+
+---
+
+## Test the Subscriber
+
+To test the subscriber, start the application:
+
+```bash
+go run . develop
+```
+
+Then, try placing an order either using MedusaGo's API routes or the [Next.js Starter Storefront](!resources!/nextjs-starter). You'll see the following messages in the terminal:
+
+```plain
+Processing order.placed which has 1 subscribers
+Sending confirmation email...
+```
+
+The first message indicates that the `order.placed` event was emitted, and the second one is the message logged from the subscriber.
+
+---
+
+## Errors in Subscribers
+
+Subscribers are executed asynchronously, outside of the flow that emitted the event. If a subscriber returns an error, it's logged, and it doesn't affect the flow that emitted the event or the other subscribers of the event.
+
+<Note type="warning" title="Don't panic in subscribers">
+
+The Local Event Module doesn't recover from a panic in a subscriber, so a panic stops the application. Return an error instead.
+
+</Note>
+
+---
+
+## Event Module
+
+The subscription and emitting of events is handled by an Event Module, an Infrastructure Module that implements the pub/sub functionalities of MedusaGo's event system.
+
+MedusaGo provides two Event Modules out of the box:
+
+- The Local Event Module, used by default. It's useful for development, as you don't need additional setup to use it. It delivers the events to the subscribers of the same process.
+- The Redis Event Module, which is useful in production. It uses [Redis](https://redis.io/) to implement the pub/sub events system, with the same queue as Medusa's Redis Event Module. You enable it by registering it as a module in your [configuration](!docs!/learn/configurations/medusa-config).
+
+Both modules implement `Subscribable`, so the code of your subscribers is the same with both.

@@ -1,0 +1,84 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Module Options`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about passing options to your module from the MedusaGo application's configurations, and how to access and validate them in the module.
+
+## What are Module Options?
+
+A module can have options that customise its behaviour or make it adaptable. For example, a module that integrates a third-party service may have an option for the API key of the service, and the Blog Module of the previous chapters may have an option for the longest title a post can have.
+
+Options are passed to a module from the configuration of the MedusaGo application, in the `Options` field of the module's entry. A module receives them in its service and its loaders as a `map[string]any`.
+
+---
+
+## How to Pass Options to a Module?
+
+To pass options to a module, set the `Options` field of its entry in the `Modules` of the configuration in `medusa-config.go`:
+
+```go title="medusa-config.go" file="modules/app/medusa-config.go" region="config"
+```
+
+The `Options` field is a `map[string]any`. The Blog Module has two options: `defaultTags`, a list of strings, and `maxTitleLength`, a number.
+
+<Note>
+
+When the configuration is written in `medusa-config.json` or `medusa-config.yaml`, the options of a module come from decoded JSON or YAML: numbers are `float64`, lists are `[]any`, and objects are `map[string]any`. In Go code you can pass any value, such as the `int` and `[]string` above. Validate the options so that the module accepts both.
+
+</Note>
+
+---
+
+## Access Module Options in Main Service
+
+The `Service` function of the module's definition receives a `ServiceOptions` value. Its `Options` field holds the module's options.
+
+In the Blog Module, the function parses the options and stores them in the service:
+
+```go title="src/modules/blog/index.go" file="modules/blog/index.go" region="module"
+```
+
+Then, the service uses them in its methods. For example, `CreateDraft` rejects a title that's longer than the `maxTitleLength` option:
+
+```go title="src/modules/blog/service.go" file="modules/blog/service.go" region="create-draft"
+```
+
+---
+
+## Access Module Options in Loader
+
+A [loader](!docs!/learn/fundamentals/modules/loaders) receives the options in the `Options` field of its `LoaderOptions` argument. The `SeedTags` loader uses them to read the `defaultTags` option:
+
+```go title="src/modules/blog/loaders.go" file="modules/blog/loaders.go" region="loader"
+```
+
+---
+
+## Validate Module Options
+
+A module should check its options when the application loads it, so that a missing or invalid option fails the application at startup, with a clear error, instead of failing later at runtime.
+
+Write the type of the options and the function that validates them:
+
+```go title="src/modules/blog/options.go" file="modules/blog/options.go" region="options"
+```
+
+`ParseOptions` returns the options with their defaults, or an error. It's used by the `Service` function and by the loader, so both validate the same way.
+
+If the `Service` function returns an error, the application doesn't start. For an invalid `maxTitleLength`, the error is prefixed by the key of the module:
+
+```plain
+blog: maxTitleLength must be a number
+```
+
+<Note>
+
+Modules that have providers, such as the File Module, take the options of each provider in the `Providers` field of the module's configuration, next to the module's own `Options`. The two sets of options are separate.
+
+</Note>

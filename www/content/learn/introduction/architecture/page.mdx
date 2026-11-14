@@ -1,0 +1,221 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `MedusaGo's Architecture`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about the architectural layers in MedusaGo.
+
+MedusaGo has the same architecture as Medusa. The layers, the way they depend on each other, and the HTTP API they expose are identical. What changes is the implementation: each layer is written in Go.
+
+## HTTP, Workflow, and Module Layers
+
+MedusaGo is a headless commerce platform. So, storefronts, admin dashboards, and other clients consume MedusaGo's functionalities through its API routes.
+
+In a common MedusaGo application, requests go through four layers in the stack. In order of entry, those are:
+
+1. API Routes (HTTP): API routes are the typical entry point. The server is built on Go's `net/http` package, with a middleware and route stack that matches the behaviour of Medusa's HTTP layer. It can also connect to Redis, which stores the server session data.
+2. Workflows: API routes consume workflows that hold the opinionated business logic of your application.
+3. Modules: Workflows use domain-specific modules for resource management.
+4. Data store: Modules query the underlying data store, which is a PostgreSQL database.
+
+```plain
+Storefront / Admin / other clients
+              |
+              v
+   API routes (HTTP layer)
+              |
+              v
+   Workflows (business logic)
+              |
+              v
+   Modules (domain logic and data)
+              |
+              v
+          PostgreSQL
+```
+
+<Note>
+
+These layers of the stack can be implemented within [plugins](!docs!/learn/fundamentals/plugins).
+
+</Note>
+
+---
+
+## Database Layer
+
+The MedusaGo application injects into each module, including your [custom modules](!docs!/learn/fundamentals/modules), a connection pool to the configured PostgreSQL database. Modules use it to read and write data.
+
+MedusaGo only supports PostgreSQL as the underlying database. It talks to it with the [pgx](https://github.com/jackc/pgx) driver and its own data access layer, so the database it reads and writes is the same one that Medusa uses. You can also integrate other databases in a [custom module](!docs!/learn/fundamentals/modules).
+
+<Note>
+
+Modules can be implemented within [plugins](!docs!/learn/fundamentals/plugins).
+
+</Note>
+
+---
+
+## Third-Party Integrations Layer
+
+Third-party services and systems are integrated through MedusaGo's Commerce and Infrastructure Modules. For other third-party services, create a custom integration in a [custom module](!docs!/learn/fundamentals/modules).
+
+### Commerce Modules
+
+[Commerce Modules](!resources!/commerce-modules) integrate third-party services relevant to commerce or user-facing features through module providers. MedusaGo includes, for example:
+
+- Payment providers: Stripe and Adyen.
+- Fulfillment provider: a manual provider.
+- Auth providers: email and password, GitHub, and Google.
+- Notification providers: a local provider that logs notifications, and SendGrid.
+
+You can replace any of these third-party services to build your preferred commerce ecosystem.
+
+### Infrastructure Modules
+
+Infrastructure Modules integrate third-party services and systems that customise MedusaGo's infrastructure. MedusaGo has the following Infrastructure Modules, each with a development default and, where relevant, a production implementation:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Module
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Purpose
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Implementations
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        Event Module
+      </Table.Cell>
+      <Table.Cell>
+        A pub/sub system that allows you to subscribe to events and emit them.
+      </Table.Cell>
+      <Table.Cell>
+        In-process (default), Redis
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Workflow Engine Module
+      </Table.Cell>
+      <Table.Cell>
+        Orchestrates workflows, including long-running ones and scheduled jobs.
+      </Table.Cell>
+      <Table.Cell>
+        In-memory (default), Redis
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Locking Module
+      </Table.Cell>
+      <Table.Cell>
+        Manages access to shared resources by multiple processes, preventing conflicts and ensuring data consistency.
+      </Table.Cell>
+      <Table.Cell>
+        In-memory (default), PostgreSQL, Redis
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Caching Module
+      </Table.Cell>
+      <Table.Cell>
+        Caches data that requires heavy computation.
+      </Table.Cell>
+      <Table.Cell>
+        In-memory, Redis
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        File Module
+      </Table.Cell>
+      <Table.Cell>
+        Manages file uploads and storage, such as product images.
+      </Table.Cell>
+      <Table.Cell>
+        Local disk (default), S3
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Notification Module
+      </Table.Cell>
+      <Table.Cell>
+        Sends notifications to customers and users, such as order updates.
+      </Table.Cell>
+      <Table.Cell>
+        Local (default), SendGrid
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Analytics Module
+      </Table.Cell>
+      <Table.Cell>
+        Tracks and analyses user interactions and system events.
+      </Table.Cell>
+      <Table.Cell>
+        Local, PostHog
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Search Module
+      </Table.Cell>
+      <Table.Cell>
+        Indexes and searches data with a search provider.
+      </Table.Cell>
+      <Table.Cell>
+        PostgreSQL
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+The [Deployment guide](!docs!/learn/deployment/general) shows how to configure the production implementations.
+
+<Note>
+
+Modules can be implemented within [plugins](!docs!/learn/fundamentals/plugins).
+
+</Note>
+
+---
+
+## The Admin Dashboard
+
+The Medusa Admin is a React application that sends requests to the Admin API routes, like any other client. MedusaGo embeds a prebuilt copy of the dashboard in its binary and serves it at `/app` (configurable with the [admin.path](!docs!/learn/configurations/medusa-config#adminpath) option). So you don't deploy the dashboard separately.
+
+If you add [admin customisations](!docs!/learn/fundamentals/admin), `build` compiles the dashboard with your widgets and UI routes. Learn more in the [Build chapter](!docs!/learn/build).
+
+---
+
+## Full Diagram of MedusaGo's Architecture
+
+```plain
+Clients: Storefront (JS SDK / REST), Medusa Admin (/app), other systems
+                              |
+                  HTTP layer (/store, /admin, /auth, /hooks)
+                              |
+                          Workflows
+                              |
+        Commerce Modules                Infrastructure Modules
+  (product, cart, order, payment, ...)  (event, workflow engine, locking,
+                              |          caching, file, notification, ...)
+                              |                     |
+                         PostgreSQL        Redis, S3, SendGrid, ...
+```

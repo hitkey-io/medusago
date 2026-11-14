@@ -1,0 +1,108 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Medusa Container`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about the Medusa container and how to use it in your customisations.
+
+## What is the Medusa Container?
+
+The Medusa container is a registry of the resources of the MedusaGo application: the services of its modules, the logger, the database connection, Query, the Link service, and more. You resolve a resource from it by its key, wherever your code needs it.
+
+This is how MedusaGo wires your code to the application without global variables: a [route](!docs!/learn/fundamentals/api-routes), a [workflow](!docs!/learn/fundamentals/workflows) step, a [script](!docs!/learn/fundamentals/custom-cli-scripts), or a [scheduled job](!docs!/learn/fundamentals/scheduled-jobs) each receives the container and resolves what it needs from it.
+
+The container is a `*container.MedusaContainer`, from the `container` package of `framework`. It has these methods:
+
+| Method | Description |
+| --- | --- |
+| `Resolve(key)` | Returns the resource registered under the key, as an `any`. It returns `nil` if there's none. |
+| `Has(key)` | Reports whether a resource is registered under the key. |
+| `Register(key, value)` | Registers a resource under a key. |
+| `CreateScope()` | Creates a child container. It resolves the resources of its parent, and its own registrations aren't visible to the parent. |
+
+Since `Resolve` returns an `any`, you convert the resource to its type with a type assertion.
+
+---
+
+## List of Resources Registered in the Medusa Container
+
+The container holds these resources. The keys are constants of the `common.ContainerRegistrationKeys` value, from the `common` package of `utils`:
+
+| Key | Resource | Type |
+| --- | --- | --- |
+| `ContainerRegistrationKeys.LOGGER` (`logger`) | The logger of the application. | `*slog.Logger` |
+| `ContainerRegistrationKeys.QUERY` (`query`) | [Query](!docs!/learn/fundamentals/query), to retrieve data across modules. | `*query.Query` |
+| `ContainerRegistrationKeys.LINK` (`link`) | The [Link service](!docs!/learn/fundamentals/module-links/link). | `*modulessdk.Link` |
+| `ContainerRegistrationKeys.REMOTE_LINK` (`remoteLink`) | The same Link service, under its former name. | `*modulessdk.Link` |
+| `ContainerRegistrationKeys.CONFIG_MODULE` (`configModule`) | The configurations of the application. | `config.ConfigModule` |
+| `ContainerRegistrationKeys.PG_CONNECTION` (`__pg_connection__`) | The connection pool of the database. | `*pgxpool.Pool` |
+| `ContainerRegistrationKeys.FEATURE_FLAG_ROUTER` (`featureFlagRouter`) | The router that tells whether a [feature flag](!docs!/learn/debugging-and-testing/feature-flags) is enabled. | `*featureflags.FlagRouter` |
+
+Each module that the application loads registers its service under its key, such as `product`, `cart`, or `blog`. The keys of the Commerce Modules are constants of the `modules-sdk` package of `utils`, such as `utilsmodulessdk.PRODUCT` (`product`), `utilsmodulessdk.CART` (`cart`), `utilsmodulessdk.EVENT_BUS` (`event_bus`), and `utilsmodulessdk.WORKFLOW_ENGINE` (`workflows`). The key of a module of your own is its name, or the `Key` of its configuration. A module that's disabled isn't registered.
+
+---
+
+## How to Resolve From the Medusa Container
+
+The code that runs in the application receives the container in different ways.
+
+### API Route
+
+In an [API route](!docs!/learn/fundamentals/api-routes), the container is the `Scope` of the request. Resolve resources from it:
+
+```go title="src/api/posts.go" file="modules/app/container.go" region="container-route"
+```
+
+### Workflow Step
+
+In a [step of a workflow](!docs!/learn/fundamentals/workflows), the container is the `Container` field of the `StepExecutionContext` that the step function receives:
+
+```go title="src/workflows/steps/list-posts.go" file="modules/app/container.go" region="container-step"
+```
+
+### Custom CLI Script
+
+A [script](!docs!/learn/fundamentals/custom-cli-scripts) receives the container in the `Container` field of its `ExecArgs`:
+
+```go title="src/scripts/my-script.go" file="modules/scripts/scripts.go" region="my-script"
+```
+
+### Scheduled Job
+
+The function of a [scheduled job](!docs!/learn/fundamentals/scheduled-jobs) receives the container as its second argument.
+
+### Module Services and Loaders
+
+A module's `Service` function receives the container in the `Container` field of its `ServiceOptions`, as a `Resolver`, an interface with the `Resolve` method. [Loaders](!docs!/learn/fundamentals/modules/loaders) don't receive the container: they receive the database handle and the module's options.
+
+<Note>
+
+A module should stay isolated, so it shouldn't resolve the services of other modules from the container. Use [module links](!docs!/learn/fundamentals/module-links) and [Query](!docs!/learn/fundamentals/query) to work with the data of other modules from your own code, such as a workflow.
+
+</Note>
+
+---
+
+## Register Your Own Resources
+
+To register a resource of your own, call `Register` on the container when the application is loaded. The `OnLoad` option of `cli.Run` takes hooks that run after the application is loaded, in the `start`, `develop`, `exec`, and `user` commands. Each hook receives the loaded application, with its container:
+
+```go title="src/resources.go" file="modules/app/container.go" region="container-register"
+```
+
+Pass the hook in the `OnLoad` option, in `main.go`:
+
+```go title="main.go" file="modules/app/container.go" region="container-onload"
+```
+
+Then resolve the resource wherever you have the container:
+
+```go title="src/resources.go" file="modules/app/container.go" region="container-register-use"
+```
+
+Check that a resource exists with `Has`, as `Resolve` returns `nil` for a key that isn't registered, and a type assertion on `nil` panics.

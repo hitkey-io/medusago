@@ -14,7 +14,7 @@ Refer to this [Medusa Admin User Guide](!user-guide!/customers) to learn how to 
 
 ## `has_account` Property
 
-The [Customer data model](/references/customer/models/Customer) has a `has_account` property, which is a boolean that indicates whether a customer is registered.
+The Customer data model has a `has_account` property, which is a boolean that indicates whether a customer is registered.
 
 When a guest customer places an order, a new `Customer` record is created with `has_account` set to `false`.
 
@@ -32,7 +32,7 @@ So, there can only be one guest customer (having `has_account=false`) and one re
 
 ## Change a Guest Customer to a Registered Customer
 
-You can only set the `has_account` property when you create a customer. The [updateCustomersWorkflow](/references/medusa-workflows/updateCustomersWorkflow) and the Customer Module's `updateCustomers` method don't accept it. So, you can't change an existing guest customer to a registered customer.
+You can only set the `has_account` property when you create a customer. The updateCustomersWorkflow and the Customer Module's `updateCustomers` method don't accept it. So, you can't change an existing guest customer to a registered customer.
 
 This affects flows that link a new auth identity to an existing guest customer. For example, a custom auth provider that sets the `customer_id` in the auth identity's app metadata to the guest customer's ID. The customer can log in, but the Medusa Admin still shows them as a guest.
 
@@ -44,9 +44,9 @@ If you're migrating customers from another platform, set `has_account` to `true`
 
 ### Register a New Customer Account
 
-When a guest customer registers, use the [createCustomerAccountWorkflow](/references/medusa-workflows/createCustomerAccountWorkflow) to create a registered customer with the same email. The workflow also sets the customer's ID in the auth identity's app metadata. It doesn't change the existing guest customer.
+When a guest customer registers, use the createCustomerAccountWorkflow to create a registered customer with the same email. The workflow also sets the customer's ID in the auth identity's app metadata. It doesn't change the existing guest customer.
 
-The guest customer's orders stay linked to the guest customer. To move them to the registered customer, the customer can request an order transfer using the [Request Order Transfer API route](!api!/store/orders/request-order-transfer).
+The guest customer's orders stay linked to the guest customer. To move them to the registered customer, the customer can request an order transfer using the [Request Order Transfer API route](!api!/store/orders).
 
 ### Email Must Match the Auth Identity
 

@@ -1,0 +1,101 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Add Columns to a Module Link`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to add custom columns to a link's table and how to set and retrieve their data.
+
+## Link Table's Default Columns
+
+When you define a [module link](!docs!/learn/fundamentals/module-links), MedusaGo creates a table in the database to store its links. The table has these columns:
+
+- `id`: the ID of the link.
+- A column for the ID of each linked record, such as `post_id` and `sales_channel_id`. Together they're the primary key of the table.
+- `created_at`, `updated_at`, and `deleted_at`: the dates the link was created, updated, and soft-deleted.
+
+You can add columns to store more information about the link. For example, to store the position of a post in a sales channel, whether it's pinned, and a note.
+
+---
+
+## How to Add Custom Columns to a Link's Table?
+
+The `DefineLink` function takes a third parameter, a `DefineLinkOptions` value. Its `Database` field is a `LinkDatabaseOptions` value that configures the link's table. Set its `ExtraColumns` field to add the columns:
+
+```go title="src/links/post-sales-channel.go" file="links/custom-columns.go" region="define-custom-columns"
+```
+
+In the example above, the link between posts and sales channels has three custom columns: `position`, `pinned`, and `note`.
+
+### Database Options
+
+The `LinkDatabaseOptions` value has these fields:
+
+| Field | Description |
+| --- | --- |
+| `Table` | The name of the link's table. If you don't set it, MedusaGo composes it from the two modules and their keys, such as `blog_post_sales_channel_sales_channel`. |
+| `IDPrefix` | The prefix of the IDs of the links. By default, `link`. |
+| `ExtraColumns` | The custom columns, as a `joiner.ExtraFields` list. The order is the order of the columns in the table. |
+
+### Column Configurations
+
+Each element of `ExtraColumns` has the `Name` of the column and an `ExtraField` with its configurations:
+
+| Field | Description |
+| --- | --- |
+| `Type` | The data type of the column: `text`, `string`, `integer`, `smallint`, `bigint`, `float`, `double`, `decimal`, `boolean`, `datetime`, `date`, `json`, `array`, or `uuid`. A `string` column is a `varchar(255)`. |
+| `DefaultValue` | The default value of the column, as an SQL expression, in a `*string`, such as `"0"` or `"false"`. |
+| `Nullable` | Whether the column can be `null`. |
+| `Options` | Other options of the type, such as `length`, or `precision` and `scale` for a `decimal`. |
+
+<Note type="warning" title="Define columns before you sync the links">
+
+MedusaGo creates the link's table the first time you sync the links, with the columns you've defined at the time. If you add or change a custom column afterwards, `db:sync-links` reports that the table differs from its definition, but doesn't alter it. Add the column with a migration, or drop the table before you sync the links again, which loses its links.
+
+</Note>
+
+---
+
+## Set Custom Column when Creating Link
+
+When you create a link with the [Link service](!docs!/learn/fundamentals/module-links/link), set the custom columns in the `data` key of the link definition. Its value is a record whose keys are the names of the columns:
+
+```go title="src/links/usage.go" file="links/custom-columns-usage.go" region="create-with-data"
+```
+
+A column that you don't set takes its default value.
+
+---
+
+## Retrieve Custom Column with Link
+
+To retrieve the custom columns with [Query](!docs!/learn/fundamentals/query), you have two options.
+
+### Method 1: Using Special Link Field
+
+Each side of the link has a special field with the rows of its link table, named after the other side's alias with the `_link` suffix: `sales_channel_link` for a post. Query it like any relation:
+
+```go title="src/links/usage.go" file="links/custom-columns-usage.go" region="query-special-field"
+```
+
+The field returns the rows of the link table: the IDs of both records and the custom columns.
+
+### Method 2: Using Entry Point
+
+The link also has an entry point, which you pass to Query as the entity. It's the two aliases joined by an underscore: `post_sales_channel`. Query returns the rows of the link table, and you can filter them by their custom columns and retrieve the linked records:
+
+```go title="src/links/usage.go" file="links/custom-columns-usage.go" region="query-entry-point"
+```
+
+---
+
+## Update Custom Column's Value
+
+To update the custom columns of an existing link, call the `Create` method of the `Link` service again with the same two records and the new values in `data`. The existing link is updated. The columns that you don't pass are reset to their default values, so pass every column you want to keep.
+
+```go title="src/links/usage.go" file="links/custom-columns-usage.go" region="update-data"
+```

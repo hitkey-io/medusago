@@ -1,0 +1,93 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Database Operations`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to perform database operations in your module's service, such as running queries and wrapping several operations in a transaction.
+
+## Run Queries
+
+The [service factory](!docs!/learn/fundamentals/modules/service-factory) covers most of what a module's service needs: its generated methods and the internal service of each data model list, create, update, and delete records. Use them first.
+
+For other needs, MedusaGo gives you three lower-level options, which you can use in the methods of your service.
+
+### Query With a Repository
+
+The internal service of a data model wraps its repository, a `*dal.Repository` that you can use directly. Its `Find` method takes a `FindOptions` value, with the filters in `Where`, and the `Select`, `Relations`, `Order`, `Take`, `Skip`, and `WithDeleted` options:
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="repository"
+```
+
+The repository also has the methods `FindAndCount`, `Create`, `Delete`, `SoftDelete`, `Restore`, `Upsert`, and `UpsertWithReplace`, which the internal service calls.
+
+### Run Raw SQL
+
+To run a SQL statement of your own, use the `dal.QueryRows` function with the database handle of the service, returned by its `DB()` method. The statement takes its arguments as `$1`, `$2`, and so on.
+
+For example, to increase the views of a post with one statement:
+
+```go title="src/modules/blog/service.go" file="modules/blog/service.go" region="raw-sql"
+```
+
+`QueryRows` returns a `[]dal.Row`. A `dal.Row` is a `map[string]any` of the row's columns. The values are converted the way Medusa converts them, so the types match its own: `integer` columns are `float64`, `text` columns are `string`, `boolean` columns are `bool`, `timestamptz` columns are `time.Time`, `jsonb` columns are decoded, and `numeric` and `bigint` columns stay `string`, to avoid losing precision.
+
+The handle also has an `Exec(ctx, sql, args...)` method for statements that return no rows.
+
+<Note type="warning">
+
+A raw statement doesn't know about the module's soft-deleted records, so add the `"deleted_at" is null` condition when it reads or changes records.
+
+</Note>
+
+---
+
+## Perform Database Operations
+
+Each generated method that changes data runs in its own transaction: a call to `createPosts` either creates all its posts, or none. When a method of your service makes several calls that must succeed or fail together, wrap them in a transaction.
+
+### Wrap Database Operations in Transactions
+
+The `InTransaction` method of the service runs a function in a database transaction. The function receives a copy of the service that's bound to the transaction:
+
+```go title="src/modules/blog/service.go" file="modules/blog/service.go" region="transaction"
+```
+
+In the `SetPostTags` method:
+
+1. `InTransaction` starts a transaction and calls the function with `tx`.
+2. The function lists the tags that exist, creates the missing ones, and replaces the tags of the post. It uses `tx.Internal(...)`, so every operation is part of the transaction.
+3. If the function returns an error, the transaction is rolled back and `InTransaction` returns the error. If it returns `nil`, the transaction commits.
+
+<Note type="warning">
+
+Inside the function, always use `tx`, not the service `s` that you called `InTransaction` on. A call on `s` runs outside the transaction, so it isn't rolled back when the function fails.
+
+</Note>
+
+Raw SQL in a transaction uses the handle of `tx`, `tx.DB()`. For example, the following method locks a post and moves the comments of another post to it:
+
+```go title="src/modules/blog/service.go" file="modules/blog/service.go" region="transaction-raw"
+```
+
+The `for update` clause locks the target post's row until the transaction ends.
+
+### Nested Transactions
+
+When you call `InTransaction` while a transaction is already running, for example from a method that another transactional method calls, MedusaGo uses a savepoint. If the inner function fails, only its changes are rolled back, and the error propagates to the outer function, which rolls back the whole transaction if it returns the error.
+
+Methods that call the generated methods on `tx` are part of the outer transaction as well.
+
+### Events and Transactions
+
+The events that the service emits for the changes of a transaction, such as `blog.post.updated`, are emitted when the outermost transaction commits. If it rolls back, they aren't emitted.
+
+---
+
+## Transaction Options
+
+Medusa lets you pass options such as an isolation level to a transactional method. MedusaGo's `InTransaction` takes no options: it starts a transaction with the database's default isolation level. If you need a stricter guarantee, lock the rows you work on with `for update` in a raw statement, as in `MoveComments`.

@@ -16,7 +16,7 @@ In this document, you’ll learn about tax lines in an order.
 
 A tax line indicates the tax rate of a line item or a shipping method.
 
-The [OrderLineItemTaxLine data model](/references/order/models/OrderLineItemTaxLine) represents a line item’s tax line, and the [OrderShippingMethodTaxLine data model](/references/order/models/OrderShippingMethodTaxLine) represents a shipping method’s tax line.
+The OrderLineItemTaxLine data model represents a line item’s tax line, and the OrderShippingMethodTaxLine data model represents a shipping method’s tax line.
 
 
 ---
@@ -48,14 +48,14 @@ Unlike cart tax lines, which Medusa recalculates automatically as the customer b
 
 For regular orders, Medusa does not automatically recompute tax lines when you update an order. For example, updating the order's shipping or billing address using the `updateOrderWorkflow` does not trigger a tax recomputation. The existing tax lines are preserved as-is.
 
-To recompute a regular order's tax lines, use the [updateOrderTaxLinesWorkflow](/references/medusa-workflows/updateOrderTaxLinesWorkflow).
+To recompute a regular order's tax lines, use the updateOrderTaxLinesWorkflow.
 
 ### Draft Orders
 
 For draft orders, Medusa recomputes tax lines in two situations:
 
-- When you update the draft order's shipping or billing address using the [updateDraftOrderWorkflow](/references/medusa-workflows/updateDraftOrderWorkflow), Medusa recomputes the tax lines to reflect the correct tax jurisdiction.
-- When you convert a draft order to a regular order using the [convertDraftOrderWorkflow](/references/medusa-workflows/convertDraftOrderWorkflow), Medusa recomputes the tax lines before placing the order. This prevents stale tax lines from carrying over to the new order.
+- When you update the draft order's shipping or billing address using the updateDraftOrderWorkflow, Medusa recomputes the tax lines to reflect the correct tax jurisdiction.
+- When you convert a draft order to a regular order using the convertDraftOrderWorkflow, Medusa recomputes the tax lines before placing the order. This prevents stale tax lines from carrying over to the new order.
 
 In both cases, whether Medusa recomputes the tax lines depends on the region's `automatic_taxes` setting:
 

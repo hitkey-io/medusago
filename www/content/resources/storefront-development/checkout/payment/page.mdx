@@ -23,14 +23,14 @@ In this guide, you'll learn how to implement the last step of the checkout flow,
 The payment step requires implementing the following flow:
 
 
-1. Retrieve the payment providers using the [List Payment Providers API route](!api!/store/payment-providers/list-payment-providers).
+1. Retrieve the payment providers using the [List Payment Providers API route](!api!/store/payment-providers).
 2. Customer chooses the payment provider to use.
-3. If the cart doesn't have an associated payment collection, create a payment collection for it using the [Create Payment Collection API route](!api!/store/payment-collections/create-payment-collection).
-4. Initialize the payment sessions of the cart's payment collection using the [Initialize Payment Sessions API route](!api!/store/payment-collections/initialize-payment-session).
+3. If the cart doesn't have an associated payment collection, create a payment collection for it using the [Create Payment Collection API route](!api!/store/payment-collections).
+4. Initialize the payment sessions of the cart's payment collection using the [Initialize Payment Sessions API route](!api!/store/payment-collections).
     - If you're using the JS SDK, it combines the third and fourth steps in a single `initiatePaymentSession` function.
 5. Optionally perform additional actions for payment based on the chosen payment provider. For example, if the customer chooses Stripe, you show them the UI to enter their card details.
     - You can refer to the [Stripe guide](./stripe/page.mdx) for an example of how to implement this.
-    - If the provider's UI collects details that the provider needs to authorize the payment, such as a payment method ID, pass them to the payment session using the [Update Payment Session API route](!api!/store/payment-collections/update-payment-session). Learn more in the [Update Payment Session Client Data](#update-payment-session-client-data) section.
+    - If the provider's UI collects details that the provider needs to authorize the payment, such as a payment method ID, pass them to the payment session using the [Update Payment Session API route](!api!/store/payment-collections). Learn more in the [Update Payment Session Client Data](#update-payment-session-client-data) section.
 
 ---
 
@@ -269,9 +269,9 @@ const handlePayment = () => {
 
 In the example above, you:
 
-- Retrieve the payment providers from the MedusaGo application using the [List Payment Providers API route](!api!/store/payment-providers/list-payment-providers). You use those to show the customer the available options.
+- Retrieve the payment providers from the MedusaGo application using the [List Payment Providers API route](!api!/store/payment-providers). You use those to show the customer the available options.
 - When the customer chooses a payment provider, you use the `initiatePaymentSession` function to create a payment collection and initialize the payment session for the chosen provider.
-    - If you're not using the JS SDK, you need to create a payment collection using the [Create Payment Collection API route](!api!/store/payment-collections/create-payment-collection) if the cart doesn't have one. Then, you need to initialize the payment session using the [Initialize Payment Session API route](!api!/store/payment-collections/initialize-payment-session).
+    - If you're not using the JS SDK, you need to create a payment collection using the [Create Payment Collection API route](!api!/store/payment-collections) if the cart doesn't have one. Then, you need to initialize the payment session using the [Initialize Payment Session API route](!api!/store/payment-collections).
 - Once the cart has a payment session, you optionally render the UI to perform additional actions. For example, if the customer chose Stripe, you can show them the card form to enter their credit card.
 
 In the `Fetch API` example, the `handlePayment` function implements this flow by calling the different functions in the correct order.
@@ -286,7 +286,7 @@ The Update Payment Session API route is available since Medusa [v2.22.1](https:/
 
 </Note>
 
-Some payment providers' checkout components return details that the provider needs to authorize the payment. To pass these details to the payment session, use the JS SDK's `updatePaymentSession` method, which sends a request to the [Update Payment Session API route](!api!/store/payment-collections/update-payment-session):
+Some payment providers' checkout components return details that the provider needs to authorize the payment. To pass these details to the payment session, use the JS SDK's `updatePaymentSession` method, which sends a request to the [Update Payment Session API route](!api!/store/payment-collections):
 
 ```ts
 const activePaymentSession = cart.payment_collection?.

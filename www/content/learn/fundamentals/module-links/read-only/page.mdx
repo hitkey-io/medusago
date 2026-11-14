@@ -1,0 +1,95 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Read-Only Module Link`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn what a read-only module link is and how to define one.
+
+## What is a Read-Only Module Link?
+
+Consider a scenario where you need to access related records from another module, but don't want the overhead of managing or storing the links between them. This can include cases where you work with data that isn't stored in your database, such as the records of a third-party system.
+
+Instead of defining a [module link](!docs!/learn/fundamentals/module-links) whose links are stored in a link table, you can use a read-only module link. A read-only module link builds a virtual relation from one data model to another in a different module, without creating a link table. Instead, the ID of the linked record is stored in a property of the first data model.
+
+For example, Medusa creates a read-only module link from the `Cart` data model of the Cart Module to the `Customer` data model of the Customer Module. It lets you access the customer of a cart without managing a link: the customer's ID is stored in the cart's `customer_id` property.
+
+---
+
+## How to Define a Read-Only Module Link
+
+The `DefineLink` function takes an optional third parameter with options for the link. To make the link read-only, set its `ReadOnly` field to `true`. You must also set the `Field` of the first data model's side, which is the property that stores the linked record's ID. It needs the side to be a `DefineLinkInput`.
+
+For example:
+
+```go title="src/links/post-author.go" file="links/read-only.go" region="define-read-only"
+```
+
+In this example, you define a read-only link from the `post` data model of the Blog Module to the `user` data model of the User Module. You do that by:
+
+- Passing a `DefineLinkInput` as the first side. It holds the linkable and the `Field`, `author_id`.
+- Setting `ReadOnly` to `true` in the options.
+
+Unlike a stored link, MedusaGo doesn't create a table for this link. It uses the ID stored in the field of the first data model to retrieve the linked record.
+
+<Note>
+
+A read-only link doesn't support the `Filterable` option. `DefineLink` returns an error if you set it.
+
+</Note>
+
+---
+
+## Retrieve Read-Only Linked Record
+
+[Query](!docs!/learn/fundamentals/query) retrieves the records of a read-only link. The property to retrieve is the alias of the second data model, `user`:
+
+```go title="src/api/posts.go" file="query/query.go" region="read-only"
+```
+
+Query lists the posts, then retrieves the users whose IDs are in the `author_id` of the posts.
+
+---
+
+## Read-Only Module Link Direction
+
+A read-only module link is unidirectional. You can only retrieve the linked record from the first data model. In the example, you retrieve the author of a post, but not the posts of a user.
+
+To retrieve the posts of a user, define another read-only link in the opposite direction.
+
+---
+
+## Inverse Read-Only Module Link
+
+An inverse read-only module link retrieves linked records based on the ID stored in the second data model.
+
+For example, to retrieve the posts of a user, define a read-only link from the User Module's `user` data model to the Blog Module's `post` data model:
+
+```go title="src/links/author-posts.go" file="links/read-only.go" region="define-read-only-list"
+```
+
+Since you can't add a field to the `user` data model, you:
+
+1. Set the `Field` of the first side to the user's `id`.
+2. Take the linkable of the `post` data model and set its `PrimaryKey` to the field of the post that holds the user's ID, `author_id`.
+3. Set `IsList` on the first side, since a user can have many posts.
+
+You can now retrieve a user and their posts:
+
+```go title="src/api/users.go" file="query/query.go" region="read-only-inverse"
+```
+
+With `IsList`, the property is a list. Both `posts` and `post` retrieve it.
+
+---
+
+## One-to-One or One-to-Many?
+
+The records that a read-only link retrieves are one object or a list of objects, depending on the link's options:
+
+- By default, the first data model's field holds one ID, so the link is one-to-one: the property is an object.
+- When `IsList` is set, in the first side's `DefineLinkInput` or in the `DefineLinkOptions`, the property is a list.

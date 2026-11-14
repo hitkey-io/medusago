@@ -1,0 +1,49 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Workflow Timeout`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to set a timeout for steps that wait for an external action.
+
+## What is a Step Timeout?
+
+By default, a workflow doesn't have a timeout. It continues its execution until it's finished or an error occurs.
+
+An async step waits for its status to be set from outside, which can take a long time or never happen. You can configure a timeout for such a step, to indicate how long it can wait. If the step's status isn't set before the timeout passes, the step fails, and the workflow is reverted: the compensation functions of the steps that ran are called.
+
+<Note title="Timeout Doesn't Stop Step Execution">
+
+Configuring a timeout doesn't stop the execution of a step's function that is in progress. The timeout only affects the status of the step and the workflow.
+
+</Note>
+
+---
+
+## Configure Step Timeout
+
+The step's `Timeout` option is a number indicating the timeout in seconds. You set it with the step's `Config` method, as explained in the [Workflows chapter](!docs!/learn/fundamentals/workflows#step-options).
+
+For example:
+
+```go title="src/workflows/hello-world.go" file="workflows/timeout/timeout.go" region="step"
+```
+
+This step is async, and its function returns an empty response, so it waits for its status. If its status isn't set within two seconds, it fails.
+
+Learn how to set the status of an async step in the [Long-Running Workflows chapter](!docs!/learn/fundamentals/workflows/long-running-workflow).
+
+### Timeout Error
+
+The step fails with a `*composer.TransactionStepTimeoutError` whose message is `Timeout error`. Since the workflow is long-running, you don't receive the error from `Run`. Subscribe to the workflow's execution to receive it in the errors of the `onFinish` event, as explained in the [Long-Running Workflows chapter](!docs!/learn/fundamentals/workflows/long-running-workflow#access-long-running-workflow-status-and-result).
+
+---
+
+## Limitations
+
+- The timeout only applies to async steps, which wait for their status. A step that isn't async finishes when its function returns.
+- MedusaGo doesn't have a timeout option for the whole workflow. To limit how long a workflow's execution lasts, set a timeout on the async steps that can wait.

@@ -1,0 +1,119 @@
+---
+generate_toc: true
+---
+
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `Guide: Create Brand Workflow`,
+}
+
+# {metadata.title}
+
+This chapter builds on the work from the [previous chapter](!docs!/learn/customization/custom-features/module) where you created a Brand Module.
+
+After adding custom modules to your application, you build commerce features around them using workflows. A workflow is a series of queries and actions, called steps, that complete a task spanning across modules. You write a workflow as a Go function, but it's a special function that allows you to define roll-back logic, retry configurations, and more advanced features.
+
+The workflow you'll create in this chapter will use the Brand Module's service to implement the feature of creating a brand. In the [next chapter](!docs!/learn/customization/custom-features/api-route), you'll expose an API route that allows admin users to create a brand, and you'll use this workflow in the route's implementation.
+
+<Note>
+
+Learn more about workflows in [this chapter](!docs!/learn/fundamentals/workflows).
+
+</Note>
+
+<Prerequisites
+  items={[
+    {
+      text: "Brand Module",
+      link: "/learn/customization/custom-features/module"
+    }
+  ]}
+/>
+
+---
+
+## 1. Create createBrandStep
+
+A workflow consists of a series of steps, each step created in a Go file under the `src/workflows` directory. A step is defined using `composer.CreateStep` from the Workflows SDK.
+
+The workflow you're creating in this guide has one step to create the brand. So, create the file `src/workflows/create-brand.go` with the following content:
+
+First, define the input of the step, which is the brand's name:
+
+```go title="src/workflows/create-brand.go" file="tutorial/src/workflows/create-brand.go" region="step-input"
+```
+
+Then, add a helper function that resolves the Brand Module's service from the container. The module's service is registered in the container with the module's name:
+
+```go title="src/workflows/create-brand.go" file="tutorial/src/workflows/create-brand.go" region="helper"
+```
+
+Finally, add the step:
+
+```go title="src/workflows/create-brand.go" file="tutorial/src/workflows/create-brand.go" region="step"
+```
+
+You create a `CreateBrandStep` using the `composer.CreateStep` function. It accepts the step's unique name as a first parameter, the step's function as a second parameter, and an optional compensation function as a third parameter, which you'll learn about next.
+
+The step function receives two parameters: a context with general configurations, and the input passed to the step when it's called. The context has a `Container` property, which is the container.
+
+The [container](!docs!/learn/fundamentals/medusa-container) is a registry of Framework and commerce tools accessible in your customizations, such as a workflow's step. The MedusaGo application registers the services of core and custom modules in the container, allowing you to resolve and use them.
+
+So, in the step function, you use the container to resolve the Brand Module's service, with the helper function `brandService`, and call its generated `createBrands` method with the `Call` method. It accepts the name of the method and its arguments: a record with the brand's data. A `dal.Record` is an ordered set of fields that serializes to JSON like a JavaScript object, and it's the type MedusaGo uses for the data of a model.
+
+<Note>
+
+Learn more about the generated methods in the [Service Factory](!docs!/learn/fundamentals/modules/service-factory) chapter.
+
+</Note>
+
+A step must return a `composer.StepResponse` and an error. `composer.NewStepResponse` accepts as a first parameter the data returned by the step, and as an optional second parameter the data passed to the compensation function, which you'll learn about next.
+
+### Compensation Function
+
+You define for each step a compensation function that's executed when an error occurs in the workflow. The compensation function defines the logic to roll-back the changes made by the step. This ensures your data remains consistent if an error occurs, which is especially useful when you integrate third-party services.
+
+<Note>
+
+Learn more about the compensation function in [this chapter](!docs!/learn/fundamentals/workflows/compensation-function).
+
+</Note>
+
+The step above already includes a compensation function, which you pass as the third parameter to `composer.CreateStep`:
+
+```go title="src/workflows/create-brand.go" file="tutorial/src/workflows/create-brand.go" region="compensation"
+```
+
+The compensation function's second parameter is the brand's ID, which you passed as the second parameter to `NewStepResponse`. Its first parameter is a context with a `Container` property, similar to the step function.
+
+In the compensation function, you resolve the Brand Module's service and use its generated `deleteBrands` method to delete the brand created by the step. This method accepts the ID of the brand to delete.
+
+If the step itself fails, the compensation function receives `nil` as the ID, so it checks for it first and does nothing.
+
+So, if an error occurs during the workflow's execution, the brand that was created by the step is deleted to maintain data consistency.
+
+---
+
+## 2. Create createBrandWorkflow
+
+You can now create the workflow that runs the `CreateBrandStep`. A workflow is created in a Go file under the `src/workflows` directory. In the file, you use `composer.CreateWorkflow` from the Workflows SDK to create the workflow.
+
+Add the following content in the same `src/workflows/create-brand.go` file:
+
+```go title="src/workflows/create-brand.go" file="tutorial/src/workflows/create-brand.go" region="workflow"
+```
+
+You create the `CreateBrandWorkflow` using the `composer.CreateWorkflow` function. This function accepts two parameters: the workflow's unique name, and the workflow's function holding the workflow's implementation.
+
+The function accepts the execution of the workflow and the workflow's input as parameters. In the function, you run the `CreateBrandStep` you created in the previous step to create a brand, with its `Run` method.
+
+A workflow returns its output and an error. In this workflow, the output is the brand the step created.
+
+---
+
+## Next Steps: Expose Create Brand API Route
+
+You now have a `CreateBrandWorkflow` that you can execute to create a brand.
+
+In the next chapter, you'll add an API route that allows admin users to create a brand. You'll learn how to create the API route, and execute in it the workflow you implemented in this chapter.

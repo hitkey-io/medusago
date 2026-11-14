@@ -1,0 +1,393 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `MedusaGo Configurations`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about the general configurations in `medusa-config.go`, and the options you can set.
+
+## Configuration File
+
+The configuration of a MedusaGo application is a Go function that returns a `config.InputConfig` value. In a project created with `create-medusago-app`, it's the `medusaConfig` function in `medusa-config.go`, which `main.go` passes to the CLI:
+
+```go title="medusa-config.go" file="project/medusa-config.go" region="config"
+```
+
+The CLI loads the [`.env` files](!docs!/learn/fundamentals/environment-variables) before it calls `medusaConfig`, so you can read environment variables with `os.Getenv`.
+
+The value you return is completed by `config.DefineConfig`. It fills the defaults described in this chapter, such as the fallbacks to environment variables, and merges the modules you add with MedusaGo's default modules. An option you leave empty takes its default.
+
+The `config.InputConfig` struct has the following fields:
+
+- `ProjectConfig`: the [project configurations](#project-configurations-projectconfig).
+- `Admin`: the [admin configurations](#admin-configurations-admin).
+- `Modules`: the [module configurations](#module-configurations-modules).
+- `Plugins`: the [plugin configurations](#plugin-configurations-plugins).
+- `FeatureFlags`: the [feature flags](#feature-flags-featureflags).
+
+### Configuration Without Go Code
+
+A project made only of configuration doesn't need Go code. The stock CLI (the `packages/cli/medusa-cli` command of the MedusaGo repository) reads the same configuration from a `medusa-config.json`, `medusa-config.yaml`, or `medusa-config.yml` file in the working directory. The keys are the camelCase names used in the headings of this chapter, such as `projectConfig` and `databaseUrl`, except for `is_default` in a module provider.
+
+<CodeTabs group="config-format">
+  <CodeTab label="JSON" value="json">
+
+```json title="medusa-config.json"
+{
+  "projectConfig": {
+    "databaseUrl": "postgres://postgres@localhost/medusa-store",
+    "http": {
+      "storeCors": "http://localhost:8000",
+      "adminCors": "http://localhost:9000",
+      "authCors": "http://localhost:8000,http://localhost:9000"
+    }
+  },
+  "admin": { "path": "/app" },
+  "modules": [
+    {
+      "resolve": "@medusajs/medusa/event-bus-redis",
+      "options": { "redisUrl": "redis://localhost:6379" }
+    }
+  ],
+  "featureFlags": { "index_engine": true }
+}
+```
+
+  </CodeTab>
+  <CodeTab label="YAML" value="yaml">
+
+```yaml title="medusa-config.yaml"
+projectConfig:
+  databaseUrl: postgres://postgres@localhost/medusa-store
+  http:
+    storeCors: http://localhost:8000
+admin:
+  path: /app
+modules:
+  - resolve: "@medusajs/medusa/event-bus-redis"
+    options:
+      redisUrl: redis://localhost:6379
+featureFlags:
+  index_engine: true
+```
+
+  </CodeTab>
+</CodeTabs>
+
+Values in these files are literal: they aren't expanded with environment variables. The options that default to an environment variable (such as `DATABASE_URL` or `JWT_SECRET`) can be left out of the file and set in the environment instead.
+
+---
+
+## Project Configurations (`projectConfig`)
+
+The `ProjectConfig` field holds the options of the server, the database, and the sessions. This example sets the most common ones:
+
+```go title="medusa-config.go" file="config/project-config.go" region="project-config"
+```
+
+### databaseUrl
+
+The `databaseUrl` configuration (Go field `ProjectConfig.DatabaseURL`) is the PostgreSQL connection URL of your application. If you leave it empty, MedusaGo uses the `DATABASE_URL` environment variable.
+
+```go title="medusa-config.go" file="config/project-config.go" region="database-url"
+```
+
+The URL is passed as it is to the [pgx](https://github.com/jackc/pgx) driver, so it accepts the connection parameters that pgx supports, such as `sslmode` and `pool_max_conns`. For example: `postgres://user:password@host:5432/medusa?sslmode=require`.
+
+### redisUrl
+
+The `redisUrl` configuration (Go field `ProjectConfig.RedisURL`) is the connection URL of a Redis server that stores the server's sessions. When it's empty, sessions are kept in the server's memory, which means they're lost when the server restarts and aren't shared between instances.
+
+MedusaGo doesn't read `REDIS_URL` on its own: set `RedisURL` from the environment variable in `medusa-config.go`, as the example above does. This option only configures sessions. The Redis-based modules take their own Redis URL, so you [pass it to each module](#module-configurations-modules).
+
+### redisPrefix
+
+The `redisPrefix` configuration (Go field `ProjectConfig.RedisPrefix`) is a prefix for the keys of the sessions in Redis. The session keys have the format `<prefix>sess:<session id>`.
+
+### redisOptions
+
+The `redisOptions` configuration (Go field `ProjectConfig.RedisOptions`) is a `map[string]any` of Redis client options, such as `connectTimeout`, applied on top of the values in `redisUrl`.
+
+### http
+
+The `HTTP` field of `ProjectConfig` holds the options of the HTTP layer.
+
+#### http.jwtSecret
+
+The `http.jwtSecret` configuration (Go field `HTTP.JwtSecret`) is a secret used to sign the authentication tokens of the HTTP layer. If you leave it empty, MedusaGo uses the `JWT_SECRET` environment variable, and `supersecret` if that isn't set either.
+
+<Note type="warning">
+
+MedusaGo doesn't refuse to start with the `supersecret` default. Always set a random secret in production.
+
+</Note>
+
+#### http.jwtExpiresIn
+
+The `http.jwtExpiresIn` configuration (Go field `HTTP.JwtExpiresIn`) is how long an authentication token is valid. It's a string such as `10h`, `7d`, or `60s`, or a number of seconds. The default is `1d`.
+
+#### http.cookieSecret
+
+The `http.cookieSecret` configuration (Go field `HTTP.CookieSecret`) is a secret used to sign the session cookie. If you leave it empty, MedusaGo uses the `COOKIE_SECRET` environment variable, and `supersecret` if that isn't set either. Set a random value in production.
+
+#### http.authCors
+
+The `http.authCors` configuration (Go field `HTTP.AuthCors`) is a comma-separated list of the origins that can send requests to the `/auth` routes. If you leave it empty, MedusaGo uses the `AUTH_CORS` environment variable, and `http://localhost:7000,http://localhost:7001,http://localhost:5173` if that isn't set either.
+
+Each item is either an origin, or a regular expression written between slashes. The expression uses Go's regular expression syntax and can end with the flags `i`, `m`, or `s`.
+
+```go title="medusa-config.go" file="config/project-config.go" region="cors"
+```
+
+#### http.storeCors
+
+The `http.storeCors` configuration (Go field `HTTP.StoreCors`) is a comma-separated list of the origins of storefronts that can send requests to the Store API routes. It accepts the same formats as `authCors`. If you leave it empty, MedusaGo uses the `STORE_CORS` environment variable, and `http://localhost:8000` if that isn't set either.
+
+#### http.adminCors
+
+The `http.adminCors` configuration (Go field `HTTP.AdminCors`) is a comma-separated list of the origins of admin dashboards that can send requests to the Admin API routes. It accepts the same formats as `authCors`. If you leave it empty, MedusaGo uses the `ADMIN_CORS` environment variable, and `http://localhost:7000,http://localhost:7001,http://localhost:5173` if that isn't set either.
+
+<Note>
+
+The Medusa Admin that MedusaGo serves at `/app` sends requests to the server's own origin. Add its URL to `adminCors` and `authCors` if you open the dashboard from an origin that's different from the server's.
+
+</Note>
+
+#### http.authMethodsPerActor
+
+The `http.authMethodsPerActor` configuration (Go field `HTTP.AuthMethodsPerActor`) is a `map[string][]string` that lists the IDs of the auth providers each actor type can authenticate with. The default for the `user` actor type is `emailpass`.
+
+```go title="medusa-config.go" file="config/project-config.go" region="auth-methods"
+```
+
+#### http.requireActorAssociation
+
+The `http.requireActorAssociation` configuration (Go field `HTTP.RequireActorAssociation`) is a `map[string]bool` whose keys are auth provider IDs. When it's `true` for a provider, the provider only authenticates auth identities that are already associated with an actor of the requested actor type. By default, an auth identity can authenticate as any actor type.
+
+#### http.restrictedFields
+
+The `http.restrictedFields` configuration (Go field `HTTP.RestrictedFields.Store`) lists the fields that can't be selected in Store API routes with the `fields` query parameter, unless the route allows them. The default is `order` and `orders`.
+
+#### http.storeRelationsLimit
+
+The `http.storeRelationsLimit` configuration (Go field `HTTP.StoreRelationsLimit`) is the maximum number of relations a caller can expand in a single request to a Store API route. For example, requesting `variants.options.values` expands three relations. The default is `3`.
+
+### sessionOptions
+
+The `sessionOptions` configuration (Go field `ProjectConfig.SessionOptions`, a pointer) customises the session middleware. It has the following fields:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Field
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Default
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `Name`
+      </Table.Cell>
+      <Table.Cell>
+        The name of the session cookie.
+      </Table.Cell>
+      <Table.Cell>
+        `connect.sid`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Resave`
+      </Table.Cell>
+      <Table.Cell>
+        Whether to save the session to the store on every request, even when it didn't change.
+      </Table.Cell>
+      <Table.Cell>
+        `true`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Rolling`
+      </Table.Cell>
+      <Table.Cell>
+        Whether to renew the cookie's expiry on every response.
+      </Table.Cell>
+      <Table.Cell>
+        `false`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `SaveUninitialized`
+      </Table.Cell>
+      <Table.Cell>
+        Whether to save sessions that haven't been modified.
+      </Table.Cell>
+      <Table.Cell>
+        `false`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Secret`
+      </Table.Cell>
+      <Table.Cell>
+        The secret used to sign the session cookie.
+      </Table.Cell>
+      <Table.Cell>
+        The value of `http.cookieSecret`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Ttl`
+      </Table.Cell>
+      <Table.Cell>
+        The lifetime of the session cookie, in milliseconds.
+      </Table.Cell>
+      <Table.Cell>
+        `36000000` (10 hours)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `DynamodbOptions`
+      </Table.Cell>
+      <Table.Cell>
+        A `map[string]any` of options that store sessions in a DynamoDB table instead of Redis or memory. It accepts `table`, `prefix`, `hashKey`, and `clientOptions` (`region`, `endpoint`, and `credentials`), among others.
+      </Table.Cell>
+      <Table.Cell>
+        \-
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+The `Resave`, `Rolling`, `SaveUninitialized`, and `Ttl` fields are pointers, so you can tell an unset value from `false` or zero. In Go 1.26 and later, you can write `new(true)` to get a pointer to a value.
+
+### cookieOptions
+
+The `cookieOptions` configuration (Go field `ProjectConfig.CookieOptions`, a pointer) customises the session cookie. It has the following fields: `Secure`, `SameSite`, `Domain`, `Path`, `HttpOnly`, `MaxAge` (in milliseconds), `Partitioned`, and `Priority`.
+
+When `NODE_ENV` is `production` or `staging`, the cookie is `Secure` and `SameSite=lax` by default, and the server only sets it on requests that arrive over HTTPS. Read the [Build chapter](!docs!/learn/build#authentication-locally-in-production-build) to learn how this affects running a production build locally.
+
+```go title="medusa-config.go" file="config/project-config.go" region="session"
+```
+
+<Note>
+
+The `workerMode`, `databaseDriverOptions`, `databaseLogging`, `databaseName`, `jwtOptions`, `jwtPublicKey`, `jwtVerifyOptions`, `authVerificationsPerActor`, and `compression` options of Medusa's configuration are not supported by MedusaGo. Set the [worker mode](!docs!/learn/production/worker-mode) with the `MEDUSA_WORKER_MODE` environment variable instead.
+
+</Note>
+
+---
+
+## Admin Configurations (`admin`)
+
+The `Admin` field of `config.InputConfig` configures the Medusa Admin that the server serves. Its fields are pointers, so an unset field takes its default.
+
+```go title="medusa-config.go" file="config/admin.go" region="admin"
+```
+
+Unlike Medusa, MedusaGo applies these options when the server starts, not when you build. You can change them and restart the server without rebuilding the admin.
+
+### backendUrl
+
+The `admin.backendUrl` configuration (Go field `Admin.BackendURL`) is the URL the dashboard sends API requests to. If you leave it unset, MedusaGo uses the `MEDUSA_BACKEND_URL` environment variable, and `/` (the server serving the dashboard) if that isn't set either.
+
+Set it only when the dashboard and the API are served from different origins.
+
+### disable
+
+The `admin.disable` configuration (Go field `Admin.Disable`) disables serving the dashboard. It's useful in a [worker deployment](!docs!/learn/production/worker-mode), where you can set it from an environment variable:
+
+```go title="medusa-config.go" file="config/admin.go" region="admin-disable"
+```
+
+### path
+
+The `admin.path` configuration (Go field `Admin.Path`) is the path the dashboard is served at. The default is `/app`. It shouldn't be `/auth`, `/store`, or `/admin`, since the APIs use those paths. The server logs an error if you set one of them.
+
+### storefrontUrl
+
+The `admin.storefrontUrl` configuration (Go field `Admin.StorefrontURL`) is the URL of your storefront. The dashboard uses it to link to storefront pages.
+
+### maxUploadFileSize
+
+The `admin.maxUploadFileSize` configuration (Go field `Admin.MaxUploadFileSize`) is the maximum size, in bytes, of a file that the dashboard accepts for upload. The default is `1048576` (1 MiB). Use `math.Inf(1)` for no limit.
+
+<Note>
+
+`Admin.OutDir` is accepted for compatibility with Medusa's configuration but has no effect. The server and the build always use `public/admin` (or `.medusa/admin` for `build --admin-only`). The `admin.vite` option isn't supported.
+
+</Note>
+
+---
+
+## Module Configurations (`modules`)
+
+The `Modules` field of `config.InputConfig` is a list of `config.ModuleConfig` values. MedusaGo starts with a default list of modules, and the modules you add either replace the default one with the same key or are added to the list.
+
+A `config.ModuleConfig` has the following fields:
+
+- `Key`: the module's key, such as `locking`. When you leave it empty, MedusaGo derives it from `Resolve` for MedusaGo's own modules, and from the module's definition for custom modules.
+- `Resolve`: the module's package name, such as `@medusajs/medusa/event-bus-redis`. For a module of your project, set `Module` to its definition instead.
+- `Options`: a `map[string]any` of the module's options.
+- `Providers`: the module providers, each with `Resolve`, `ID`, `Options`, and `IsDefault`. Modules that support providers, such as the File and Locking Modules, take them here.
+- `Disable`: whether to disable the module.
+- `Module`: the module definition of a custom module of your project.
+
+For example, this replaces the in-process Event Module and the in-memory Workflow Engine, Locking, and Caching Modules with their Redis implementations:
+
+```go title="medusa-config.go" file="config/modules.go" region="production-modules"
+```
+
+<Note>
+
+In the Workflow Engine Redis Module, the Redis URL is in the `redis` option, as shown above. In the others, it's the `redisUrl` option.
+
+</Note>
+
+To pass the list to your configuration:
+
+```go title="medusa-config.go" file="config/modules.go" region="modules"
+```
+
+This example replaces the local File Module Provider with the S3 provider, which stores files in a bucket instead of the server's disk:
+
+```go title="medusa-config.go" file="config/modules.go" region="s3"
+```
+
+Learn how to register your own module in the [Modules chapter](!docs!/learn/fundamentals/modules).
+
+---
+
+## Plugin Configurations (`plugins`)
+
+The `Plugins` field of `config.InputConfig` lists the plugins to enable. A plugin is a Go package that registers itself when it's imported, so you also need to import it in `main.go`. The stock CLI already links in the official loyalty plugin.
+
+```go title="medusa-config.go" file="config/modules.go" region="plugins"
+```
+
+Learn more in the [Plugins chapter](!docs!/learn/fundamentals/plugins).
+
+---
+
+## Feature Flags (`featureFlags`)
+
+The `FeatureFlags` field is a `map[string]any` that toggles [feature flags](!docs!/learn/debugging-and-testing/feature-flags). Its keys are the flags' keys, and its values are booleans.
+
+```go title="medusa-config.go" file="config/feature-flags.go" region="feature-flags"
+```

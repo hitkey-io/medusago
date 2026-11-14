@@ -1,0 +1,122 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Error Handling in Workflows`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about what happens when an error occurs in a workflow, how to handle the errors of a workflow, and how to change the default behaviour when a step fails.
+
+## Default Behavior of Errors in Workflows
+
+When a step of a workflow returns an error, the workflow's execution stops. Then, [the compensation function](!docs!/learn/fundamentals/workflows/compensation-function) of every step that ran is called to undo the actions performed by their respective steps.
+
+A workflow's body returns the error of a step so that the workflow stops. The workflow's `Run` method then returns that error, unchanged, to the workflow's caller, such as an API route, subscriber, or scheduled job. It's the first error a step returned. If an error is a `*common.MedusaError`, you can access its type and message.
+
+For example, this workflow's first step fails:
+
+```go title="src/workflows/my-workflow.go" file="workflows/errorhandling/errorhandling.go" region="workflow"
+```
+
+`actionThatReturnsError` returns a `*common.MedusaError`, so `moreActions` isn't executed.
+
+<Note>
+
+Learn more about error handling in API routes in the [Errors chapter](!docs!/learn/fundamentals/api-routes/errors).
+
+</Note>
+
+This is the default behavior of errors in workflows. However, you can handle the errors in the caller, or configure a step to change the default behaviour.
+
+---
+
+## Handle Errors in the Workflow's Caller
+
+When you execute a workflow, check the error `Run` returns. If you return the error from an API route, MedusaGo's error handler returns an appropriate HTTP response based on the error. You can also handle the error yourself. For example, to return a custom response:
+
+```go title="src/api/workflows/route.go" file="workflows/errorhandling/errorhandling.go" region="route"
+```
+
+In this example, you check the type of the error with `errors.As` and return a custom response if it's an `unexpected_state` error. You return any other error to the error handler.
+
+<Note>
+
+MedusaGo's `Run` doesn't have a `throwOnError` option like Medusa's: it always returns the first error, and the other errors of the execution aren't returned.
+
+</Note>
+
+---
+
+## Handle Errors in the Workflow's Body
+
+Since the workflow's body is Go code, you can handle the error of a step with an `if` statement, instead of returning it. So, you don't need the equivalent of a try-catch block.
+
+### Skip the Rest of the Workflow
+
+If you check the error of a step and return from the workflow's body without the error, the rest of the steps aren't executed, and the workflow succeeds. It's the equivalent of a try-catch block that doesn't do anything in its catch block:
+
+```go title="src/workflows/skip-on-failure.go" file="workflows/errorhandling/errorhandling.go" region="handle"
+```
+
+In this example, if `actionThatReturnsError` fails, the `moreActions` step isn't executed.
+
+<Note type="warning">
+
+The workflow doesn't fail, so the compensation functions of the steps that ran aren't called, including the one of the step that failed. If you want the workflow to fail and roll back, return the error.
+
+</Note>
+
+### Set Step as Failed, but Continue Workflow Execution
+
+In some cases, you may want to fail a step, but continue the rest of the workflow's execution.
+
+This is useful when you don't want a step's failure to stop the workflow's execution, but you want to mark that step as failed.
+
+The `ContinueOnPermanentFailure` option allows you to do that. When enabled, the workflow's execution continues, and the step is marked as failed in the execution's journal if an error occurs in that step. The step's `Run` method returns the zero value of its output and a `nil` error.
+
+<Note>
+
+The compensation function of the step that has the `ContinueOnPermanentFailure` option isn't called when an error occurs.
+
+</Note>
+
+It's like ignoring the error of the step and going on with the next steps, while still having the failure in the execution's details.
+
+You set the option with the step's `Config` method:
+
+```go title="src/workflows/continue-on-failure.go" file="workflows/errorhandling/errorhandling.go" region="continue"
+```
+
+In this example, if the `continueStep` fails, the `moreActions` step is still executed.
+
+<Note>
+
+The error that occurred in the step isn't available to the workflow. If you need it, catch it in the step's function and return it as part of the step's output.
+
+</Note>
+
+---
+
+## Fail a Step Permanently
+
+A step that is [retried](!docs!/learn/fundamentals/workflows/retry-failed-steps) is executed again every time it returns an error. To fail a step without retrying it, return `composer.PermanentFailure` with the error's message as the step's response, with a `nil` error:
+
+```go title="src/workflows/permanent-failure.go" file="workflows/errorhandling/errorhandling.go" region="permanent"
+```
+
+In this example, the step isn't retried although it has `MaxRetries` set. The workflow fails with the message as its error, and the compensation functions are called. As with any failed step, the compensation function of the step receives `nil`.
+
+---
+
+## Errors in Compensation Functions
+
+If a compensation function returns an error, the error is logged, and MedusaGo goes on to run the compensation functions of the previous steps. The workflow's `Run` method still returns the error of the step that failed, not the error of the compensation function.
+
+<Note title="Differences from Medusa">
+
+Medusa's `skipOnPermanentFailure` option and `StepResponse.permanentFailure`'s second parameter aren't available. You achieve the same results with the Go code in this chapter: check a step's error in the workflow's body to skip steps, and undo what a step did before it returns an error, as explained in the [Compensation Function chapter](!docs!/learn/fundamentals/workflows/compensation-function#handle-step-errors-in-loops).
+
+</Note>

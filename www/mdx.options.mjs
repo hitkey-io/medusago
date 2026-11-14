@@ -57,7 +57,7 @@ export const mdxOptions = {
       crossProjectLinksPlugin,
       {
         baseUrl: "",
-        projectUrls: { docs: { url: "", path: "/learn" } },
+        projectUrls: { docs: { url: "", path: "" } },
         useBaseUrl: true,
       },
     ],

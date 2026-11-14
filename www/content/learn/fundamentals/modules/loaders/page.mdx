@@ -1,0 +1,126 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Module Loaders`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about loaders and how to use them in a module.
+
+## What is a Loader?
+
+When you start the MedusaGo application, the modules it uses are loaded: each one builds its service and registers it in the [container](!docs!/learn/fundamentals/medusa-container). Modules also run their loaders at certain points.
+
+A loader is a function that a module defines to run code when the module is loaded. Use loaders to perform one-time setup, such as seeding the module's tables with default data, or checking that the module's configuration is valid.
+
+MedusaGo's own modules use loaders for the same purposes. For example, the Currency Module's loader inserts the list of currencies, and the Region Module's loader inserts the list of countries.
+
+---
+
+## How to Create a Loader?
+
+### 1. Implement Loader Function
+
+A loader is a function of type `Loader`, which receives a context and a `LoaderOptions` value:
+
+| Field | Description |
+| --- | --- |
+| `DB` | The database handle of the module. |
+| `Options` | The [options](!docs!/learn/fundamentals/modules/options) of the module, as a `map[string]any`. |
+| `Providers` | The providers registered for the module, for modules that have providers. |
+| `Logger` | A `*slog.Logger`. |
+
+A loader doesn't receive the container. To use the module's data models, build a service over them with `NewMedusaService` and use the internal service of the data model.
+
+For example, create the file `src/modules/blog/loaders.go` with the following content:
+
+```go title="src/modules/blog/loaders.go" file="modules/blog/loaders.go" region="loader"
+```
+
+The `SeedTags` loader creates the tags listed in the `defaultTags` option of the module. It first lists the tags that exist, and creates only the missing ones. That makes it safe to run many times.
+
+<Note type="warning">
+
+Loaders run every time the conditions in the [When are Loaders Executed?](#when-are-loaders-executed) section are met, so write them to be idempotent: running them again must not fail or duplicate data.
+
+</Note>
+
+### 2. Export Loader in Module Definition
+
+To use the loader, list it in the `Loaders` field of the module's definition:
+
+```go title="src/modules/blog/index.go" file="modules/blog/index.go" region="module"
+```
+
+The loaders of a module run in the order of the list.
+
+### Test the Loader
+
+Run the migrations, which run the loaders of every module:
+
+```bash
+go run . db:migrate
+```
+
+The loader logs how many tags it created. Run the command again, and the loader creates none, since the tags exist.
+
+---
+
+## When are Loaders Executed?
+
+### Loaders Executed with Migrations
+
+MedusaGo runs the loaders of the modules after it runs the migrations and syncs the links, in these commands:
+
+- `go run . db:migrate`
+- `go run . db:setup`, which runs the same steps as `db:migrate`, after it creates the database.
+- `go run . db:migrate:scripts`
+
+The loaders run in the order the modules appear in the application's configuration.
+
+### Loaders Executed on Application Startup
+
+A loader doesn't run when the application starts unless the module asks for it. The built-in modules whose loaders insert required data, such as the Payment Module, ask for it. Set `LoadersOnStart` to `true` on the module's exports to do the same:
+
+```go title="src/modules/blog/index.go" file="modules/blog/index.go" region="loaders-on-start"
+```
+
+The loaders of the module then run each time the application starts, after the modules' services are created.
+
+<Note>
+
+Medusa runs the loaders of every module when the application starts. MedusaGo only does so for the modules that set `LoadersOnStart`, and for all modules when you run the migration commands above.
+
+</Note>
+
+---
+
+## Avoid Heavy Operations in Loaders
+
+A loader that runs on startup delays the start of the application, and a failing loader stops it. Keep such loaders fast and make them tolerate a temporary failure.
+
+The loaders of MedusaGo's own modules return `nil` after they log a warning when they can't insert their data, so that the application can still start. Return an error from a loader only when the module can't work without what the loader does.
+
+### Alternative Solutions
+
+If you need to run heavy work, consider these alternatives:
+
+- A [scheduled job](!docs!/learn/fundamentals/scheduled-jobs), to run the work periodically.
+- A [custom CLI script](!docs!/learn/fundamentals/custom-cli-scripts), to run the work when you decide to.
+- A [workflow](!docs!/learn/fundamentals/workflows), to run the work in the background.
+
+---
+
+## Create Resources in the Service
+
+Upstream docs use loaders to create a client for an external service, such as a database connection, and register it in the container for the module's service. In MedusaGo, create such a resource in the `Service` function of the module's definition instead, and keep it in your service struct.
+
+The function receives the `ServiceOptions` of the module, with the `DB`, `Options`, `Logger`, `Providers`, and `Container` fields. The following `Service` function parses the module's options and stores them in the service:
+
+```go title="src/modules/blog/index.go" file="modules/blog/index.go" region="module"
+```
+
+The function runs once when the application loads the module. Return an error from it to stop the application, for example when an option is invalid.

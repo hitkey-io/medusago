@@ -1,0 +1,38 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Run Workflow Steps in Parallel`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to group workflow steps that don't rely on one another's results.
+
+## composer.Parallelize Function
+
+If your workflow has steps that don't rely on one another's results, group them with `composer.Parallelize` from the Workflows SDK.
+
+`Parallelize` accepts functions as parameters. Each function runs a step, and returns the step's error. The workflow continues to the next step after all the functions finish.
+
+For example:
+
+```go title="src/workflows/my-workflow.go" file="workflows/parallel/parallel.go" region="workflow"
+```
+
+In this example, the workflow creates a product, then creates its prices and attaches it to a sales channel. The two steps don't rely on each other, so they're passed to `Parallelize`.
+
+Each function stores the step's result in a variable declared before the call, so you can use the results after `Parallelize` returns. Return the error of the `Parallelize` call from the workflow, as with any step error.
+
+### How Parallelize Executes the Steps
+
+MedusaGo runs the functions you pass to `Parallelize` one after the other, in the order you pass them. It doesn't run them at the same time. A step doesn't start before the previous one finishes.
+
+Like in Medusa, a failure in one of the functions doesn't prevent the others from running. `Parallelize` runs all the functions, then returns the first error. The steps that succeeded are compensated with the failed one.
+
+<Note>
+
+Don't start your own goroutines to run steps concurrently. The compensation functions run in the reverse order in which the steps finish, so with concurrent steps the order of the rollback would depend on timing.
+
+</Note>

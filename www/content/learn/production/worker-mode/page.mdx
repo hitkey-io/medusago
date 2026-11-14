@@ -1,0 +1,129 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Worker Mode of MedusaGo Instance`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about the different modes of running a MedusaGo instance and how to configure the mode.
+
+## What is Worker Mode?
+
+By default, the MedusaGo application runs in `shared` mode, which runs:
+
+- `server`: the application server that handles incoming requests to the application's API routes.
+- `worker`: the worker that processes background tasks. This includes scheduled jobs and subscribers.
+
+While this setup is suitable for development, it is not optimal for production environments where background tasks can be long-running or resource-intensive.
+
+### Worker Mode in Production
+
+In a production environment, you should deploy two separate instances of your MedusaGo application:
+
+1. A server instance that handles incoming requests to the application's API routes.
+2. A worker instance that processes background tasks. This includes scheduled jobs and subscribers.
+
+You don't need to set up different projects for each instance. Both instances run the same binary. You configure the mode with an environment variable, as you'll see later in this chapter.
+
+This separation ensures that the server instance remains responsive to incoming requests, while the worker instance processes tasks in the background.
+
+```plain
+                        Redis
+                          ^
+        queues events     |     consumes events,
+        and workflow jobs |     runs workflow jobs
+                          |
+   Server instance -------+------- Worker instance
+   MEDUSA_WORKER_MODE=server       MEDUSA_WORKER_MODE=worker
+   handles API requests            processes background tasks
+```
+
+<Note type="warning">
+
+The server and worker instances can only share work through Redis. With the default in-process Event Module and in-memory Workflow Engine Module, each instance only processes its own events and jobs. To split the work, configure the [Redis Event Module and the Redis Workflow Engine Module](!docs!/learn/deployment/general#3-install-production-modules-and-providers) in both instances.
+
+</Note>
+
+---
+
+## How to Set Worker Mode
+
+You set the worker mode of an instance with the `MEDUSA_WORKER_MODE` environment variable. It accepts the following values:
+
+- `shared`: (default) run the application in a single process, meaning the worker and server run in the same process.
+- `worker`: run a worker process.
+- `server`: run the application server only.
+
+For example, in the deployed server instance, set the variable to `server`, and in the worker instance, set it to `worker`:
+
+<CodeTabs group="worker-mode-env">
+  <CodeTab label="Server Instance" value="server">
+
+```bash
+MEDUSA_WORKER_MODE=server
+```
+
+  </CodeTab>
+  <CodeTab label="Worker Instance" value="worker">
+
+```bash
+MEDUSA_WORKER_MODE=worker
+```
+
+  </CodeTab>
+</CodeTabs>
+
+<Note>
+
+MedusaGo doesn't have the `projectConfig.workerMode` configuration of Medusa. The environment variable is the only way to set the mode.
+
+</Note>
+
+### What Each Mode Changes
+
+The mode affects the modules that process work in the background:
+
+- The Redis Event Module starts its worker, which runs the subscribers for the queued events, in the `shared` and `worker` modes only. A `server` instance adds events to the queue, and a worker instance processes them.
+- The Redis Workflow Engine Module starts the workers that process long-running workflows, retries, timeouts, and scheduled jobs, and clears expired executions, in the `shared` and `worker` modes only. A `server` instance doesn't register scheduled jobs.
+- The Index and Search Modules synchronise their data when the application starts in the `shared` and `worker` modes only.
+
+The HTTP server starts in every mode. A worker instance still listens on its port, so you can use the `/health` route as a health check, but you don't need to expose it to clients.
+
+### Disable Admin in Worker Mode
+
+Since the worker instance only processes background tasks, you should disable the admin interface in it. That will save resources in the worker instance.
+
+To disable the admin interface, set the [admin.disable](!docs!/learn/configurations/medusa-config#disable) configuration in your `medusa-config.go` file:
+
+```go title="medusa-config.go" file="config/admin.go" region="admin-disable"
+```
+
+Similar to before, you set the value from an environment variable, allowing you to enable or disable the admin interface based on the environment.
+
+Then, in the deployed server instance, set `DISABLE_MEDUSA_ADMIN` to `false`, and in the worker instance, set `DISABLE_MEDUSA_ADMIN` to `true`:
+
+<CodeTabs group="worker-mode-env">
+  <CodeTab label="Server Instance" value="server">
+
+```bash
+DISABLE_MEDUSA_ADMIN=false
+```
+
+  </CodeTab>
+  <CodeTab label="Worker Instance" value="worker">
+
+```bash
+DISABLE_MEDUSA_ADMIN=true
+```
+
+  </CodeTab>
+</CodeTabs>
+
+---
+
+## Cluster Mode
+
+The `start` command's `--cluster`, `--servers`, and `--workers` options aren't supported. A MedusaGo process is a single Go server whose runtime already uses all the available CPU cores, so you scale by running more instances, each with its own worker mode.

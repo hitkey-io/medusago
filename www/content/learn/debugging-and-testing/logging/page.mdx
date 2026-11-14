@@ -1,0 +1,122 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Logging`,
+}
+
+# {metadata.title}
+
+In this chapter, you’ll learn how to use MedusaGo’s logger.
+
+## Logger
+
+MedusaGo logs with Go's standard [`log/slog`](https://pkg.go.dev/log/slog) package. Its logger is a `*slog.Logger` with a handler that formats the messages and filters them by level. It's the default logger of the process, so both the framework and your code log through it.
+
+The MedusaGo application registers the logger in the container as `logger`.
+
+---
+
+## How to Log a Message
+
+Resolve the `logger` using the container to log a message in your resource.
+
+For example, create a [script](!docs!/learn/fundamentals/custom-cli-scripts) with the following content:
+
+```go title="src/scripts/log-messages.go" file="config/logging.go" region="log-script"
+```
+
+This script resolves the `logger` from the container and uses it to log messages. Messages can have attributes, which are key and value pairs that follow the message.
+
+### Test the Script
+
+To test out the above script, register it in your `main.go` file with the name `log-messages`, as explained in the [Custom CLI Scripts chapter](!docs!/learn/fundamentals/custom-cli-scripts). Then, run it:
+
+```bash
+go run . exec log-messages
+```
+
+You'll see the following messages as part of the logged messages:
+
+```text
+info:    I'm using the logger!
+warn:    Something looks off order_id=order_123
+error:   Something failed error=payment declined
+```
+
+The `debug` message isn't shown, as the default log level hides it.
+
+---
+
+## Log Levels
+
+A `*slog.Logger` has the following methods:
+
+- `Info`: The message is logged with level `info`.
+- `Warn`: The message is logged with level `warn`.
+- `Error`: The message is logged with level `error`.
+- `Debug`: The message is logged with level `debug`.
+
+Each of these methods accepts the message, followed by optional key and value pairs.
+
+---
+
+## Logging Configurations
+
+### Log Level
+
+You set the minimum level that's logged with the `LOG_LEVEL` environment variable. It accepts the same level names as Medusa's logger, from the most to the least severe:
+
+1. `error`
+2. `warn`
+3. `info`
+4. `http` (default)
+5. `verbose`
+6. `debug`
+7. `silly`
+
+Since `slog` has no `http`, `verbose`, or `silly` level, those values map to the available ones: `http` and `verbose` show `error`, `warn`, and `info` messages, and `debug` and `silly` also show `debug` messages. An unknown value is treated as `http`.
+
+For example:
+
+```bash
+LOG_LEVEL=error
+```
+
+This logs `error` messages only.
+
+### Save Logs in a File
+
+Aside from showing the logs in the terminal, you can save the logs in a file by setting the `LOG_FILE` environment variable to the path of the file. A relative path is relative to the directory the application runs from.
+
+For example:
+
+```bash
+LOG_FILE=all.log
+```
+
+Your logs are now saved in the `all.log` file at the root of your project. The messages are appended to the file in the JSON format, one object per line, whatever the format shown in the terminal is.
+
+<Note>
+
+You can set `LOG_LEVEL` and `LOG_FILE` in the system environment or in the `.env` file of the directory you run the application from.
+
+</Note>
+
+### Log Format
+
+The format of the logs depends on `NODE_ENV`:
+
+- When it's `development` (the default for every command except `start`), messages are printed as `level: message key=value`, with colours if the output is a terminal. Set the `NO_COLOR` environment variable to turn the colours off.
+- In any other environment, such as `production`, each message is printed as a JSON object:
+
+```json
+{"level":"warn","message":"Something looks off","order_id":"order_123","timestamp":"2026-11-14 18:46:20"}
+```
+
+<Note>
+
+The `--verbose`, `--json`, and `--no-color` options of the CLI are accepted for compatibility but have no effect. Use the environment variables above instead.
+
+</Note>

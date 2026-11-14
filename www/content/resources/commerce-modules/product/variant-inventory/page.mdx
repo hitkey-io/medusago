@@ -27,7 +27,7 @@ Refer to this [Medusa Admin User Guide](!user-guide!/products/variants#manage-pr
 
 ## Configure Inventory Management of Product Variants
 
-A product variant, represented by the [ProductVariant](/references/product/models/ProductVariant) data model, has a `manage_inventory` field that's disabled by default. This field indicates whether you'll manage the inventory quantity of the product variant in the MedusaGo application. You can also keep `manage_inventory` disabled if you manage the product's inventory in an external system, such as an ERP.
+A product variant, represented by the ProductVariant data model, has a `manage_inventory` field that's disabled by default. This field indicates whether you'll manage the inventory quantity of the product variant in the MedusaGo application. You can also keep `manage_inventory` disabled if you manage the product's inventory in an external system, such as an ERP.
 
 The Product Module doesn't provide inventory-management features. Instead, the MedusaGo application uses the [Inventory Module](../../inventory/page.mdx) to manage inventory for products and variants. When `manage_inventory` is disabled, the MedusaGo application always considers the product variant to be in stock. This is useful if your product's variants aren't items that can be stocked, such as digital products, or they don't have a limited stock quantity.
 
@@ -75,7 +75,7 @@ Product variants have an `allow_backorder` field that's disabled by default. Whe
 
 <Note title="Tip">
 
-You can also allow customers to subscribe to restock notifications of a product variant as explained in [this guide](../../../recipes/commerce-automation/restock-notification/page.mdx).
+You can also allow customers to subscribe to restock notifications of a product variant as explained in this guide.
 
 </Note>
 
@@ -93,8 +93,8 @@ This is useful when an admin adds a currently out-of-stock item to a draft order
 
 The following workflows support the per-item `allow_backorder` field:
 
-- Cart workflows: [addToCartWorkflow](/references/medusa-workflows/addToCartWorkflow), [createCartWorkflow](/references/medusa-workflows/createCartWorkflow)
-- Order item workflows: [addOrderLineItemsWorkflow](/references/medusa-workflows/addOrderLineItemsWorkflow), [orderEditAddNewItemWorkflow](/references/medusa-workflows/orderEditAddNewItemWorkflow), [orderExchangeAddNewItemWorkflow](/references/medusa-workflows/orderExchangeAddNewItemWorkflow), [orderClaimAddNewItemWorkflow](/references/medusa-workflows/orderClaimAddNewItemWorkflow)
+- Cart workflows: addToCartWorkflow, createCartWorkflow
+- Order item workflows: addOrderLineItemsWorkflow, orderEditAddNewItemWorkflow, orderExchangeAddNewItemWorkflow, orderClaimAddNewItemWorkflow
 
 ---
 
@@ -104,7 +104,7 @@ The following guides provide more details on inventory management in the MedusaG
 
 - [Physical and Customs Attributes](../physical-customs-attributes/page.mdx): Learn how physical and customs attributes on products and variants relate to the inventory item created for a variant.
 - [Inventory Kits in the Inventory Module](../../inventory/inventory-kit/page.mdx): Learn how you can implement bundled or multi-part products through the Inventory Module.
-- [Retrieve Product Variant Inventory Quantity](../guides/variant-inventory/page.mdx): Learn how to retrieve the available inventory quantity of a product variant.
+- Retrieve Product Variant Inventory Quantity: Learn how to retrieve the available inventory quantity of a product variant.
 - [Configure Selling Products](../selling-products/page.mdx): Learn how to use inventory management to support different use cases when selling products.
 - [Inventory in Flows](../../inventory/inventory-in-flows/page.mdx): Learn how Medusa utilizes inventory management in different flows.
 - [Storefront guide: how to retrieve a product variant's inventory details](/resources/storefront-development/products/inventory).

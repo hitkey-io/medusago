@@ -1,0 +1,62 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Seed Data with Custom CLI Script`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to create a custom CLI script that seeds data into your database.
+
+## How to Seed Data
+
+To seed dummy data, you create a [custom CLI script](!docs!/learn/fundamentals/custom-cli-scripts) that uses the application's services and workflows to create the data, and run it with the `exec` command. Use it to prepare a development database, or to load the data a feature needs.
+
+The script should be safe to run more than once, so check that the data doesn't exist before you create it. Otherwise, running it again may fail, for example because of a unique constraint, or create duplicates.
+
+---
+
+## Example: Seed Blog Data
+
+The following script seeds the Blog Module of the previous chapters. It:
+
+1. Stops if the posts exist already.
+2. Retrieves the sales channel named `Blog` with Query, or creates it with the `CreateSalesChannelsWorkflow` workflow of the Sales Channel Module.
+3. Creates three posts with the module's service.
+4. Links the posts to the sales channel, with the [custom column](!docs!/learn/fundamentals/module-links/custom-columns) `position`.
+
+```go title="src/scripts/seed.go" file="modules/scripts/seed.go" region="seed"
+```
+
+In the script:
+
+- `blog.Name` is the key of the Blog Module, so `c.Resolve(blog.Name)` returns its service.
+- `CreateSalesChannelsWorkflow.Run` runs the workflow that creates sales channels with the application's container, so it emits the events and applies the logic that creating a sales channel through the API does.
+- The link between the posts and the sales channel uses the link that the project defines, with `position` as the custom column.
+
+The imports of the script are:
+
+```go title="src/scripts/seed.go" file="modules/scripts/seed.go" region="seed-imports"
+```
+
+### Register and Run the Script
+
+Register the script in the `Scripts` option of `cli.Run`, under the name `seed`, as in the `main.go` of the previous chapter. Then, run it:
+
+```bash
+go run . exec seed
+```
+
+The script logs the progress of the seeding. Run it a second time: it logs that the data is already seeded, and does nothing.
+
+### Test Script
+
+To check the result, retrieve the posts with their links using [Query](!docs!/learn/fundamentals/query), in another script, or in your own code. For example, a query on the entity `post` with the fields `id`, `title`, and `sales_channels.name` returns the posts and the name of their sales channel.
+
+<Note>
+
+To seed the data that Medusa Admin shows, such as products or customers, use the workflows of the Commerce Modules in the same way, with the container the script receives. Learn more about them in the [Workflows chapter](!docs!/learn/fundamentals/workflows) and the [Commerce Modules reference](!resources!/commerce-modules).
+
+</Note>

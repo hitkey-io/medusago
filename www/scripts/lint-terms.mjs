@@ -16,8 +16,8 @@ const ALWAYS = [
   [/\bMedusa (application|applications|server|backend|project|projects|instance)\b/i, 'use "MedusaGo application/server/…"'],
   [/medusa-config\.(ts|js)\b/, "use medusa-config.go"],
   [/\bnpx medusa\b|\byarn medusa\b/, 'use "go run . <command>"'],
-  [/\bcreate-medusa-app\b(?!-errors)/, "use create-medusago-app"],
-  [/@medusajs\/(framework\/(http|workflows-sdk|modules-sdk|utils|framework)|medusa|core-flows|workflows-sdk|modules-sdk|cli|test-utils)\b/, "backend TypeScript package"],
+  [/(?<![\/])\bcreate-medusa-app\b(?!-errors)/, "use create-medusago-app"],
+  [/@medusajs\/(framework\/(http|workflows-sdk|modules-sdk|utils|framework)|medusa\/(api|core-flows)|core-flows|workflows-sdk|modules-sdk|cli|test-utils)\b/, "backend TypeScript package"],
   [/\bMedusa Cloud\b|\bcloud\.medusajs\.com\b|\bmedusa-cloud\b|!cloud!|\bCloud (user|account|project)s?\b/i, "Medusa Cloud is not part of MedusaGo"],
   [/\b(RBAC|role-based access control|Single Sign-On|OIDC)\b/, "Enterprise feature"],
 ]

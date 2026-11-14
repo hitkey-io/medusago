@@ -1,0 +1,179 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Install MedusaGo`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to install and run a MedusaGo application.
+
+## Create MedusaGo Application
+
+A MedusaGo application is made up of a Go server that also serves the Medusa Admin dashboard. You can optionally install the [Next.js Starter Storefront](!resources!/nextjs-starter) while installing the MedusaGo application, or at a later point.
+
+<Prerequisites items={[
+  {
+    text: "Go v1.26 or later",
+    link: "https://go.dev/dl/"
+  },
+  {
+    text: "Git CLI tool",
+    link: "https://git-scm.com/downloads"
+  },
+  {
+    text: "PostgreSQL installed and running",
+    link: "https://www.postgresql.org/download/"
+  }
+]} />
+
+To create a MedusaGo application, run the `create-medusago-app` installer with `go run`:
+
+```bash
+go run github.com/hitkey-io/medusago/packages/cli/create-medusago-app@latest my-medusa-store
+```
+
+`my-medusa-store` is the name of the project's directory. The command also creates a PostgreSQL database for the project named `medusa-my-medusa-store`. While the command runs, it asks whether you want to install the storefront.
+
+<Note>
+
+To customise the installation, such as specifying a database URL, refer to the [create-medusago-app reference](!resources!/create-medusa-app). {/* terms-ok */}
+
+</Note>
+
+The installer creates the project from the [MedusaGo starter](https://github.com/hitkey-io/medusago-starter). The backend, with the Medusa Admin, is in the `apps/backend` directory. If you chose to install the storefront, it's in the `apps/storefront` directory.
+
+If your PostgreSQL server doesn't accept the default `postgres` user without a password, the installer asks for your PostgreSQL username and password.
+
+<Note title="Tip">
+
+The storefront is a JavaScript application, so installing it requires Node.js on your machine. The MedusaGo application itself doesn't need it. {/* terms-ok */}
+
+</Note>
+
+### Successful Installation Result
+
+Once the installation finishes successfully, the MedusaGo application runs at `http://localhost:9000`.
+
+The Medusa Admin dashboard runs at `http://localhost:9000/app`. The installer opens it in your default browser so you can create an admin user. Use that user to log in later.
+
+If you also installed the storefront, it's running at `http://localhost:8000`.
+
+You can stop the servers by exiting the installer. To run the MedusaGo application again, refer to the [Run MedusaGo Application in Development](#run-medusago-application-in-development) section.
+
+---
+
+## Run MedusaGo Application in Development
+
+To run the MedusaGo application in development, change to the backend's directory (`apps/backend`) and run the following command:
+
+```bash
+go run . develop
+```
+
+This runs your MedusaGo server at `http://localhost:9000`, and the Medusa Admin dashboard at `http://localhost:9000/app`.
+
+The `develop` command watches your project. When you change a file, it rebuilds your application and restarts the server. Learn more in the [Medusa CLI reference](!resources!/medusa-cli#develop).
+
+<Note title="Tip">
+
+For details on starting and configuring the Next.js Starter Storefront, refer to the [Next.js Starter Storefront documentation](!resources!/nextjs-starter).
+
+</Note>
+
+### The Health Endpoint
+
+To check that the server is running, send a request to `http://localhost:9000/health`. It responds with `OK`.
+
+---
+
+## Create Medusa Admin User
+
+Besides creating an admin user in the admin dashboard, you can also create one with the CLI.
+
+Run the following command in the backend's directory (`apps/backend`) to create a new admin user:
+
+```bash
+go run . user -e admin@medusajs.com -p supersecret
+```
+
+Replace `admin@medusajs.com` and `supersecret` with the user's email and password respectively.
+
+You can then use the user's credentials to log in to the Medusa Admin dashboard.
+
+---
+
+## Project Files
+
+Your MedusaGo application's project (`apps/backend`) has the following files and directories:
+
+```plain
+apps/backend
+├── .env.template
+├── go.mod
+├── main.go
+├── medusa-config.go
+└── src
+    ├── admin
+    ├── api
+    ├── jobs
+    ├── links
+    ├── modules
+    ├── scripts
+    ├── subscribers
+    └── workflows
+```
+
+### main.go
+
+The entry point of your application. It runs the [Medusa CLI](!resources!/medusa-cli) with your project's configuration and customisations. This is why you run commands as `go run . <command>`.
+
+```go title="main.go" file="project/main.go" region="main"
+```
+
+### medusa-config.go
+
+This file holds your [MedusaGo configurations](!docs!/learn/configurations/medusa-config), such as your PostgreSQL database URL. It returns the configuration that `main.go` passes to the CLI.
+
+### .env.template
+
+A template of the [environment variables](!docs!/learn/fundamentals/environment-variables) your application uses. The installer creates the `.env` file with the values for your database.
+
+### src
+
+This directory is the central place for your custom development. Go has no file-system discovery, so each part that you add is a Go package that you register in `main.go` or `medusa-config.go`. The subdirectories are:
+
+- `admin`: Holds your admin dashboard's custom [widgets](!docs!/learn/fundamentals/admin/widgets) and [UI routes](!docs!/learn/fundamentals/admin/ui-routes). These are React components, so they're JavaScript or TypeScript files.
+- `api`: Holds your custom [API routes](!docs!/learn/fundamentals/api-routes) that are added as endpoints in your application.
+- `jobs`: Holds your [scheduled jobs](!docs!/learn/fundamentals/scheduled-jobs) that run at a specified interval during your application's runtime.
+- `links`: Holds your [module links](!docs!/learn/fundamentals/module-links) that build associations between data models of different modules.
+- `modules`: Holds your custom [modules](!docs!/learn/fundamentals/modules) that implement custom business logic.
+- `scripts`: Holds your custom [scripts](!docs!/learn/fundamentals/custom-cli-scripts) to be executed using the CLI's `exec` command.
+- `subscribers`: Holds your [event listeners](!docs!/learn/fundamentals/events-and-subscribers) that are executed asynchronously whenever an event is emitted.
+- `workflows`: Holds your custom [workflows](!docs!/learn/fundamentals/workflows) that can be executed from anywhere in your application.
+
+### .medusa
+
+The `build` command creates a `.medusa` directory with the production build. Don't modify its files or commit them to your repository. Learn more in the [Build chapter](!docs!/learn/build).
+
+---
+
+## Configure MedusaGo Application
+
+By default, your MedusaGo application is equipped with the basic configuration to start your development.
+
+If you run into issues with configurations, such as CORS errors, or need to change the default configuration, refer to the [MedusaGo Configurations](!docs!/learn/configurations/medusa-config) guide.
+
+---
+
+## Update MedusaGo Application
+
+Refer to the [Update MedusaGo](!docs!/learn/update) guide to learn how to update your project.
+
+---
+
+## Next Steps
+
+In the next chapters, you'll learn about the architecture of your MedusaGo application, then learn how to customise your application to build custom features.

@@ -1,0 +1,153 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Guide: Implement Brand Module`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll build a Brand Module that adds a `brand` table to the database and provides data-management features for it.
+
+A [module](!docs!/learn/fundamentals/modules) is a reusable package of functionalities related to a single domain or integration. MedusaGo comes with multiple pre-built modules for core commerce needs, such as the [Cart Module](!resources!/commerce-modules/cart) that holds the data models and business logic for cart operations.
+
+In a module, you create data models and business logic to manage them. In the next chapters, you'll see how you use the module to build commerce features.
+
+## 1. Create Module Directory
+
+Modules are created in a sub-directory of `src/modules`. So, start by creating the directory `src/modules/brand` that will hold the Brand Module's files.
+
+```plain
+src/modules/brand
+```
+
+---
+
+## 2. Create Data Model
+
+A [data model](!docs!/learn/fundamentals/modules#1-create-data-model) represents a table in the database. You create data models using MedusaGo's Data Model Language (DML). It simplifies defining a table's columns, relations, and indexes with straightforward functions and configurations.
+
+You create a data model in a Go file under the module's directory. So, to create a data model that represents a new `brand` table in the database, create the file `src/modules/brand/models.go` with the following content:
+
+```go title="src/modules/brand/models.go" file="tutorial/src/modules/brand/models.go"
+```
+
+You create a `Brand` data model which has an `id` primary key property, and a `name` text property.
+
+You define the data model using the `dml.Define` function of the DML. It accepts two parameters:
+
+1. The first one is the name of the data model's table in the database. Use snake-case names.
+2. The second is the data model's schema: a `dml.Schema`, which is a list of the model's properties. Each property has a name and a property type, such as `dml.Id()` or `dml.Text()`.
+
+<Note title="Tip">
+
+Refer to the [Properties](!docs!/learn/fundamentals/data-models/properties) chapter to learn more.
+
+</Note>
+
+---
+
+## 3. Create Module Service
+
+You perform database operations on your data models in a [service](!docs!/learn/fundamentals/modules#2-create-service), which is a struct exported by the module and acts like an interface to its functionalities.
+
+In this step, you'll create the Brand Module's service that provides methods to manage the `Brand` data model. In the next chapters, you'll use this service when exposing custom features that involve managing brands.
+
+You define a service in a `service.go` file at the root of your module's directory. So, create the file `src/modules/brand/service.go` with the following content:
+
+```go title="src/modules/brand/service.go" file="tutorial/src/modules/brand/service.go"
+```
+
+The `BrandModuleService` embeds the `MedusaService` struct from the Modules SDK. This struct provides data-management methods for your module's data models.
+
+The module's definition, which you'll create next, passes the module's data models to `MedusaService`, and generates methods to manage those data models. So, the `BrandModuleService` now has methods like `createBrands` and `retrieveBrand` to manage the `Brand` data model. You call a generated method by its name with the service's `Call` method, which accepts a context, the name of the method, and its arguments.
+
+You'll use these methods in the [next chapter](!docs!/learn/customization/custom-features/workflow).
+
+<Note title="Tip">
+
+Refer to the [Service Factory](!docs!/learn/fundamentals/modules/service-factory) chapter to learn more about the generated methods.
+
+</Note>
+
+---
+
+## 4. Export Module Definition
+
+A module must export a definition that tells MedusaGo the name of the module and its models. This definition is exported in an `index.go` file at the module's root directory.
+
+So, to export the Brand Module's definition, create the file `src/modules/brand/index.go` with the following content:
+
+```go title="src/modules/brand/index.go" file="tutorial/src/modules/brand/index.go" region="definition"
+```
+
+You use `Module` from the Modules SDK (the `github.com/hitkey-io/medusago/packages/core/utils/src/modules-sdk` package, imported with the alias `utilsmodulessdk`) to create the module's definition. It accepts two parameters:
+
+1. The module's name (`brand`). You'll use this name when you use this module in other customizations.
+2. A `utilsmodulessdk.ModuleDefinition` with the following properties:
+   - `Models`: the module's data models.
+   - `Migrations`: the module's migrations, which you'll generate in the last step. Leave this line out until then, as the `migrations` package doesn't exist yet.
+   - `Service`: a function that creates the module's main service from the generated `MedusaService`.
+
+<Note title="Tip">
+
+You export `ModuleName` to reference the module's name more reliably in other customizations.
+
+</Note>
+
+The value `Module` returns has a `Linkable` property that holds the link configurations of the module's data models, which you'll use in the [Define Link chapter](!docs!/learn/customization/extend-features/define-link), and a `ModuleExports` property to add the module to the application.
+
+---
+
+## 5. Add Module to MedusaGo's Configurations
+
+To start using your module, you must add it to MedusaGo's configurations in `medusa-config.go`.
+
+The `config.InputConfig` value that `medusaConfig` returns has a `Modules` property, whose value is a list of modules to add to the application. So, add the following in `medusa-config.go`:
+
+```go title="medusa-config.go" file="tutorial/medusa-config.go" region="modules"
+```
+
+Import the Brand Module's package (`src/modules/brand` in your project) and add the module with its `ModuleExports`. `Resolve` is the path of the module's directory, which the command that generates the module's migrations uses.
+
+The Brand Module is now added to your MedusaGo application. You'll start using it in the [next chapter](!docs!/learn/customization/custom-features/workflow).
+
+---
+
+## 6. Generate and Run Migrations
+
+A [migration](!docs!/learn/fundamentals/modules#5-generate-migrations) is a Go file that defines database changes made by a module. Migrations ensure that your module is re-usable and removes friction when working in a team, making it easy to reflect changes across team members' databases.
+
+[MedusaGo's CLI tool](!resources!/medusa-cli) allows you to generate migration files for your module, then run those migrations to reflect the changes in the database. So, run the following command in your MedusaGo application's directory:
+
+```bash
+go run . db:generate brand
+```
+
+The `db:generate` command accepts as an argument the name of the module to generate the migrations for. It creates the directory `src/modules/brand/migrations`, with a migration file, an `index.go` file that lists the module's migrations, and a `.snapshot-brand.json` file that the command uses to generate the next migrations. Keep all of them in version control.
+
+The migration is a Go file similar to the following:
+
+```go title="src/modules/brand/migrations/Migration20261114134555.go" file="tutorial/src/modules/brand/migrations/Migration20261114134555.go"
+```
+
+The name of the migration file has the time at which it was generated, so yours is different.
+
+Then, add the module's migrations to its definition. In `src/modules/brand/index.go`, add the `Migrations` property to the `ModuleDefinition`, with the list that the `migrations` package exports: `Migrations: migrations.Migrations`. This is the line the definition in step 4 includes.
+
+Finally, run the migrations:
+
+```bash
+go run . db:migrate
+```
+
+The `db:migrate` command runs all migrations that haven't been run yet in the MedusaGo application, including the Brand Module's, which creates the `brand` table.
+
+---
+
+## Next Step: Create Brand Workflow
+
+The Brand Module now creates a `brand` table in the database and provides a service to manage its records.
+
+In the next chapter, you'll implement the functionality to create a brand in a workflow. You'll then use that workflow in a later chapter to expose an endpoint that allows admin users to create a brand.

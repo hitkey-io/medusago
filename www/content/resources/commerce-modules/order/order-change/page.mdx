@@ -11,7 +11,7 @@ In this document, you'll learn what an order change is and the related concepts.
 
 ## OrderChange Data Model
 
-The [OrderChange data model](/references/order/models/OrderChange) represents any kind of change to an order, such as a [return](../return/page.mdx), [exchange](../exchange/page.mdx), or [edit](../edit/page.mdx). Each of these is essentially an order change that is confirmed to apply changes to the original order.
+The OrderChange data model represents any kind of change to an order, such as a [return](../return/page.mdx), [exchange](../exchange/page.mdx), or [edit](../edit/page.mdx). Each of these is essentially an order change that is confirmed to apply changes to the original order.
 
 The `OrderChange` model's `change_type` property indicates the purpose of the order change:
 
@@ -26,7 +26,7 @@ Once the order change is confirmed, its changes are applied to the order.
 
 ## Order Change Actions
 
-The actions performed on the original order by an order change, such as adding an item, are represented by the [OrderChangeAction data model](/references/order/models/OrderChangeAction).
+The actions performed on the original order by an order change, such as adding an item, are represented by the OrderChangeAction data model.
 
 The `OrderChangeAction` has an `action` property that indicates the type of action to perform on the order, and a `details` property that holds additional information related to the action.
 
@@ -359,7 +359,7 @@ The following table lists the possible `action` values that Medusa uses and the 
       </Table.Cell>
       <Table.Cell>
       
-      `details` is an object that has the properties to update. The properties are the same as the ones in the [Order data model](/references/order/models/Order).
+      `details` is an object that has the properties to update. The properties are the same as the ones in the Order data model.
 
       </Table.Cell>
     </Table.Row>

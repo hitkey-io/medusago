@@ -1,0 +1,284 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Middlewares`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about middlewares and how to create them.
+
+## What is a Middleware?
+
+A middleware is a function executed when a request is sent to an API route. It's executed before the route handler function.
+
+Middlewares are used to guard API routes, parse request content types other than `application/json`, manipulate request data, and more.
+
+The HTTP server of the MedusaGo application is built to behave like the Express server that Medusa uses: it has an ordered stack of middlewares and route handlers, and a middleware calls a `next` function to pass the request to the next element in the stack.
+
+### Middleware Types
+
+There are two types of middlewares:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Example
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        Global Middleware
+      </Table.Cell>
+      <Table.Cell>
+        A middleware that applies to all routes matching a specified pattern.
+      </Table.Cell>
+      <Table.Cell>
+        `/custom*` applies to all routes starting with `/custom`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Route Middleware
+      </Table.Cell>
+      <Table.Cell>
+        A middleware that applies to routes matching a specified pattern and HTTP method(s).
+      </Table.Cell>
+      <Table.Cell>
+        A middleware that applies to all `POST` requests to routes starting with `/custom`.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+These middlewares generally have the same definition and usage, but they differ in the routes they apply to. You'll learn how to create both types in the following sections.
+
+---
+
+## How to Create a Middleware?
+
+A middleware is a function of type `MiddlewareFunction` from the `framework/src/http` package. It receives the request, the response, and the `next` function, and returns an `error`.
+
+For example, this middleware logs a message for every request it runs for:
+
+```go title="src/api/middlewares.go" file="api/middlewares.go" region="logger"
+```
+
+You apply middlewares to API routes with `MiddlewareRoute` values, which you pass in the `Middlewares` option of the CLI, in the same place you [register your API routes](!docs!/learn/fundamentals/api-routes#register-the-api-route).
+
+For example:
+
+```go title="src/api/middlewares.go" file="api/middlewares.go" region="global-and-route"
+```
+
+A `MiddlewareRoute` has the following properties:
+
+- `Matcher`: The API route path to apply the middleware on, as a string. The string can include path parameters, such as `/custom/:id`, and the wildcard `*`, such as `/custom*`.
+- `MatcherRe`: A regular expression to use instead of `Matcher`. It's a Go `*regexp.Regexp`, matched against the request path.
+- `Middlewares`: A slice of middleware functions to run.
+- `Methods`: (optional) By default, a middleware is applied on all HTTP methods for a route. You can specify one or more HTTP methods to apply the middleware to in this option, making it a route middleware.
+- `BodyParser`: (optional) Configures how the request body is parsed for the routes that match. Learn more in the [Configure the Body Parser](#configure-the-body-parser) section.
+
+### Test the Middleware
+
+To test the middleware:
+
+1. Start the application:
+
+```bash
+go run . develop
+```
+
+2. Send a request to any API route starting with `/custom`. If you specified an HTTP method in the `Methods` property, make sure to use that method.
+3. See the log message `Received a request!` in the terminal.
+
+---
+
+## Apply a Middleware Using a Regular Expression
+
+You can set the `MatcherRe` property to a regular expression to apply a middleware to routes matching a pattern.
+
+A regular expression must account for the full request path, including the leading slash. Go's regular expressions match anywhere in the path unless you anchor them, so anchor the pattern with `^` and `$`:
+
+```go title="src/api/middlewares.go" file="api/middlewares.go" region="regexp"
+```
+
+This middleware applies to `/custom` and any route starting with `/custom/`. A pattern such as `/custom/` without anchors would also match `/other/custom/route`.
+
+---
+
+## When to Use Middlewares
+
+Middlewares are useful for:
+
+- [Protecting API routes](!docs!/learn/fundamentals/api-routes/protected-routes) to ensure that only authenticated users can access them.
+- [Validating](!docs!/learn/fundamentals/api-routes/validation) request query and body parameters.
+- [Parsing](#configure-the-body-parser) request content types other than `application/json`, or changing how the body is parsed.
+- [Applying CORS](!docs!/learn/fundamentals/api-routes/cors) configurations to custom API routes.
+
+---
+
+## Middleware Function Parameters
+
+The middleware function accepts three parameters:
+
+1. A request object of type `*MedusaRequest`.
+2. A response object of type `*MedusaResponse`.
+3. A function of type `NextFunction` that executes the next middleware in the stack.
+
+<Note title="Important">
+
+You must call the `next` function in the middleware, with `nil` as its argument, unless you send a response or return an error. Otherwise, other middlewares and the API route handler won't execute.
+
+</Note>
+
+For example, the middleware in the first example logs the request's method and path, then calls `next(nil)` and returns `nil` to execute the next middleware in the stack.
+
+### Stop a Request
+
+A middleware can stop a request in two ways:
+
+- Send a response with the `res` object, and don't call `next`.
+- Return an error, or pass it to `next`. The remaining middlewares and the route handler don't execute, and the application's [error handler](!docs!/learn/fundamentals/api-routes/errors) sends the error response.
+
+For example, this middleware rejects requests that don't have the `x-api-version` header:
+
+```go title="src/api/middlewares.go" file="api/middlewares.go" region="reject"
+```
+
+### Share Data with the Route Handler
+
+Use the `Locals` property of the request to pass values from a middleware to the next middlewares and the route handler. It's a `map[string]any` that's created for every request.
+
+---
+
+## Middleware for Routes with Path Parameters
+
+To indicate a path parameter in a middleware's `Matcher` pattern, use the format `:{param-name}`.
+
+For example:
+
+```go title="src/api/middlewares.go" file="api/middlewares.go" region="path-params"
+```
+
+This applies a middleware to the routes with the path `/custom/:id`.
+
+<Note>
+
+Unlike in Medusa, a matcher that doesn't end with a slash also matches request URLs that have a trailing slash, such as `/custom/`.
+
+</Note>
+
+---
+
+## How Are Middlewares Ordered and Applied?
+
+### Middleware and Routes Execution Order
+
+The MedusaGo application registers middlewares and API route handlers in the following order, stacking them on top of each other:
+
+1. Global middlewares in the following order:
+    1. Global middlewares defined in the Medusa core.
+    2. Global middlewares defined in the plugins (in the order the plugins are registered in).
+    3. Global middlewares you define in the application.
+2. Route middlewares in the following order:
+    1. Route middlewares defined in the Medusa core.
+    2. Route middlewares defined in the plugins (in the order the plugins are registered in).
+    3. Route middlewares you define in the application.
+3. API routes in the following order:
+    1. API routes defined in the Medusa core.
+    2. API routes defined in the plugins (in the order the plugins are registered in).
+    3. API routes you define in the application.
+
+Then, when a request is sent to an API route, the stack is executed in order: global middlewares are executed first, then the route middlewares, and finally the route handlers.
+
+For example, consider you have the following middlewares:
+
+```go title="src/api/middlewares.go" file="api/middlewares_order.go" region="execution-order"
+```
+
+When you send a `GET` request to the `/custom` route, `globalMiddleware` runs first, then `routeMiddleware`, and finally the route handler.
+
+### Middlewares Sorting
+
+On top of the previous ordering, MedusaGo sorts global and route middlewares based on their matcher pattern in the following order:
+
+1. Wildcard matchers. For example, `/custom*`.
+2. Regex matchers. For example, `/custom/(products|collections)`, and every `MatcherRe`.
+3. Static matchers without parameters. For example, `/custom`.
+4. Static matchers with parameters. For example, `/custom/:id`.
+
+For example, if you have the following middlewares:
+
+```go title="src/api/middlewares.go" file="api/middlewares_order.go" region="sorting"
+```
+
+The global middlewares are sorted into the following order before they're registered:
+
+1. Global middleware `b` (`/custom`).
+2. Global middleware `a` (`/custom/:id`).
+
+And the route middlewares are sorted into the following order before they're registered:
+
+1. Route middleware `c` (`/custom*`).
+2. Route middleware `d` (`/custom/:id`).
+
+Then, the middlewares are registered in the order mentioned earlier, with global middlewares first, then the route middlewares.
+
+---
+
+## Configure the Body Parser
+
+The application parses the request body before the middlewares run, depending on the request's `Content-Type` header: `application/json` bodies, `application/x-www-form-urlencoded` bodies, and `text/plain` bodies. The result is in `req.Body`.
+
+To change how the body of requests to specific routes is parsed, set the `BodyParser` property of a `MiddlewareRoute`. It's a pointer to a `BodyParserConfig`, which has the following properties:
+
+- `SizeLimit`: The maximum size of the request body, as a string such as `"500kb"` or `"2mb"`. The default is 100 kilobytes. If a request's body is larger, the application responds with a `413` status code.
+- `PreserveRawBody`: Whether to keep the bytes of the body in `req.RawBody`, in addition to the parsed body.
+- `Disabled`: Turns the body parser off. `req.Body` isn't set, and the handler can read the stream from `req.Request.Body`.
+
+For example, this configuration keeps the raw body of requests sent to a webhook route, to verify the signature that the sender computed from the exact bytes it sent:
+
+```go title="src/api/middlewares.go" file="api/middlewares.go" region="body-parser"
+```
+
+The route handler can then use the body as usual:
+
+```go title="src/api/webhooks/custom/route.go" file="api/middlewares.go" region="webhook-handler"
+```
+
+To disable the body parser for a route, set `Disabled`:
+
+```go title="src/api/middlewares.go" file="api/middlewares.go" region="disable-parser"
+```
+
+<Note>
+
+A `BodyParser` configuration applies to the routes that match its `Matcher` and `Methods`, whether or not the `MiddlewareRoute` has middlewares.
+
+</Note>
+
+---
+
+## Overriding Middlewares
+
+A middleware can not override an existing middleware. Instead, middlewares are added to the end of the middleware stack.
+
+For example, if you define a custom validation middleware, such as `ValidateAndTransformBody`, on an existing route, then both the original and the custom validation middleware will run.
+
+Similarly, if you add an [authenticate](!docs!/learn/fundamentals/api-routes/protected-routes#protect-custom-api-routes) middleware to an existing route, both the original and the custom authentication middleware will run. So, you can't override the original authentication middleware.
+
+### Alternative Solution to Overriding Middlewares
+
+If you need to change the middlewares applied to a route, you can create a custom [API route](!docs!/learn/fundamentals/api-routes) that executes the same functionality as the original route, but with the middlewares you want.

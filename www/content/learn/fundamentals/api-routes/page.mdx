@@ -1,0 +1,246 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `API Routes`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn what API routes are and how to create them.
+
+## What is an API Route?
+
+An API route is a REST endpoint that exposes commerce features to external applications, such as storefronts, the Medusa Admin, or third-party systems.
+
+The MedusaGo application provides a set of [admin](!api!/admin) and [store](!api!/store) API routes out-of-the-box. They are the same routes that Medusa provides, with the same requests and responses. You can also create custom API routes to expose your custom functionalities.
+
+---
+
+## How to Create an API Route?
+
+An API route is a Go value of type `RouteFile` from the `framework/src/http` package. It has two properties:
+
+- `Path`: The path of the API route. A path segment that starts with a colon, such as `:id`, is a [path parameter](!docs!/learn/fundamentals/api-routes/parameters).
+- `Route`: The handler function of each HTTP method the route supports, such as `GET` and `POST`.
+
+An API route handler is a function that receives a `MedusaRequest` and a `MedusaResponse`, and returns an `error`. If it returns an error, the application's [error handler](!docs!/learn/fundamentals/api-routes/errors) sends the error response.
+
+For example, to create a `GET` API route at `/hello-world`, add the following handler to a Go file under `src/api` of your project:
+
+```go title="src/api/hello-world/route.go" file="api/hello_world.go" region="handlers"
+```
+
+Then, define the `RouteFile`:
+
+```go title="src/api/hello-world/route.go" file="api/hello_world.go" region="route-file"
+```
+
+<Note title="Tip">
+
+The example above defines both a `GET` and a `POST` handler. The [HTTP Methods](!docs!/learn/fundamentals/api-routes/http-methods) chapter explains the available HTTP methods.
+
+</Note>
+
+### Register the API Route
+
+MedusaGo doesn't scan the file system for API routes. You register the routes of your project by passing them in the `Routes` option of the CLI, in the `main.go` file of your application.
+
+For example:
+
+```go title="main.go" file="api/routes.go" region="options"
+```
+
+Where `Routes` is a slice with every `RouteFile` of your project, and `Middlewares` is a slice with every [middleware](!docs!/learn/fundamentals/api-routes/middlewares) configuration. In this guide, they're defined in the `src/api` package, which you import in `main.go`:
+
+```go title="src/api/routes.go" file="api/routes.go" region="routes"
+```
+
+<Note>
+
+The `src/api` directory and the file names are conventions that follow the structure of a MedusaGo project. The only requirement is that every route file you want the application to serve is passed in `cli.Options.Routes`.
+
+</Note>
+
+The routes of your project are loaded after Medusa's API routes and the API routes of your plugins.
+
+### Test the API Route
+
+To test the API route above, start the MedusaGo application from the directory of your project:
+
+```bash
+go run . develop
+```
+
+Then, send a `GET` request to the `/hello-world` API route:
+
+```bash
+curl http://localhost:9000/hello-world
+```
+
+You should receive the following response:
+
+```json
+{
+  "message": "[GET] Hello world!"
+}
+```
+
+---
+
+## The Request and Response Objects
+
+An API route handler receives a `*MedusaRequest` and a `*MedusaResponse`. `MedusaRequest` embeds Go's `*http.Request`, so you can use its methods and fields as usual, such as `req.Method`, `req.Header`, and `req.URL`.
+
+These are the most used properties of `MedusaRequest`:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Property
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `Params`
+      </Table.Cell>
+      <Table.Cell>
+        The [path parameters](!docs!/learn/fundamentals/api-routes/parameters#path-parameters), as a `map[string]string`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Query`
+      </Table.Cell>
+      <Table.Cell>
+        The [query parameters](!docs!/learn/fundamentals/api-routes/parameters#query-parameters).
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Body` and `RawBody`
+      </Table.Cell>
+      <Table.Cell>
+        The parsed [request body](!docs!/learn/fundamentals/api-routes/parameters#request-body-parameters), and the bytes of the body if you configure the middleware to preserve them.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `ValidatedBody` and `ValidatedQuery`
+      </Table.Cell>
+      <Table.Cell>
+        The body and query parameters, after the [validation middlewares](!docs!/learn/fundamentals/api-routes/validation) ran.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Scope`
+      </Table.Cell>
+      <Table.Cell>
+        The [Medusa container](!docs!/learn/fundamentals/medusa-container). Use its `Resolve` method to resolve a registered resource, such as the Query tool or a module's service.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `AuthContext`
+      </Table.Cell>
+      <Table.Cell>
+        The details of the authenticated actor, if any. Learn more in the [Protected API Routes](!docs!/learn/fundamentals/api-routes/protected-routes) chapter.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Session`
+      </Table.Cell>
+      <Table.Cell>
+        The request's session.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `QueryConfig` and `FilterableFields`
+      </Table.Cell>
+      <Table.Cell>
+        The fields, pagination and filters that the `ValidateAndTransformQuery` middleware resolves.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Locals`
+      </Table.Cell>
+      <Table.Cell>
+        A `map[string]any` to share values between middlewares and the route handler.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+`MedusaRequest` also has a `Ctx()` method. It returns the request's context, but it isn't canceled when the client disconnects. Pass it to the queries, [workflows](!docs!/learn/fundamentals/workflows), and module services you run in the handler, so that the work isn't stopped halfway if the client closes the connection. Use `req.Request.Context()` if you need to detect that the client disconnected, such as in a [stream](!docs!/learn/fundamentals/api-routes/responses#example-server-sent-events-sse).
+
+The [Response](!docs!/learn/fundamentals/api-routes/responses) chapter explains the methods of `MedusaResponse`.
+
+---
+
+## Routes Without a Prefix and Medusa's Prefixes
+
+The path prefix of an API route determines what MedusaGo applies to it automatically:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Prefix
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Behavior
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `/admin`
+      </Table.Cell>
+      <Table.Cell>
+        Requires an authenticated admin user, and applies the `http.adminCors` [CORS configuration](!docs!/learn/fundamentals/api-routes/cors).
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `/store`
+      </Table.Cell>
+      <Table.Cell>
+        Requires a publishable API key in the `x-publishable-api-key` header, authenticates the customer if the request has credentials, and applies the `http.storeCors` configuration.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `/auth`
+      </Table.Cell>
+      <Table.Cell>
+        Applies the `http.authCors` configuration.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Any other prefix
+      </Table.Cell>
+      <Table.Cell>
+        The route is public, and CORS isn't applied. For example, the `/hello-world` route above.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## Next Chapters: Learn More About API Routes
+
+Follow the next chapters to learn about the different HTTP methods you can use in API routes, parameters and validation, protecting routes, and more.

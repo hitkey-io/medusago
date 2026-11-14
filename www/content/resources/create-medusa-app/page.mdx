@@ -29,7 +29,7 @@ In this reference, you'll learn how to use `create-medusago-app` to create a Med
   }
 ]} />
 
-If you choose to install the storefront, you also need Node.js, as the storefront is a JavaScript application. The tool checks for `git` and `go` when it starts, and for `node` if you choose the storefront.
+If you choose to install the storefront, you also need Node.js, as the storefront is a JavaScript application. The tool checks for `git` and `go` when it starts, and for `node` if you choose the storefront. {/* terms-ok */}
 
 ---
 
@@ -58,7 +58,7 @@ The options can come before or after the project name. Run the tool with `-h` to
 When you run the tool, it:
 
 1. Checks that Git and Go are installed.
-2. Asks whether to install the storefront, unless you pass `--with-nextjs-starter`. If you choose it, the tool checks that Node.js is installed.
+2. Asks whether to install the storefront, unless you pass `--with-nextjs-starter`. If you choose it, the tool checks that Node.js is installed. {/* terms-ok */}
 3. Connects to PostgreSQL and creates the database `medusa-<project name>`, unless you pass `--skip-db` or `--db-url`. It first tries the `postgres` user without a password on `localhost:5432`. If that fails, it asks for your PostgreSQL username and password, and for the database's name. If a database with the name exists, it asks for another name.
 4. Clones the [MedusaGo starter](https://github.com/hitkey-io/medusago-starter) (a shallow clone of its `main` branch) into the project directory, and removes its `.git` directory. If you didn't choose the storefront, it removes the `apps/storefront` directory.
 5. Writes the `apps/backend/.env` file with the application's environment variables.
@@ -101,7 +101,7 @@ The tool creates the `.env` file of the backend with the following variables:
 - `--no-browser`: Don't start the servers or open the browser at the end. The tool only shows the success message.
 - `--directory-path <path>`: The directory to create the project in. The project is created in `<path>/<project-name>`.
 - `--with-nextjs-starter`: Install the storefront along with the backend, without asking.
-- `--use-npm`, `--use-yarn`, `--use-pnpm`: The package manager that installs and runs the storefront. The default is `npm`. You can only pass one of them.
+- `--use-npm`, `--use-yarn`, `--use-pnpm`: The package manager that installs and runs the storefront. The default is `npm`. You can only pass one of them. {/* terms-ok */}
 - `--verbose`: Show the output of the underlying commands. Useful for debugging.
 - `--seed`: Accepted for compatibility with Medusa's tool, with no effect.
 

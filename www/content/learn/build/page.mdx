@@ -1,0 +1,176 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Build MedusaGo Application`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to create a production build of your MedusaGo application for deployment to a hosting provider.
+
+The next chapter explains how to deploy your MedusaGo application.
+
+## build Command
+
+The CLI provides a [build](!resources!/medusa-cli#build) command that creates a standalone build of the MedusaGo application that:
+
+- Doesn't rely on your source files or on the Go toolchain to run.
+- Can be copied to a production server reliably.
+
+So, to create the production build, run the following command in the root of your project (`apps/backend`):
+
+```bash
+go run . build
+```
+
+The command creates a `.medusa/server` directory in the root of your project that contains your build assets. The next sections explain how to use the build output.
+
+---
+
+## Start Built MedusaGo Application
+
+To start the MedusaGo application after running the `build` command:
+
+<Note>
+
+You need to run these steps every time you run the `build` command, since the `.medusa/server` directory is recreated each time.
+
+</Note>
+
+1. Change to the `.medusa/server` directory:
+
+```bash
+cd .medusa/server
+```
+
+2. When running the application locally, make sure to copy the `.env` file from the root project's directory. In production, use system environment variables instead.
+
+```bash title=".medusa/server"
+cp ../../.env .env
+```
+
+<Note>
+
+The application loads `.env` from its working directory, so it's important to start it from `.medusa/server`. Learn more in the [environment variables guide](!docs!/learn/fundamentals/environment-variables).
+
+</Note>
+
+3. Run the pending migrations:
+
+```bash title=".medusa/server"
+NODE_ENV=production ./medusa db:migrate
+```
+
+4. Start the MedusaGo application from `.medusa/server`:
+
+```bash title=".medusa/server"
+./medusa start
+```
+
+The `start` command sets `NODE_ENV` to `production` if you haven't set it. Other commands, such as `db:migrate`, default to `development`, so set `NODE_ENV` yourself when you want them to load the production `.env` file and log in the production format.
+
+<Note>
+
+If you built the project with the stock `medusa` binary instead of your own `main.go`, the build copies that binary, and the `medusa-config.json` or `medusa-config.yaml` file next to it, to `.medusa/server`.
+
+</Note>
+
+### Authentication Locally in Production Build
+
+When the MedusaGo application is started in production (`NODE_ENV=production`) or staging mode, cookie settings are stricter. The session cookie is `Secure`, and the server only sets it on HTTPS requests (it trusts the `X-Forwarded-Proto` header of a proxy). So if you try to access the Medusa Admin over plain `http://localhost:9000` in production mode, you can't log in.
+
+To access the Medusa Admin locally in production mode, set the `CookieOptions` of your configuration to be less strict. For example:
+
+```go title="medusa-config.go" file="config/project-config.go" region="local-cookies"
+```
+
+In this example, you set `SameSite` to `lax` and `Secure` to `false`, which allows cookies to be sent over non-secure connections.
+
+Then rebuild the application and start it again as described in the [steps above](#start-built-medusago-application). You can now access the Medusa Admin locally in production mode.
+
+<Note type="warning">
+
+Make sure to remove the `CookieOptions` configuration once you're done testing locally, as it's not secure for production environments.
+
+</Note>
+
+---
+
+## Build Output
+
+The `build` command creates a `.medusa/server` directory in the root of your project that contains your build assets. Do not commit this directory to your repository. This directory should be generated as part of your deployment process.
+
+The `.medusa/server` directory contains the following:
+
+```plain
+.medusa/server
+├── medusa
+├── medusa-config.json   (only if your project has one)
+└── public
+    └── admin
+```
+
+- `medusa`: Your application, compiled into a single executable with `go build`. It includes your configuration and customisations, and a copy of the Medusa Admin.
+- `public/admin`: The production build of the admin dashboard. The `public` directory is publicly accessible.
+- `medusa-config.json`, `medusa-config.yaml`, or `medusa-config.yml`: A copy of the configuration file, if your project has one. A project that's configured in `medusa-config.go` doesn't need it, since the configuration is part of the executable.
+
+### Dependencies
+
+You don't need to install any dependencies on the server. The executable includes every Go dependency, so you only need to copy `.medusa/server` to the machine that runs it. Build on the same operating system and architecture as the server, or cross-compile as explained in the next section.
+
+### Cross-Compile for Another Platform
+
+The `build` command runs `go build`, so it honours the `GOOS` and `GOARCH` environment variables. To build for a different platform, compile your application once for your own machine, then run that executable with the target platform's variables:
+
+```bash
+go build -o medusa-tool .
+GOOS=linux GOARCH=amd64 ./medusa-tool build
+```
+
+### Built Assets
+
+The build compiles your Go packages into the executable. If your application needs other files at runtime, such as JSON data or templates, embed them with Go's [`embed` package](https://pkg.go.dev/embed), so they're part of the executable. Otherwise, copy them to `.medusa/server` as part of your build process.
+
+<Note type="warning">
+
+Do not expose sensitive files in your deployments, especially in the `.medusa/server/public` directory, as they will be publicly accessible. Sensitive files include those containing API keys, database credentials, or any other confidential information.
+
+</Note>
+
+---
+
+## Admin Build
+
+The Medusa Admin is part of the executable, so a project without admin customisations needs no separate admin build step: `build` writes the embedded dashboard to `.medusa/server/public/admin`, and the server serves it.
+
+The admin options of your configuration, such as `admin.path` and `admin.backendUrl`, are applied when the server starts. You don't need to rebuild the admin to change them.
+
+### Build Admin Customizations
+
+If your project has a `src/admin` directory, the build compiles the dashboard together with your [widgets and UI routes](!docs!/learn/fundamentals/admin). This step uses the original admin bundler, so it needs Node.js and the `@medusajs/admin-bundler` and `@medusajs/dashboard` packages installed in your project. The output goes to `.medusa/server/public/admin`. {/* terms-ok */}
+
+The server serves `public/admin` from its working directory when it exists, and the embedded dashboard otherwise. So, to serve your customisations, start the server from `.medusa/server`, or deploy the `public` directory next to the executable.
+
+<Note type="warning">
+
+The build checks whether the `src/admin` directory exists, not whether it contains customisations. The directory in the starter project is empty, so remove it if you have no admin customisations. Otherwise, `build` fails at the frontend step asking for the admin bundler packages, even though the executable was built.
+
+</Note>
+
+### Separate Admin Build
+
+The `build` command accepts a `--admin-only` option that outputs only the admin to the `.medusa/admin` directory, with the admin options compiled in. This is useful when deploying the admin dashboard separately, such as on a static host:
+
+```bash
+go run . build --admin-only
+```
+
+In this case, disable the admin in the MedusaGo application that serves your API by setting [admin.disable](!docs!/learn/configurations/medusa-config#disable) to `true`. The command logs a warning if the admin is still enabled in your configuration.
+
+---
+
+## Deploying Production Build
+
+The next chapter covers how to deploy the production build.

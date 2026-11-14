@@ -15,13 +15,13 @@ There are two types of API keys:
 - `secret`: A secret key used for authentication and verification purposes, such as an admin user’s authentication token or a password reset token.
     - This API key is useful for operations that require authentication, such as creating orders or managing products as an admin user.
 
-The API key’s type is stored in the `type` property of the [ApiKey data model](/references/api-key/models/ApiKey).
+The API key’s type is stored in the `type` property of the ApiKey data model.
 
 ### Default Scopes and Permissions
 
 In your MedusaGo application, a `publishable` API key is only useful to send requests to the [Store API routes](!api!/store). Learn more about it in the [Publishable API Keys](../../sales-channel/publishable-api-keys/page.mdx) guide.
 
-In addition, a `secret` API key allows you to access the [Admin API routes](!api!/admin) and perform actions as the admin user that the key was created for. The `created_by` property of the [ApiKey data model](/references/api-key/models/ApiKey) indicates the ID of the associated admin user.
+In addition, a `secret` API key allows you to access the [Admin API routes](!api!/admin) and perform actions as the admin user that the key was created for. The `created_by` property of the ApiKey data model indicates the ID of the associated admin user.
 
 To authenticate using a secret API key, pass it with HTTP Basic authentication in the `Authorization` header:
 
@@ -42,7 +42,7 @@ Secret API keys must be sent using HTTP Basic authentication, not as a Bearer to
 
 When using the [Medusa Admin](!user-guide!/settings/developer) or [API routes](!api!/admin/api-keys), only admin users can create API keys. 
 
-You can also create API keys in your customizations using the [createApiKeysWorkflow](/references/medusa-workflows/createApiKeysWorkflow).
+You can also create API keys in your customizations using the createApiKeysWorkflow.
 
 ---
 
@@ -58,7 +58,7 @@ For display purposes, the API key data model also has a `redacted` property that
 
 ## API Key Expiration
 
-An API key expires when it’s revoked using the [revokeApiKeysWorkflow](/references/medusa-workflows/revokeApiKeysWorkflow). This method will set the following properties in the API key:
+An API key expires when it’s revoked using the revokeApiKeysWorkflow. This method will set the following properties in the API key:
 
 - `revoked_at`: The date and time when the API key was revoked.
 - `revoked_by`: The ID of the user who revoked the API key.
@@ -69,4 +69,4 @@ The associated token is no longer usable or verifiable.
 
 ## Token Verification
 
-To verify a token received as an input or in a request, use the [authenticate method of the module’s main service](/references/api-key/authenticate) which validates the token against all non-expired tokens.
+To verify a token received as an input or in a request, use the authenticate method of the module’s main service which validates the token against all non-expired tokens.

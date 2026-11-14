@@ -1,0 +1,169 @@
+---
+generate_toc: true
+---
+
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `Guide: Query Product's Brands`,
+}
+
+# {metadata.title}
+
+In the previous chapters, you [defined a link](!docs!/learn/customization/extend-features/define-link) between the [custom Brand Module](!docs!/learn/customization/custom-features/module) and MedusaGo's [Product Module](!resources!/commerce-modules/product), then [extended the create-product flow](!docs!/learn/customization/extend-features/extend-create-product) to link a product to a brand.
+
+In this chapter, you'll learn how to retrieve a product's brand (and vice-versa) in two ways: Using MedusaGo's existing API route, or in customizations, such as a custom API route.
+
+<Prerequisites
+  items={[
+    {
+      text: "Brand Module",
+      link: "/learn/customization/custom-features/module"
+    },
+    {
+      text: "Defined link between the Brand and Product data models.",
+      link: "/learn/customization/extend-features/define-link"
+    }
+  ]}
+/>
+
+---
+
+## Approach 1: Retrieve Brands in Existing API Routes
+
+MedusaGo's existing API routes accept a `fields` query parameter that allows you to specify the fields and relations of a model to retrieve. So, when you send a request to the [List Products](!api!/admin/products), [Get Product](!api!/admin/products), or any product-related admin routes that accept a `fields` query parameter, you can specify in this parameter to return the product's brands.
+
+For example, send the following request to retrieve the list of products with their brands:
+
+```bash
+curl 'http://localhost:9000/admin/products?fields=+brand.*' \
+-H 'Authorization: Bearer {token}'
+```
+
+<Note title="Tip">
+
+Make sure to replace `{token}` with your admin user's authentication token. Learn how to retrieve it in the [API reference](!api!/store).
+
+</Note>
+
+Any product that is linked to a brand will have a `brand` property in its object:
+
+```json title="Example Product Object"
+{
+  "id": "prod_123",
+  // ...
+  "brand": {
+    "id": "01JEB44M61BRM3ARM2RRMK7GJF",
+    "name": "Acme",
+    "created_at": "2024-12-05T09:59:08.737Z",
+    "updated_at": "2024-12-05T09:59:08.737Z",
+    "deleted_at": null
+  }
+}
+```
+
+By using the `fields` query parameter, you don't have to re-create existing API routes to get custom data models that you linked to core data models.
+
+<Note>
+
+Store API routes only return the fields and relations they allow. To retrieve your linked data models from a store route, allow them in the route's configuration, as explained in the [Allowed Fields](!docs!/learn/fundamentals/api-routes/allowed-fields) chapter.
+
+</Note>
+
+### Limitations: Filtering by Brands in Existing API Routes
+
+While you can retrieve linked records using the `fields` query parameter of an existing API route, you can't filter by linked records.
+
+Instead, you'll have to create a custom API route that uses [Query](!docs!/learn/fundamentals/query) to filter by linked records.
+
+---
+
+## Approach 2: Use Query to Retrieve Linked Records
+
+You can also retrieve linked records using [Query](!docs!/learn/fundamentals/query). Query allows you to retrieve data across modules with filters, pagination, and more. You can resolve Query from the container and use it in your API route or workflow.
+
+For example, you can create an API route that retrieves brands and their products. If you followed the [Create Brands API route chapter](!docs!/learn/customization/custom-features/api-route), you'll have the file `src/api/admin/brands/route.go` with a `POST` API route. Add a new `GET` function to the same file:
+
+```go title="src/api/admin/brands/route.go" file="tutorial/src/api/admin/brands/route.go" region="get"
+```
+
+This adds a `GET` API route at `/admin/brands`. In the API route, you resolve Query from the container with `QueryOf`, from the `http/utils` package of the Framework (`github.com/hitkey-io/medusago/packages/core/framework/src/http/utils`, imported with the alias `httputils`). Query has a `Graph` method that runs a query to retrieve data. It accepts a context, a `query.GraphInput` value, and options. The input has the following properties:
+
+- `Entity`: The data model's name as specified in the first parameter of `dml.Define`.
+- `Fields`: A list of properties and relations to retrieve. You can pass:
+    - A property's name, such as `id`, or `*` for all properties.
+    - A relation or linked model's name, such as `products` (use the plural name since brands are linked to list of products). You suffix the name with `.*` to retrieve all its properties.
+
+`Graph` returns a result whose `Data` property is the list of retrieved brands. You return the brands in the response.
+
+Then, update the `Route` variable in the same file to list both handlers, and make sure the route file is registered in `src/api/routes.go`, as you did in the [API route chapter](!docs!/learn/customization/custom-features/api-route):
+
+```go title="src/api/admin/brands/route.go" file="tutorial/src/api/admin/brands/route.go" region="route"
+```
+
+<Note>
+
+Learn more about Query in the [Query chapter](!docs!/learn/fundamentals/query).
+
+</Note>
+
+### Test it Out
+
+To test the API route out, send a `GET` request to `/admin/brands`:
+
+```bash
+curl 'http://localhost:9000/admin/brands' \
+-H 'Authorization: Bearer {token}'
+```
+
+<Note title="Tip">
+
+Make sure to replace `{token}` with your admin user's authentication token. Learn how to retrieve it in the [API reference](!api!/store).
+
+</Note>
+
+This returns the brands in your store with their linked products. For example:
+
+```json title="Example Response"
+{
+  "brands": [
+    {
+      "id": "123",
+      // ...
+      "products": [
+        {
+          "id": "prod_123",
+          // ...
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Filter by Brand in Query
+
+You can also filter products by their linked brand, with a filter on the `brand` relation. For example:
+
+```go title="src/api/admin/brands/filter.go" file="tutorial/src/api/admin/brands/filter.go" region="filter"
+```
+
+This retrieves only the products linked to a brand with the given name. Learn more about filtering by linked records in the [Query chapter](!docs!/learn/fundamentals/query).
+
+---
+
+## Summary
+
+By following the examples of the previous chapters, you:
+
+- Defined a link between the Brand and Product modules' data models, allowing you to associate a product with a brand.
+- Extended the create-product workflow and route to allow setting the product's brand while creating the product.
+- Queried a product's brand, and vice versa.
+
+---
+
+## Next Steps: Customize Medusa Admin
+
+Client applications, such as the Medusa Admin dashboard, can now use brand-related features, such as creating a brand or setting the brand of a product.
+
+In the next chapters, you'll learn how to customize the Medusa Admin to show a product's brand on its details page, and to show a new page with the list of brands in your store. Continue with the [Customize Medusa Admin](!docs!/learn/customization/customize-admin) chapter.

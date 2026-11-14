@@ -1,0 +1,125 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Introduction`,
+}
+
+# {metadata.title}
+
+Learn what MedusaGo is, who it's for, and how this documentation is organised.
+
+## What is MedusaGo
+
+MedusaGo is a Go implementation of the [Medusa](https://medusajs.com) commerce backend. You write your commerce features in Go, and you keep everything else that makes Medusa what it is: the same HTTP API, the same database, the same Medusa Admin dashboard, and the same storefronts.
+
+MedusaGo ships with three main tools:
+
+1. A suite of [Commerce Modules](!resources!/commerce-modules) with core commerce functionalities, such as tracking inventory, calculating cart totals, accepting payments, managing orders, and much more.
+2. A [Framework](!docs!/learn/fundamentals/framework) for building custom functionalities specific to your business, product, or industry. This includes tools for introducing custom API routes, business logic, and data models, and for building workflows and integrating with third-party services. All of it is written in Go.
+3. The Medusa Admin, a customisable dashboard for merchants to configure and operate their store.
+
+A MedusaGo application compiles to a single binary that serves the API and the Medusa Admin. It needs a PostgreSQL database, and optionally Redis in production.
+
+### Compatible with Medusa
+
+MedusaGo is a drop-in replacement for Medusa's backend. Its baseline is Medusa `v2.22.6`, and every route of the Admin, Store, Auth, and webhook APIs behaves like its Medusa counterpart. This means that:
+
+- The original Medusa Admin dashboard works unchanged. MedusaGo embeds it in the binary and serves it at `/app`.
+- [`@medusajs/js-sdk`](!resources!/js-sdk), the [Next.js Starter Storefront](!resources!/nextjs-starter), and any other storefront built for Medusa work unchanged.
+- The [Admin](!api!/admin) and [Store](!api!/store) API references apply to MedusaGo as they are.
+- MedusaGo reads and writes the database of a Medusa `v2.22.6` application as is, and Medusa can take over a database that MedusaGo has used. Stop one server before you start the other on the same database, as workflow executions that are in progress are not carried over.
+
+<Note>
+
+Medusa's backend is written in TypeScript. MedusaGo is not a wrapper around it: the framework, the modules, and the workflow engine are implemented in Go. That's why the customisation guides in this documentation use Go code.
+
+</Note>
+
+---
+
+## Who should use MedusaGo
+
+MedusaGo is for teams that want Medusa's commerce capabilities and want to build and run their customisations in Go. For example:
+
+- Teams that prefer to deploy one self-contained binary instead of managing a runtime and its dependencies.
+- Teams that already have Medusa storefronts or an Admin and want a lighter backend behind them.
+- Developers who know Go and want to build custom modules, workflows, and API routes with a language and tooling they already use.
+
+---
+
+## What's Not Included
+
+A few things of the Medusa ecosystem are not part of MedusaGo:
+
+- Enterprise-edition features of the upstream project aren't included.
+- Backend customisations and plugins written in TypeScript can't be loaded. Plugins are Go packages that you import into your application.
+- Parts of Medusa's CLI that only make sense for Node projects are not available. Refer to the [Medusa CLI reference](!resources!/medusa-cli) for the list.
+
+Admin customisations (widgets and UI routes) and storefronts are still JavaScript and TypeScript, since they run in the browser.
+
+---
+
+## How to Learn MedusaGo
+
+This documentation introduces you to MedusaGo's concepts and how they help you build your business use case. The chapters gradually introduce each concept, with examples along the way.
+
+Start with the [Installation chapter](!docs!/learn/installation) to run a MedusaGo application locally. Then, follow the [customization tutorial](!docs!/learn/customization/custom-features) to build your first custom feature, and read the [Framework chapters](!docs!/learn/fundamentals/framework) to understand each concept in depth.
+
+### How to Use the Documentation
+
+This documentation is split into the following sections:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Section
+      </Table.HeaderCell>
+      <Table.HeaderCell className="w-2/3">
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        [Main Documentation](!docs!/learn)
+      </Table.Cell>
+      <Table.Cell>
+        The documentation you're currently reading. Follow the chapters to understand MedusaGo's core concepts before you jump into the other sections.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Resources](!resources!/commerce-modules)
+      </Table.Cell>
+      <Table.Cell>
+        References for the [Commerce Modules](!resources!/commerce-modules), the [MedusaGo CLI](!resources!/medusa-cli), and [create-medusago-app](!resources!/create-medusa-app), along with storefront development and tooling guides. {/* terms-ok */}
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        API Reference
+      </Table.Cell>
+      <Table.Cell>
+        References of the [Store](!api!/store) and [Admin](!api!/admin) API routes. They also include instructions related to authentication, parameter types in requests, and more.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [User Guide](!user-guide!)
+      </Table.Cell>
+      <Table.Cell>
+        Guides that introduce merchants and store managers to the Medusa Admin dashboard and help them understand how to use it to manage their store.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## Next Steps
+
+To get started, check out the [Installation chapter](!docs!/learn/installation).

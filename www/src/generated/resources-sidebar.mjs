@@ -534,12 +534,27 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/create-medusa-app",
+            "title": "create-medusa-app",
+            "children": []
+          },
+          {
+            "loaded": true,
             "type": "sidebar",
             "sidebar_id": "medusa-cli",
             "title": "Medusa CLI",
             "childSidebarTitle": "Medusa CLI Reference",
             "initialOpen": true,
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/medusa-cli",
+                "title": "Overview",
+                "children": []
+              }
+            ]
           }
         ]
       },
@@ -5500,20 +5515,6 @@ export const generatedSidebars = [
           },
           {
             "type": "separator"
-          },
-          {
-            "loaded": true,
-            "type": "category",
-            "title": "Concepts",
-            "children": [
-              {
-                "loaded": true,
-                "type": "link",
-                "path": "/resources/commerce-modules/user/links-to-other-modules",
-                "title": "Link to Modules",
-                "children": []
-              }
-            ]
           },
           {
             "loaded": true,

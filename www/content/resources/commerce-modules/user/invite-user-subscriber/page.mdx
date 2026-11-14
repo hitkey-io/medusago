@@ -25,11 +25,11 @@ Refer to the [Manage Invites](!user-guide!/settings/users/invites) user guide to
 
 Admin users can add new users to their store by sending them an invite. The flow for inviting users is as follows:
 
-1. An admin user invites a user either through the [Medusa Admin](!user-guide!/settings/users/invites) or using the [Create Invite API route](!api!/admin/invites/create-invite).
+1. An admin user invites a user either through the [Medusa Admin](!user-guide!/settings/users/invites) or using the [Create Invite API route](!api!/admin/invites).
 2. The invite is created and the `invite.created` event is emitted.
     - At this point, you can handle the event to send an email or notification to the user.
 3. The invited user receives the invite and can accept it, which creates a new user.
-    - The invited user can accept the invite either through the Medusa Admin or using the [Accept Invite API route](!api!/admin/invites/accept-invite).
+    - The invited user can accept the invite either through the Medusa Admin or using the [Accept Invite API route](!api!/admin/invites).
 
 The admin user can also resend the invite if the invited user doesn't receive the invite or doesn't accept it before expiry, which emits the `invite.resent` event.
 
@@ -43,9 +43,9 @@ After adding the subscriber, you will have a complete user invite flow that you 
 
 To send an email or notification to the user, you must have a Notification Module Provider set up.
 
-Medusa provides providers like [SendGrid](../../../infrastructure-modules/notification/sendgrid/page.mdx) and [Resend](../../../integrations/guides/resend/page.mdx), and you can also [create your own custom provider](/references/notification-provider-module).
+Medusa provides providers like SendGrid and Resend, and you can also create your own custom provider.
 
-Refer to the [Notification Module](../../../infrastructure-modules/notification/page.mdx#what-is-a-notification-module-provider) documentation for a list of available providers and how to set them up.
+Refer to the Notification Module documentation for a list of available providers and how to set them up.
 
 ### Invite URL
 
@@ -97,7 +97,7 @@ The following section provides example notification templates for some Notificat
 
 <Note>
 
-Refer to the [SendGrid Notification Module Provider](../../../infrastructure-modules/notification/sendgrid/page.mdx) documentation for more details on how to set up SendGrid.
+Refer to the SendGrid Notification Module Provider documentation for more details on how to set up SendGrid.
 
 </Note>
 

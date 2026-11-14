@@ -1,0 +1,247 @@
+---
+generate_toc: true
+---
+
+import { TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Long-Running Workflows`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn what a long-running workflow is and how to configure it.
+
+## What is a Long-Running Workflow?
+
+When you execute a workflow, you wait until the workflow finishes execution to receive the output.
+
+A long-running workflow is a workflow that continues its execution in the background. You don't receive its output immediately. Instead, you subscribe to the workflow execution to listen to status changes and receive its result once the execution is finished.
+
+### Why use Long-Running Workflows?
+
+Long-running workflows are useful if:
+
+- A task takes too long. For example, you're importing data from a CSV file.
+- The workflow's steps wait for an external action to finish before resuming execution. For example, before you import the data from the CSV file, you wait until the import is confirmed by the user.
+
+---
+
+## Configure Long-Running Workflows
+
+A workflow is considered long-running if at least one step has its `Async` option set to `true` and its function returns an empty response.
+
+For example, consider the following workflow and steps:
+
+```go title="src/workflows/hello-world.go" file="workflows/longrunning/longrunning.go" region="steps"
+```
+
+The second step has the `Async` option set to `true`, and its function returns an empty response (`composer.StepResponse[any]{}`). This indicates that this step is an asynchronous step. Its type parameter is `any`, so the output of an empty response is `nil`.
+
+<Note>
+
+An async step only waits if the output of its response is `nil`. So, use a type that can be `nil` for the output of an async step that waits, such as `any` or a pointer. The empty response of a step whose output is a `string` has the output `""`, so the step completes immediately.
+
+</Note>
+
+Then, add the workflow:
+
+```go title="src/workflows/hello-world.go" file="workflows/longrunning/longrunning.go" region="workflow"
+```
+
+So, when you execute the `hello-world` workflow, it continues its execution in the background once it reaches the second step. `Run` returns to its caller when the workflow reaches the async step, and the output it returns is empty: the workflow's output is only available when the workflow finishes.
+
+### When is a Workflow Considered Long-Running?
+
+A workflow is also considered long-running if:
+
+- One of its steps has its `Async` and `BackgroundExecution` options set to `true`, as explained in the [next section](#run-a-step-in-the-background).
+- One of its [nested workflows](!docs!/learn/fundamentals/workflows/execute-another-workflow) is a long-running workflow.
+
+Since a long-running workflow's execution is stored in the database while it runs, you can view it in the Medusa Admin, as explained in the [Store Workflow Executions chapter](!docs!/learn/fundamentals/workflows/store-executions).
+
+### Run a Step in the Background
+
+You can also make a step run in the background, without waiting for an external action to set its status. Set the `BackgroundExecution` option of an async step to `true`. The workflow's execution returns to its caller as soon as the step starts, and the step's function continues in the background. Unlike a step that only waits, its function's response completes the step:
+
+```go title="src/workflows/import-data.go" file="workflows/longrunning/background.go" region="background"
+```
+
+---
+
+## Change Step Status
+
+Once the workflow's execution reaches an async step that waits for its status, it waits in the background for the step to succeed or fail before it moves to the next step.
+
+To fail or succeed a step, use `composer.SetStepSuccess` and `composer.SetStepFailure`. They find the workflow engine in the container. They're the same operations the Workflow Engine Module's service, registered in the container under the `workflows` key, has.
+
+<Note>
+
+Admin users can also succeed or fail a step with the [Succeed a Step](!api!/admin/workflows-executions) and [Fail a Step](!api!/admin/workflows-executions) API routes.
+
+</Note>
+
+### Retrieve Transaction ID
+
+Before changing the status of a workflow execution's async step, you must have the execution's transaction ID.
+
+Execute the workflow with `RunWithInfo`. The `composer.RunInfo` value it returns has the details of the execution's transaction. Use its `TransactionID` to later change async steps' statuses:
+
+```go title="src/workflows/run.go" file="workflows/longrunning/status.go" region="transaction-id"
+```
+
+You can also pass your own transaction ID in the options of `Run` or `RunWithInfo`, as explained in the [Store Workflow Executions chapter](!docs!/learn/fundamentals/workflows/store-executions#run-a-workflow-with-a-transaction-id).
+
+### Change Step Status to Successful
+
+`composer.SetStepSuccess` sets a step's status to successful. If you use it on a workflow execution's async step, the workflow continues execution to the next step.
+
+For example:
+
+```go title="src/workflows/set-step-success.go" file="workflows/longrunning/status.go" region="success"
+```
+
+In this function, you set `step-2` of the previous workflow as successful.
+
+`SetStepSuccess` accepts the following parameters:
+
+<TypeList
+  types={[
+    {
+      name: "ctx",
+      type: "`context.Context`",
+      description: "The context of the call.",
+    },
+    {
+      name: "container",
+      type: "`composer.Container`",
+      description: "The container, to find the workflow engine.",
+    },
+    {
+      name: "key",
+      type: "`composer.IdempotencyKey`",
+      description: "The details of the workflow execution.",
+      children: [
+        {
+          name: "Action",
+          type: "`invoke` | `compensate`",
+          description: "If the step's compensation function is running, use `compensate`. Otherwise, use `invoke`.",
+        },
+        {
+          name: "TransactionID",
+          type: "`string`",
+          description: "The ID of the workflow execution's transaction.",
+        },
+        {
+          name: "StepID",
+          type: "`string`",
+          description: "The ID of the step to change its status. This is the first parameter passed to `composer.CreateStep` when creating the step.",
+        },
+        {
+          name: "WorkflowID",
+          type: "`string`",
+          description: "The ID of the workflow. This is the first parameter passed to `composer.CreateWorkflow` when creating the workflow.",
+        },
+      ],
+    },
+    {
+      name: "response",
+      type: "`any`",
+      description: "The response of the step. Since the async step's function doesn't return a response, you set its response when changing its status.",
+    },
+  ]}
+  sectionTitle="Change Step Status to Successful"
+/>
+
+### Change Step Status to Failed
+
+`composer.SetStepFailure` changes a step's status to failed. It accepts the same parameters as `SetStepSuccess`, but the last one is the error that fails the step.
+
+After changing the async step's status to failed, the workflow execution fails and the compensation functions of previous steps are executed.
+
+For example:
+
+```go title="src/workflows/set-step-failure.go" file="workflows/longrunning/status.go" region="failure"
+```
+
+You use this function in a different part of your application, such as an API route, that changes the status of an async step in a long-running workflow's execution to failed.
+
+If no step with the given IDs is waiting for its status, both functions return an error.
+
+---
+
+## Access Long-Running Workflow Status and Result
+
+To access the status and result of a long-running workflow execution, use `composer.Subscribe` and `composer.Unsubscribe`, which are also methods of the Workflow Engine Module's service.
+
+The workflow's execution only notifies its subscribers if you execute it with the `Notify` option of `composer.RunOptions`.
+
+<Note title="Tip">
+
+To retrieve the workflow execution's details at a later point, you can also [store the workflow's executions](!docs!/learn/fundamentals/workflows/store-executions) with a retention time.
+
+</Note>
+
+For example:
+
+```go title="src/workflows/start.go" file="workflows/longrunning/subscribe.go" region="subscribe"
+```
+
+In the above example, you execute the long-running workflow `hello-world` with the `Notify` option, then subscribe to its execution using its transaction ID.
+
+### Subscribe Function
+
+`composer.Subscribe` listens to changes in the workflow execution's status. It accepts the following parameters:
+
+<TypeList
+  types={[
+    {
+      name: "workflowID",
+      type: "`string`",
+      description: "The ID of the workflow.",
+    },
+    {
+      name: "transactionID",
+      type: "`string`",
+      description: "The ID of the workflow execution's transaction. If you pass an empty string, you subscribe to every execution of the workflow.",
+    },
+    {
+      name: "subscriberID",
+      type: "`string`",
+      description: "The ID of the subscriber. Subscribing twice with the same ID has no effect.",
+    },
+    {
+      name: "fn",
+      type: "`func(composer.WorkflowEvent)`",
+      description: "The function executed when the workflow execution's status changes. It receives a `WorkflowEvent`. Its `EventType` property tells you what changed.",
+    },
+  ]}
+  sectionTitle="Subscribe Function"
+/>
+
+The `EventType` of the event is one of `onBegin`, `onStepBegin`, `onStepSuccess`, `onStepFailure`, `onStepAwaiting`, `onCompensateBegin`, `onCompensateStepSuccess`, `onCompensateStepFailure`, and `onFinish`.
+
+If the `EventType` is `onFinish`, the workflow finished executing. The event then also has a `Result` property holding the workflow's output, and an `Errors` property with the errors that occurred, if any. The result is a JSON-like value: an object is a `*dal.Record`, not the Go type your workflow returns.
+
+### Unsubscribe Function
+
+You can unsubscribe from the workflow using `composer.Unsubscribe`, which accepts the workflow ID, the transaction ID, and the subscriber ID you passed to `Subscribe`.
+
+---
+
+## Nested Long-Running Workflows
+
+When you execute a long-running workflow within another workflow, the parent workflow becomes a long-running workflow as well. The parent workflow waits for the nested workflow to finish before continuing its execution.
+
+To change the status of an async step of the nested workflow, use the ID of the workflow you executed (the parent) as the `WorkflowID` of the `IdempotencyKey`, with the name of the nested workflow's step as the `StepID`.
+
+Learn more about nested workflows in the [Execute Nested Workflows chapter](!docs!/learn/fundamentals/workflows/execute-another-workflow).
+
+---
+
+## Workflow Engine Modules
+
+The Workflow Engine Module executes the workflows. MedusaGo comes with two:
+
+- The in-memory Workflow Engine Module, which is the default. It keeps the steps that wait for their status in the memory of the process. If the process restarts, they're lost, and the executions stored in the database stay in their last state.
+- The Redis Workflow Engine Module, which stores the checkpoints of executions, so a waiting step can be completed from any instance of your application. Use it in production. Learn how to configure it in the [MedusaGo Configurations chapter](!docs!/learn/configurations/medusa-config).

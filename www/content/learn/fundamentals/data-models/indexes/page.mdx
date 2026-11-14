@@ -1,0 +1,83 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Define Database Index on Data Model`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to define database indexes on a data model, and how to add check constraints to it.
+
+<Note>
+
+You can also define an index on a single property, with the `Index` and `Unique` modifiers. Learn more in the [Properties chapter](!docs!/learn/fundamentals/data-models/properties#define-database-index-on-property).
+
+</Note>
+
+## Define Database Index on Data Model
+
+Use the `WithIndexes` method of a data model to define one or more indexes. It takes a list of `dml.Index` values:
+
+```go title="src/modules/blog/indexes.go" file="modules/blog/indexes.go" region="indexes"
+```
+
+Each `dml.Index` has these fields:
+
+| Field | Description |
+| --- | --- |
+| `On` | The names of the properties the index covers. Required. A relationship that holds a foreign key, such as `author`, can't be used: use the name of the foreign key column, such as `author_id`. |
+| `Name` | The name of the index. If you don't set it, MedusaGo names it `IDX_<table>_<properties>`, such as `IDX_listing_category_status`. |
+| `Unique` | When `true`, the index is unique, and its name ends with `_unique`. |
+| `Where` | The SQL condition of a partial index. |
+| `Type` | The index method of PostgreSQL, such as `brin`, `gin`, or `gist`. By default, `btree`. |
+| `WhereNull` | When `true`, the index has no condition, and covers the records that are soft-deleted too. |
+
+The data model above creates the following indexes:
+
+```sql
+CREATE INDEX IF NOT EXISTS "IDX_listing_category_status" ON "listing" ("category", "status") WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS "IDX_listing_recent" ON "listing" ("published_at") WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS "IDX_listing_title_category_unique" ON "listing" ("title", "category") WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS "IDX_listing_views" ON "listing" ("views") WHERE status = 'published' AND deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS "IDX_listing_published_at" ON "listing" USING brin ("published_at") WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS "IDX_listing_status_all" ON "listing" ("status");
+```
+
+Like any change to a data model, you apply the indexes with a [migration](!docs!/learn/fundamentals/data-models/write-migration).
+
+### Index Conditions
+
+An index covers the records that match its `Where` condition, which makes it smaller and faster when you only query a subset of the records.
+
+MedusaGo adds the condition `deleted_at IS NULL` to every index, so that it doesn't cover the soft-deleted records. If you set `Where`, MedusaGo appends `AND deleted_at IS NULL` to it, unless your condition already tests `deleted_at`.
+
+To create an index that covers the soft-deleted records too, set `WhereNull` to `true`, as in the last index of the example.
+
+The condition is SQL that refers to the table's columns. For example, `Where: "status = 'published'"` indexes the published records only. PostgreSQL only uses a partial index for a query whose conditions imply the index's condition.
+
+### Unique Database Index
+
+Set `Unique` to `true` to create a unique index. It prevents two records from having the same values in the properties of `On`. Since the index doesn't cover soft-deleted records, you can create a record with the values of a deleted one.
+
+---
+
+## Define Check Constraints
+
+A check constraint makes the database reject a record that doesn't satisfy a condition. Use the `WithChecks` method of a data model to add them. It takes a list of `dml.Check` values with the SQL `Expression` of the condition, and an optional `Name`:
+
+```go title="src/modules/blog/indexes.go" file="modules/blog/indexes.go" region="checks"
+```
+
+The migration of the data model adds the constraints to its table:
+
+```sql
+create table "discount" (
+  -- ...
+  constraint discount_percentage_range check (percentage between 1 and 100),
+  constraint discount_check check (ends_at > starts_at)
+);
+```
+
+A check without a name is named `<table>_check`. The expression is SQL: it refers to the table's columns, and the database evaluates it when a record is created or updated. If the condition isn't met, the operation fails with a database error.

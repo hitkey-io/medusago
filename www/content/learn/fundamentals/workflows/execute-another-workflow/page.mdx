@@ -1,0 +1,74 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Execute Nested Workflows`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to execute a workflow in another workflow.
+
+## How to Execute a Workflow in Another?
+
+In many cases, you may have a workflow that you want to re-use in another workflow. This is most common when you build custom workflows and you want to utilize Medusa's existing workflows, which are in the Go packages under `packages/core/core-flows/src` in the MedusaGo repository.
+
+Executing a workflow within another is slightly different from how you usually execute a workflow. Instead of calling the workflow's `Run` method with the container, you call its `RunAsStep` method with the execution of the workflow you're in. This runs the nested workflow within the parent workflow's execution, with the same container and context.
+
+For example, to execute the `CreateProductsWorkflow` in your custom workflow:
+
+```go title="src/workflows/hello-world.go" file="workflows/nested/nested.go" region="run-as-step"
+```
+
+`RunAsStep` accepts the workflow's execution, and the nested workflow's input. It returns the nested workflow's output, and an error.
+
+The nested workflow runs as one step of the parent workflow, named after the nested workflow's ID with the suffix `-as-step`. To use another name, call `RunAsStepNamed` with the name as its second parameter.
+
+---
+
+## Prepare Input Data
+
+Since the body of a workflow is Go code, you can prepare the input data of the nested workflow with regular code:
+
+```go title="src/workflows/hello-product.go" file="workflows/nested/nested.go" region="input"
+```
+
+In this example, you prepend `Hello` to the title of the product. Then, you pass the product as input to the `CreateProductsWorkflow`.
+
+---
+
+## Run Workflow Conditionally
+
+Similarly, you run a workflow conditionally with an `if` statement:
+
+```go title="src/workflows/conditional-product.go" file="workflows/nested/nested.go" region="condition"
+```
+
+In this example, the workflow only runs the `CreateProductsWorkflow` if `ShouldCreate` (passed in the input) is enabled.
+
+---
+
+## Errors in Nested Workflows
+
+A nested workflow behaves similarly to a step in a workflow. So, if the nested workflow fails, it returns an error that you return from the parent workflow to stop its execution and compensate the previous steps.
+
+In addition, if another step fails after the nested workflow, the nested workflow's steps are compensated as part of the compensation process, in the reverse order of the steps.
+
+Learn more about handling errors in workflows in the [Error Handling](!docs!/learn/fundamentals/workflows/errors) chapter.
+
+---
+
+## Nested Long-Running Workflows
+
+When you execute a long-running workflow within another workflow, the parent workflow becomes a long-running workflow as well.
+
+So, the parent workflow waits for the nested workflow to finish before continuing its execution.
+
+Refer to the [Long-Running Workflows](!docs!/learn/fundamentals/workflows/long-running-workflow) chapter for more information on how to handle long-running workflows.
+
+---
+
+## Nested Workflows and Hooks
+
+The hooks of the nested workflow still run when you execute it as a step. If you consumed a hook of the nested workflow, as explained in the [Workflow Hooks](!docs!/learn/fundamentals/workflows/workflow-hooks) chapter, its handler runs as part of the parent workflow's execution.

@@ -1,0 +1,161 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Emit Workflow and Service Events`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about event types and how to emit an event in a service or workflow.
+
+## Event Types
+
+In your customization, you can emit an event, then listen to it in a subscriber and perform an asynchronous action, such as sending a notification or sending data to a third-party system.
+
+There are two types of events in MedusaGo:
+
+1. Workflow event: an event that's emitted in a workflow after a commerce feature is performed. For example, MedusaGo emits the `order.placed` event after a cart is completed.
+2. Service event: an event that's emitted to track, trace, or debug processes under the hood. For example, you can emit an event with an audit trail.
+
+### Which Event Type to Use?
+
+**Workflow events** are the most common event type in development, as most custom features and customizations are built around workflows.
+
+Some examples of workflow events:
+
+1. When a user creates a blog post and you're emitting an event to send a newsletter email.
+2. When you finish syncing products to a third-party system and you want to notify the admin user of new products added.
+3. When a customer purchases a digital product and you want to generate and send it to them.
+
+You should only go for a **service event** if you're emitting an event for processes under the hood that don't directly affect front-facing features.
+
+Some examples of service events:
+
+1. When you're tracing data manipulation and changes, and you want to track every time some custom data is changed.
+2. When you're syncing data with a search engine.
+
+---
+
+## Emit Event in a Workflow
+
+To emit a workflow event, use the `EmitEventStep` helper step provided in the `core-flows/src/common/steps` package. It allows you to emit an event from within a workflow, and it only emits the event after the workflow has finished successfully.
+
+For example:
+
+```go title="src/workflows/hello-world.go" file="events/emit_workflow.go" region="workflow"
+```
+
+You run the step like any other step of a workflow, with `Run`. It accepts an `EmitEventStepInput` struct having the following properties:
+
+- `EventName`: The event's name.
+- `Data`: The data payload. For a single event, pass an object, such as a `*dal.Record`. Subscribers listening to the event will receive this data in the event's payload.
+- `Options`: (optional) Options for the event module. Learn more in the [Event Options](#event-options) section.
+- `Metadata`: (optional) Additional metadata to add to the event.
+
+In this example, you emit the event `custom.created` and pass in the data payload an `id` property. The event is only emitted if the workflow finishes successfully. If the workflow fails, the event isn't emitted.
+
+### Test it Out
+
+If you execute the workflow, the event is emitted and you can see it in your application's logs.
+
+Any subscribers listening to the event are executed.
+
+### Emit Event Multiple Times
+
+You can also emit the event multiple times with `EmitEventStep` by passing a slice of payloads, of type `[]any`, to the `Data` property. The event is emitted once per each element in the slice.
+
+For example:
+
+```go title="src/workflows/hello-world.go" file="events/emit_workflow.go" region="multiple"
+```
+
+The event `custom.created` will be emitted three times, once per each payload in the slice passed to the `Data` property. The subscriber listening to the event will be executed three times, each time receiving one of the payloads as the event's payload.
+
+### Event Options
+
+The `Options` property is a `*dal.Record` that's passed to the event module. Which options an event module uses depends on the module:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Option
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `delay`
+      </Table.Cell>
+      <Table.Cell>
+        The time to wait, in milliseconds, before the event is delivered to the subscribers. Both event modules support it.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `priority`
+      </Table.Cell>
+      <Table.Cell>
+        When the event is processed relative to other events in the queue. The Redis Event Module supports it. The Local Event Module ignores it.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `attempts`
+      </Table.Cell>
+      <Table.Cell>
+        How many times the Redis Event Module tries to deliver the event if a subscriber fails.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+### Emit Event with Custom Priority
+
+You can specify a priority level when emitting events to control when the event is processed relative to other events in the queue. This is useful to ensure that critical business events are handled promptly, while less important events can be deferred.
+
+The priority is a number between `1` and `2097152`, where a lower number means a higher priority. The default is `100`. The `EventPriority` variable of the `utils/src/event-bus` package has the following values: `CRITICAL` (10), `HIGH` (50), `DEFAULT` (100), `LOW` (500), and `LOWEST` (2097152). An invalid value is replaced with the default priority and logs a warning.
+
+To emit an event with custom priority, pass the `priority` option:
+
+```go title="src/workflows/critical-operation.go" file="events/emit_workflow.go" region="priority"
+```
+
+In the above example, the `payment.processed` event is emitted with the `CRITICAL` priority level, ensuring it is processed before other lower-priority events when you use the Redis Event Module.
+
+---
+
+## Emit Event in a Service
+
+To emit a service event, resolve the event module from the container, then use its `Emit` method:
+
+1. In the function that creates your service, keep the container that the module is loaded with. It's in the `Container` property of the `ServiceOptions` that the function receives:
+
+```go title="src/modules/blog/service.go" file="events/emit_service.go" region="service"
+```
+
+<Note>
+
+The `Container` that the service receives is the container of the application, so the event module is available in it. Resolve the event module when you emit the event, not when the service is created, since it may not be registered yet at that point.
+
+</Note>
+
+2. Use the event module's `Emit` method in the service's methods to emit an event. In the example above, the `PerformAction` method emits the `custom.event` event.
+
+The method accepts a context and a slice of `Message` values, which have the following properties:
+
+- `Name`: The event's name.
+- `Data`: The data payload. You can pass any value, and subscribers listening to the event will receive this data in the event's payload.
+- `Options` and `Metadata`: (optional) The event options, and additional metadata.
+
+### Test it Out
+
+If you execute the `PerformAction` method of your service, the event is emitted and you can see it in your application's logs.
+
+Any subscribers listening to the event are also executed.

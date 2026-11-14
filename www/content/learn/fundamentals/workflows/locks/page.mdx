@@ -1,0 +1,119 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Locking Operations in Workflows`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to lock operations in your workflows to avoid race conditions and ensure data consistency.
+
+## What is a Lock?
+
+A lock is a mechanism that restricts multiple accesses to a resource or a piece of code, preventing multiple processes from modifying it simultaneously.
+
+Locks are particularly useful in workflows where concurrent executions may lead to commerce risks. For example, MedusaGo uses locks in its cart workflows to prevent issues like overselling products or double charging customers.
+
+The Locking Module handles the locking mechanism using the underlying provider. By default, it uses an in-memory provider, which only locks within the process of your application. For an application running multiple instances, use the Redis locking provider, as explained in the [MedusaGo Configurations chapter](!docs!/learn/configurations/medusa-config).
+
+You can use the Locking Module's service in your workflows to create locks around critical sections of your code.
+
+---
+
+## How to Use Locks in Workflows
+
+MedusaGo provides two steps that you can use to create locks in your workflows. They are in the `core-flows/src/locking/steps` package of the MedusaGo repository:
+
+- `AcquireLockStep`: attempt to acquire a lock. If the lock is already held by another process, this step waits until the lock is released. It fails if a timeout occurs before acquiring the lock.
+- `ReleaseLockStep`: release a previously acquired lock.
+
+You can use these steps in your workflows to ensure that only one instance of a workflow can modify a resource at a time.
+
+For example:
+
+```go title="src/workflows/charge-customer.go" file="workflows/locks/locks.go" region="workflow"
+```
+
+In this example, the workflow attempts to acquire a lock on an order using its ID as the lock key.
+
+Once the lock is acquired, it executes the `chargeCustomerStep`. After the step is complete, it releases the lock using the `ReleaseLockStep`.
+
+If the lock can't be acquired within the specified timeout period, the `AcquireLockStep` returns an error, and the workflow fails.
+
+<Note title="Tip">
+
+If an error occurs in the workflow after a lock is acquired with `AcquireLockStep`, the step's compensation function releases the lock automatically.
+
+</Note>
+
+### Locking Steps Input
+
+The input of `AcquireLockStep` is an `AcquireLockStepInput` value with the following properties:
+
+- `Key`: the keys to lock, as a slice of strings.
+- `Timeout`: the number of seconds to keep trying to acquire the lock. It's `0` by default, so the step fails if the lock is already held.
+- `RetryInterval`: a pointer to the number of seconds to wait between attempts. It's `0.3` by default.
+- `TTL`: the number of seconds after which the lock expires. It doesn't expire by default.
+- `OwnerID`: a pointer to the ID of the lock's owner.
+- `Provider`: the name of the locking provider to use. The default provider is used if it's empty.
+- `ExecuteOnSubWorkflow`: whether to lock when the workflow runs as a step of another workflow. It's explained [later in this chapter](#locks-in-nested-workflows).
+
+`ReleaseLockStepInput` accepts `Key`, `OwnerID`, `Provider`, and `ExecuteOnSubWorkflow`.
+
+---
+
+## How to Use Locks in Workflow Steps
+
+You can alternatively acquire and release locks within steps by resolving the Locking Module's service and using its `Acquire` and `Release` methods.
+
+<Note type="warning">
+
+Do not acquire locks within a workflow and a step in the same workflow execution, as this can lead to deadlocks.
+
+</Note>
+
+For example:
+
+```go title="src/workflows/steps/charge-customer.go" file="workflows/locks/step.go" region="step"
+```
+
+In this example, the step acquires a lock on the order using the `OrderID` as the lock key. After performing the operation, it releases the lock.
+
+The `Execute` method holds the lock while a function runs, and releases it when the function returns:
+
+```go title="src/workflows/steps/charge-customer.go" file="workflows/locks/step.go" region="execute"
+```
+
+The Locking Module's service has the following methods:
+
+- `Acquire(ctx, keys, args)`: acquire the locks of the keys. `args.Expire` is the number of seconds after which a lock expires.
+- `Release(ctx, keys, args)`: release the locks. It returns whether they were released.
+- `Execute(ctx, keys, job, args)`: acquire the locks, run `job`, then release them. `args.Timeout` is the number of seconds to wait for the locks.
+- `ReleaseAll(ctx, args)`: release all the locks of an owner.
+
+The step waits until the lock is acquired based on the configured Locking Module provider's options.
+
+---
+
+## Locks in Nested Workflows
+
+When a nested workflow acquires a lock with `AcquireLockStep`, the lock isn't acquired. So, if you're using a workflow that acquires locks with `AcquireLockStep` within another workflow, the parent workflow must handle the locking mechanism. You can also set `ExecuteOnSubWorkflow` to `true` in the steps' input to lock even when the workflow runs as a step.
+
+<Note>
+
+If the nested workflow acquires a lock in a step using the Locking Module's service, the lock is acquired as expected.
+
+</Note>
+
+For example, consider a custom workflow that executes MedusaGo's `CompleteCartWorkflow`. The `CompleteCartWorkflow` acquires locks on the cart with `AcquireLockStep` to prevent race conditions.
+
+Therefore, the custom workflow must acquire and release the locks around the `CompleteCartWorkflow` execution. For example:
+
+```go title="src/workflows/custom-complete-cart.go" file="workflows/locks/nested.go" region="nested"
+```
+
+In the example above, the `CustomCompleteCartWorkflow` acquires a lock on the cart before executing the `CompleteCartWorkflow` and releases it afterward.
+
+Make sure you're acquiring the same lock key as the nested workflow.

@@ -1,0 +1,86 @@
+---
+generate_toc: true
+---
+
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `Guide: Define Module Link Between Brand and Product`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to define a module link between a brand defined in the [custom Brand Module](!docs!/learn/customization/custom-features/module), and a product defined in the [Product Module](!resources!/commerce-modules/product) that's available in your MedusaGo application out-of-the-box.
+
+Modules are isolated from other resources, ensuring that they're integrated into the MedusaGo application without side effects. However, you may need to build relations between data models of different modules, or you're trying to extend data models from [Commerce Modules](!resources!/commerce-modules) with custom properties. To do that, you define module links.
+
+A [module link](!docs!/learn/fundamentals/module-links) forms an association between two data models of different modules while maintaining module isolation. You can then manage and query linked records of the data models using MedusaGo's Modules SDK.
+
+In this chapter, you'll define a module link between the `Brand` data model of the Brand Module, and the `Product` data model of the Product Module. In later chapters, you'll manage and retrieve linked product and brand records.
+
+<Prerequisites
+  items={[
+    {
+      text: "Brand Module having a Brand data model",
+      link: "/learn/customization/custom-features/module"
+    }
+  ]}
+/>
+
+## 1. Define Link
+
+Links are defined in Go files under the `src/links` directory. A file defines the link using `DefineLink` from the Modules SDK.
+
+So, to define a link between the `Product` and `Brand` models, create the file `src/links/product-brand.go` with the following content:
+
+```go title="src/links/product-brand.go" file="tutorial/src/links/product-brand.go" region="link"
+```
+
+The `Define` function builds the link configurations of the two data models:
+
+- For the Product Module, you use `utilsmodulessdk.LinkableOf` with the module's definition from the `modules` package (`github.com/hitkey-io/medusago/packages/medusa/src/modules`). It returns the link configurations of the module's data models, keyed by the lower-camel-case name of the model.
+- For the Brand Module, you use the `Linkable` property of the value `Module` returned, which has the same keys.
+
+The `DefineLink` function accepts two parameters of the same type, which is either:
+
+- The data model's link configuration, which you convert with its `ToJSON` method.
+- Or a `DefineLinkInput` value that has the following properties:
+  - `Linkable`: the data model's link configuration.
+  - `IsList`: a boolean indicating whether many records of the data model can be linked to the other model.
+
+So, in the above code snippet, you define a link between the `Product` and `Brand` data models. Since a brand can be associated with multiple products, you enable `IsList` in the `Product` model's input.
+
+---
+
+## 2. Register the Link
+
+`DefineLink` registers the link when it's called, so call the `Define` function before the application starts. In `main.go`, call it at the beginning of the `main` function, and stop if it returns an error:
+
+```go title="main.go" file="tutorial/main.go" region="main"
+```
+
+The `main` function also consumes a workflow hook, which you'll add in the next chapter.
+
+---
+
+## 3. Sync the Link to the Database
+
+A module link is represented in the database as a table that stores the IDs of linked records. So, after defining the link, run the following command to create the module link's table in the database:
+
+```bash
+go run . db:migrate
+```
+
+This command reflects migrations on the database and syncs module links, which creates a table for the `product-brand` link.
+
+<Note title="Tip">
+
+You can also run `go run . db:sync-links` to just sync module links without running migrations.
+
+</Note>
+
+---
+
+## Next Steps: Extend Create Product Flow
+
+In the next chapter, you'll extend MedusaGo's workflow and API route that create a product to allow associating a brand with a product. You'll also learn how to link brand and product records.

@@ -1,0 +1,168 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Module Links`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn what a module link is and how to define one.
+
+## What is a Module Link?
+
+A module is [isolated](!docs!/learn/fundamentals/modules): it can't have a foreign key to another module's table, or a relationship to its data models. But commerce features often need to relate data across modules. For example, a blog post is about a product, or a customer wrote a comment.
+
+A module link forms an association between two data models of different modules, while the modules stay isolated. You define the link in code, and MedusaGo stores the links in a table of its own, in the database.
+
+You can then:
+
+- [Create and remove links](!docs!/learn/fundamentals/module-links/link) with the `Link` service.
+- [Retrieve linked records](!docs!/learn/fundamentals/query) with Query, for example a post with its products.
+
+<Note>
+
+To relate data models of the same module, use [relationships](!docs!/learn/fundamentals/data-models/relationships) instead. They create foreign keys, so they're more efficient than links.
+
+</Note>
+
+---
+
+## How to Define a Module Link?
+
+You define a module link with the `DefineLink` function of the `modules-sdk` of the `utils` package. You call it with the two sides of the link: the linkable data models of two modules.
+
+### 1. Create Link Function
+
+A module returns the linkable data models in the `Linkable` field of its definition, a map whose keys are the names of the data models, with the first letter in lower case. For example, the Blog Module of the previous chapters has `post`, `comment`, and `tag`.
+
+MedusaGo's modules have one too. `LinkableOf` returns it from the exports of a module in the `modules` package: `utilsmodulessdk.LinkableOf(&modules.Product)["product"]` is the `Product` data model of the Product Module, and `["productVariant"]` is its `ProductVariant` data model.
+
+Create the file `src/links/post-product.go` with a function that defines the link between a post and a product:
+
+```go title="src/links/post-product.go" file="links/define.go" region="define-post-product"
+```
+
+The `modules` package, which holds the exports of MedusaGo's modules, is `github.com/hitkey-io/medusago/packages/medusa/src/modules`, and `utilsmodulessdk` is the `modules-sdk` package of `utils`. The `DefineLink` function takes the two sides, in the order they're defined. Each side is a linkable that you can wrap in a `DefineLinkInput` to set its options, such as `IsList`.
+
+### 2. Call the Link Function Before the Application Loads
+
+`DefineLink` registers the link in memory, so you call it before the application loads, in all commands. Call your link functions at the beginning of `main`, before `cli.Run`:
+
+```go title="main.go" file="modules/app/main.go" region="main"
+```
+
+The `Define` function of the example calls the link functions of the project:
+
+```go title="src/links/links.go" file="links/define.go" region="define-all"
+```
+
+<Note>
+
+Module links are defined in Go code, so a project that uses `medusa-config.json` or `medusa-config.yaml` with the stock `medusa` binary can't define them. Use a Go project, as created by `create-medusago-app`.
+
+</Note>
+
+### 3. Sync Links
+
+A module link is stored in a link table in the database. The table is created when you sync the links. Run the following command:
+
+```bash
+go run . db:migrate
+```
+
+This command runs the migrations of the modules, and syncs the links. You can also sync only the links:
+
+```bash
+go run . db:sync-links
+```
+
+The sync:
+
+- Creates the link tables of the links that don't have one.
+- Reports, without changing them, the link tables that differ from their definition, for example when you add [custom columns](!docs!/learn/fundamentals/module-links/custom-columns) to a link whose table exists.
+- Skips the tables of the links that you removed, and logs a warning, unless you pass `--execute-all` to `db:sync-links`, or `--execute-all-links` to `db:migrate`. With the option, it drops the tables of the removed links, and the links in them.
+
+### Module Link's Database Table
+
+The link table of the link above is named `blog_post_product_product`, after the two modules and their keys. It has these columns:
+
+| Column | Description |
+| --- | --- |
+| `id` | The ID of the link. |
+| `post_id` | The ID of the post. |
+| `product_id` | The ID of the product. |
+| `created_at`, `updated_at`, `deleted_at` | The dates the link was created, updated, and soft-deleted. |
+
+The primary key of the table is the pair of the two IDs, so a post and a product can be linked once. Link tables are tracked in the `link_module_migrations` table.
+
+---
+
+## When to Use Module Links
+
+Use a module link when you want to relate a data model of your module to a data model of another module, and keep the modules isolated. Use it also when you want to extend a Commerce Module's data model with your own data without changing the module, such as a brand for products, or a post that features a product.
+
+Don't use a link, but a [relationship](!docs!/learn/fundamentals/data-models/relationships), for data models of the same module.
+
+---
+
+## Define a List Module Link
+
+By default, a module link is one-to-one: a record of each side can be linked to one record of the other side. For example, the following link relates a post to one product variant, and a variant to one post:
+
+```go title="src/links/post-variant.go" file="links/define.go" region="define-one-to-one"
+```
+
+To allow a record to be linked to many records of the other data model, set `IsList` to `true` on the side that can have many. For example, a customer can have many comments, but a comment is linked to one customer:
+
+```go title="src/links/customer-comment.go" file="links/define.go" region="define-one-to-many"
+```
+
+`IsList` is on the `comment` side: many comments can be linked to a customer.
+
+### Many-to-Many Module Link
+
+To allow a record of each side to be linked to many records of the other side, set `IsList` to `true` on both. The link between posts and products does that: a post features many products, and a product appears in many posts.
+
+When you retrieve the records with [Query](!docs!/learn/fundamentals/query), a list side is retrieved as a list, with the plural of its name: `products` for a post, and `posts` for a product.
+
+---
+
+## Set Delete Cascades on Link
+
+When a record is deleted, you may want to delete the records linked to it. Set `DeleteCascade` to `true` on the side whose records should be deleted with the other.
+
+For example, to delete the posts of a sales channel when the sales channel is deleted:
+
+```go title="src/links/sales-channel-post.go" file="links/define.go" region="define-cascade"
+```
+
+The cascade takes effect when the records are deleted through the [Link service](!docs!/learn/fundamentals/module-links/link#cascade-delete-linked-records): you call its `Delete` method, or a workflow that does. The workflow that deletes sales channels removes their links with the `RemoveRemoteLinkStep` step, which calls it.
+
+---
+
+## Override Link Alias
+
+When you retrieve the linked records with Query, you use the alias of the linked data model: the name of its linkable key without `_id`, such as `product` or `sales_channel`. To use another property name, set the `Alias` of a side:
+
+```go title="src/links/post-sales-channel.go" file="links/define.go" region="define-alias"
+```
+
+With this definition, a sales channel retrieves its posts with the `articles` property instead of `posts`, and the entry point of the link is `article_sales_channel`.
+
+---
+
+## Delete Module Link Definition
+
+To remove a link, delete its definition from the project, and its call in `Define`. Then sync the links with the option that drops the tables of the removed links:
+
+```bash
+go run . db:sync-links --execute-all
+```
+
+<Note type="warning">
+
+This drops the link table and the links in it. Without `--execute-all`, MedusaGo logs a warning and keeps the table.
+
+</Note>

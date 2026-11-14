@@ -44,7 +44,7 @@ When the order is retrieved, only the related data with the same version is retu
 
 An order's item is stored across two data models:
 
-- The [OrderLineItem data model](/references/order/models/OrderLineItem) holds the item's original details, such as its title and the price at the time of purchase. This record is not versioned.
-- The [OrderItem data model](/references/order/models/OrderItem) links the line item to an order version. It holds the versioned `quantity`, `unit_price`, `compare_at_unit_price`, and `metadata` of the item in that version.
+- The OrderLineItem data model holds the item's original details, such as its title and the price at the time of purchase. This record is not versioned.
+- The OrderItem data model links the line item to an order version. It holds the versioned `quantity`, `unit_price`, `compare_at_unit_price`, and `metadata` of the item in that version.
 
 When an [order edit](../edit/page.mdx), claim, exchange, or return changes an item's quantity, price, or metadata, the Order Module writes the new values to the `OrderItem` record of the new version. The `OrderLineItem` record keeps its original values.

@@ -12,7 +12,7 @@ A shipping option is a way of shipping an item. Each fulfillment provider offers
 
 When the customer places an order, they choose a shipping option to fulfill their items.
 
-A shipping option is represented by the [ShippingOption data model](/references/fulfillment/models/ShippingOption).
+A shipping option is represented by the ShippingOption data model.
 
 ---
 
@@ -25,9 +25,9 @@ A shipping option's `price_type` property determines how its price is resolved:
 
 ### How Calculated Prices are Resolved
 
-For a shipping option of type `calculated`, Medusa invokes the [calculatePrice method](/references/fulfillment/provider) of the associated fulfillment provider to resolve the price against the cart. This happens when:
+For a shipping option of type `calculated`, Medusa invokes the calculatePrice method of the associated fulfillment provider to resolve the price against the cart. This happens when:
 
-- You retrieve the cart's shipping options with their prices, such as when the customer views their shipping options during checkout. For calculated options, you retrieve the price using the [Calculate Shipping Option Price API route](!api!/store/shipping-options/calculate-shipping-option-price).
+- You retrieve the cart's shipping options with their prices, such as when the customer views their shipping options during checkout. For calculated options, you retrieve the price using the [Calculate Shipping Option Price API route](!api!/store/shipping-options).
 - The shipping method is added to the cart.
 - The cart is refreshed. Medusa refreshes the cart after most cart changes, such as adding a line item or updating the cart's address, so the price may be recalculated frequently.
 
@@ -39,7 +39,7 @@ If the fulfillment provider's `calculatePrice` method throws an error, or return
 
 </Note>
 
-You learn more about implementing calculated prices in a fulfillment provider in the [Create Fulfillment Module Provider](/references/fulfillment/provider) reference, and how to use them during checkout in the [Storefront Shipping guide](../../../storefront-development/checkout/shipping/page.mdx).
+You learn more about implementing calculated prices in a fulfillment provider in the Create Fulfillment Module Provider reference, and how to use them during checkout in the [Storefront Shipping guide](../../../storefront-development/checkout/shipping/page.mdx).
 
 ## Service Zone Restrictions
 
@@ -69,7 +69,7 @@ You can also restrict a shipping option's price based on specific conditions. Fo
 
 </Note>
 
-These rules are represented by the [ShippingOptionRule data model](/references/fulfillment/models/ShippingOptionRule). Its properties define the custom rules:
+These rules are represented by the ShippingOptionRule data model. Its properties define the custom rules:
 
 - `attribute`: The name of a property or table that the rule applies to. For example, `customer_group`.
 - `operator`: The operator used in the condition. For example:
@@ -87,9 +87,9 @@ A shipping option can have multiple rules. For example, you can add rules to a s
 
 A shipping option belongs to a type and a profile.
 
-A shipping option type defines a group of shipping options with shared shipping characteristics. For example, a shipping option’s type may be `express`, while another may be `standard`. The type is represented by the [ShippingOptionType data model](/references/fulfillment/models/ShippingOptionType).
+A shipping option type defines a group of shipping options with shared shipping characteristics. For example, a shipping option’s type may be `express`, while another may be `standard`. The type is represented by the ShippingOptionType data model.
 
-A shipping profile defines a group of items (such as products) that are shipped in a similar manner. For example, the "Standard" shipping profile applies to all products, whereas the "Digital" shipping profile applies to digital products. Shipping profiles are represented by the [ShippingProfile data model](/references/fulfillment/models/ShippingProfile).
+A shipping profile defines a group of items (such as products) that are shipped in a similar manner. For example, the "Standard" shipping profile applies to all products, whereas the "Digital" shipping profile applies to digital products. Shipping profiles are represented by the ShippingProfile data model.
 
 ---
 

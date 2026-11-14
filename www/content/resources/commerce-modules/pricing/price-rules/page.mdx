@@ -31,7 +31,7 @@ You can manage prices and tiers using the Medusa Admin:
 
 ## Tiered Pricing
 
-Each price, represented by the [Price data model](/references/pricing/models/Price), has two optional properties that can be used to create tiered prices:
+Each price, represented by the Price data model, has two optional properties that can be used to create tiered prices:
 
 - `min_quantity`: The minimum quantity that must be in the cart for the price to be applied.
 - `max_quantity`: The maximum quantity that can be in the cart for the price to be applied.
@@ -87,7 +87,7 @@ If there are other rules applied to the price, they may affect the price calcula
 
 You can also restrict prices by advanced rules, such as a customer's group, zip code, or a cart's total.
 
-Each rule of a price is represented by the [PriceRule data model](/references/pricing/models/PriceRule).
+Each rule of a price is represented by the PriceRule data model.
 
 The `Price` data model has a `rules_count` property, which indicates how many rules, represented by `PriceRule`, are applied to the price.
 
@@ -101,7 +101,7 @@ For example, a price can be restricted by a region and a zip code.
 
 ### Price List Rules
 
-Rules applied to a price list are represented by the [PriceListRule data model](/references/pricing/models/PriceListRule).
+Rules applied to a price list are represented by the PriceListRule data model.
 
 The `rules_count` property of a `PriceList` indicates how many rules are applied to it.
 
@@ -110,7 +110,7 @@ The `rules_count` property of a `PriceList` indicates how many rules are applied
 
 The [price calculation](../price-calculation/page.mdx) mechanism considers a price applicable when the resource that this price is in matches the specified rules.
 
-For example, a [cart object](!api!/store/carts/schema) has an `item_total` property. So, if a shipping option has the following price:
+For example, a [cart object](!api!/store/carts) has an `item_total` property. So, if a shipping option has the following price:
 
 ```json
 {

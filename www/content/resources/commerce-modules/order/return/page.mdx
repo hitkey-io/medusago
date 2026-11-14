@@ -14,13 +14,13 @@ Refer to this [Medusa Admin User Guide](!user-guide!/orders/returns) to learn ho
 
 ## What is a Return?
 
-A return is the return of items delivered from the customer back to the merchant. It is represented by the [Return data model](/references/order/models/Return).
+A return is the return of items delivered from the customer back to the merchant. It is represented by the Return data model.
 
 A return is requested either by the customer from the storefront, or the merchant from the admin. Medusa supports an automated Return Merchandise Authorization (RMA) flow.
 
 <Note>
 
-The [Create Return API route](!api!/store/returns/create-return) doesn't require customer authentication, so that guest customers can request a return for their orders. To add access rules to the route, refer to the [Restrict Return Creation guide](../secure-return-creation/page.mdx).
+The [Create Return API route](!api!/store/returns) doesn't require customer authentication, so that guest customers can request a return for their orders. To add access rules to the route, refer to the [Restrict Return Creation guide](../secure-return-creation/page.mdx).
 
 </Note>
 
@@ -31,7 +31,7 @@ Once the merchant receives the returned items, they mark the return as received.
 
 ## Returned Items
 
-The items to be returned are represented by the [ReturnItem data model](/references/order/models/ReturnItem).
+The items to be returned are represented by the ReturnItem data model.
 
 The `ReturnItem` model has two properties storing the item's quantity:
 
@@ -54,7 +54,7 @@ For example, if you fulfilled three units of an item and already received two of
 
 ## Return Shipping Methods
 
-A return has shipping methods used to return the items to the merchant. The shipping methods are represented by the [OrderShippingMethod data model](/references/order/models/OrderShippingMethod).
+A return has shipping methods used to return the items to the merchant. The shipping methods are represented by the OrderShippingMethod data model.
 
 In the MedusaGo application, the shipping method for a return is created only from a shipping option, provided by the Fulfillment Module, that has the rule `is_return` enabled.
 
@@ -64,7 +64,7 @@ In the MedusaGo application, the shipping method for a return is created only fr
 
 The `refund_amount` property of the `Return` data model holds the amount a merchant must refund the customer.
 
-The [OrderTransaction data model](/references/order/models/OrderTransaction) represents the refunds made for the return.
+The OrderTransaction data model represents the refunds made for the return.
 
 ---
 

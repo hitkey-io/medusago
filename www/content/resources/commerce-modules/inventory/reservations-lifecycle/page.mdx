@@ -20,7 +20,7 @@ In this guide, you'll learn about the lifecycle of a reservation in Medusa: when
 
 ## What is a Reservation?
 
-A reservation, represented by the [ReservationItem data model](/references/inventory-next/models/ReservationItem), is a reserved quantity of an inventory item in a location. A reservation holds stock for a purchase that isn't fulfilled yet.
+A reservation, represented by the ReservationItem data model, is a reserved quantity of an inventory item in a location. A reservation holds stock for a purchase that isn't fulfilled yet.
 
 A reservation affects the [InventoryLevel](../concepts/page.mdx#inventorylevel) of the reserved inventory item in the associated location:
 
@@ -41,19 +41,19 @@ Medusa only manages reservations for inventory items whose variants have `manage
 
 ### Order Placement
 
-Medusa creates a reservation for each of the order's inventory items when an order is placed by completing a cart. This is implemented in the [completeCartWorkflow](/references/medusa-workflows/completeCartWorkflow).
+Medusa creates a reservation for each of the order's inventory items when an order is placed by completing a cart. This is implemented in the completeCartWorkflow.
 
 The reservation is created in the location associated with the order's sales channel, and its quantity is the ordered quantity.
 
 <Note>
 
-Some workflows that create an order, such as the [createOrderWorkflow](/references/medusa-workflows/createOrderWorkflow), only check that there's sufficient stock without creating a reservation. If you create an order with one of these workflows, the [createOrderFulfillmentWorkflow](/references/medusa-workflows/createOrderFulfillmentWorkflow) throws an error for items whose variants have `manage_inventory` enabled, since they don't have an associated reservation. Create the reservations manually before fulfilling the order, as explained in the next section.
+Some workflows that create an order, such as the createOrderWorkflow, only check that there's sufficient stock without creating a reservation. If you create an order with one of these workflows, the createOrderFulfillmentWorkflow throws an error for items whose variants have `manage_inventory` enabled, since they don't have an associated reservation. Create the reservations manually before fulfilling the order, as explained in the next section.
 
 </Note>
 
 ### Custom Reservations
 
-You can also create a reservation for custom use cases, such as reserving stock for an offline sale. Use the [createReservationsWorkflow](/references/medusa-workflows/createReservationsWorkflow) to create one or more reservations.
+You can also create a reservation for custom use cases, such as reserving stock for an offline sale. Use the createReservationsWorkflow to create one or more reservations.
 
 To associate a reservation with an order's item so that the fulfillment flow can find it, set the reservation's `line_item_id` to the order item's ID.
 
@@ -65,7 +65,7 @@ A reservation is temporary. Medusa releases the reservation, making the quantity
 
 ### Order Fulfillment
 
-When an order's item is fulfilled, Medusa performs the following for each of the item's inventory items, as implemented in the [createOrderFulfillmentWorkflow](/references/medusa-workflows/createOrderFulfillmentWorkflow):
+When an order's item is fulfilled, Medusa performs the following for each of the item's inventory items, as implemented in the createOrderFulfillmentWorkflow:
 
 - Subtracts the fulfilled quantity from the `stocked_quantity` of the inventory level.
 - Decreases the `reserved_quantity` of the inventory level by the fulfilled quantity.
@@ -87,7 +87,7 @@ If a fulfillment is canceled, Medusa restores the reservations that were release
 
 ### Custom Deletion
 
-You can also delete reservations manually, such as when a custom reservation is no longer needed. Use the [deleteReservationsWorkflow](/references/medusa-workflows/deleteReservationsWorkflow) to delete one or more reservations.
+You can also delete reservations manually, such as when a custom reservation is no longer needed. Use the deleteReservationsWorkflow to delete one or more reservations.
 
 ---
 

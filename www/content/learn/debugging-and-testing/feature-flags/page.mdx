@@ -1,0 +1,166 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Feature Flags`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn what feature flags are, what the available feature flags in MedusaGo are, and how to toggle them.
+
+## What are Feature Flags?
+
+Feature flags allow you to ship new features that are still under development and testing, but not ready for production or wide use yet.
+
+Medusa uses feature flags to ship new versions even when some features are not fully ready. MedusaGo follows the same flags, so the features that are behind a flag in Medusa are behind the same flag in MedusaGo.
+
+---
+
+## Available Feature Flags in MedusaGo
+
+The following feature flags are available:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Key
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Environment Variable
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `index_engine`
+      </Table.Cell>
+      <Table.Cell>
+        `MEDUSA_FF_INDEX_ENGINE`
+      </Table.Cell>
+      <Table.Cell>
+        Enables the Admin API's index routes, and lets the routes that list products, and the rule value options of promotions, filter through the Index Module. You must also add the Index Module to your [modules](!docs!/learn/configurations/medusa-config#module-configurations-modules).
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `translation`
+      </Table.Cell>
+      <Table.Cell>
+        `MEDUSA_FF_TRANSLATION`
+      </Table.Cell>
+      <Table.Cell>
+        Enables the Translation Module, its Admin API routes, and the translation of Store API responses based on the request's locale.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `view_configurations`
+      </Table.Cell>
+      <Table.Cell>
+        `MEDUSA_FF_VIEW_CONFIGURATIONS`
+      </Table.Cell>
+      <Table.Cell>
+        Enables the Admin API routes that manage the Medusa Admin's view configurations and property labels. They respond with a `404` error when the flag is off.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `caching`
+      </Table.Cell>
+      <Table.Cell>
+        `MEDUSA_FF_CACHING`
+      </Table.Cell>
+      <Table.Cell>
+        Lets the framework cache the results of queries through the Caching Module. You must also configure the Caching Module.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `backend_hmr`
+      </Table.Cell>
+      <Table.Cell>
+        `MEDUSA_FF_BACKEND_HMR`
+      </Table.Cell>
+      <Table.Cell>
+        Hot module replacement of the backend in Medusa. It has no effect in MedusaGo, where the `develop` command rebuilds and restarts the server when you change a file.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## Toggle Feature Flags
+
+There are multiple ways to enable or disable feature flags in MedusaGo:
+
+- In the `medusa-config.go` file;
+- Or using environment variables.
+
+If a flag is set in both, the environment variable wins.
+
+### 1. Using the `medusa-config.go` file
+
+The `FeatureFlags` field of the configuration is a `map[string]any` to toggle feature flags. Its keys are the feature flags' keys, and its values are booleans indicating whether the feature is enabled.
+
+For example, to enable the translation feature flag in `medusa-config.go`:
+
+```go title="medusa-config.go" file="config/feature-flags.go" region="feature-flags"
+```
+
+Make sure to run the migrations after enabling a feature flag, in case it requires database changes:
+
+```bash
+go run . db:migrate
+```
+
+Before disabling a feature flag, make sure to roll back the migrations that depend on it with the [db:rollback](!resources!/medusa-cli#dbrollback) command.
+
+### 2. Using Environment Variables
+
+The feature flags can also be enabled or disabled using environment variables. This is useful to control the feature flag based on the environment.
+
+To toggle a feature flag using an environment variable, set an environment variable with its environment variable name from the table above and set its value to `true` or `false`.
+
+For example, to enable the index engine feature flag using an environment variable:
+
+```env
+MEDUSA_FF_INDEX_ENGINE=true
+```
+
+Any value other than `true` (in any letter case) disables the flag.
+
+Make sure to run the migrations after enabling a feature flag, in case it requires database changes.
+
+### Enable the Index Engine
+
+The index engine needs the flag and the Index Module. You enable both in your configuration:
+
+```go title="medusa-config.go" file="config/feature-flags.go" region="index-engine"
+```
+
+Then, run `go run . db:migrate` to create the module's tables.
+
+---
+
+## Check Feature Flag Status
+
+During development, you can check whether a feature flag is enabled. This is useful to add customisations that only apply when a specific feature is enabled.
+
+To build backend customisations around feature flags, use the `IsFeatureEnabled` function of the `feature-flags` package of MedusaGo. It accepts a container and a feature flag key, and returns a boolean indicating whether the feature is enabled. You can use it in scripts, subscribers, workflow steps, and API routes (with the request's `Scope`):
+
+```go title="src/scripts/index-engine.go" file="config/feature-flags.go" region="check-flag"
+```
+
+For client customisations, such as admin widgets, send a request to the [List Feature Flags API route](!api!/admin/feature-flags). It returns the status of every flag in a `feature_flags` object, and it doesn't require authentication:
+
+```bash
+curl http://localhost:9000/admin/feature-flags
+```

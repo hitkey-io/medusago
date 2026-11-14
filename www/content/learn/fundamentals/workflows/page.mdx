@@ -1,0 +1,238 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Workflows`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about workflows and how to define and execute them.
+
+## What is a Workflow?
+
+In digital commerce you typically have many systems involved in your operations. For example, you may have an ERP system that holds product master data and accounting reports, a CMS system for content, a CRM system for managing customer campaigns, a payment service to process credit cards, and so on. Sometimes you may even have custom built applications that need to participate in the commerce stack. One of the biggest challenges when operating a stack like this is ensuring consistency in the data spread across systems.
+
+MedusaGo has a built-in durable execution engine to help complete tasks that span multiple systems. You orchestrate your operations across systems in MedusaGo instead of having to manage it yourself.
+
+A workflow is a series of queries and actions, called steps, that complete a task. You write a workflow as a Go function that calls its steps.
+
+However, unlike regular functions, workflows:
+
+- Keep a journal of their steps, allowing you to track them and their progress.
+- Support defining roll-back logic for each step, so that you can handle errors gracefully and your data remain consistent across systems.
+- Perform long actions asynchronously, giving you control over when a step starts and finishes.
+
+You implement all custom flows within workflows, then execute them from [API routes](!docs!/learn/fundamentals/api-routes), [subscribers](!docs!/learn/fundamentals/events-and-subscribers), and [scheduled jobs](!docs!/learn/fundamentals/scheduled-jobs).
+
+<Note title="Workflows in MedusaGo and Medusa">
+
+Medusa builds a workflow by running its constructor function once, with placeholder values, to create an internal representation of the steps. That's why Medusa's workflow constructors have constraints, and why they need utilities such as `transform` and `when`.
+
+MedusaGo doesn't have those constraints. The body of a workflow is plain Go: a step runs when your code calls it, so you use variables, `if` statements, loops, and `return` as you do anywhere else in Go. So, the chapters about the constructor's constraints and about data manipulation don't exist in this documentation.
+
+</Note>
+
+---
+
+## How to Create and Execute a Workflow?
+
+### 1. Create the Steps
+
+A workflow is made of a series of steps. A step is created using `composer.CreateStep` from the Workflows SDK.
+
+Create the file `src/workflows/hello-world.go` with the following content:
+
+```go title="src/workflows/hello-world.go" file="workflows/overview/hello-world.go" region="step1"
+```
+
+`composer.CreateStep` accepts the following parameters:
+
+1. The step's unique name, `step-1`.
+2. The step's function. It receives the step's context and its input, and returns the step's response and an error.
+3. The step's compensation function, which you'll learn about in the [Compensation Function](!docs!/learn/fundamentals/workflows/compensation-function) chapter. It's `nil` if the step doesn't need one.
+
+A step returns its output wrapped in a `composer.StepResponse`, which you create with `composer.NewStepResponse`. The type of the output is a type parameter of the step, so the workflow receives it with its type.
+
+Steps can accept input parameters. For example, add the following to `src/workflows/hello-world.go`:
+
+```go title="src/workflows/hello-world.go" file="workflows/overview/hello-world.go" region="step2"
+```
+
+This adds another step whose function receives a `WorkflowInput` value as its second parameter.
+
+### 2. Create a Workflow
+
+Next, add the following to the same file to create the workflow using `composer.CreateWorkflow`:
+
+```go title="src/workflows/hello-world.go" file="workflows/overview/hello-world.go" region="workflow"
+```
+
+`composer.CreateWorkflow` accepts the workflow's unique name as a first parameter, and the workflow's function as a second parameter. The type parameters of the workflow are its input and output types.
+
+The workflow's function receives an `*composer.Execution` and the workflow's input. You run a step by calling its `Run` method with the execution and the step's input. It returns the step's output, or the error if the step failed. If a step fails, return its error from the workflow's function: the workflow then stops and compensates the steps that ran, as explained in the [Error Handling](!docs!/learn/fundamentals/workflows/errors) chapter.
+
+The value the function returns is returned to the workflow's executors.
+
+### 3. Execute the Workflow
+
+You can execute a workflow from different customizations:
+
+- Execute in an API route to expose the workflow's functionalities to clients.
+- Execute in a subscriber to use the workflow's functionalities when a commerce operation is performed.
+- Execute in a scheduled job to run the workflow's functionalities automatically at a specified repeated interval.
+
+To execute the workflow, call its `Run` method with a context, the [container](!docs!/learn/fundamentals/medusa-container), and the workflow's input:
+
+<CodeTabs group="resource-types">
+  <CodeTab label="API Route" value="api-route">
+
+```go title="src/api/workflow/route.go" file="workflows/overview/execute.go" region="api-route"
+```
+
+  </CodeTab>
+  <CodeTab label="Subscriber" value="subscriber">
+
+```go title="src/subscribers/order-placed.go" file="workflows/overview/execute.go" region="subscriber"
+```
+
+  </CodeTab>
+  <CodeTab label="Scheduled Job" value="scheduled-job">
+
+```go title="src/jobs/message-daily.go" file="workflows/overview/execute.go" region="job"
+```
+
+  </CodeTab>
+</CodeTabs>
+
+`Run` returns the workflow's output and an error. The error is the first error a step returned, unchanged, so you can check it the way you check any Go error. In an API route, you return the error to let MedusaGo's error handler turn it into an HTTP response.
+
+<Note>
+
+Learn how to register an API route, a subscriber, and a scheduled job in the [API Routes](!docs!/learn/fundamentals/api-routes), [Events and Subscribers](!docs!/learn/fundamentals/events-and-subscribers), and [Scheduled Jobs](!docs!/learn/fundamentals/scheduled-jobs) chapters.
+
+</Note>
+
+If you need the details of the execution's transaction, such as its ID, use `RunWithInfo` instead of `Run`. It returns the output, a `composer.RunInfo` value with the `TransactionID`, `RunID`, and `State` of the execution, and the error.
+
+### 4. Test Workflow
+
+To test out your workflow, start your MedusaGo application:
+
+```bash
+go run . develop
+```
+
+Then, if you added the API route above, send a `GET` request to `/workflow`:
+
+```bash
+curl http://localhost:9000/workflow
+```
+
+You'll receive the following response:
+
+```json title="Example Response"
+{
+  "message": "Hello John from step two!"
+}
+```
+
+---
+
+## Access the Container in Workflow Steps
+
+A step receives a `composer.StepExecutionContext` as its first parameter. Its `Container` property is the [container](!docs!/learn/fundamentals/medusa-container), which allows you to resolve Framework and commerce tools in your application. Its `Context` property is the `context.Context` to pass to the calls you make in the step.
+
+For example, consider you want to implement a workflow that returns the total products in your application. Create the file `src/workflows/product-count.go` with the following content:
+
+```go title="src/workflows/product-count.go" file="workflows/overview/product-count.go" region="container"
+```
+
+In `getProductCountStep`, you use the container to resolve the Product Module's main service. Then, you call its generated `listAndCountProducts` method, which returns the products and their total count. You return the count in the step's response. You then call this step in the `ProductCountWorkflow`.
+
+<Note title="Tip">
+
+`StepExecutionContext` also has the name of the step and the workflow, the transaction ID, and `Attempt`, the number of the current attempt to execute the step (it's `1` unless the step is [retried](!docs!/learn/fundamentals/workflows/retry-failed-steps)).
+
+</Note>
+
+---
+
+## Conditions
+
+Since the body of a workflow is Go code, you add conditions with `if` statements:
+
+```go title="src/workflows/conditional.go" file="workflows/overview/conditions.go" region="conditions"
+```
+
+If you want the condition to be part of the execution's journal, use `composer.When`. It accepts the execution, a name for the condition, the condition, and a function that runs the steps if the condition holds, and returns what the function returns:
+
+```go title="src/workflows/conditional.go" file="workflows/overview/conditions.go" region="when"
+```
+
+---
+
+## Step Options
+
+A step's options configure how the workflow engine executes it. You set them by calling the `Config` method on the step, which returns a copy of the step with the options. Its first parameter is a new name for the step, or an empty string to keep its name. This way, you can use the same step with different options, or with different names, in the same workflow.
+
+```go title="src/workflows/hello-world.go" file="workflows/overview/options.go" region="options"
+```
+
+The options you can set are:
+
+<TypeList
+  types={[
+    {
+      type: "`int`",
+      name: "MaxRetries",
+      description: "How many times the step is retried if it fails. Learn more in the [Retry Failed Steps](!docs!/learn/fundamentals/workflows/retry-failed-steps) chapter.",
+    },
+    {
+      type: "`bool`",
+      name: "ContinueOnPermanentFailure",
+      description: "Whether the workflow continues if the step fails. Learn more in the [Error Handling](!docs!/learn/fundamentals/workflows/errors) chapter.",
+    },
+    {
+      type: "`bool`",
+      name: "NoCompensation",
+      description: "Whether to skip the step's compensation function.",
+    },
+    {
+      type: "`bool`",
+      name: "Async",
+      description: "Whether the step waits for its status to be set from outside. Learn more in the [Long-Running Workflows](!docs!/learn/fundamentals/workflows/long-running-workflow) chapter.",
+    },
+    {
+      type: "`bool`",
+      name: "BackgroundExecution",
+      description: "Whether the step's function runs in the background, and the workflow's execution returns to its caller. It's used with `Async`.",
+    },
+    {
+      type: "`int`",
+      name: "Timeout",
+      description: "The number of seconds an async step waits for its status before it fails. Learn more in the [Workflow Timeout](!docs!/learn/fundamentals/workflows/workflow-timeout) chapter.",
+    },
+  ]}
+  sectionTitle="Step Options"
+/>
+
+---
+
+## What's Next
+
+The next chapters explain the features of workflows in more detail:
+
+- [Compensation Function](!docs!/learn/fundamentals/workflows/compensation-function): undo what a step did when an error occurs.
+- [Error Handling](!docs!/learn/fundamentals/workflows/errors): handle the errors of a workflow's steps.
+- [Workflow Hooks](!docs!/learn/fundamentals/workflows/workflow-hooks): consume the hooks of Medusa's workflows to inject your logic.
+- [Retry Failed Steps](!docs!/learn/fundamentals/workflows/retry-failed-steps): retry a step if it fails.
+- [Run Workflow Steps in Parallel](!docs!/learn/fundamentals/workflows/parallel-steps): group steps that don't rely on each other.
+- [Workflow Timeout](!docs!/learn/fundamentals/workflows/workflow-timeout): fail a step that waits for too long.
+- [Store Workflow Executions](!docs!/learn/fundamentals/workflows/store-executions): keep the details of an execution in the database.
+- [Long-Running Workflows](!docs!/learn/fundamentals/workflows/long-running-workflow): run a workflow in the background and wait for external actions.
+- [Execute Nested Workflows](!docs!/learn/fundamentals/workflows/execute-another-workflow): run a workflow as a step of another one.
+- [Locking Operations in Workflows](!docs!/learn/fundamentals/workflows/locks): avoid race conditions.

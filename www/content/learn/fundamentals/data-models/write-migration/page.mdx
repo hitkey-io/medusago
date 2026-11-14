@@ -1,0 +1,177 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Migrations`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn what a migration is, how to generate one or write it by hand, and how to run and roll it back.
+
+## What is a Migration?
+
+A migration is a change to the database's schema, such as creating a table or adding a column. It's how you keep the database in line with the data models of your modules.
+
+In MedusaGo, a migration is a Go value of type `migrations.Migration`, from the `migrations` package of the `utils`. It has:
+
+| Field | Description |
+| --- | --- |
+| `Name` | The name of the migration, such as `Migration20261114134517`. It's recorded in the database once the migration runs, so it must be unique and must not change afterwards. |
+| `Up` | The SQL statements that apply the migration, in order. |
+| `Down` | The SQL statements that revert the migration. Without them, the migration can't be rolled back. |
+| `UpFunc` and `DownFunc` | Functions that apply and revert the migration with Go code, to use instead of `Up` and `Down`. |
+
+MedusaGo records the migrations that ran in the `mikro_orm_migrations` table, the same table that Medusa uses, with the same names. That's what lets you switch between Medusa and MedusaGo on the same database.
+
+---
+
+## Generate Migration
+
+You don't have to write migrations for your data models. Run the `db:generate` command with the key of the module:
+
+```bash
+go run . db:generate blog
+```
+
+The command compares the module's data models with the snapshot of its latest migration, and writes the migration with the difference. It writes these files in the `migrations` directory of the module, which is the `Resolve` path of the module in the configuration, followed by `/migrations`:
+
+- `Migration<timestamp>.go`: the migration. The timestamp is the time the command ran, such as `Migration20261114134517`.
+- `.snapshot-<module>.json`: the new snapshot of the schema.
+- `index.go`: the list of all the migrations of the directory, ordered by name.
+
+If you didn't change your data models, the command logs that there are no changes, and writes nothing.
+
+For the Blog Module, the command generates the following migration:
+
+```go title="src/modules/blog/migrations/Migration20261114134517.go" file="modules/blog/migrations/Migration20261114134517.go"
+```
+
+The `Up` statements create the tables, indexes, and foreign keys. The `Down` statements drop the tables.
+
+### Register the Migrations in the Module
+
+The module runs the migrations that its definition lists. After the first `db:generate`, reference the list of the `migrations` package in the `Migrations` field of the module's definition:
+
+```go title="src/modules/blog/index.go" file="modules/blog/index.go" region="module"
+```
+
+The `index.go` file of the `migrations` package is rewritten each time you generate a migration, so you only reference it once. The `migrations` package must exist before you generate for the first time, as the module imports it, so create it with an empty list, as explained in the [Modules chapter](!docs!/learn/fundamentals/modules#5-generate-migrations).
+
+<Note title="Limitations">
+
+`db:generate` only works for the modules of your application, which you register with a `Resolve` path such as `./src/modules/blog`. It can't generate migrations for the modules that ship with MedusaGo. The command needs the database of the application, as it connects to it.
+
+</Note>
+
+---
+
+## Write a Migration Manually
+
+You may need to write a migration by hand, for example to change data, or to change the schema in a way the generator can't detect, such as renaming a column.
+
+To write a migration, add a file with a `migrations.Migration` value to the `migrations` directory of the module, and add its variable to the `Migrations` list in `index.go`. For example, this migration adds a nullable `subtitle` column to the `post` table, and drops it when it's reverted. To add a column that isn't `null`, give it a default value for the existing rows:
+
+```go title="src/modules/blog/migrations/Migration20261115090000.go" file="modules/blog/migrationexamples/examples.go" region="add-column"
+```
+
+<Note>
+
+`db:generate` rewrites `index.go` with every migration of the directory, ordered by name. If you write a migration by hand, name it so that it sorts after the existing ones, such as with a timestamp, and run `db:generate` or edit `index.go` to list it.
+
+</Note>
+
+### Migration File Naming
+
+The name of a migration file is its `Name`, such as `Migration20261115090000.go`. The part after `Migration` is a timestamp, in the format `YYYYMMDDHHMMSS`. The migrations of a module run in the order of the `Migrations` list.
+
+---
+
+## Run the Migration
+
+To run the pending migrations, run the following command in your application's directory:
+
+```bash
+go run . db:migrate
+```
+
+The command:
+
+1. Runs the pending migrations of every module. Each module's pending migrations run together in a single transaction, so that if one fails, none of that module's pending migrations is applied.
+2. Syncs the [module links](!docs!/learn/fundamentals/module-links).
+3. Runs the [loaders](!docs!/learn/fundamentals/modules/loaders) of the modules.
+4. Runs the migration scripts of MedusaGo that haven't run.
+
+You can skip some of the steps with the `--skip-links` and `--skip-scripts` options.
+
+---
+
+## Rollback the Migration
+
+To revert the last migration of a module, run the `db:rollback` command with the key of the module:
+
+```bash
+go run . db:rollback blog
+```
+
+The command runs the `Down` statements of the last migration of the module that ran, and removes its record. To revert more migrations, run it again. If a migration has no `Down` statements, the command fails with the error `This migration cannot be reverted`.
+
+### Caution: Rollback Migration before Deleting
+
+If you want to remove a migration you generated, roll it back first, and then delete its file and its entry in `index.go`. If you delete the file of a migration that ran, its record stays in the database and its changes stay in the schema.
+
+---
+
+## Data Migrations
+
+A migration can change data as well as the schema. Use `UpFunc` and `DownFunc` instead of `Up` and `Down`. They receive the context and the transaction in which the module's migrations run:
+
+```go title="src/modules/blog/migrations/Migration20261115095000.go" file="modules/blog/migrationexamples/examples.go" region="data-migration"
+```
+
+<Note>
+
+Medusa lets projects add data migration scripts in `src/migration-scripts`. MedusaGo runs its own migration scripts, but it doesn't load scripts from a project. To change data once, use a migration with `UpFunc`, or a [custom CLI script](!docs!/learn/fundamentals/custom-cli-scripts) that you run when you decide to.
+
+</Note>
+
+---
+
+## Migration Examples
+
+The following are examples of migrations that you can write by hand, and of the SQL that the generator produces for the same changes.
+
+### Example: Migration with Relationship
+
+To create a table that has a relationship to another table, create its columns, its indexes, and a foreign key to the related table:
+
+```go title="src/modules/blog/migrations/Migration20261115094000.go" file="modules/blog/migrationexamples/examples.go" region="relationship"
+```
+
+### Example: Migration to Remove a Column
+
+To remove a column, use `drop column`. The `Down` statements recreate the column, but not its data:
+
+```go title="src/modules/blog/migrations/Migration20261115092000.go" file="modules/blog/migrationexamples/examples.go" region="drop-column"
+```
+
+### Example: Migration to Rename a Column
+
+To rename a column and keep its data, use `rename column`. The generator detects a rename when a removed column and an added column have the same definition, and generates the statement itself. Write the migration by hand when it doesn't, or when you also need to change the data:
+
+```go title="src/modules/blog/migrations/Migration20261115091000.go" file="modules/blog/migrationexamples/examples.go" region="rename-column"
+```
+
+Also rename the property in the data model. A migration you write by hand doesn't update the schema snapshot of the module: the next `db:generate` compares the models to the snapshot as it was after the last migration that the command generated.
+
+### Example: Migration to Create an Index
+
+To create an index, use `CREATE INDEX`. Name it like the generator does, `IDX_<table>_<columns>`, and restrict it to the rows that aren't soft-deleted:
+
+```go title="src/modules/blog/migrations/Migration20261115093000.go" file="modules/blog/migrationexamples/examples.go" region="create-index"
+```
+
+### Example: Migration to Drop an Index
+
+The `Down` statement of the previous migration drops the index: `DROP INDEX IF EXISTS "IDX_post_author_id";`. Use it in the `Up` of a migration to drop an index of your own.

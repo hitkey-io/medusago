@@ -1,0 +1,102 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Data Models`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn what data models are and how to create a data model in a module.
+
+## What is a Data Model?
+
+A data model represents a table in the database. You create data models in a [module](!docs!/learn/fundamentals/modules), and they hold the data the module manages.
+
+You create a data model with the Data Model Language (DML), which is the `dml` package of MedusaGo. It's an alternative to writing SQL tables by hand: you define the properties and relationships of the data model in Go, and MedusaGo derives the table, its columns, indexes, and foreign keys from the definition. Then you generate [migrations](!docs!/learn/fundamentals/data-models/write-migration) that create the tables in the database.
+
+The module's service gets methods to manage the data model's records from the [service factory](!docs!/learn/fundamentals/modules/service-factory), without you writing them.
+
+---
+
+## How to Create a Data Model
+
+In a module, create the file `models.go` that defines the module's data models. For example, the Blog Module of the [Modules chapter](!docs!/learn/fundamentals/modules) has a `Post` data model:
+
+```go title="src/modules/blog/models.go" file="modules/blog/models.go" region="post"
+```
+
+The `dml` package is imported like this:
+
+```go title="src/modules/blog/models.go" file="modules/blog/models.go" region="imports"
+```
+
+A data model is a variable that holds the result of `dml.Define`. The function takes:
+
+1. The name of the data model's table, `"post"`. MedusaGo derives the name of the data model from it: `Post`. You use that name in the service, for example in `Internal("Post")`, and in relationships.
+2. The schema, a `dml.Schema`. It's a list of the properties, in the order of the table's columns. Each entry has a `Name`, which is the name of the column or the relationship, and a `Property`, which describes it.
+
+The schema above has:
+
+- An `id` property, which is the primary key. Its `Prefix` makes the generated IDs look like `post_01J...`.
+- Text, enum, number, date-time, and JSON properties, with modifiers such as `Unique`, `Nullable`, and `Default`. Learn more in the [Properties chapter](!docs!/learn/fundamentals/data-models/properties).
+- The relationships `comments` and `tags`. Learn more in the [Relationships chapter](!docs!/learn/fundamentals/data-models/relationships).
+
+The `WithIndexes` and `WithCascades` methods add an [index](!docs!/learn/fundamentals/data-models/indexes) and a deletion cascade to the data model.
+
+You pass the data models to the module's definition, in its `Models` field, as in the `Models` variable of the file:
+
+```go title="src/modules/blog/models.go" file="modules/blog/models.go" region="models"
+```
+
+<Note>
+
+Every data model has the `created_at`, `updated_at`, and `deleted_at` properties, and MedusaGo sets them for you. You can't define a property with one of these names: `dml.Define` panics when you do. `created_at` and `updated_at` are set when a record is created and updated, and `deleted_at` is set when you [soft-delete](!docs!/learn/fundamentals/modules/service-factory#delete-softdelete-and-restore-methods) it.
+
+</Note>
+
+---
+
+## Generate Migrations
+
+After you create a data model, you generate a migration for it. A migration holds the SQL statements that create or change the data model's table.
+
+To generate the migration of a module, run the following command in your application's directory, where `blog` is the key of the module:
+
+```bash
+go run . db:generate blog
+```
+
+The command compares the module's data models with the snapshot of its previous migration, and writes a migration with the difference. For a new module, that's the creation of its tables.
+
+### Run Migrations
+
+To apply the migration and create the tables, run:
+
+```bash
+go run . db:migrate
+```
+
+### Migrations on Data Model Changes
+
+Each time you change a data model, for example when you add a property, generate a new migration and run it. The command writes a new migration with the statements that change the existing table, so you don't lose the data in it.
+
+Learn more about migrations, including how to write them manually, in the [Migrations chapter](!docs!/learn/fundamentals/data-models/write-migration).
+
+---
+
+## Manage Data Models
+
+To manage the records of a data model, use the methods that the service factory generates for your module's service. For example, `createPosts` and `listPosts` create and list the records of the `Post` data model.
+
+Learn more in the [Service Factory chapter](!docs!/learn/fundamentals/modules/service-factory).
+
+---
+
+## Chapters on Data Models
+
+- [Properties](!docs!/learn/fundamentals/data-models/properties): the types of properties and their modifiers.
+- [Relationships](!docs!/learn/fundamentals/data-models/relationships): one-to-one, one-to-many, and many-to-many relationships, and cascades.
+- [Indexes](!docs!/learn/fundamentals/data-models/indexes): database indexes and check constraints.
+- [Migrations](!docs!/learn/fundamentals/data-models/write-migration): generate, write, run, and roll back migrations.

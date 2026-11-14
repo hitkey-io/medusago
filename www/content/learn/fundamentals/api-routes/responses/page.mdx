@@ -1,0 +1,149 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `API Route Response`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to send a response in your API route.
+
+## Send a JSON Response
+
+To send a JSON response, use the `JSON` method of the `MedusaResponse` object that is passed as the second parameter of your API route handler.
+
+For example:
+
+```go title="src/api/custom/route.go" file="api/responses.go" region="json"
+```
+
+This API route returns the following JSON object:
+
+```json
+{
+  "message": "Hello, World!"
+}
+```
+
+The `JSON` method accepts any value that Go's `encoding/json` package can marshal, such as maps, structs with `json` tags, and slices. It returns an error if the value can't be marshaled, so return it from the handler.
+
+---
+
+## Set Response Status Code
+
+By default, setting the JSON data using the `JSON` method returns a response with a `200` status code.
+
+To change the status code, use the `Status` method of the `MedusaResponse` object before you send the response. It returns the response, so you can chain it with the `JSON` method.
+
+For example:
+
+```go title="src/api/custom/route.go" file="api/responses.go" region="status"
+```
+
+The response of this API route has the status code `201`.
+
+---
+
+## Change Response Content Type
+
+To return response data other than a JSON object, set the response headers with the `SetHeader` method of the `MedusaResponse` object, which includes the content type. Then, send the response with the `Send` method, which accepts a string.
+
+<Note>
+
+`Send` sets the `Content-Type` header to `text/html; charset=utf-8` if you haven't set it.
+
+</Note>
+
+### Example: Return a File
+
+To create an API route that returns a PDF file, you can set the `Content-Type` header to `application/pdf`:
+
+```go title="src/api/custom/invoice/route.go" file="api/responses.go" region="file"
+```
+
+### Example: Return XML Content
+
+To create an API route that returns XML content, you can set the `Content-Type` header to `application/xml`:
+
+```go title="src/api/custom/report/route.go" file="api/responses.go" region="xml"
+```
+
+### Example: Server-Sent Events (SSE)
+
+To create an API route that returns server-sent events (SSE), set the `Content-Type` header to `text/event-stream`, then call the `Writer` method. It sends the status code and headers, and returns the underlying `http.ResponseWriter` that you can write the stream to.
+
+```go title="src/api/custom/stream/route.go" file="api/responses.go" region="stream"
+```
+
+This API route opens a stream by setting the `Content-Type` to `text/event-stream`. It then simulates a stream with a ticker that writes the stream data every three seconds, and flushes it to the client.
+
+The handler returns when the client closes the connection, which you detect with the `Done` channel of the request's context. Use `req.Request.Context()` for that, instead of `req.Ctx()`, which isn't canceled when the client disconnects.
+
+---
+
+## Other Response Methods
+
+These are the other methods of `MedusaResponse` that you can use:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Method
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `Header()`
+      </Table.Cell>
+      <Table.Cell>
+        Returns the response's `http.Header`, to add or remove headers.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `SendStatus(code)`
+      </Table.Cell>
+      <Table.Cell>
+        Sets the status code and sends the status's text as the body.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `End()`
+      </Table.Cell>
+      <Table.Cell>
+        Ends the response without a body, with the status set by `Status`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Handoff()`
+      </Table.Cell>
+      <Table.Cell>
+        Returns the underlying `http.ResponseWriter` without writing the status code, so that you can pass it to functions that write the status themselves, such as `http.ServeContent`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `OnEnd(fn)`
+      </Table.Cell>
+      <Table.Cell>
+        Registers a function to run once the response is sent.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+<Note>
+
+`JSON` and `Send` compute a weak `ETag` header for the response, and answer a `GET` or `HEAD` request that has a matching `If-None-Match` header with a `304` status code, like the API routes of Medusa do.
+
+</Note>

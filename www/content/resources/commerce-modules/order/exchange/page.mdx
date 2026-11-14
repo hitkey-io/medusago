@@ -20,13 +20,13 @@ An exchange is the replacement of an item that the customer ordered with another
 
 A merchant creates the exchange, specifying which items to return and which new items to send.
 
-The [OrderExchange data model](/references/order/models/OrderExchange) represents an exchange.
+The OrderExchange data model represents an exchange.
 
 ---
 
 ## Returned and New Items
 
-When an exchange is created, a return, represented by the [Return data model](/references/order/models/Return), is also created to handle receiving the items back from the customer.
+When an exchange is created, a return, represented by the Return data model, is also created to handle receiving the items back from the customer.
 
 <Note>
 
@@ -34,13 +34,13 @@ Refer to the [Returns guide](../return/page.mdx) to learn more about returns and
 
 </Note>
 
-The [OrderExchangeItem data model](/references/order/models/OrderExchangeItem) represents the new items to be sent to the customer. It's associated with the `OrderExchange` data model.
+The OrderExchangeItem data model represents the new items to be sent to the customer. It's associated with the `OrderExchange` data model.
 
 ---
 
 ## Exchange Shipping Methods
 
-An exchange has shipping methods used to send the new items to the customer. They’re represented by the [OrderShippingMethod data model](/references/order/models/OrderShippingMethod).
+An exchange has shipping methods used to send the new items to the customer. They’re represented by the OrderShippingMethod data model.
 
 The shipping methods for the returned items are associated with the exchange's return, as explained in the [Returns guide](../return/page.mdx#return-shipping-methods).
 
@@ -101,7 +101,7 @@ The `OrderExchange` data model has a `difference_due` property that stores the o
   </Table.Body>
 </Table>
 
-Any payments or refunds made are stored in the [OrderTransaction data model](/references/order/models/OrderTransaction).
+Any payments or refunds made are stored in the OrderTransaction data model.
 
 ---
 

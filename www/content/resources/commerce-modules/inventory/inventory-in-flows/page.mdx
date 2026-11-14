@@ -12,7 +12,7 @@ When a product variant is created and its `manage_inventory` property's value is
 
 <Note title="Tip">
 
-This flow is implemented within the [createProductVariantsWorkflow](/references/medusa-workflows/createProductVariantsWorkflow)
+This flow is implemented within the createProductVariantsWorkflow
 
 </Note>
 
@@ -25,7 +25,7 @@ When a product variant with `manage_inventory` set to `true` is added to the car
 
 <Note title="Tip">
 
-This flow is implemented within the [addToCartWorkflow](/references/medusa-workflows/addToCartWorkflow)
+This flow is implemented within the addToCartWorkflow
 
 </Note>
 
@@ -38,7 +38,7 @@ When an order is placed, the MedusaGo application creates a reservation item for
 
 <Note title="Tip">
 
-This flow is implemented within the [completeCartWorkflow](/references/medusa-workflows/completeCartWorkflow)
+This flow is implemented within the completeCartWorkflow
 
 </Note>
 
@@ -57,13 +57,13 @@ Learn more in the [Reservations Lifecycle](../reservations-lifecycle/page.mdx) g
 
 <Note title="Tip">
 
-This flow is implemented within the [createOrderFulfillmentWorkflow](/references/medusa-workflows/createOrderFulfillmentWorkflow)
+This flow is implemented within the createOrderFulfillmentWorkflow
 
 </Note>
 
 <Note>
 
-Each fulfilled item whose variant has `manage_inventory` enabled must have an associated inventory reservation, otherwise the [createOrderFulfillmentWorkflow](/references/medusa-workflows/createOrderFulfillmentWorkflow) throws an error. Reservations are created automatically when an order is placed through the [completeCartWorkflow](/references/medusa-workflows/completeCartWorkflow). If you create an order with a workflow that doesn't create reservations, such as [createOrderWorkflow](/references/medusa-workflows/createOrderWorkflow), use the [createReservationsWorkflow](/references/medusa-workflows/createReservationsWorkflow) to create reservations before fulfilling the order, and set each reservation's `line_item_id` to the order item's ID.
+Each fulfilled item whose variant has `manage_inventory` enabled must have an associated inventory reservation, otherwise the createOrderFulfillmentWorkflow throws an error. Reservations are created automatically when an order is placed through the completeCartWorkflow. If you create an order with a workflow that doesn't create reservations, such as createOrderWorkflow, use the createReservationsWorkflow to create reservations before fulfilling the order, and set each reservation's `line_item_id` to the order item's ID.
 
 </Note>
 
@@ -76,7 +76,7 @@ When an item in an order is returned and the associated variant has its `manage_
 
 <Note title="Tip">
 
-This flow is implemented within the [confirmReturnReceiveWorkflow](/references/medusa-workflows/confirmReturnReceiveWorkflow)
+This flow is implemented within the confirmReturnReceiveWorkflow
 
 </Note>
 

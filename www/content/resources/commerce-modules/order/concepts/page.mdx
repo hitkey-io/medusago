@@ -8,7 +8,7 @@ In this document, you’ll learn about orders and related concepts
 
 ## Order
 
-An order is a purchase made by a customer, either through the storefront or through the API. It is represented by the [Order data model](/references/order/models/Order).
+An order is a purchase made by a customer, either through the storefront or through the API. It is represented by the Order data model.
 
 An order holds information about:
 
@@ -31,25 +31,25 @@ When an order is created from a cart or a draft order, the order inherits their 
 
 When order items are changed through an edit, claim, or exchange, the new items added to the order will also have their details in the order's locale if translations are available.
 
-You can also edit an order's locale using the [Update Order](!api!/admin/orders/update-order) API route.
+You can also edit an order's locale using the [Update Order](!api!/admin/orders) API route.
 
 ---
 
 ## Order Items
 
-The items purchased in an order are represented by the [OrderItem data model](/references/order/models/OrderItem). An order can have multiple items.
+The items purchased in an order are represented by the OrderItem data model. An order can have multiple items.
 
 
 ### Item's Product Details
 
-The details of the purchased products are represented by the [LineItem data model](/references/order/models/OrderLineItem). Not only does a line item hold the details of the product, but also details related to its price, adjustments due to promotions, and taxes.
+The details of the purchased products are represented by the LineItem data model. Not only does a line item hold the details of the product, but also details related to its price, adjustments due to promotions, and taxes.
 
 ### Item Metadata Fields
 
 An order item exposes two metadata fields:
 
-- `metadata`: Custom data stored on the versioned [OrderItem](/references/order/models/OrderItem) record. This metadata is specific to a version of the item in the order.
-- `line_item_metadata`: Custom data stored on the underlying [OrderLineItem](/references/order/models/OrderLineItem) record. This metadata belongs to the line item itself, independent of versioning.
+- `metadata`: Custom data stored on the versioned OrderItem record. This metadata is specific to a version of the item in the order.
+- `line_item_metadata`: Custom data stored on the underlying OrderLineItem record. This metadata belongs to the line item itself, independent of versioning.
 
 <Note>
 
@@ -63,7 +63,7 @@ An order item exposes two metadata fields:
 
 An order has one or more shipping methods used to handle item shipment.
 
-Each shipping method is represented by the [OrderShippingMethod data model](/references/order/models/OrderShippingMethod) that holds its details. The shipping method is linked to the order through the [OrderShipping data model](/references/order/models/OrderShipping).
+Each shipping method is represented by the OrderShippingMethod data model that holds its details. The shipping method is linked to the order through the OrderShipping data model.
 
 
 ### data Property
@@ -78,7 +78,7 @@ The MedusaGo application passes the `data` property to the Fulfillment Module wh
 
 ## Order Totals
 
-An order’s total amounts (including tax total, total after an item is returned, etc…) are represented by the [OrderSummary data model](/references/order/models/OrderSummary).
+An order’s total amounts (including tax total, total after an item is returned, etc…) are represented by the OrderSummary data model.
 
 Refer to the [Retrieve Order Totals](../order-totals/page.mdx) guide to learn how to retrieve an order’s totals.
 
@@ -86,7 +86,7 @@ Refer to the [Retrieve Order Totals](../order-totals/page.mdx) guide to learn ho
 
 ## Order Payments
 
-Payments made on an order, whether they’re capture or refund payments, are recorded as transactions represented by the [OrderTransaction data model](/references/order/models/OrderTransaction).
+Payments made on an order, whether they’re capture or refund payments, are recorded as transactions represented by the OrderTransaction data model.
 
 An order can have multiple transactions. The sum of these transactions must be equal to the order summary’s total. Otherwise, there’s an outstanding amount.
 

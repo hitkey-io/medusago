@@ -8,7 +8,7 @@ In this guide, you’ll learn about the main concepts in the Pricing Module.
 
 ## Price Data Model
 
-The [Price](/references/pricing/models/Price) data model represents a specific price for a resource. For example, the price of a product variant in the USD currency.
+The Price data model represents a specific price for a resource. For example, the price of a product variant in the USD currency.
 
 The `Price` data model has an `amount` property that represents the monetary value of the price. It's stored as an integer in major units. For example, `$20.00` is stored as `20`, and `$20.5` is stored as `20.5`.
 
@@ -18,7 +18,7 @@ The `Price` data model belongs to other data models like `PriceSet` and `PriceLi
 
 ## Price Set
 
-A [PriceSet](/references/pricing/models/PriceSet) represents a collection of prices that are linked to a resource. For example, a product variant can have a price set that includes prices in multiple currencies, such as USD and EUR.
+A PriceSet represents a collection of prices that are linked to a resource. For example, a product variant can have a price set that includes prices in multiple currencies, such as USD and EUR.
 
 Each of these prices is represented by the [Price data model](#price-data-model).
 
@@ -27,7 +27,7 @@ Each of these prices is represented by the [Price data model](#price-data-model)
 
 ## Price List
 
-A [PriceList](/references/pricing/models/PriceList) is a group of prices that are only enabled when their conditions and rules are satisfied. For example, you can apply special prices to customers in the VIP group.
+A PriceList is a group of prices that are only enabled when their conditions and rules are satisfied. For example, you can apply special prices to customers in the VIP group.
 
 When the conditions are met, the prices in the price list can override the default prices in a price set. Learn more in the [Price Calculation](../price-calculation/page.mdx) guide.
 
@@ -75,7 +75,7 @@ When the customer views and purchases a product, Medusa selects the price based 
 
 ## Multi-Region Support for Prices
 
-The `Price` data model has a relation to the [PriceRule](/references/pricing/models/PriceRule) data model that allows you to define prices that are applied based on specific conditions, such as the customer's region.
+The `Price` data model has a relation to the PriceRule data model that allows you to define prices that are applied based on specific conditions, such as the customer's region.
 
 For example, Medusa allows you to specify prices for a product variant that are applied only when the customer is in a specific region. The price would be similar to the following:
 

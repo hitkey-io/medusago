@@ -31,7 +31,7 @@ In this guide, you'll learn how to reject product variants whose product isn't a
 
 A product's [availability in a sales channel](../../sales-channel/links-to-other-modules/page.mdx#product-module) is a merchandising filter, not an authorization boundary.
 
-Medusa applies it when you retrieve products. For example, the [List Products Store API route](!api!/store/products/list-products) only returns the products available in the sales channels of the publishable API key in the request. So, a product that you remove from a sales channel disappears from that channel's storefront.
+Medusa applies it when you retrieve products. For example, the [List Products Store API route](!api!/store/products) only returns the products available in the sales channels of the publishable API key in the request. So, a product that you remove from a sales channel disappears from that channel's storefront.
 
 Medusa doesn't apply that filter when a variant is added to a cart or when a cart is completed. A customer who knows a variant's ID can still add it to a cart scoped to a sales channel that the variant's product isn't available in.
 
@@ -41,7 +41,7 @@ Medusa doesn't enforce this by default because merchants use sales channels for 
 
 </Note>
 
-The inventory check that does run when you add an item to a cart, which the [confirmVariantInventoryWorkflow](/references/medusa-workflows/confirmVariantInventoryWorkflow) performs, only checks the quantity available at the stock locations of the cart's sales channel. It doesn't check whether the variant's product is linked to that sales channel.
+The inventory check that does run when you add an item to a cart, which the confirmVariantInventoryWorkflow performs, only checks the quantity available at the stock locations of the cart's sales channel. It doesn't check whether the variant's product is linked to that sales channel.
 
 To enforce the availability, consume the `validate` [hook](!docs!/learn/fundamentals/workflows/workflow-hooks) of the workflows that add items to a cart and complete a cart. A workflow hook is a point in a workflow where you can inject custom functionality as a step function. If the step function throws an error, the workflow stops and the API route returns the error.
 
@@ -60,6 +60,6 @@ To test out the validation:
 1. Start the MedusaGo application.
 2. In the Medusa Admin dashboard, add a product that doesn't belong to a sales channel, or remove a product from a sales channel, as explained in the [user guide](!user-guide!/settings/sales-channels#manage-products-in-sales-channel).
 3. Create a cart associated with that sales channel using a publishable API key linked to it.
-4. Send a request to the [Add Line Item Store API route](!api!/store/carts/add-line-item) with a variant of the product you removed.
+4. Send a request to the [Add Line Item Store API route](!api!/store/carts) with a variant of the product you removed.
 
 The request returns a response with the `400` status code and the error message you specified.

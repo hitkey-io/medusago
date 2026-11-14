@@ -43,11 +43,11 @@ You can use this webhook listener when configuring webhook events in your third-
 
 ### getWebhookActionAndData Method
 
-The webhook listener API route executes the [getWebhookActionAndData method](/references/payment/getWebhookActionAndData) of the Payment Module's main service. This method delegates handling of incoming webhook events to the relevant payment provider.
+The webhook listener API route executes the getWebhookActionAndData method of the Payment Module's main service. This method delegates handling of incoming webhook events to the relevant payment provider.
 
 <Note title="Tip">
 
-Payment providers have a similar [getWebhookActionAndData method](/references/payment/provider) to process the webhook event. So, if you're implementing a custom payment provider, make sure to implement it to handle webhook events.
+Payment providers have a similar getWebhookActionAndData method to process the webhook event. So, if you're implementing a custom payment provider, make sure to implement it to handle webhook events.
 
 </Note>
 
@@ -56,7 +56,7 @@ If the `getWebhookActionAndData` method returns an `authorized` or `captured` ac
 
 <Note>
 
-View the full flow of the webhook event processing in the [processPaymentWorkflow](/references/medusa-workflows/processPaymentWorkflow) reference.
+View the full flow of the webhook event processing in the processPaymentWorkflow reference.
 
 </Note>
 

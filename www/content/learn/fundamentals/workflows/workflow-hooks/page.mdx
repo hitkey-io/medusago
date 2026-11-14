@@ -1,0 +1,138 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Workflow Hooks`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn what workflow hooks are and how to use them.
+
+## What is a Workflow Hook?
+
+A workflow hook is a specific point in a workflow where you can inject custom functionality. This custom functionality is called a hook handler.
+
+MedusaGo exposes hooks in many of its workflows that are used in its API routes. You can consume those hooks to add your custom logic. The hooks have the same names as in Medusa.
+
+<Note title="Consume workflow hooks when" type="success">
+
+You want to perform a custom action during a workflow's execution, such as when a product is created.
+
+</Note>
+
+---
+
+## How to Consume a Hook?
+
+Every workflow created with `composer.CreateWorkflow` has a `RegisterHook` method. It accepts three parameters:
+
+1. The name of the hook.
+2. The hook handler: a step function.
+3. An optional compensation function. It's `nil` if you don't need one.
+
+So, to consume a hook:
+
+1. Import the workflow from its Go package in MedusaGo's core flows (`packages/core/core-flows/src`).
+2. Call `RegisterHook` with the name of the hook and the handler.
+3. Call the function that registers the hook before the application starts, for example from `main.go`.
+
+For example, to consume the `productsCreated` hook of Medusa's `CreateProductsWorkflow`, create the file `src/workflows/hooks/product-created.go` with the following content:
+
+```go title="src/workflows/hooks/product-created.go" file="workflows/hooks/hooks.go" region="consume"
+```
+
+Then, in `main.go`, call `hooks.RegisterProductsCreatedHook()` before you call `cli.Run`. A hook handler only runs in an application that registered it.
+
+Now, when a product is created using the [Create Product API route](!api!/admin/products), your hook handler runs after the product is created.
+
+<Note>
+
+A hook can have only one handler. If you register a handler for a hook that already has one, the new handler replaces the previous one.
+
+</Note>
+
+<Note title="Tip">
+
+To find where a workflow runs its hooks, search for `CreateHook` in its file under `packages/core/core-flows/src` in the MedusaGo repository. The call shows the name of the hook and its input.
+
+</Note>
+
+### Hook Handler Parameters
+
+Since a hook handler is essentially a step function, it receives the step's context as a first parameter, and the hook's input as a second parameter. The context has a `Container` property to resolve resources from the [container](!docs!/learn/fundamentals/medusa-container).
+
+The hook's input has the type `any`. Each hook has a different input. For example, the `productsCreated` hook receives a `*dal.Record` with a `products` property that holds the created products, and an `additional_data` property.
+
+The handler returns a `composer.StepResponse` and an error. If it returns an error, the workflow fails and the compensation functions are called.
+
+### Hook Handler Compensation
+
+Since the hook handler is a step function, you can set its compensation function as the third parameter of `RegisterHook`.
+
+For example:
+
+```go title="src/workflows/hooks/product-created.go" file="workflows/hooks/hooks.go" region="compensation"
+```
+
+The compensation function runs if an error occurs in the workflow. It undoes the actions performed by the hook handler.
+
+The compensation function receives the second parameter passed to the `StepResponse` returned by the handler as input. Learn more in the [Compensation Function](!docs!/learn/fundamentals/workflows/compensation-function) chapter.
+
+### Additional Data Property
+
+Medusa's workflows include an `additional_data` property in the hook's input:
+
+```go title="src/workflows/hooks/product-created.go" file="workflows/hooks/hooks.go" region="additional-data"
+```
+
+This property is a `*dal.Record` that contains additional data passed to the workflow through the request sent to the API route. It's `nil` if no additional data was passed.
+
+The API routes that run workflows with hooks accept an `additional_data` object in the request body, and pass it to the workflow. MedusaGo doesn't validate the properties of `additional_data`: you validate them in a middleware or in the hook handler, as explained in the [Extend Create Product Flow](!docs!/learn/customization/extend-features/extend-create-product) guide.
+
+### Pass Additional Data to Workflow
+
+You can also pass additional data when running the workflow. Set it in the workflow's input:
+
+```go title="src/api/products/route.go" file="workflows/hooks/run.go" region="run"
+```
+
+Your hook handler then receives the passed data in the `additional_data` property.
+
+---
+
+## Hooks with Return Values
+
+Some workflow hooks expect you to return data from the hook handler. This data is then used in subsequent steps of the workflow.
+
+You return the data in the `StepResponse` the handler returns:
+
+For example, the `setPricingContext` hook of `CreateAndCompleteReturnOrderWorkflow` merges the data its handler returns into the pricing context:
+
+```go title="src/workflows/hooks/pricing-context.go" file="workflows/hooks/hooks.go" region="return-value"
+```
+
+Refer to the source of a workflow in the MedusaGo repository to check whether a hook uses the data its handler returns.
+
+---
+
+## Add Hooks to Your Workflow
+
+You can add hooks to your own workflows, so that other customizations, such as a plugin, can inject their logic. Call `composer.CreateHook` in the workflow's body, with the execution, the hook's name, and its input:
+
+```go title="src/workflows/create-order.go" file="workflows/hooks/own.go" region="create-hook"
+```
+
+If no handler is registered for the hook, it does nothing. If a handler is registered with `CreateOrderWorkflow.RegisterHook`, it runs at that point as a step of the workflow, and its compensation function runs if the workflow fails.
+
+To use the data the handler returns, call `composer.CreateHookWithResult`. It returns the data, or `nil` if no handler is registered:
+
+```go title="src/workflows/pricing.go" file="workflows/hooks/own.go" region="result"
+```
+
+---
+
+## Hooks in Plugins
+
+A [plugin](!docs!/learn/fundamentals/plugins) consumes hooks in the `Load` function of its definition, which runs once when the plugin is loaded. Learn more in the [Create a Plugin](!docs!/learn/fundamentals/plugins/create) chapter.

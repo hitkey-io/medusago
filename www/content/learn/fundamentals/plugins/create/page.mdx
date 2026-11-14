@@ -1,0 +1,287 @@
+---
+generate_toc: true
+---
+
+import { Table } from "docs-ui"
+
+export const metadata = {
+  title: `Create a Plugin`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to create a MedusaGo plugin, test it in an application, and publish it.
+
+A [plugin](!docs!/learn/fundamentals/plugins) is a Go package of reusable MedusaGo customizations that you can use in any MedusaGo application. By creating and publishing a plugin, you can reuse your customizations across multiple projects or share them with the community.
+
+The chapter builds a small wishlist plugin as an example. It has a module with a `wishlist` table, a link to customers, an API route, a subscriber, a workflow hook, and a scheduled job.
+
+## 1. Create a Plugin Project
+
+A plugin is a Go module. Create a directory for it, and initialize the module with the name you'll publish it under, which is the import path of its main package:
+
+```bash
+mkdir medusa-plugin-wishlist
+cd medusa-plugin-wishlist
+go mod init github.com/acme/medusa-plugin-wishlist
+go get github.com/hitkey-io/medusago@latest
+```
+
+<Note>
+
+Plugin projects aren't created by the `create-medusago-app` installer, and the plugin commands of the Medusa CLI (`plugin:build`, `plugin:develop`, `plugin:publish`, `plugin:add`, and `plugin:db:generate`) aren't supported. You don't need them: a Go module doesn't have a build step, and you publish and install it with the Go toolchain.
+
+</Note>
+
+### Plugin Directory Structure
+
+The main package of the plugin is at the root of the module. Its customizations are in the following sub-directories, which mirror the structure of a MedusaGo project:
+
+- `src/api`: contains the [API routes](!docs!/learn/fundamentals/api-routes) and [middlewares](!docs!/learn/fundamentals/api-routes/middlewares) of the plugin.
+- `src/jobs`: contains [scheduled jobs](!docs!/learn/fundamentals/scheduled-jobs).
+- `src/links`: contains [module links](!docs!/learn/fundamentals/module-links).
+- `src/modules`: contains [modules](!docs!/learn/fundamentals/modules).
+- `src/subscribers`: contains [subscribers](!docs!/learn/fundamentals/events-and-subscribers).
+- `src/workflows`: contains [workflows](!docs!/learn/fundamentals/workflows). You can also add [hooks](!docs!/learn/fundamentals/workflows/workflow-hooks) under `src/workflows/hooks`.
+
+Unlike in a project, MedusaGo doesn't scan these directories. You list what the plugin contains in its definition, as explained in the next section.
+
+---
+
+## 2. Define the Plugin
+
+The plugin registers a `plugins.Definition` value with the framework. It describes the plugin's customizations. Create the file `plugin.go` at the root of the plugin with the following content:
+
+```go title="plugin.go" file="plugin/plugin.go" region="definition"
+```
+
+A `plugins.Definition` has the following properties:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Property
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `Name`
+      </Table.Cell>
+      <Table.Cell>
+        The plugin's name. An application uses it as the `Resolve` value of the plugin in its configuration. Use the import path of the plugin's package.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Version`
+      </Table.Cell>
+      <Table.Cell>
+        The plugin's version.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Modules`
+      </Table.Cell>
+      <Table.Cell>
+        The plugin's [modules](#3-create-a-module). `Dir` is the name of the module's directory, and `Exports` its definition.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Links`
+      </Table.Cell>
+      <Table.Cell>
+        A function that defines the plugin's [module links](!docs!/learn/fundamentals/module-links/link) with `DefineLink`. It returns an error if a link is invalid.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Routes` and `Middlewares`
+      </Table.Cell>
+      <Table.Cell>
+        The plugin's API routes and middlewares, in the same form as the `Routes` and `Middlewares` of a project. They're registered after MedusaGo's own API, and before the project's.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Subscribers`
+      </Table.Cell>
+      <Table.Cell>
+        The plugin's subscribers. Each has the `Events` it handles, and a `Handler`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `Load`
+      </Table.Cell>
+      <Table.Cell>
+        A function that runs once when the plugin is loaded. Use it to consume workflow hooks and to register scheduled jobs.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+Then, register the definition when the package is imported:
+
+```go title="plugin.go" file="plugin/plugin.go" region="register"
+```
+
+An application that imports the package registers the plugin. The plugin's customizations are only added to the application if it also lists the plugin in the `Plugins` of its configuration.
+
+---
+
+## 3. Create a Module
+
+A module in a plugin is a [module](!docs!/learn/fundamentals/modules) like the ones in a project. For example, create the file `src/modules/wishlist/models.go` with the following content:
+
+```go title="src/modules/wishlist/models.go" file="plugin/src/modules/wishlist/models.go"
+```
+
+Then, create its definition in `src/modules/wishlist/index.go`:
+
+```go title="src/modules/wishlist/index.go" file="plugin/src/modules/wishlist/index.go" region="module"
+```
+
+The module is registered in the application with the key of its service, which is the name you pass to `Module` (`wishlist`). It's available under this key in the [container](!docs!/learn/fundamentals/medusa-container).
+
+### Plugin Options
+
+The options an application sets for the plugin are passed to every module of the plugin, in the `Options` of the service's options. For example, the module above reads a `max_items` option. A module reads an option with a type assertion on the `Options` map, so check the value's type, and keep a default for an option the application doesn't set. If the application sets the options in `medusa-config.json` or `medusa-config.yaml`, a number is a `float64`.
+
+### Generate Migrations
+
+The migrations of a plugin's modules run when the application runs `go run . db:migrate`. To generate them, you need a MedusaGo application in which the module is a project module, since `db:generate` only generates migrations for the modules that are resolved from a local path.
+
+So, create a development application in a `dev` directory of the plugin, with a `main.go` and a `medusa-config.go` like [any project](!docs!/learn/configurations/medusa-config). In its configuration, add the module with the path of its directory, relative to the `dev` directory:
+
+```go title="dev/medusa-config.go" file="plugin/usage/dev.go" region="dev-module"
+```
+
+Then, set the `DATABASE_URL` of the development application to a PostgreSQL database, and run the following command from the `dev` directory:
+
+```bash
+go run . db:generate wishlist
+```
+
+It generates the migrations in `src/modules/wishlist/migrations`. Add them to the module's definition with the `Migrations` property, as shown in the module's definition above. The development application must not list the plugin in its `Plugins`, as the plugin would register the module twice.
+
+---
+
+## 4. Create Other Customizations
+
+You create the other customizations of the plugin as in a project, then add them to its definition.
+
+### Links
+
+Define the plugin's links in a function with `DefineLink`, and set it as the `Links` property of the definition:
+
+```go title="src/links/wishlist-customer.go" file="plugin/src/links/wishlist-customer.go" region="body"
+```
+
+### API Routes and Middlewares
+
+Create a function that returns the `[]medusahttp.RouteFile` of the plugin's routes, and one that returns its `[]medusahttp.MiddlewareRoute`. The paths of the routes are complete, for example `/store/wishlists`:
+
+```go title="src/api/routes.go" file="plugin/src/api/routes.go" region="body"
+```
+
+### Subscribers
+
+Create `plugins.Subscriber` values with the events to subscribe to, and a handler. The handler receives the container as a `plugins.Resolver`:
+
+```go title="src/subscribers/customer-created.go" file="plugin/src/subscribers/customer-created.go" region="body"
+```
+
+### Workflow Hooks
+
+[Workflows](!docs!/learn/fundamentals/workflows) are Go values, so an application that wants to run a workflow of your plugin imports it from the plugin's package. To consume the hooks of MedusaGo's workflows, call `RegisterHook` in the `Load` function:
+
+```go title="src/workflows/hooks/hooks.go" file="plugin/src/workflows/hooks/hooks.go" region="body"
+```
+
+### Scheduled Jobs
+
+A scheduled job is registered at runtime, so register it in the `Load` function too:
+
+```go title="src/jobs/cleanup.go" file="plugin/src/jobs/cleanup.go" region="body"
+```
+
+<Note>
+
+The `Load` function runs once per process, when the plugin is loaded. A plugin's `Load` only runs for an application that lists the plugin in its configuration.
+
+</Note>
+
+<Note>
+
+Admin extensions are JavaScript, and a plugin's Go package can't carry them. Learn how to customize the admin in the [Admin Development](!docs!/learn/fundamentals/admin) chapter.
+
+</Note>
+
+---
+
+## 5. Test the Plugin in an Application
+
+To test the plugin, use it in a MedusaGo application. You can create one with the `create-medusago-app` installer.
+
+In the application's directory, add the plugin to its dependencies. While you develop it, use a `replace` directive that points to the plugin's directory:
+
+```bash
+go mod edit -replace github.com/acme/medusa-plugin-wishlist=../medusa-plugin-wishlist
+go get github.com/acme/medusa-plugin-wishlist
+```
+
+Then, in the application's `main.go`, import the plugin's package for its side effect, which registers the plugin: `import _ "github.com/acme/medusa-plugin-wishlist"`.
+
+Finally, add the plugin to the `Plugins` of the application's configuration, in `medusa-config.go`, with the options you want:
+
+```go title="medusa-config.go" file="plugin/usage/usage.go" region="config"
+```
+
+`Resolve` is the plugin's `Name`. If an application lists a plugin that isn't imported, it fails to start with an error saying it can't resolve the plugin.
+
+Run the migrations of the plugin's modules, then start the application:
+
+```bash
+go run . db:migrate
+go run . develop
+```
+
+`db:migrate` also syncs the plugin's module links. Your plugin's API routes, subscribers, and hooks are now part of the application.
+
+---
+
+## 6. Publish the Plugin
+
+A plugin is published as a Go module. Push it to a Git repository whose URL matches the module's name, then tag a release:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+An application then installs the version with `go get`:
+
+```bash
+go get github.com/acme/medusa-plugin-wishlist@v1.0.0
+```
+
+The application's dependencies include the MedusaGo version the plugin requires, or a later one if the application uses a later version. Test the plugin with the versions of MedusaGo you want to support.
+
+---
+
+## Update a Plugin
+
+To update a plugin in an application, run `go get` with the new version, then run the migrations:
+
+```bash
+go get github.com/acme/medusa-plugin-wishlist@v1.1.0
+go run . db:migrate
+```

@@ -1,0 +1,265 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Query`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about Query and how to use it to fetch data from modules.
+
+## What is Query?
+
+Query fetches data across modules. It's a tool that wraps the [module services](!docs!/learn/fundamentals/modules/service-factory) of the application and the [module links](!docs!/learn/fundamentals/module-links), and it lets you retrieve the records of a data model together with the records linked to it, even when they belong to other modules.
+
+For example, with Query you retrieve a post of the Blog Module with the products of the Product Module that it's linked to, in one call. Query lists the posts, finds their links, and then retrieves the products.
+
+The API routes of the Admin and Store APIs use Query to retrieve their data.
+
+---
+
+## Query Example
+
+Query is registered in the [container](!docs!/learn/fundamentals/medusa-container) under the key `common.ContainerRegistrationKeys.QUERY`. Its type is `*query.Query`, from the `query` package of `core`:
+
+```go title="src/queries/query.go" file="query/query.go" region="resolver"
+```
+
+These are the imports of the examples of this chapter:
+
+```go title="src/queries/query.go" file="query/query.go" region="imports"
+```
+
+To retrieve data, call its `Graph` method. It takes a `GraphInput`, which describes the data to retrieve, and a `joiner.Options` value, for options such as the locale:
+
+```go title="src/queries/query.go" file="query/query.go" region="graph"
+```
+
+The `GraphInput` has these fields:
+
+| Field | Description |
+| --- | --- |
+| `Entity` | The name of the data model to retrieve, in snake case, such as `post`, `product`, or `sales_channel`. It's the alias of the data model. |
+| `Fields` | The properties to retrieve, as a list. |
+| `Filters` | The filters on the records, as a `*dal.Record`. |
+| `Pagination` | The pagination and the order of the records, as a `*dal.Record`. |
+| `WithDeleted` | Includes the soft-deleted records when `true`. |
+| `Context` | The context to pass to modules that use one, such as pricing. |
+
+`Graph` returns a `*GraphResult`:
+
+- `Data` is a `[]any` of the records. Each one is a `*dal.Record`, an ordered map of the retrieved properties.
+- `Metadata` holds the `count`, `skip`, and `take` of the query when you paginate. It's `nil` otherwise.
+
+<Note>
+
+The examples of this chapter use the small `rec` function that builds a `*dal.Record` from a list of keys and values. You define it in your project:
+
+```go title="src/queries/query.go" file="query/query.go" region="rec"
+```
+
+</Note>
+
+### Query Usage in Workflows
+
+In a [workflow](!docs!/learn/fundamentals/workflows), use the `UseQueryGraphStep` step from `core-flows/src/common/steps`. It takes a `GraphInput`, and returns the result of the query:
+
+```go title="src/workflows/posts.go" file="query/workflow.go" region="workflow"
+```
+
+The `Data` of the result is the list of records. If you set the `IsList` field of the step's input to `false`, it's the first record.
+
+---
+
+## Querying the Graph
+
+Query's name for the data that you can retrieve is the *graph*: the data models of the modules, and the links between them.
+
+A data model is in the graph when it has an alias, which is the name you pass in `Entity`: every data model of a module has the snake case of its name and its plural, such as `post` and `posts`. The module links add the linked data models as properties of the data models that they link.
+
+---
+
+## Select Specific Fields
+
+Pass the names of the properties to retrieve in the `Fields` list. To retrieve all the properties of a record, use `*`:
+
+```go title="src/queries/query.go" file="query/query.go" region="all-fields"
+```
+
+<Note type="warning">
+
+Retrieving all the fields of a record, and of its linked records, is expensive for large data models such as carts and orders: they have many relations that Query loads, and the totals that it computes. Select only the fields that you need.
+
+</Note>
+
+---
+
+## Retrieve Linked Records
+
+Fields can also be properties of the records linked to the data model. Use a dot between the name of the relation and the property: `comments.body`. To retrieve all the properties of a linked record, use `*` after the dot: `products.*`.
+
+The names of the relations are:
+
+- For a relationship of the module, the name of its property: `comments` and `tags` for a post.
+- For a module link, the alias of the linked data model: `products` for a post, since a post is linked to many products, and `sales_channels`, `user`, and so on. The [Module Links chapters](!docs!/learn/fundamentals/module-links) explain how the alias is defined.
+
+You can go through many levels:
+
+```go title="src/queries/query.go" file="query/query.go" region="linked"
+```
+
+The query above retrieves the posts, their comments (a relationship of the Blog Module), their linked products (a module link to the Product Module), and the variants of the products. Query retrieves each module's data with the module's service, so it makes one request for each module, not one for each record.
+
+A linked record that's a list, such as `comments` or `products`, is a list of records in the result. A linked record that isn't a list is a record, and the property is left out of the result when no record is linked.
+
+### Retrieve Custom Columns of Links
+
+The `_link` property of a link returns the link's rows, with their custom columns. Learn more in the [Custom Columns chapter](!docs!/learn/fundamentals/module-links/custom-columns#retrieve-custom-column-with-link).
+
+---
+
+## Apply Filters
+
+Pass the filters in the `Filters` field, as a `*dal.Record` whose keys are properties and whose values are the values to match:
+
+```go title="src/queries/query.go" file="query/query.go" region="filters"
+```
+
+The query above retrieves the published posts of an author. All the filters of a record must match.
+
+To match one of many values, pass a list:
+
+```go title="src/queries/query.go" file="query/query.go" region="filter-in"
+```
+
+### Advanced Query Filters
+
+A filter's value can also be a record with operators:
+
+| Operator | Matches |
+| --- | --- |
+| `$eq`, `$ne` | Equal, or not equal, to a value. `$ne` with `nil` matches a property that isn't `null`. |
+| `$in`, `$nin` | A value that is in a list, or is not. |
+| `$gt`, `$gte`, `$lt`, `$lte` | Greater than, greater than or equal to, less than, or less than or equal to a value. |
+| `$like`, `$ilike` | A pattern, with `%` as a wildcard. `$ilike` ignores the case. |
+| `$re` | A regular expression. |
+| `$exists` | A property that's set (`true`) or is `null` (`false`). |
+| `$contains`, `$contained`, `$overlap` | For properties that hold lists or JSON: containing, contained in, or overlapping a value. |
+| `$not` | Negates an operator. |
+
+The `$and` and `$or` keys combine filters, and `$not` negates one:
+
+```go title="src/queries/query.go" file="query/query.go" region="filter-operators"
+```
+
+#### Filter a Relation's Property
+
+To filter by a property of a relationship, use its name as the key, with a record of filters as the value:
+
+```go title="src/queries/query.go" file="query/query.go" region="filter-relation"
+```
+
+The query retrieves the posts that have a comment by Ada.
+
+### Filter by Linked Data Model's Property
+
+You can filter by a property of a data model that's linked through a module link, in the same way:
+
+```go title="src/queries/query.go" file="query/query.go" region="filter-linked"
+```
+
+Query applies the filter on the other module's data. When it can't turn the filter into a SQL condition of the module's own query, it retrieves the linked records, filters the results in memory, and applies the pagination afterwards, so the results and their count are correct.
+
+---
+
+## Apply Pagination
+
+To paginate the records, pass a record in `Pagination`, with these keys:
+
+| Key | Description |
+| --- | --- |
+| `skip` | The number of records to skip. |
+| `take` | The number of records to retrieve. |
+| `order` | The order of the records, as a record whose keys are properties and whose values are `"ASC"` or `"DESC"`. |
+
+When you set `skip`, the result has `Metadata`, with the `count` of all the records that match the filters, and the `skip` and `take` that you passed:
+
+```go title="src/queries/query.go" file="query/query.go" region="pagination"
+```
+
+<Note>
+
+The numbers of the pagination are `float64` or `int` values, and the `count` of the metadata is a `float64`.
+
+</Note>
+
+### Retrieve Only the Count
+
+To get only the number of records, paginate with a `take` of `0`. Query returns no records, and the `count` of the metadata:
+
+```go title="src/queries/query.go" file="query/query.go" region="count-only"
+```
+
+### Sort Records
+
+The `order` key of the pagination sorts the records, as in the `PostsPage` example above, which sorts by `created_at` in descending order. Without an order, the records are sorted by their primary key, in ascending order.
+
+---
+
+## Retrieve Deleted Records
+
+Query doesn't retrieve the soft-deleted records by default. Set `WithDeleted` to `true` to retrieve them as well. To retrieve only the deleted records, also filter by a `deleted_at` that isn't `null`:
+
+```go title="src/queries/query.go" file="query/query.go" region="with-deleted"
+```
+
+---
+
+## Retrieve Localized Data
+
+If the Translation Module is enabled, set the `Locale` option to retrieve the translatable properties in a locale:
+
+```go title="src/queries/query.go" file="query/query.go" region="locale"
+```
+
+---
+
+## Configure Query to Throw Error
+
+By default, Query returns an empty result when the records you filter by ID don't exist. Set the `ThrowIfKeyNotFound` option to make Query return a `NOT_FOUND` error that names the IDs that it couldn't find:
+
+```go title="src/queries/query.go" file="query/query.go" region="throw"
+```
+
+The `ThrowIfRelationNotFound` option does the same for the linked records that Query retrieves by ID.
+
+---
+
+## Cache Query Results
+
+If the caching module and the `caching` feature flag are enabled, you can cache the result of a query with the `Cache` option. The `caching.CacheOptions` value has these fields:
+
+| Field | Description |
+| --- | --- |
+| `Enable` | Enables or disables the cache for this query. The cache is enabled when any other field is set. |
+| `Key` | The cache key. By default, MedusaGo computes it from the query. |
+| `Tags` | The tags of the cached entry, to invalidate it. |
+| `ComputeAutomaticTags` | Whether MedusaGo adds tags from the records that the query retrieves. |
+| `TTL` | The time to live of the entry, in seconds. |
+| `AutoInvalidate` | Whether the entry is invalidated automatically when its records change. |
+| `Providers` | The caching providers to use. |
+
+```go title="src/queries/query.go" file="query/query.go" region="cache"
+```
+
+Without the module or the feature flag, the option has no effect, and Query runs the query.
+
+---
+
+## Query for Your Modules
+
+Query builds the graph at startup from the DML data models of the configured modules and the links that your project defines. A module of your application is in the graph once it's registered in `medusa-config.go`, and its [links](!docs!/learn/fundamentals/module-links) are defined before the application loads. You can then retrieve its data models, such as `post`, with the same calls.
+
+The data models of the graph come from DML definitions: Query can't retrieve data that a module doesn't define as a DML data model.

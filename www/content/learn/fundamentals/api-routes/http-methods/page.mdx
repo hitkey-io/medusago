@@ -1,0 +1,43 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `HTTP Methods`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about how to add new API routes for each HTTP method.
+
+## HTTP Method Handler
+
+An API route is created for every HTTP method you set a handler function for in the `Route` of a `RouteFile`.
+
+The `Route` struct has a field for each allowed HTTP method: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `OPTIONS`, and `HEAD`. Every field has the type `RouteHandler`, which is a function that receives a `*MedusaRequest` and a `*MedusaResponse` and returns an `error`: `func(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error`.
+
+A method whose field isn't set isn't handled by the route, so requests with that method receive a `404` response.
+
+For example, the following file defines two handlers and a route file that uses both:
+
+```go title="src/api/hello-world/route.go" file="api/hello_world.go"
+```
+
+This file adds two API routes:
+
+- A `GET` API route at `http://localhost:9000/hello-world`.
+- A `POST` API route at `http://localhost:9000/hello-world`.
+
+Don't forget to [register the route file](!docs!/learn/fundamentals/api-routes#register-the-api-route) in the `Routes` option of the CLI.
+
+<Note>
+
+If a route has a `GET` handler but no `HEAD` handler, `HEAD` requests are answered by the `GET` handler. If it has no `OPTIONS` handler, an `OPTIONS` request receives an `Allow` header with the methods the route supports, unless the [CORS middleware](!docs!/learn/fundamentals/api-routes/cors) answers the preflight request.
+
+</Note>
+
+---
+
+## Handle Errors
+
+A handler returns an `error` to report that something went wrong. Return `nil` after you send the response. Learn more in the [Errors](!docs!/learn/fundamentals/api-routes/errors) chapter.

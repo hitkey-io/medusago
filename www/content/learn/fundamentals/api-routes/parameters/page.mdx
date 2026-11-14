@@ -1,0 +1,157 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `API Route Parameters`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about path, query, and request body parameters.
+
+## Path Parameters
+
+To create an API route that accepts a path parameter, add a path segment of the format `:param` to the route file's `Path`.
+
+For example, to create an API route at the path `/hello-world/:id`, where `:id` is a path parameter, create the route file with the following handler:
+
+```go title="src/api/hello-world/id/route.go" file="api/parameters.go" region="path-param"
+```
+
+The `MedusaRequest` object has a `Params` property. `Params` holds the path parameters in key-value pairs, as a `map[string]string`. The values are URL-decoded.
+
+### Multiple Path Parameters
+
+To create an API route that accepts multiple path parameters, add multiple segments of the format `:param` to the `Path`.
+
+For example, to create an API route at `/hello-world/:id/name/:name`, use the following handler:
+
+```go title="src/api/hello-world/id/name/route.go" file="api/parameters.go" region="multiple-path-params"
+```
+
+You access the `id` and `name` path parameters using the `req.Params` property.
+
+### Register the Routes
+
+The route files for these handlers set the paths with the path parameters:
+
+```go title="src/api/parameters.go" file="api/parameters.go" region="routes"
+```
+
+---
+
+## Query Parameters
+
+You can access all query parameters in the `Query` property of the `MedusaRequest` object. `Query` is an ordered object of type `*dal.Record`, whose keys are the query parameters' names.
+
+Use the `Get` method of `Query` to retrieve a parameter. It returns the value and a boolean that indicates whether the parameter exists. The query string is parsed like Express parses it with the `qs` library, so the value of a parameter is:
+
+- A `string`, if the parameter is passed once, such as `?name=John`.
+- A `[]any` of strings, if it's passed multiple times or with brackets, such as `?id[]=1&id[]=2`.
+- A `*dal.Record`, if it's an object, such as `?created_at[$gt]=2026-01-01`.
+
+For example:
+
+```go title="src/api/greeting/route.go" file="api/parameters.go" region="query-param"
+```
+
+The value of the `name` variable is the value passed in `?name=John`, for example.
+
+The `queryString` function in this example is a small helper that returns the value of a parameter if it's a string:
+
+```go title="src/api/helpers.go" file="api/helpers.go" region="query-string"
+```
+
+### Validate Query Parameters
+
+You can apply validation rules on received query parameters to ensure they match specified rules and types.
+
+Learn more in the [API Route Validation](!docs!/learn/fundamentals/api-routes/validation#how-to-validate-request-query-parameters) chapter.
+
+---
+
+## Request Body Parameters
+
+The MedusaGo application parses the body of any request with a JSON, URL-encoded, or text content type. The request body is set in the `MedusaRequest`'s `Body` property, whose type depends on the content type:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Content Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Type of `Body`
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `application/json`
+      </Table.Cell>
+      <Table.Cell>
+        A `*dal.Record` for a JSON object, or a `[]any` for a JSON array.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `application/x-www-form-urlencoded`
+      </Table.Cell>
+      <Table.Cell>
+        A `*dal.Record`.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `text/plain`
+      </Table.Cell>
+      <Table.Cell>
+        A `string`.
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+If the request has no body, or has another content type, `Body` is an empty `*dal.Record`. In JSON bodies, numbers are `float64` values, like in JavaScript.
+
+<Note title="Tip">
+
+Learn more about configuring body parsing, such as the size limit, in the [Middlewares](!docs!/learn/fundamentals/api-routes/middlewares#configure-the-body-parser) chapter.
+
+</Note>
+
+For example:
+
+```go title="src/api/greeting/route.go" file="api/parameters.go" region="body-param"
+```
+
+In this example, you use the `name` request body parameter to create the message in the returned response. The `body` function is a helper that converts `req.Body` into a `*dal.Record`, or an empty one if it isn't an object:
+
+```go title="src/api/helpers.go" file="api/helpers.go" region="body"
+```
+
+To test it out, send the following request to your MedusaGo application:
+
+```bash
+curl -X POST 'http://localhost:9000/greeting' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "name": "John"
+}'
+```
+
+This returns the following JSON object:
+
+```json
+{
+  "message": "[POST] Hello John!"
+}
+```
+
+### Validate Body Parameters
+
+You can apply validation rules on received body parameters to ensure they match specified rules and types.
+
+Learn more in the [Body Validation](!docs!/learn/fundamentals/api-routes/validation#how-to-validate-request-body) chapter.

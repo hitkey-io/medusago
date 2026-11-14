@@ -1,0 +1,60 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Build Custom Features`,
+}
+
+# {metadata.title}
+
+In the upcoming chapters, you'll follow step-by-step guides to build custom features in MedusaGo. These guides gradually introduce MedusaGo's concepts to help you understand what they are and how to use them.
+
+<Note title="Before you start">
+
+The guides build on a MedusaGo application and its code. [Install a MedusaGo application](!docs!/learn/installation) if you haven't already. You run the commands of the guides from the `apps/backend` directory of the project, as explained in the installation chapter.
+
+</Note>
+
+---
+
+## Tutorial Summary
+
+By following the guides in the upcoming chapters, you'll add brands to the MedusaGo application and associate them with products.
+
+To build a custom feature in MedusaGo, you need three main [Framework](!docs!/learn/fundamentals/framework) tools:
+
+- [Module](!docs!/learn/fundamentals/modules): a package with commerce logic for a single domain. It defines new tables to add to the database, and a service with methods to manage these tables.
+- [Workflow](!docs!/learn/fundamentals/workflows): a tool to perform an operation comprising multiple steps with built-in rollback and retry mechanisms.
+- [API route](!docs!/learn/fundamentals/api-routes): a REST endpoint that exposes commerce features to clients, such as the admin dashboard or a storefront. The API route executes a workflow that implements the commerce feature using modules.
+
+---
+
+## Where the Code Lives
+
+The code of the guides is Go. A MedusaGo project mirrors the structure of Medusa's projects, so the customizations are in the sub-directories of `src`:
+
+```plain
+apps/backend
+├── main.go
+├── medusa-config.go
+└── src
+    ├── api
+    ├── links
+    ├── modules
+    └── workflows
+```
+
+Unlike Medusa, MedusaGo doesn't scan these directories when it starts. The directories organize your code, and you register what they contain in `medusa-config.go` (the modules) and `main.go` (the API routes, middlewares, links, and workflow hooks). The guides show where to register each customization.
+
+Most code samples don't show their `import` statements: add them with your editor or with `goimports`. The import paths of your project's packages start with the module name in your `go.mod`, for example `my-medusa-store/src/modules/brand`.
+
+---
+
+## Next Chapters: Brand Module Example
+
+The next chapters will guide you to:
+
+1. Build a Brand Module that creates a `Brand` data model and provides data-management features.
+2. Add a workflow to create a brand.
+3. Expose an API route that allows admin users to create a brand using the workflow.

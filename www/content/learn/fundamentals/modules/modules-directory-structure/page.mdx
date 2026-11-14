@@ -1,0 +1,61 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Module Directory Structure`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about the files and directories you can create in a module's directory.
+
+A module is a Go package, so MedusaGo doesn't require a fixed file layout: the compiler resolves your code through imports. The layout below is the one the chapters of this documentation use, and it mirrors the layout of a Medusa module.
+
+```plain
+src/modules/blog
+├── models.go
+├── service.go
+├── index.go
+├── loaders.go
+├── options.go
+└── migrations
+    ├── .snapshot-blog.json
+    ├── Migration20261114134517.go
+    └── index.go
+```
+
+## index.go
+
+The `index.go` file holds the module's definition: the call to `Module` with the module's data models, migrations, loaders, and the function that builds its service. It also exports the value you register in `medusa-config.go`.
+
+```go title="src/modules/blog/index.go" file="modules/blog/index.go" region="module"
+```
+
+Learn more in the [Modules chapter](!docs!/learn/fundamentals/modules).
+
+## service.go
+
+The `service.go` file holds the module's main service: the struct that embeds `*MedusaService` and the methods you add to it.
+
+```go title="src/modules/blog/service.go" file="modules/blog/service.go" region="service"
+```
+
+Learn more in the [Service Factory chapter](!docs!/learn/fundamentals/modules/service-factory).
+
+## Other Files and Directories
+
+You can add the following to the module:
+
+| File or directory | Description |
+| --- | --- |
+| `models.go` | The module's [data models](!docs!/learn/fundamentals/data-models). A module with many models can group them in a `models` package, with one file per model. |
+| `loaders.go` | The module's [loaders](!docs!/learn/fundamentals/modules/loaders), the functions that run when the module is loaded. |
+| `options.go` | The type and the validation of the module's [options](!docs!/learn/fundamentals/modules/options). |
+| `migrations` | The module's [migrations](!docs!/learn/fundamentals/data-models/write-migration). `db:generate` writes it in the directory of the module, as a Go package named `migrations`, with an `index.go` file that lists the migrations and a `.snapshot-<module>.json` file with the schema snapshot. |
+
+<Note>
+
+A module can't import the packages of another module, as it must remain isolated. Use [module links](!docs!/learn/fundamentals/module-links) to relate the data models of different modules, and [Query](!docs!/learn/fundamentals/query) to retrieve them together.
+
+</Note>

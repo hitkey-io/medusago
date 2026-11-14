@@ -201,7 +201,7 @@ Before you start implementing the express checkout flow, you'll install the depe
 
 ### Install Medusa UI
 
-Medusa provides a [UI Library](!ui!) that provides the primitives to build applications based on Medusa's design system. To install the UI library, run the following command in your Next.js project:
+Medusa provides a UI Library that provides the primitives to build applications based on Medusa's design system. To install the UI library, run the following command in your Next.js project:
 
 ```bash npm2yarn
 npm install @medusajs/ui@latest @medusajs/ui-preset@latest @medusajs/icons@latest
@@ -209,9 +209,9 @@ npm install @medusajs/ui@latest @medusajs/ui-preset@latest @medusajs/icons@lates
 
 You install three packages:
 
-- `@medusajs/ui`: The main [UI library](!ui!).
+- `@medusajs/ui`: The main UI library.
 - `@medusajs/ui-preset`: The design and style presets for the UI library.
-- `@medusajs/icons`: A package that has [Medusa icons](!ui!/icons/overview) you can use in your application.
+- `@medusajs/icons`: A package that has Medusa icons you can use in your application.
 
 Next, to use Medusa's design system in your storefront, change the content of `tailwind.config.ts` to the following:
 
@@ -1310,7 +1310,7 @@ useEffect(() => {
 // TODO set selected variant
 ```
 
-In the `useEffect` hook, you use the JS SDK to send a request to the [List Products](!api!/store/products/list-products) API route, passing the following query parameters:
+In the `useEffect` hook, you use the JS SDK to send a request to the [List Products](!api!/store/products) API route, passing the following query parameters:
 
 - `handle`: Filter the list of products with the unique handler.
 - `region_id`: Set the selected region, which is necessary to retrieve the correct pricing.
@@ -1318,7 +1318,7 @@ In the `useEffect` hook, you use the JS SDK to send a request to the [List Produ
 
 <Note title="Tip">
 
-Most of Medusa's API routes accept the `fields` query parameter, allowing you to specify the fields you need to retrieve. Learn more about its usage in [this documentation](!api!/store/select-fields-and-relations)
+Most of Medusa's API routes accept the `fields` query parameter, allowing you to specify the fields you need to retrieve. Learn more about its usage in [this documentation](!api!/store)
 
 </Note>
 
@@ -2072,7 +2072,7 @@ useEffect(() => {
 // TODO set calculated prices
 ```
 
-In the `useEffect` hook, you use the JS SDK to send a request to the [List Shipping Options of a Cart](!api!/store/shipping-options/list-shipping-options-for-cart) API route, passing the cart's ID as a query parameter. The API route returns a list of shipping options, which you set in the `shippingOptions` state variable.
+In the `useEffect` hook, you use the JS SDK to send a request to the [List Shipping Options of a Cart](!api!/store/shipping-options) API route, passing the cart's ID as a query parameter. The API route returns a list of shipping options, which you set in the `shippingOptions` state variable.
 
 ### Retrieve Calculated Prices
 
@@ -2081,7 +2081,7 @@ Shipping options have a `price_type` property whose value is either:
 - `flat_rate`: This value means the shipping option has a fixed price.
 - `calculated`: This value means the shipping option's price is calculated based on the cart's context, such as the shipping address or items in the carts. This is useful when the [fulfillment provider](../../../commerce-modules/fulfillment/fulfillment-provider/page.mdx) that's associated with a shipping option calculates the price based on these conditions.
 
-So, to retrieve the prices of calculated shipping options, you use Medusa's [Calculate Shipping Option Price](!api!/store/shipping-options/calculate-shipping-option-price) API route.
+So, to retrieve the prices of calculated shipping options, you use Medusa's [Calculate Shipping Option Price](!api!/store/shipping-options) API route.
 
 Replace the `TODO` in the `Shipping` component with the following:
 
@@ -2406,7 +2406,7 @@ useEffect(() => {
 // TODO handle provider selection
 ```
 
-In the `useEffect` hook, you use the JS SDK to send a request to the [List Payment Providers](!api!/store/payment-providers/list-payment-providers) API route, passing the cart's region ID as a query parameter.
+In the `useEffect` hook, you use the JS SDK to send a request to the [List Payment Providers](!api!/store/payment-providers) API route, passing the cart's region ID as a query parameter.
 
 The API route returns a list of payment providers, which you set in the `paymentProviders` state variable. These are the payment providers you'll allow the customer to select from.
 
@@ -2532,7 +2532,7 @@ const placeOrder = () => {
 // TODO render payment step
 ```
 
-You define a `placeOrder` function that uses the JS SDK to complete the cart by sending a request to the [Complete Cart API route](!api!/store/carts/complete-cart). If the cart is successfully completed, you unset the cart and redirect the customer to the confirmation page, which you'll implement later.
+You define a `placeOrder` function that uses the JS SDK to complete the cart by sending a request to the [Complete Cart API route](!api!/store/carts). If the cart is successfully completed, you unset the cart and redirect the customer to the confirmation page, which you'll implement later.
 
 ### Render Payment Step
 
@@ -2767,7 +2767,7 @@ While both the MedusaGo application and the Next.js Starter Storefront are runni
 
 By following this guide, you now have an express checkout storefront built with Next.js that connects to a Medusa commerce application.
 
-You can add more features to your storefront or commerce application. For example, you can integrate a [Notification Module Provider](../../../infrastructure-modules/notification/page.mdx) to send the customer a confirmation email when they place their order.
+You can add more features to your storefront or commerce application. For example, you can integrate a Notification Module Provider to send the customer a confirmation email when they place their order.
 
 If you're new to Medusa, check out the [main documentation](!docs!/learn), where you'll get a more in-depth learning of all the concepts you've used in this guide and more.
 

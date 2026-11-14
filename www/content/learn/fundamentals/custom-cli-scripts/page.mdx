@@ -1,0 +1,74 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Custom CLI Scripts`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to create and execute custom scripts from MedusaGo's CLI tool.
+
+## What is a Custom CLI Script?
+
+A custom CLI script is a function that you execute with the `exec` command of MedusaGo's CLI tool. You use it when you need to run a task once, or occasionally, with access to the application's resources: for example, to seed data, to fix data, or to try something out.
+
+The script receives the [container](!docs!/learn/fundamentals/medusa-container) of the application, so it can use the [module services](!docs!/learn/fundamentals/modules/service-factory), [Query](!docs!/learn/fundamentals/query), the [Link service](!docs!/learn/fundamentals/module-links/link), and the [workflows](!docs!/learn/fundamentals/workflows) of the application.
+
+---
+
+## How to Create a Custom CLI Script?
+
+A script is a function of type `ExecScript`, from the `common` package of `types`. It receives a context and an `ExecArgs` value with the container and the script's arguments, and it returns an `error`:
+
+```go title="src/scripts/my-script.go" file="modules/scripts/scripts.go" region="my-script"
+```
+
+The script above resolves the logger and Query from the container, retrieves the products, and logs how many there are. If it returns an error, the `exec` command logs it and exits with a non-zero status.
+
+Go can't import a file by its path at run time, as Medusa does. So you register each script by its name in the `Scripts` option of `cli.Run`, in the `main.go` file of your application:
+
+```go title="main.go" file="modules/app/main.go" region="main"
+```
+
+The key of the map is the name of the script. `my-script` is the name of the function above.
+
+---
+
+## How to Run a Custom CLI Script?
+
+To run the script, run the `exec` command with the script's name, in your application's directory:
+
+```bash
+go run . exec my-script
+```
+
+The command loads the application, without the Medusa Admin, so that the script has everything the application has. It logs `Executing script at my-script...`, runs the script, which logs the number of products, and logs `Finished executing script.`
+
+You can also name the script by the path of the file where it would be in a Medusa-style layout, such as `go run . exec ./src/scripts/my-script.go`. MedusaGo maps the path to the name `my-script`: it drops the extension, and the `src/scripts` directory.
+
+If the name isn't registered, the command fails with an error that lists the registered scripts.
+
+---
+
+## Custom CLI Script Arguments
+
+Your script can accept arguments from the command line. Pass them after the name of the script:
+
+```bash
+go run . exec greet Ada Grace
+```
+
+The arguments are in the `Args` field of the `ExecArgs` value, as a list of strings:
+
+```go title="src/scripts/greet.go" file="modules/scripts/scripts.go" region="script-args"
+```
+
+---
+
+## Scripts and Links
+
+A script loads the application like the other commands do. Define your [module links](!docs!/learn/fundamentals/module-links) before you call `cli.Run`, as the `main` function above does, so that the script can use them in Query and in the `Link` service.
+
+The [Seed Data chapter](!docs!/learn/fundamentals/custom-cli-scripts/seed-data) shows a script that uses the services of a module, a workflow, and links.

@@ -1,0 +1,110 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Link`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about the `Link` service, which you use to create, remove, and list the links between records of different modules.
+
+## What is Link?
+
+`Link` is a service of the framework. It manages the records of the [link tables](!docs!/learn/fundamentals/module-links) that you define with `DefineLink`: it creates and removes links, lists them, and cascades the deletion of a record to the records linked to it.
+
+It's registered in the [container](!docs!/learn/fundamentals/medusa-container) under the key `common.ContainerRegistrationKeys.LINK`, and its type is `*modulessdk.Link`, in the `modules-sdk` of the `core` package. You resolve it like any resource of the container. These are the imports of the examples of this chapter:
+
+```go title="src/links/usage.go" file="links/usage.go" region="imports"
+```
+
+The `Link` service is resolved with:
+
+```go title="src/links/usage.go" file="links/usage.go" region="resolver"
+```
+
+`LinkDefinition` is the description of a link: a `*dal.Record` whose keys are the two modules, in the order the link is defined, and whose values are records with the key of each side. The `modulessdk.NewLinkDefinition` function builds it:
+
+```go title="src/links/usage.go" file="links/usage.go" region="link-definition"
+```
+
+The modules are named by their keys, the same you use in the container. Constants such as `utilsmodulessdk.PRODUCT` and `utilsmodulessdk.SALES_CHANNEL` hold the keys of Commerce Modules. The keys of the linked records, `post_id` and `product_id`, are the linkable keys of the data models. A link definition that doesn't match a link of your project fails with an error that tells that the link wasn't found, and that the modules must be passed in the order they're defined.
+
+### Link Usage in Workflows
+
+In a workflow, use the steps of `core-flows/src/common/steps` instead of the `Link` service, so that a failed workflow reverts the changes. The steps are `CreateRemoteLinkStep`, `DismissRemoteLinkStep`, `RemoveRemoteLinkStep`, and `UpdateRemoteLinksStep`. They take a list of link definitions, and their compensation functions revert them:
+
+```go title="src/workflows/link-post-to-product.go" file="links/usage.go" region="workflow"
+```
+
+---
+
+## Create Link
+
+To create a link between two records, call the `Create` method with their link definitions. It takes a list, so you can create many links with one call:
+
+```go title="src/links/usage.go" file="links/usage.go" region="create"
+```
+
+`Create` returns the records of the link table that it created or restored.
+
+### Enforced Integrity Constraints on Link Creation
+
+When you create a link, `Link` enforces the cardinality of the link that you defined:
+
+- In a one-to-one link, creating a link fails if one of the two records is already linked to another record.
+- In a one-to-many link, creating a link fails if the record on the `IsList` side is already linked to another record of the other side.
+- In a many-to-many link, there's no such constraint.
+
+A violation returns an `INVALID_DATA` error with the message `Cannot create multiple links between 'blog' and 'product'`, which names the two modules. Creating the same link twice doesn't fail: the second call updates the existing link.
+
+---
+
+## Dismiss Link
+
+To remove a link between two records, call the `Dismiss` method with the same link definitions:
+
+```go title="src/links/usage.go" file="links/usage.go" region="dismiss"
+```
+
+`Dismiss` soft-deletes the links, by setting their `deleted_at` column, and returns them. It doesn't delete the records. If you create the same link again, the link is restored.
+
+---
+
+## List Links
+
+To list the links that exist between records, call the `List` method with the link definitions. Its last argument says whether to return the links as link definitions (`true`), or as the rows of the link table (`false`):
+
+```go title="src/links/usage.go" file="links/usage.go" region="list"
+```
+
+To retrieve linked records, not the links, use [Query](!docs!/learn/fundamentals/query).
+
+---
+
+## Cascade Delete Linked Records
+
+If you delete a record, the links that point to it remain, unless the deletion goes through `Link`. The `Delete` method soft-deletes the links of the records you pass, and the records linked with a [delete cascade](!docs!/learn/fundamentals/module-links#set-delete-cascades-on-link). It cascades through the links of the deleted records as well.
+
+```go title="src/links/usage.go" file="links/usage.go" region="delete-cascade"
+```
+
+The method takes a record whose keys are modules and whose values are records of linkable keys and their IDs, which `modulessdk.DeleteEntityInput` builds. It returns the errors that happened, and a record of the keys that were deleted by module.
+
+The cascade soft-deletes the records of the other module by calling the `softDelete` method that the [service factory](!docs!/learn/fundamentals/modules/service-factory#delete-softdelete-and-restore-methods) generates for its data model.
+
+---
+
+## Restore Linked Records
+
+To restore the links that `Delete` soft-deleted, and the linked records, call the `Restore` method with the same input:
+
+```go title="src/links/usage.go" file="links/usage.go" region="restore"
+```
+
+---
+
+## Update Links
+
+A link may have [custom columns](!docs!/learn/fundamentals/module-links/custom-columns) that store data about it. To update them, call `Create` again with the same linked records and a `data` key with the new values. Learn more in the [Custom Columns chapter](!docs!/learn/fundamentals/module-links/custom-columns#update-custom-columns-value).

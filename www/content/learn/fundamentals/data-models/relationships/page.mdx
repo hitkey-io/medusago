@@ -1,0 +1,199 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Data Model Relationships`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to define relationships between data models in your module, and how to manage the related records.
+
+<Note>
+
+Relationships are between data models of the same module. To relate the data models of different modules, such as your module's data model and a product, use [module links](!docs!/learn/fundamentals/module-links).
+
+</Note>
+
+## What is a Relationship Property?
+
+A relationship property of a data model defines a relation to another data model of the same module. In the database, it's a foreign key column, or a pivot table.
+
+You create a relationship property in the schema of a data model with one of these functions of the `dml` package, which take the name of the related data model, and options:
+
+| Function | Relationship |
+| --- | --- |
+| `dml.HasOne` and `dml.BelongsTo` | One-to-one. The data model with `BelongsTo` holds the foreign key. |
+| `dml.HasMany` and `dml.BelongsTo` | One-to-many. The data model with `BelongsTo` holds the foreign key. |
+| `dml.ManyToMany` | Many-to-many, through a pivot table. |
+
+The first argument is the name of the related data model as MedusaGo derives it from its table name: `Comment` for the `comment` model, and `BlogPost` for `blog_post`. The options are `dml.RelationshipOptions`. Its `MappedBy` field is the name of the relationship property in the other data model.
+
+---
+
+## One-to-One Relationship
+
+A one-to-one relationship between two data models means that a record of the first data model has one record of the second, and the other way around.
+
+You define it with `dml.HasOne` in one data model and `dml.BelongsTo` in the other. For example, an author has one profile, and a profile belongs to one author:
+
+```go title="src/modules/blog/relationships.go" file="modules/blog/relationships.go" region="one-to-one"
+```
+
+The `Author` data model has a `profile` property, which is a `HasOne` relationship to the `AuthorProfile` data model. The `AuthorProfile` data model has an `author` property, which is a `BelongsTo` relationship to `Author`. Each `MappedBy` is the name of the property in the other data model.
+
+### Optional Relationship
+
+To make the relationship optional on the `HasOne` or `BelongsTo` side, use the `Nullable` modifier on the property:
+
+```go title="src/modules/blog/relationships.go" file="modules/blog/relationships.go" region="one-to-one-optional"
+```
+
+On the `BelongsTo` side, this makes the foreign key column nullable.
+
+### One-to-One Relationship in the Database
+
+When you generate the migrations of data models that have a one-to-one relationship, the migration adds to the table of the data model that has the `BelongsTo` property:
+
+1. A column of the format `<relation_name>_id` that stores the ID of the related record. The `author_profile` table has an `author_id` column.
+2. A foreign key on this column to the table of the related data model.
+3. A unique index on the column, so that two profiles can't belong to the same author.
+
+### One-sided One-to-One Relationship
+
+You can define a one-to-one relationship on only one side, when the other data model doesn't need a property that points back.
+
+From the `HasOne` side, set `ForeignKey` to `true`, so that the foreign key column is added to this data model's table, and `MappedByUndefined` to `true`, since the relationship has no other side:
+
+```go title="src/modules/blog/relationships.go" file="modules/blog/relationships.go" region="one-sided-has-one"
+```
+
+The `user_account` table gets an `email_id` column, and the `Email` data model has no property that points to the user.
+
+From the `BelongsTo` side, set `MappedByUndefined` to `true`:
+
+```go title="src/modules/blog/relationships.go" file="modules/blog/relationships.go" region="one-sided-belongs-to"
+```
+
+The `badge` table gets a `holder_id` column, and the `Holder` data model has no property that points to its badge.
+
+---
+
+## One-to-Many Relationship
+
+A one-to-many relationship between two data models means that a record of the first has many records of the second, and a record of the second belongs to one record of the first.
+
+You define it with `dml.HasMany` in the first data model and `dml.BelongsTo` in the second. For example, a post has many comments, and a comment belongs to one post:
+
+```go title="src/modules/blog/models.go" file="modules/blog/models.go" region="comment"
+```
+
+The `Post` data model has a `comments` property, `HasMany("Comment", ...)`. The `Comment` data model has a `post` property, `BelongsTo("Post", ...)`.
+
+### Optional Relationship
+
+To make the relationship optional on the `BelongsTo` side, use the `Nullable` modifier on the property, so that a comment can exist without a post.
+
+### One-to-Many Relationship in the Database
+
+When you generate the migrations of data models that have a one-to-many relationship, the migration adds to the table of the data model that has the `BelongsTo` property:
+
+1. A column of the format `<relation_name>_id`, such as `post_id` in the `comment` table, that stores the ID of the related record.
+2. An index and a foreign key on this column to the table of the related data model.
+
+---
+
+## Many-to-Many Relationship
+
+A many-to-many relationship between two data models means that a record of each can be related to many records of the other. You define it with `dml.ManyToMany` in both data models. For example, a post has many tags, and a tag is on many posts:
+
+```go title="src/modules/blog/models.go" file="modules/blog/models.go" region="tag"
+```
+
+The `Post` data model has the `tags` property, and the `Tag` data model has the `posts` property. Each one's `MappedBy` is the name of the property in the other.
+
+### Many-to-Many Relationship in the Database
+
+When you generate the migrations of data models that have a many-to-many relationship, the migration creates a pivot table with:
+
+1. A column for the ID of each of the two data models, such as `post_id` and `tag_id`. Together they're the primary key of the pivot table.
+2. A foreign key on each column to the table of its data model, which cascades the deletion.
+
+The pivot table is named after the two tables, in alphabetical order, with the second one in the plural, such as `post_tags`.
+
+### Many-To-Many with Custom Columns
+
+To add custom columns to the pivot table of a many-to-many relationship, define a data model that represents the pivot table, and pass its name in the `PivotEntity` option of the relationship on one side. The side with `PivotEntity` is the owner of the relationship:
+
+```go title="src/modules/blog/relationships.go" file="modules/blog/relationships.go" region="many-to-many-pivot"
+```
+
+- `OrderTest.products` is a many-to-many relationship, with `PivotEntity: "OrdersProducts"`.
+- `ProductTest.orders` is the other side of the relationship.
+- `OrdersProducts` is the data model of the pivot table. It has a `BelongsTo` relationship to each data model, with `MappedBy` set to the name of the many-to-many property. It also has a `metadata` column.
+
+You can define other columns in the pivot data model, like in any data model.
+
+---
+
+## Cascades
+
+When you perform an operation on a data model, such as deleting a record, a cascade specifies the related records that the operation also applies to. For example, when a post is deleted, its comments should be deleted too.
+
+Use the `WithCascades` method of the data model to configure its cascades:
+
+```go title="src/modules/blog/models.go" file="modules/blog/models.go" region="post"
+```
+
+The `WithCascades` method takes a `dml.Cascades` value. Its `Delete` field is a list of the names of the relationship properties whose records are deleted with the record. In the example above, when a post is deleted, soft-deleted, or restored, its comments are as well.
+
+<Note>
+
+You can only cascade from the parent to the child, from the `HasMany` or `HasOne` property. `WithCascades` panics if you cascade a `BelongsTo` property.
+
+</Note>
+
+---
+
+## Searchable Relationships
+
+Add the `Searchable` modifier to a relationship property to make the searchable properties of the related data model part of the search of the `q` filter. For example, a category whose entries are searchable is found when a search term matches the title of one of its entries:
+
+```go title="src/modules/blog/relationships.go" file="modules/blog/relationships.go" region="searchable-relationship"
+```
+
+---
+
+## Manage Relationships
+
+You manage the related records with the methods of the [service factory](!docs!/learn/fundamentals/modules/service-factory).
+
+### Create Related Records
+
+When you create a record, you can create the records of its `HasMany` relationships in the same call, with the property of the relationship. To create a record of the `BelongsTo` side, set its foreign key, such as `post_id`:
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="create-related"
+```
+
+For a many-to-many relationship, the property of the relationship takes a list of the IDs of existing records, or of records to create and relate.
+
+### Retrieve Related Records
+
+Pass the names of the relationships in the `relations` key of the configuration of `retrieve` and `list`, to load the related records with each record:
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="retrieve-related"
+```
+
+### Replace the Records of a Many-to-Many Relationship
+
+To change the records related through a many-to-many relationship, use the `ReplaceManyToMany` method of the internal service of the data model that owns the relationship. It relates the record to the IDs you pass, and removes any other relation:
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="replace-many-to-many"
+```
+
+The `SetPostTags` method of the Blog Module, shown in the [Database Operations chapter](!docs!/learn/fundamentals/modules/db-operations), does it in a transaction.
+
+### Retrieve Related Records With Query
+
+[Query](!docs!/learn/fundamentals/query) retrieves a record with its relationships too, using the name of the relationship in the fields, such as `comments.*`.

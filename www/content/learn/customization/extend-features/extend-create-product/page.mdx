@@ -1,0 +1,180 @@
+---
+generate_toc: true
+---
+
+import { Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `Guide: Extend Create Product Flow`,
+}
+
+# {metadata.title}
+
+After linking the [custom Brand data model](!docs!/learn/customization/custom-features/module) and MedusaGo's [Product Module](!resources!/commerce-modules/product) in the [previous chapter](!docs!/learn/customization/extend-features/define-link), you'll extend the create product workflow and API route to allow associating a brand with a product.
+
+Some API routes, including the [Create Product API route](!api!/admin/products), accept an `additional_data` request body parameter. This parameter can hold custom data that's passed to the [hooks](!docs!/learn/fundamentals/workflows/workflow-hooks) of the workflow executed in the API route, allowing you to consume those hooks and perform actions with the custom data.
+
+So, in this chapter, to extend the create product flow and associate a brand with a product, you will:
+
+- Consume the `productsCreated` hook of the `CreateProductsWorkflow`, which is executed within the workflow after the product is created. You'll link the product with the brand passed in the `additional_data` parameter.
+- Validate the `additional_data` of the Create Product API route, to allow passing a brand ID in it.
+
+<Prerequisites
+  items={[
+    {
+      text: "Brand Module",
+      link: "/learn/customization/custom-features/module"
+    },
+    {
+      text: "Defined link between the Brand and Product data models.",
+      link: "/learn/customization/extend-features/define-link"
+    }
+  ]}
+/>
+
+---
+
+## 1. Consume the productsCreated Hook
+
+A [workflow hook](!docs!/learn/fundamentals/workflows/workflow-hooks) is a point in a workflow where you can inject a step to perform a custom functionality. Consuming a workflow hook allows you to extend the features of a workflow and, consequently, the API route that uses it.
+
+The `CreateProductsWorkflow` used in the [Create Product API route](!api!/admin/products) has a `productsCreated` hook that runs after the product is created. You'll consume this hook to link the created product with the brand specified in the request parameters.
+
+The workflow is the `CreateProductsWorkflow` variable of the `github.com/hitkey-io/medusago/packages/core/core-flows/src/product/workflows` package. To consume its hook, create the file `src/workflows/hooks/created-product.go` with the following content:
+
+```go title="src/workflows/hooks/created-product.go" file="tutorial/src/workflows/hooks/created-product.go" region="register"
+```
+
+Every workflow has a `RegisterHook` method to consume its hooks. It accepts the name of the hook, a step function that is the hook handler, and an optional compensation function. You'll write the handler and the compensation function next.
+
+Add the hook handler in the same file:
+
+```go title="src/workflows/hooks/created-product.go" file="tutorial/src/workflows/hooks/created-product.go" region="handler"
+```
+
+The step function accepts the following parameters:
+
+1. The step's context, which has a `Container` property whose value is the [container](!docs!/learn/fundamentals/medusa-container) to resolve Framework and commerce tools.
+2. The hook's input, a `*dal.Record`. It has the properties passed from the workflow to the hook, which in this case are the `products` property that holds the created products, and `additional_data`, which is the custom data passed in the `additional_data` request body parameter. It's `nil` if the request doesn't have it.
+
+In the step, if a brand ID is passed in `additional_data`, you resolve the Brand Module's service and use its generated `retrieveBrand` method to retrieve the brand by its ID. The `retrieveBrand` method returns an error if the brand doesn't exist, which fails the workflow and rolls it back.
+
+### Link Brand to Product
+
+Next, you want to create a link between the created products and the brand. To do so, you use `Link`, which is a struct from the Modules SDK that provides methods to manage linked records.
+
+At the end of the handler, add the following:
+
+```go title="src/workflows/hooks/created-product.go" file="tutorial/src/workflows/hooks/created-product.go" region="link"
+```
+
+You resolve the `Link` from the container. Then, you loop over the created products to assemble a list of links to be created. After that, you pass the list of links to `Link`'s `Create` method, which will link the product and brand records.
+
+You build each link with `modulessdk.NewLinkDefinition`, which accepts the name of the first module, the name of the linked key and its value, followed by the same three values for the second module. The key is `{model_name}_id`, where `{model_name}` is the snake-case name of the module's data model. Its value is the ID of the record to be linked. You must pass the modules in the same order as the link configurations passed to `DefineLink`.
+
+Finally, you return a `StepResponse` with the created links as its compensation input.
+
+### Dismiss Links in Compensation
+
+The second function you pass to `RegisterHook` is a compensation function that undoes what the step did. It receives the step's context as a first parameter, and the second parameter of the returned `StepResponse` as a second parameter.
+
+To undo creating the links in the hook, add the following function to the file:
+
+```go title="src/workflows/hooks/created-product.go" file="tutorial/src/workflows/hooks/created-product.go" region="compensation"
+```
+
+In the compensation function, if the `links` list isn't empty, you resolve the `Link` and use its `Dismiss` method. This method removes a link between two records. It accepts the same parameter as the `Create` method.
+
+### Register the Hook
+
+Hooks of a workflow are consumed when you call `RegisterHook`, so call the `Register` function before the application starts. In `main.go`, call `hooks.Register()` after you define the links:
+
+```go title="main.go" file="tutorial/main.go" region="main"
+```
+
+<Note>
+
+A hook can have only one handler. If you register another handler for the same hook, it replaces this one.
+
+</Note>
+
+---
+
+## 2. Validate Additional Data
+
+Now that you've consumed the `productsCreated` hook, you want to configure the `/admin/products` API route that creates a new product to only accept a valid brand ID in its `additional_data` parameter.
+
+<Note title="Differences from Medusa">
+
+In Medusa, you configure the properties of `additional_data` with the `additionalDataValidator` option of a middleware. MedusaGo doesn't have that option. The Create Product API route accepts any object in `additional_data`, so the brand ID already reaches your hook handler. To validate the object, you add a middleware that validates it, as you'll do in this section.
+
+</Note>
+
+Create the file `src/api/admin/products/additional-data.go` with the following content:
+
+```go title="src/api/admin/products/additional-data.go" file="tutorial/src/api/admin/products/additional-data.go" region="validator"
+```
+
+You create a validation schema for the custom properties you accept in `additional_data`: `brand_id` is an optional string. Then, you create a middleware that validates the `additional_data` of the request's validated body, and returns the validation error if it's invalid. The middleware runs after the validation middleware of the core API route, so the request's body is already validated when it runs.
+
+Then, add the middleware to the middlewares of the `POST /admin/products` route in the same file:
+
+```go title="src/api/admin/products/additional-data.go" file="tutorial/src/api/admin/products/additional-data.go" region="middlewares"
+```
+
+Finally, add these middlewares to the middlewares of your project in `src/api/middlewares.go`:
+
+```go title="src/api/middlewares.go" file="tutorial/src/api/middlewares.go" region="middlewares"
+```
+
+`POST` requests sent to `/admin/products` can now pass the ID of a brand in the `brand_id` property of `additional_data`, and a request with another property in `additional_data` fails with a validation error.
+
+---
+
+## Test it Out
+
+To test it out, first, retrieve the authentication token of your admin user by sending a `POST` request to `/auth/user/emailpass`:
+
+```bash
+curl -X POST 'http://localhost:9000/auth/user/emailpass' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+    "email": "admin@medusa-test.com",
+    "password": "supersecret"
+}'
+```
+
+Make sure to replace the email and password in the request body with your user's credentials.
+
+Then, send a `POST` request to `/admin/products` to create a product, and pass in the `additional_data` parameter a brand's ID:
+
+```bash
+curl -X POST 'http://localhost:9000/admin/products' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer {token}' \
+--data '{
+    "title": "Product 1",
+    "options": [
+      {
+        "title": "Default option",
+        "values": ["Default option value"]
+      }
+    ],
+    "shipping_profile_id": "{shipping_profile_id}",
+    "additional_data": {
+        "brand_id": "{brand_id}"
+    }
+}'
+```
+
+Make sure to replace `{token}` with the token you received from the previous request, `shipping_profile_id` with the ID of a shipping profile in your application, and `{brand_id}` with the ID of a brand in your application. You can retrieve the ID of a shipping profile either from the Medusa Admin, or the [List Shipping Profiles API route](!api!/admin/shipping-profiles).
+
+The request creates a product and returns it.
+
+In the MedusaGo application's logs, you'll find the message `Linked brand to products`, indicating that the workflow hook handler ran and linked the brand to the products.
+
+---
+
+## Next Steps: Query Linked Brands and Products
+
+Now that you've extended the create-product flow to link a brand to it, you want to retrieve the brand details of a product. You'll learn how to do so in the next chapter.

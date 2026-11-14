@@ -1,0 +1,191 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Service Factory`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about the service factory, the generated methods it adds to your module's service, and how to use them.
+
+## What is the Service Factory?
+
+The service factory is the `MedusaService` type of the `modules-sdk` package of MedusaGo. When you define a module with `Module`, MedusaGo creates a `MedusaService` for the module's data models. It manages the records of each data model, so you don't write the code that creates, reads, updates, and deletes them.
+
+Your module's service embeds the generated `MedusaService`, and you add the methods that hold your business logic. The service you define is what MedusaGo registers in the container.
+
+The service factory gives you two ways to manage the records of a data model:
+
+- The *generated methods*, such as `listPosts` and `createPosts`, that you call by name with the `Call` method of the service.
+- The *internal service* of each data model, returned by the `Internal` method of the service, whose methods have typed arguments.
+
+Both return the same data, as `*dal.Record` values. A `dal.Record` is an ordered map that keeps the order of its keys when it's encoded to JSON, like a JavaScript object.
+
+<Note>
+
+Medusa generates real methods on the service class. Go has no methods generated at run time, so MedusaGo dispatches the generated methods by name through `Call`. The names and the arguments of the generated methods are the same as in Medusa.
+
+</Note>
+
+---
+
+## How to Extend the Service Factory?
+
+To use the service factory, embed `*MedusaService` in your service, and build the service in the `Service` function of the module's definition. The `Service` function receives the generated `MedusaService`:
+
+```go title="src/modules/blog/index.go" file="modules/blog/index.go" region="module"
+```
+
+The service embeds the generated service:
+
+```go title="src/modules/blog/service.go" file="modules/blog/service.go" region="service"
+```
+
+The `Module` function also builds the generated methods of the data models of the `Models` field. The module in the chapter has three: `Post`, `Comment`, and `Tag`.
+
+---
+
+## Generated Methods
+
+The service factory generates the following methods for each data model of the module. The names use the data model's name, `Post` for the `post` model, and its plural, `Posts`.
+
+| Method | Description |
+| --- | --- |
+| `list<Plural>(filters, config)` | Lists records. |
+| `listAndCount<Plural>(filters, config)` | Lists records and their total count. |
+| `retrieve<Model>(id, config)` | Retrieves a record by its primary key. It returns a `NOT_FOUND` error if there's none. |
+| `create<Plural>(data)` | Creates one or more records. |
+| `update<Plural>(data)` | Updates one or more records. |
+| `delete<Plural>(ids)` | Permanently deletes records. |
+| `softDelete<Plural>(ids)` | Soft-deletes records, by setting their `deleted_at` column. |
+| `restore<Plural>(ids)` | Restores soft-deleted records. |
+
+If a data model is named `BlogPost`, the methods are `listBlogPosts`, `retrieveBlogPost`, and so on.
+
+You call a generated method with the `Call` method of the service. It takes the context, the name of the method, and its arguments as a list:
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="call-signature"
+```
+
+`Call` returns the result as an `any` that you convert to the type that's described for each method below.
+
+<Note>
+
+The filters, configurations, and data are `*dal.Record` values, so the examples use the small `rec` function that builds one from a list of keys and values. You define it in your project:
+
+```go title="src/modules/blog/helpers.go" file="modules/blog/helpers.go" region="rec"
+```
+
+</Note>
+
+### list Method
+
+`list<Plural>` takes the filters and the configuration of the query, and returns a `[]*dal.Record`.
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="call-list"
+```
+
+The first argument holds the filters, which match the properties of the data model. The value of a filter can be a value to match, a list of values, or an object with an operator: `$eq`, `$ne`, `$in`, `$nin`, `$gt`, `$gte`, `$lt`, `$lte`, `$like`, `$ilike`, `$exists`, `$not`, `$re`, `$contains`, `$contained`, or `$overlap`. The `$and`, `$or`, and `$not` keys combine filters. A filter can also use a property of a relationship, such as `rec("comments", rec("author_name", "Ada"))`. Learn more in the [Query chapter](!docs!/learn/fundamentals/query).
+
+If the data model has [searchable](!docs!/learn/fundamentals/data-models/properties#define-a-searchable-property) properties, the `q` filter, such as `rec("q", "medusa")`, searches them.
+
+The second argument is the configuration of the query. All its keys are optional:
+
+| Key | Description |
+| --- | --- |
+| `select` | The properties to retrieve, as a list of names. By default, all the properties. |
+| `relations` | The relationships to load, as a list of names. |
+| `take` and `skip` | The number of records to retrieve, and the number to skip. |
+| `order` | An object whose keys are properties and values are `"ASC"` or `"DESC"`. By default, the records are ordered by their primary key. |
+| `withDeleted` | Includes the soft-deleted records when `true`. |
+
+### listAndCount Method
+
+`listAndCount<Plural>` takes the same arguments as `list<Plural>`. It returns a `[]any` of two elements: a `[]*dal.Record` of the records, and an `int`, the number of records that match the filters, whatever `take` and `skip` are.
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="call-list-and-count"
+```
+
+### retrieve Method
+
+`retrieve<Model>` takes the primary key of the record and a configuration with `select` and `relations`. It returns a `*dal.Record`. If no record has the key, it returns an error of the `NOT_FOUND` type with the message `Post with id: post_123 was not found`.
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="call-retrieve"
+```
+
+### create Method
+
+`create<Plural>` takes one record or a list of records. It returns a `*dal.Record` for one record, and a `[]*dal.Record` for a list. Properties that you don't set take their default value. The ID is generated, with the prefix of the model's `id` property.
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="call-create"
+```
+
+You can create related records in the same call. For example, a `comments` property with a list of comments creates them with the post. Learn more in the [Relationships chapter](!docs!/learn/fundamentals/data-models/relationships).
+
+### update Method
+
+`update<Plural>` takes the data to update, in one of three shapes:
+
+1. A record with the primary key and the properties to change. The method returns the updated `*dal.Record`.
+2. A list of such records. It returns a `[]*dal.Record`.
+3. A record with a `selector` and a `data` key. The method sets the properties of `data` on every record that matches the `selector`, and returns a `[]*dal.Record`.
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="call-update"
+```
+
+If a record of the first two shapes doesn't exist, the method returns a `NOT_FOUND` error. The `metadata` property of a record is merged with the value you pass: the keys that you set are added or replaced, and a key set to an empty string is removed.
+
+### delete, softDelete, and restore Methods
+
+`delete<Plural>` takes the primary keys of the records to delete, or a record with a `selector`. It deletes them permanently. The relationships that the data model [cascades](!docs!/learn/fundamentals/data-models/relationships#cascades) its deletion to are deleted with them.
+
+`softDelete<Plural>` and `restore<Plural>` set and clear the `deleted_at` column of the records, and of the records of their cascading relationships. They return a `*dal.Record` that maps the [linkable keys](!docs!/learn/fundamentals/module-links) of the records that were affected to their IDs, such as `{ post_id: [...], comment_id: [...] }`.
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="call-delete"
+```
+
+[Module links](!docs!/learn/fundamentals/module-links/link#cascade-delete-linked-records) use these methods to soft-delete and restore the linked records.
+
+---
+
+## Internal Services
+
+`Internal` takes the name of a data model, as in its definition: `Post`. It returns an internal service, with typed methods for the data model:
+
+| Method | Description |
+| --- | --- |
+| `List(ctx, filters, config)` | Lists records. |
+| `ListAndCount(ctx, filters, config)` | Lists records and counts them. |
+| `Retrieve(ctx, id, config)` | Retrieves a record by its primary key. |
+| `Create(ctx, data)` | Creates records. |
+| `Update(ctx, input)` | Updates records, with the same input shapes as `update<Plural>`. |
+| `Upsert(ctx, data)` | Creates the records, or updates those whose primary key exists. |
+| `Delete(ctx, idsOrSelector)` | Deletes records. |
+| `SoftDelete(ctx, ids)` and `Restore(ctx, ids)` | Soft-delete and restore records. |
+| `ReplaceManyToMany(ctx, ownerID, relation, targetIDs)` | Replaces the records related through a many-to-many relationship. |
+
+The configuration is a `FindConfig` with `Select`, `Relations`, `Take`, `Skip`, `Order`, and `WithDeleted` fields:
+
+```go title="src/modules/blog/usage.go" file="modules/blog/usage.go" region="internal-service"
+```
+
+The generated methods call the internal services, so both behave the same way. Use the internal service in your own methods, where the typed configuration is more convenient. For example, the `SetPostTags` method of the Blog Module uses the `Tag` and `Post` internal services.
+
+---
+
+## Events Emitted by the Service
+
+The service factory emits an event when its methods create, update, delete, or restore records, such as `blog.post.created`, `blog.post.updated`, `blog.post.deleted`, and `blog.post.restored`. The event's data holds the ID of the record. The events are emitted once the transaction that made the change commits. Learn more in the [Events and Subscribers chapter](!docs!/learn/fundamentals/events-and-subscribers).
+
+---
+
+## Add Your Own Methods
+
+Add methods to your service to hold your business logic. They use the generated methods, the internal services, or [database operations](!docs!/learn/fundamentals/modules/db-operations) of your own. For example, the `PublishPost` method:
+
+```go title="src/modules/blog/service.go" file="modules/blog/service.go" region="publish"
+```
+
+It retrieves a post, checks that it's a draft, and updates its status and publish date. Learn more about the methods that run several operations in a transaction in the [Database Operations chapter](!docs!/learn/fundamentals/modules/db-operations).

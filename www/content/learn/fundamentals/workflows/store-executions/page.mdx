@@ -1,0 +1,128 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Store Workflow Executions`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to store workflow executions in the database, access them later, and use a workflow's transaction ID.
+
+## Workflow Execution Retention
+
+MedusaGo doesn't store your workflow's execution details by default. However, you can configure a workflow to keep its execution details stored in the database.
+
+This is useful for auditing and debugging purposes. When you store a workflow's execution, you can view details around its steps, their states and their output. You can also check whether the workflow or any of its steps failed.
+
+<Note title="Tip">
+
+You can view stored workflow executions from the Medusa Admin dashboard by going to Settings -> Workflows.
+
+</Note>
+
+---
+
+## How to Store Workflow's Executions?
+
+To enable storing a workflow's executions, create the workflow with `composer.CreateWorkflowWithOptions` instead of `composer.CreateWorkflow`. It accepts the workflow's ID, a `composer.WorkflowOptions` value, and the workflow's function. In the options:
+
+- Enable the `Store` option. If your workflow is a [Long-Running Workflow](!docs!/learn/fundamentals/workflows/long-running-workflow), its executions are stored while they run, whether you enable this option or not.
+- Set the `RetentionTime` option to the number of seconds that the workflow execution should be stored in the database after it finishes.
+
+For example:
+
+```go title="src/workflows/hello-workflow.go" file="workflows/store/store.go" region="workflow"
+```
+
+Whenever you execute the `HelloWorkflow` now, its execution details are stored in the database. The execution is stored in the `workflow_execution` table by the Workflow Engine Module. Both the in-memory and Redis Workflow Engine Modules store executions in the database.
+
+<Note>
+
+When an execution finishes, MedusaGo deletes it unless the workflow's `RetentionTime` is set. So, a workflow with only `Store` enabled is stored while it runs, but not after it finishes.
+
+</Note>
+
+---
+
+## Retrieve Workflow Executions
+
+When you execute a workflow with `RunWithInfo`, you receive a `composer.RunInfo` value with the execution's transaction details:
+
+```go title="src/workflows/run.go" file="workflows/store/retrieve.go" region="info"
+```
+
+To retrieve a workflow's execution details from the database, resolve the Workflow Engine Module from the container and use its generated `listWorkflowExecutions` method.
+
+For example, you can create a `GET` API Route at `src/api/workflows/id_/route.go` that retrieves a workflow execution for the specified transaction ID:
+
+```go title="src/api/workflows/id_/route.go" file="workflows/store/retrieve.go" region="retrieve"
+```
+
+In the above example, you resolve the Workflow Engine Module from the container and call its `listWorkflowExecutions` method, passing the `transaction_id` as a filter to retrieve its workflow execution details.
+
+A workflow execution object will be similar to the following:
+
+```json
+{
+  "id": "wf_exec_01JJC2T6B3P76JD35F12QTTA78",
+  "workflow_id": "hello-workflow",
+  "transaction_id": "auto-01JJC2T6AVJCQ3N4BRD1EB88SP",
+  "run_id": "01JJC2T6AVJCQ3N4BRD1EB88SQ",
+  "execution": {
+    "state": "done",
+    "steps": {},
+    "modelId": "hello-workflow",
+    "options": {},
+    "metadata": {},
+    "startedAt": 1737719880027,
+    "definition": {},
+    "hasAsyncSteps": false,
+    "transactionId": "auto-01JJC2T6AVJCQ3N4BRD1EB88SP",
+    "hasFailedSteps": false,
+    "hasSkippedSteps": false,
+    "hasWaitingSteps": false,
+    "hasRevertedSteps": false
+  },
+  "context": {
+    "data": {},
+    "errors": []
+  },
+  "state": "done",
+  "retention_time": 99999,
+  "created_at": "2025-01-24T09:58:00.036Z",
+  "updated_at": "2025-01-24T09:58:00.046Z",
+  "deleted_at": null
+}
+```
+
+### Example: Check if Stored Workflow Execution Failed
+
+To check if a stored workflow execution failed, you can check its `state` property:
+
+```go title="src/workflows/failed.go" file="workflows/store/retrieve.go" region="state"
+```
+
+Other state values include `done`, `invoking`, `compensating`, `reverted`, and `waiting_to_compensate`.
+
+---
+
+## Run a Workflow with a Transaction ID
+
+When you execute a workflow, you can pass a `TransactionID` in the options of the `Run` method to set the ID of the execution's transaction. If you don't pass one, MedusaGo generates a unique ID with the prefix `auto-` for every execution.
+
+For example:
+
+```go title="src/workflows/run.go" file="workflows/store/retrieve.go" region="transaction-id"
+```
+
+A transaction ID is the ID you use to set the status of an async step, to subscribe to the execution, or to retrieve its stored details.
+
+<Note type="warning" title="Differences from Medusa">
+
+In Medusa, running a workflow that stores its executions with the ID of an existing transaction loads that execution and resumes it, and its `idempotent` option returns the stored result of a finished execution. MedusaGo doesn't do that: every `Run` starts a new execution, even if you pass the ID of an existing transaction. The `Idempotent` option is accepted and saved in the execution's options, but it doesn't deduplicate executions.
+
+To make sure an operation runs only once, such as when a third-party service sends the same webhook twice, check for a stored execution yourself with the transaction ID, as shown in the previous section, or protect the operation with a [lock](!docs!/learn/fundamentals/workflows/locks).
+
+</Note>

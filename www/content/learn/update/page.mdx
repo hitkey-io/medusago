@@ -1,0 +1,126 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Update MedusaGo`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about updating your MedusaGo application, and about moving an existing Medusa store to MedusaGo.
+
+## MedusaGo Versioning
+
+MedusaGo is distributed as the Go module `github.com/hitkey-io/medusago`, and its releases are Git tags of that module, such as `v0.6.1`. Your project's `go.mod` file pins the version your application uses.
+
+Each MedusaGo release is based on a release of Medusa. That release is the baseline: the HTTP API, the database schema, and the Medusa Admin of your application match it. The baseline is `2.22.6` at the time of writing. When MedusaGo moves to a newer Medusa release, it ports the changes of that release, including its database migrations.
+
+<Note>
+
+While MedusaGo is at version `v0.x`, a release can include changes to the Go packages that your customisations import. Check the release's changes before you update.
+
+</Note>
+
+---
+
+## Check Installed Version
+
+To check the version of MedusaGo in your project, run the following command in your application's directory:
+
+```bash
+go list -m github.com/hitkey-io/medusago
+```
+
+To check the Medusa baseline it implements, run the following command:
+
+```bash
+go run . -v
+```
+
+The command prints the version of the CLI and of Medusa that your application mirrors, which should be the same.
+
+---
+
+## Check Latest Version
+
+The releases are listed on the tags page of the [MedusaGo repository](https://github.com/hitkey-io/medusago/tags). You can also ask Go for the latest version:
+
+```bash
+go list -m -versions github.com/hitkey-io/medusago
+```
+
+---
+
+## Update MedusaGo Application
+
+Before updating a MedusaGo application, make sure to check the changes of the release for anything that requires actions from your side.
+
+Then, to update your application, change the version of the module in your project and tidy the dependencies. In your application's directory (`apps/backend`), run:
+
+```bash
+go get github.com/hitkey-io/medusago@latest
+go mod tidy
+```
+
+Replace `latest` with a version, such as `v0.6.1`, to update to a specific release.
+
+### Running Migrations
+
+Releases may include changes to the database, such as new tables, updates to existing tables, updates after adding links, or data migration scripts.
+
+So, after updating MedusaGo, run the following command to migrate the latest changes to your database:
+
+```bash
+go run . db:migrate
+```
+
+This will run all pending migrations, sync links, and run data migration scripts.
+
+### Rebuild for Production
+
+If you deploy a production build, rebuild your application after updating, and deploy the new `.medusa/server` directory. Learn more in the [Build chapter](!docs!/learn/build).
+
+### Reverting an Update
+
+Before reverting an update, if you already ran the migrations, you have to first identify the modules that had migrations. Then, before reverting, run the `db:rollback` command for each of those modules.
+
+For example, if the version you updated to had migrations for the Cart and Product Modules, run the following command:
+
+```bash
+go run . db:rollback cart product
+```
+
+This reverts the last executed migration of each module.
+
+Then, revert the update by changing the version of the module in your project to the previous one:
+
+```bash
+go get github.com/hitkey-io/medusago@v0.6.0
+go mod tidy
+```
+
+Finally, run the migrations to sync link changes:
+
+```bash
+go run . db:migrate
+```
+
+---
+
+## Move an Existing Medusa Store to MedusaGo
+
+MedusaGo reads and writes the database of a Medusa store as is, and Medusa can take over a database that MedusaGo has used. To switch an existing store, update it to the baseline version of your MedusaGo release first. Then:
+
+1. Stop the existing Medusa deployment, both its server and its worker. Workflow executions that are in progress aren't carried over, so wait for them to finish before you stop it.
+2. Point your MedusaGo application's `DATABASE_URL` to the same database.
+3. Run `go run . db:migrate`. On a database that Medusa already migrated to the baseline version, it doesn't change anything.
+4. Start your MedusaGo application.
+
+Your storefronts and the Medusa Admin keep working, since the HTTP API is the same. Your customisations, such as custom modules, workflows, and API routes, must be rewritten in Go.
+
+<Note type="warning">
+
+Don't run both servers on the same database at the same time.
+
+</Note>

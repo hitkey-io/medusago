@@ -16,7 +16,7 @@ Refer to this [Medusa Admin User Guide](!user-guide!/orders/edit) to learn how t
 
 A merchant can edit an order to add new items or change the quantity of existing items.
 
-An order edit is represented by the [OrderChange data model](/references/order/models/OrderChange).
+An order edit is represented by the OrderChange data model.
 
 The `OrderChange` data model is associated with any type of change, including returns or exchanges. However, its `change_type` property distinguishes the type of change being made.
 
@@ -26,9 +26,9 @@ For order edits, the `OrderChange`'s `change_type` is `edit`.
 
 ## Add Items in an Order Edit
 
-When a merchant adds new items to an order during editing, the item is added as an [OrderItem](/references/order/models/OrderItem).
+When a merchant adds new items to an order during editing, the item is added as an OrderItem.
 
-Additionally, an `OrderChangeAction` is created. The [OrderChangeAction data model](/references/order/models/OrderChangeAction) represents a change made by an `OrderChange`, such as adding an item.
+Additionally, an `OrderChangeAction` is created. The OrderChangeAction data model represents a change made by an `OrderChange`, such as adding an item.
 
 When an item is added, an `OrderChangeAction` is created with the type `ITEM_ADD`. Its `details` property stores the item's ID, price, and quantity.
 
@@ -40,7 +40,7 @@ A merchant can update an existing item's quantity, price, or metadata.
 
 This change is recorded as an `OrderChangeAction` with the type `ITEM_UPDATE`. Its `details` property stores the item's ID, updated price, and updated quantity.
 
-Once the order edit is confirmed, the Order Module writes the updated `quantity`, `unit_price`, `compare_at_unit_price`, and `metadata` to the [OrderItem record](/references/order/models/OrderItem) of the order's new version. The [OrderLineItem record](/references/order/models/OrderLineItem) keeps the values it had when the item was added to the order.
+Once the order edit is confirmed, the Order Module writes the updated `quantity`, `unit_price`, `compare_at_unit_price`, and `metadata` to the OrderItem record of the order's new version. The OrderLineItem record keeps the values it had when the item was added to the order.
 
 <Note>
 
@@ -54,7 +54,7 @@ Retrieving the order after the edit returns the updated values in `items.unit_pr
 
 Adding new items to the order requires adding shipping methods for those items.
 
-These shipping methods are represented by the [OrderShippingMethod data model](/references/order/models/OrderShippingMethod). Also, an `OrderChangeAction` is created with the type `SHIPPING_ADD`.
+These shipping methods are represented by the OrderShippingMethod data model. Also, an `OrderChangeAction` is created with the type `SHIPPING_ADD`.
 
 ---
 

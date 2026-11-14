@@ -1,0 +1,371 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Environment Variables`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how environment variables are loaded in MedusaGo.
+
+## System Environment Variables
+
+The MedusaGo application loads and uses system environment variables.
+
+For example, if you set the `PORT` environment variable to `8000`, the MedusaGo application runs on that port instead of `9000`.
+
+In production, you should always use system environment variables that you set through your hosting provider. A system environment variable always takes precedence over a value in a `.env` file.
+
+---
+
+## Environment Variables in .env Files
+
+During development, it's easier to set environment variables in a `.env` file in your repository. The [MedusaGo CLI](!resources!/medusa-cli) loads the `.env` file of the directory you run it from before it runs a command, so it applies to `go run . develop`, `db:migrate`, `user`, and every other command.
+
+Based on your `NODE_ENV` system environment variable, the CLI also loads an environment-specific file when it loads your configuration:
+
+<Note title="Tip">
+
+`NODE_ENV` defaults to `production` when you run `start`. Otherwise, it defaults to `development`. Set it explicitly to override the default.
+
+</Note>
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Environment
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        `.env` Files Loaded
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `NODE_ENV` = `development` or not set
+      </Table.Cell>
+      <Table.Cell>
+        `.env`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `NODE_ENV` = `production`
+      </Table.Cell>
+      <Table.Cell>
+        `.env` and `.env.production`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `NODE_ENV` = `staging`
+      </Table.Cell>
+      <Table.Cell>
+        `.env` and `.env.staging`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `NODE_ENV` = `test`
+      </Table.Cell>
+      <Table.Cell>
+        `.env` and `.env.test`
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+A variable is only set if it isn't already set. So the precedence, from highest to lowest, is the system environment, then `.env`, then `.env.<NODE_ENV>`. A value can reference other variables with `$NAME` or `${NAME}`. For example, the installer writes `DATABASE_URL=postgres://localhost/$DB_NAME` in the `.env` file.
+
+To make sure the correct file is loaded as shown in the table, only use `development`, `production`, `staging`, or `test` as the value of `NODE_ENV`.
+
+<Note>
+
+MedusaGo's `.env` handling follows the `dotenv` format: lines such as `KEY=value`, `export KEY=value`, quoted values, and `#` comments.
+
+</Note>
+
+---
+
+## Use Environment Variables in Your Configuration
+
+Read environment variables in `medusa-config.go` with `os.Getenv`. The CLI loads the `.env` files before it calls your configuration function:
+
+```go title="medusa-config.go" file="project/medusa-config.go" region="config"
+```
+
+Some options fall back to an environment variable when you leave them empty, as listed in the next section. You don't need to read those variables yourself.
+
+---
+
+## Environment Variables for Admin Customizations
+
+Since the Medusa Admin is built on top of [Vite](https://vite.dev/), you prefix the environment variables you want to use in a widget or UI route with `VITE_`. Then, you can access or use them with the `import.meta.env` object.
+
+Learn more in the [Admin Environment Variables](!docs!/learn/fundamentals/admin/environment-variables) chapter.
+
+---
+
+## Predefined MedusaGo Environment Variables
+
+You can further customise the MedusaGo application's behaviour using the following predefined environment variables. You can set them in your `.env` file or in your deployment platform.
+
+<Note title="Tip">
+
+You should opt for setting configurations in `medusa-config.go` where possible. For a full list of MedusaGo configurations, refer to the [MedusaGo Configurations chapter](!docs!/learn/configurations/medusa-config).
+
+</Note>
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Environment Variable
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Default
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        `HOST`
+      </Table.Cell>
+      <Table.Cell>
+        The host to run the MedusaGo application on. The `-H` option of `start` and `develop` overrides it.
+      </Table.Cell>
+      <Table.Cell>
+        All network interfaces
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `PORT`
+      </Table.Cell>
+      <Table.Cell>
+        The port to run the MedusaGo application on. The `-p` option of `start` and `develop` overrides it.
+      </Table.Cell>
+      <Table.Cell>
+        `9000`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `NODE_ENV`
+      </Table.Cell>
+      <Table.Cell>
+        The environment the application runs in. It selects the `.env` file to load, the log format, and, in `production` and `staging`, stricter session cookies.
+      </Table.Cell>
+      <Table.Cell>
+        `production` for `start`, `development` otherwise
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `DATABASE_URL`
+      </Table.Cell>
+      <Table.Cell>
+        The URL to connect to the PostgreSQL database. Only used if [projectConfig.databaseUrl](!docs!/learn/configurations/medusa-config#databaseurl) isn't set in `medusa-config.go`.
+      </Table.Cell>
+      <Table.Cell>
+        \-
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `DB_NAME`
+      </Table.Cell>
+      <Table.Cell>
+        The name of the database that `db:create` and `db:setup` create when you don't pass `--db`. It's read from your `.env` file, and the command saves the name it used there.
+      </Table.Cell>
+      <Table.Cell>
+        `medusa-<directory name>`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `STORE_CORS`
+      </Table.Cell>
+      <Table.Cell>
+        URLs of storefronts that can access the Store API routes. Only used if [projectConfig.http.storeCors](!docs!/learn/configurations/medusa-config#httpstorecors) isn't set in `medusa-config.go`.
+      </Table.Cell>
+      <Table.Cell>
+        `http://localhost:8000`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `ADMIN_CORS`
+      </Table.Cell>
+      <Table.Cell>
+        URLs of admin dashboards that can access the Admin API routes. Only used if [projectConfig.http.adminCors](!docs!/learn/configurations/medusa-config#httpadmincors) isn't set in `medusa-config.go`.
+      </Table.Cell>
+      <Table.Cell>
+        `http://localhost:7000,http://localhost:7001,http://localhost:5173`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `AUTH_CORS`
+      </Table.Cell>
+      <Table.Cell>
+        URLs of clients that can access the authentication routes. Only used if [projectConfig.http.authCors](!docs!/learn/configurations/medusa-config#httpauthcors) isn't set in `medusa-config.go`.
+      </Table.Cell>
+      <Table.Cell>
+        `http://localhost:7000,http://localhost:7001,http://localhost:5173`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `JWT_SECRET`
+      </Table.Cell>
+      <Table.Cell>
+        A random string used to create authentication tokens in the HTTP layer. Only used if [projectConfig.http.jwtSecret](!docs!/learn/configurations/medusa-config#httpjwtsecret) isn't set in `medusa-config.go`.
+      </Table.Cell>
+      <Table.Cell>
+        `supersecret`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `COOKIE_SECRET`
+      </Table.Cell>
+      <Table.Cell>
+        A random string used to sign the session cookie. Only used if [projectConfig.http.cookieSecret](!docs!/learn/configurations/medusa-config#httpcookiesecret) isn't set in `medusa-config.go`.
+      </Table.Cell>
+      <Table.Cell>
+        `supersecret`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `MEDUSA_BACKEND_URL`
+      </Table.Cell>
+      <Table.Cell>
+        The URL of the MedusaGo server that the Medusa Admin sends requests to. Only used if [admin.backendUrl](!docs!/learn/configurations/medusa-config#backendurl) isn't set in `medusa-config.go`.
+      </Table.Cell>
+      <Table.Cell>
+        `/`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `MEDUSA_WORKER_MODE`
+      </Table.Cell>
+      <Table.Cell>
+        The [worker mode](!docs!/learn/production/worker-mode) of the instance: `shared`, `worker`, or `server`.
+      </Table.Cell>
+      <Table.Cell>
+        `shared`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `MEDUSA_FF_<FLAG>`
+      </Table.Cell>
+      <Table.Cell>
+        Toggles a [feature flag](!docs!/learn/debugging-and-testing/feature-flags), such as `MEDUSA_FF_INDEX_ENGINE=true`.
+      </Table.Cell>
+      <Table.Cell>
+        `false`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `LOG_LEVEL`
+      </Table.Cell>
+      <Table.Cell>
+        The levels to log. Learn more in the [Logging](!docs!/learn/debugging-and-testing/logging#log-level) chapter.
+      </Table.Cell>
+      <Table.Cell>
+        `http`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `LOG_FILE`
+      </Table.Cell>
+      <Table.Cell>
+        The file to save logs in. By default, logs aren't saved in any file. Learn more in the [Logging](!docs!/learn/debugging-and-testing/logging#save-logs-in-a-file) chapter.
+      </Table.Cell>
+      <Table.Cell>
+        \-
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `NO_COLOR`
+      </Table.Cell>
+      <Table.Cell>
+        When set to a non-empty value, the development logs aren't coloured.
+      </Table.Cell>
+      <Table.Cell>
+        \-
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `AUTH_MFA_ENCRYPTION_KEY`
+      </Table.Cell>
+      <Table.Cell>
+        The key that encrypts the secrets of multi-factor authentication. It's required to enrol or use an authentication factor. The installer generates a random value in the `.env` file.
+      </Table.Cell>
+      <Table.Cell>
+        \-
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `ADMIN_AUTH_TYPE`
+      </Table.Cell>
+      <Table.Cell>
+        A string indicating the authentication method that the JS SDK instance uses in the Medusa Admin. Possible values are `session` and `jwt`. Learn more in the [JS SDK Authentication guide](!resources!/js-sdk/auth/overview). The server reads it when it starts, so you don't need to rebuild the admin.
+      </Table.Cell>
+      <Table.Cell>
+        `session`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `ADMIN_JWT_TOKEN_STORAGE_KEY`
+      </Table.Cell>
+      <Table.Cell>
+        A string indicating the key used to store the authentication JWT token in the browser's local storage. Only applicable if `ADMIN_AUTH_TYPE` is set to `jwt`.
+      </Table.Cell>
+      <Table.Cell>
+        `medusa_auth_token`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        `MEDUSA_EPSILON`
+      </Table.Cell>
+      <Table.Cell>
+        Numeric values whose magnitude is not greater than this are returned as `0` in API responses. It's read once when the process starts, so set it as a system environment variable.
+      </Table.Cell>
+      <Table.Cell>
+        `0.0001`
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+<Note>
+
+The installer also writes `REDIS_URL` in your `.env` file. MedusaGo doesn't read this variable by itself: your `medusa-config.go` must pass it to the options that need a Redis URL, as the [configurations chapter](!docs!/learn/configurations/medusa-config#redisurl) explains.
+
+</Note>
+
+<Note>
+
+MedusaGo doesn't collect usage telemetry, so there's no `MEDUSA_DISABLE_TELEMETRY` variable.
+
+</Note>

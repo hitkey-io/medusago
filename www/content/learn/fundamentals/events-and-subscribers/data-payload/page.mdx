@@ -1,0 +1,62 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Event Data Payload`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how subscribers receive an event's data payload.
+
+## Access Event's Data Payload
+
+When events are emitted, they're emitted with a data payload.
+
+The `Event` value that the subscriber function receives as a parameter holds the event payload in its `Data` property, with additional context in the `Metadata` property.
+
+For example:
+
+```go title="src/subscribers/product-created.go" file="events/data_payload.go" region="product-created"
+```
+
+This logs the product ID received in the `product.created` event's data payload.
+
+The `eventID` function in the example reads the `id` property of the payload. The payload of the events that MedusaGo emits is an object of type `*dal.Record`, so `Data` holds a `*dal.Record`, and you read its values with the `Get` method:
+
+```go title="src/subscribers/product-created.go" file="events/data_payload.go" region="event-id"
+```
+
+Since `Data` has the type `any`, check the type of the payload before you use it. The properties of the payload are different for each event.
+
+The `Event` struct has the following properties:
+
+<TypeList types={[
+  {
+    name: "Name",
+    type: "`string`",
+    description: "The name of the triggered event."
+  },
+  {
+    name: "Data",
+    type: "`any`",
+    description: "The data payload of the event. For the events that MedusaGo emits, it's a `*dal.Record`, and its properties are different for each event."
+  },
+  {
+    name: "Metadata",
+    type: "`*dal.Record`",
+    description: "Additional data and context of the emitted event, such as `created_at` and `published_at`. It can be `nil`."
+  },
+]} sectionTitle="Access Event's Data Payload" />
+
+For example, this function reads the details of an event:
+
+```go title="src/subscribers/describe-event.go" file="events/data_payload.go" region="metadata"
+```
+
+<Note>
+
+The payload and the metadata you receive depend on the event module. With the Redis Event Module, they're decoded from JSON, so the payload is always a `*dal.Record` or a `[]any`. With the Local Event Module, you receive the value that was passed when the event was emitted.
+
+</Note>

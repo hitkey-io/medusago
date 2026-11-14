@@ -1,0 +1,68 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Handling CORS in API Routes`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn about the CORS middleware and how to configure it for custom API routes.
+
+## CORS Overview
+
+Cross-Origin Resource Sharing (CORS) allows only configured origins to access your API routes.
+
+For example, if you allow only origins starting with `http://localhost:7001` to access your Admin API routes, other origins accessing those routes get a CORS error.
+
+### CORS Configurations
+
+The `StoreCors`, `AdminCors`, and `AuthCors` properties of the `HTTP` configuration set the allowed origins for routes starting with `/store`, `/admin`, and `/auth` respectively.
+
+These configurations accept a comma-separated list of origins. An origin can also be a regular expression, between slashes, such as `/^https:\/\/.*\.example\.com$/`.
+
+For example:
+
+```go title="medusa-config.go" file="api/cors.go" region="config"
+```
+
+This allows the `http://localhost:7001` origin to access the Admin API routes, and the `http://localhost:8000` origin to access Store API routes.
+
+If you don't set a property, its value is the `STORE_CORS`, `ADMIN_CORS`, or `AUTH_CORS` environment variable, or a default value for local development.
+
+<Note title="Tip">
+
+Learn more about the CORS configurations in [this reference](!docs!/learn/configurations/medusa-config#http).
+
+</Note>
+
+---
+
+## CORS in Store and Admin Routes
+
+To disable the CORS middleware for a route, set the `Cors` property of the route's `Route` to `false`. It's a `*bool`, and `nil` means the middleware is applied.
+
+For example:
+
+```go title="src/api/store/custom-hello/route.go" file="api/cors.go" region="disable"
+```
+
+This disables the CORS middleware on API routes at the path `/store/custom-hello`. The `ptr` function in this example returns a pointer to the value you pass.
+
+---
+
+## CORS in Custom Routes
+
+If you create a route that doesn't start with `/store`, `/admin`, or `/auth`, you must apply the CORS middleware manually. Otherwise, all requests to your API route from other origins lead to a CORS error.
+
+You can do that with a [middleware](!docs!/learn/fundamentals/api-routes/middlewares) in the middleware configurations of your project.
+
+For example:
+
+```go title="src/api/middlewares.go" file="api/cors.go" region="custom-routes"
+```
+
+This retrieves the configurations of your application from the container, and applies the `StoreCors` configuration to routes starting with `/custom`. The `Cors` function from the `framework/src/http` package returns the CORS middleware, and `ParseCorsOrigins` parses a configuration value into the allowed origins.
+
+The CORS middleware answers `OPTIONS` preflight requests itself, with a `204` status code, so you don't need to add a handler for them.

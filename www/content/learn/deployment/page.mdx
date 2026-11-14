@@ -1,0 +1,63 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `MedusaGo Deployment Overview`,
+}
+
+# {metadata.title}
+
+In this chapter, you’ll learn the general approach to deploying the MedusaGo application.
+
+## MedusaGo Project Components
+
+A standard MedusaGo project is made up of:
+
+- MedusaGo application: The MedusaGo server and the Medusa Admin.
+- One or more storefronts.
+
+You deploy the MedusaGo application, with the server and admin, separately from the storefront.
+
+---
+
+## Deploying the MedusaGo Application
+
+You must deploy the MedusaGo application before the storefront, as it connects to the server and won’t work without a deployed server URL.
+
+The MedusaGo application is a single executable. Any hosting provider or platform where you can run an executable or a container can host it. You don't need a language runtime on the server.
+
+Your server connects to a PostgreSQL database, Redis, and other services relevant for your setup. Most hosting providers support deploying and managing these databases along with your server.
+
+When you deploy your MedusaGo application, you also deploy the Medusa Admin, since the same executable serves it.
+
+### Deploy Server and Worker Instances
+
+By default, MedusaGo runs all processes in a single instance. This includes the server that handles incoming requests and the worker that processes background tasks. While this works for development, it’s not optimal for production environments as many background tasks can be long-running or resource-heavy.
+
+Instead, you should deploy two instances:
+
+- A server instance, which handles incoming requests to the application’s API routes.
+- A worker instance, which processes background tasks, including scheduled jobs and subscribers.
+
+You don’t need to set up different projects for each instance. Both run the same executable, and you configure them to run in different modes based on environment variables.
+
+Learn more about worker modes and how to configure them in the [Worker Mode chapter](!docs!/learn/production/worker-mode).
+
+### How to Deploy MedusaGo?
+
+To self-host MedusaGo, the [next chapter](!docs!/learn/deployment/general) explains the general steps to deploy your application. In short:
+
+1. Build the application with the [build command](!docs!/learn/build). The output is the `.medusa/server` directory.
+2. Provision PostgreSQL and Redis.
+3. Run the database migrations, then start the executable with the environment variables of your deployment.
+
+---
+
+## Deploying the Storefront
+
+The storefront is deployed separately from the MedusaGo application, and the hosting options depend on the tools and frameworks you use to create the storefront.
+
+If you’re using the Next.js Starter Storefront, you may deploy the storefront to any hosting provider that supports frontend frameworks. Make sure to set its backend URL variable to the URL of your deployed MedusaGo application, and to add the storefront's URL to the `STORE_CORS` and `AUTH_CORS` variables of the application.
+
+Refer to the [Next.js Starter Storefront documentation](!resources!/nextjs-starter) for more details.

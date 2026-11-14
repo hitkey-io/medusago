@@ -1,0 +1,251 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Request Body and Query Parameter Validation`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to validate request body and query parameters in your custom API route.
+
+## Request Validation
+
+Consider you're creating a `POST` API route at `/custom/sum`. It accepts two parameters `a` and `b` that are required numbers, and returns their sum.
+
+MedusaGo provides two middlewares to validate the request body and query parameters of incoming requests to your custom API routes. They're in the `framework/src/http/utils` package:
+
+- `ValidateAndTransformBody` to validate the request's body parameters against a schema.
+- `ValidateAndTransformQuery` to validate the request's query parameters against a schema.
+
+Both middlewares accept a schema from the `framework/src/zod` package. It's a Go port of [Zod](https://zod.dev/) that has the same parsing rules as the Zod version Medusa uses, which gives you flexibility in how you define your validation schema with complex rules. It also produces the same error messages as Medusa.
+
+The next steps explain how to add request body and query parameter validation to the API route mentioned earlier.
+
+---
+
+## How to Validate Request Body
+
+### Step 1: Create Validation Schema
+
+To create a validation schema, use the functions of the `zod` package, which are the Go equivalents of Zod's builders. Define the schemas of your API routes in a Go file next to them.
+
+For example, create the following schema:
+
+```go title="src/api/custom/validators.go" file="api/validation.go" region="body-schema"
+```
+
+The `PostSumSchema` variable is a schema that indicates the request body is valid if:
+
+1. It's an object.
+2. It has a property `a` that is a required number.
+3. It has a property `b` that is a required number.
+
+<Note>
+
+An object schema at the top level of a request body or query is strict: the request is invalid if it has a property that the schema doesn't declare.
+
+</Note>
+
+### Step 2: Add Request Body Validation Middleware
+
+To use this schema for validating the body parameters of requests to `/custom/sum`, use the `ValidateAndTransformBody` middleware. It accepts a function that returns the schema, since the schema can depend on the request. For a static schema, wrap it with the `httputils.Schema` helper.
+
+For example, add the following middleware configuration to the `Middlewares` of your project:
+
+```go title="src/api/middlewares.go" file="api/validation.go" region="middlewares"
+```
+
+This applies the `ValidateAndTransformBody` middleware on `POST` requests to `/custom/sum`. It uses the `PostSumSchema` as the validation schema.
+
+#### How the Validation Works
+
+If a request's body parameters don't pass the validation, the `ValidateAndTransformBody` middleware returns an error indicating the validation errors.
+
+If a request's body parameters are validated successfully, the middleware sets the validated body parameters in the `ValidatedBody` property of `MedusaRequest`.
+
+### Step 3: Use Validated Body in API Route
+
+In your API route, consume the validated body using the `ValidatedBody` property of `MedusaRequest`.
+
+For example, create the following handlers:
+
+```go title="src/api/custom/sum/route.go" file="api/validation.go" region="handlers"
+```
+
+`ValidatedBody` holds the output of the schema. For an object schema, that's a `*dal.Record` whose values have the types the schema declares: a number is a `float64`, a string is a `string`, an array is a `[]any`, and a nested object is a `*dal.Record`. The `body` and `numberOf` functions in this example are helpers that read a record's values.
+
+### Convert the Validated Body into a Go Type
+
+To work with a Go struct instead of a record, marshal the validated body to JSON and unmarshal it into a type:
+
+```go title="src/api/custom/posts/route.go" file="api/validation.go" region="typed"
+```
+
+### Test it Out
+
+To test out the validation, send a `POST` request to `/custom/sum` passing `a` and `b` body parameters. You can try sending incorrect request body parameters to test out the validation.
+
+For example, if you omit the `a` parameter, you'll receive a `400` response code with the following response data:
+
+```json
+{
+  "type": "invalid_data",
+  "message": "Invalid request: Field 'a' is required"
+}
+```
+
+If you pass a value of the wrong type, or a property that the schema doesn't declare, the message is, respectively:
+
+```plain
+Invalid request: Expected type: 'number' for field 'a', got: 'x'
+Invalid request: Unrecognized fields: 'c'
+```
+
+---
+
+## How to Validate Request Query Parameters
+
+The steps to validate the request query parameters are similar to that of [validating the body](#how-to-validate-request-body).
+
+### Step 1: Create Validation Schema
+
+The first step is to create a schema with the rules of the accepted query parameters.
+
+Consider that the API route accepts two query parameters `a` and `b` that are numbers, similar to the previous section.
+
+Create the following schema:
+
+```go title="src/api/custom/validators.go" file="api/validation.go" region="query-schema"
+```
+
+Since a query parameter's type is originally a string or a slice of strings, you have to use the `Preprocess` function to validate other query types, such as numbers.
+
+`Preprocess` accepts a function and a schema. For both `a` and `b`, the function transforms the query parameter's value to a number first if it's a string, then the schema checks that the resulting value is a number. The `parseNumber` function in this example uses `strconv.ParseFloat`:
+
+```go title="src/api/helpers.go" file="api/helpers.go" region="parse-number"
+```
+
+<Note title="Tip">
+
+For a query parameter that you want to convert with JavaScript's `Number` semantics, you can use `zod.CoerceNumber()` instead, which is the port of `z.coerce.number()`.
+
+</Note>
+
+### Step 2: Add Request Query Validation Middleware
+
+Next, you'll use the schema to validate incoming requests' query parameters to the `/custom/sum` API route.
+
+Add the `ValidateAndTransformQuery` middleware to the API route in the `Middlewares` of your project. It's in the same configuration list as the body validation middleware:
+
+```go title="src/api/middlewares.go" file="api/validation.go" region="middlewares"
+```
+
+The `ValidateAndTransformQuery` accepts two parameters:
+
+- The first one is the schema to validate the query parameters against.
+- The second one is a `QueryConfig` struct with options for retrieving data using Query, which you can learn more about in [this chapter](!docs!/learn/fundamentals/query). It's empty in this example. You'll use it to restrict the retrievable fields in the [Allowed Fields](!docs!/learn/fundamentals/api-routes/allowed-fields) chapter.
+
+#### How the Validation Works
+
+If a request's query parameters don't pass the validation, the `ValidateAndTransformQuery` middleware returns an error indicating the validation errors.
+
+If a request's query parameters are validated successfully, the middleware sets the validated query parameters in the `ValidatedQuery` property of `MedusaRequest`, which is a `*dal.Record`.
+
+### Step 3: Use Validated Query in API Route
+
+Finally, use the validated query in the API route. `ValidatedQuery` has the validated parameters.
+
+For example, the following handler is the one for `GET` requests, in the handlers shown earlier:
+
+```go title="src/api/custom/sum/route.go" file="api/validation.go" region="handlers"
+```
+
+In the `sumGET` handler, you use the `ValidatedQuery` property of `MedusaRequest` to access the values of the `a` and `b` properties as numbers, then return in the response their sum.
+
+Don't forget to add the route file to the `Routes` of your project:
+
+```go title="src/api/custom/sum/route.go" file="api/validation.go" region="route"
+```
+
+### Test it Out
+
+To test out the validation, send a `GET` request to `/custom/sum` with `a` and `b` query parameters. You can try sending incorrect query parameters to see how the validation works.
+
+For example, if you omit the `a` parameter, you'll receive a `400` response code with the following response data:
+
+```json
+{
+  "type": "invalid_data",
+  "message": "Invalid request: Field 'a' is required"
+}
+```
+
+---
+
+## Available Schemas
+
+The `zod` package is a port of the parts of Zod that API validation needs. These are the functions and methods you can use:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Kind
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Functions and Methods
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        Primitives
+      </Table.Cell>
+      <Table.Cell>
+        `String()`, `Number()`, `Boolean()`, `Null()`, `Unknown()`, `Any()`, `Literal(values...)`, `Enum(values...)`, `CoerceNumber()`, `CoerceDate()`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Collections
+      </Table.Cell>
+      <Table.Cell>
+        `Array(schema)`, `Object(zod.F(key, schema)...)`, `Record(keySchema, valueSchema)`, `Union(schemas...)`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Modifiers
+      </Table.Cell>
+      <Table.Cell>
+        `Optional()`, `Nullable()`, `Nullish()`, `Default(value)`, `Preprocess(fn, schema)`, `Transform(fn)`, `Refine(fn, message)`, `SuperRefine(fn)`, `Lazy(fn)`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Checks
+      </Table.Cell>
+      <Table.Cell>
+        `Min(n)`, `Max(n)`, `Gt(n)`, `Gte(n)`, `Nonnegative()`, `Int()`, `Email()`
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        Object methods
+      </Table.Cell>
+      <Table.Cell>
+        `Strict()`, `Passthrough()`, `Strip()`, `Extend(fields...)`, `Merge(schema)`, `Pick(keys...)`, `Omit(keys...)`, `Partial()`
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+For example, this schema uses some of them:
+
+```go title="src/api/custom/validators.go" file="api/validation.go" region="richer-schema"
+```
+
+Learn more about how schemas work in [Zod's documentation](https://zod.dev). The functions above behave like their Zod equivalents.

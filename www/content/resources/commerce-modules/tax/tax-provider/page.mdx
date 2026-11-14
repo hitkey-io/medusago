@@ -18,12 +18,12 @@ Refer to this [Medusa Admin User Guide](!user-guide!/settings/tax-regions) to le
 
 The Tax Module Provider handles tax line calculations in the MedusaGo application. It integrates third-party tax services, such as TaxJar, or implements custom tax calculation logic.
 
-The MedusaGo application uses the Tax Module Provider whenever it needs to calculate tax lines for a cart or order, or when you [calculate the tax lines using the Tax Module's service](../tax-calculation-with-provider/page.mdx).
+The MedusaGo application uses the Tax Module Provider whenever it needs to calculate tax lines for a cart or order, or when you calculate the tax lines using the Tax Module's service.
 
 
 ### Default Tax Provider
 
-The Tax Module provides a `system` tax provider that acts as a placeholder tax provider. It performs basic tax calculation, as you can see in the [Create Tax Module Provider](/references/tax/provider#gettaxlines) guide.
+The Tax Module provides a `system` tax provider that acts as a placeholder tax provider. It performs basic tax calculation, as you can see in the Create Tax Module Provider guide.
 
 This provider is installed by default in your application and you can use it with tax regions.
 
@@ -57,7 +57,7 @@ A Tax Module Provider is a module whose service implements the `ITaxProvider` im
 
 The module can have multiple tax provider services, where each are registered as separate tax providers.
 
-Refer to the [Create Tax Module Provider](/references/tax/provider) guide to learn how to create a Tax Module Provider.
+Refer to the Create Tax Module Provider guide to learn how to create a Tax Module Provider.
 
 After you create a tax provider, you can choose it as the default Tax Module Provider for a region in the [Medusa Admin dashboard](!user-guide!/settings/tax-regions).
 
@@ -69,7 +69,7 @@ After you create a tax provider, you can choose it as the default Tax Module Pro
 
 The Tax Module accepts a `providers` option that allows you to configure the providers registered in your application.
 
-Learn more about this option in the [Module Options](../module-options/page.mdx) guide.
+Learn more about this option in the Module Options guide.
 
 ### Registration on Application Start
 
@@ -79,7 +79,7 @@ For each Tax Module Provider, the MedusaGo application finds all tax provider se
 
 ### TaxProvider Data Model
 
-A registered tax provider is represented by the [TaxProvider data model](/references/tax/models/TaxProvider) in the MedusaGo application.
+A registered tax provider is represented by the TaxProvider data model in the MedusaGo application.
 
 This data model is used to reference a service in the Tax Module Provider and determine whether it's installed in the application.
 
