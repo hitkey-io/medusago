@@ -7,6 +7,8 @@ and it runs on the same database as a Node.js Medusa application.
 
 Baseline: Medusa `v2.22.6`.
 
+Documentation: [medusago.hitkey.io](https://medusago.hitkey.io/)
+
 ## Getting started
 
 Requirements: [Go](https://go.dev/dl/) 1.26 or later, [PostgreSQL](https://www.postgresql.org/download/)
