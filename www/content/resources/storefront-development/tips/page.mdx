@@ -1,4 +1,5 @@
 ---
+rewritten: true
 tags:
   - storefront
 ---
@@ -9,14 +10,14 @@ export const metadata = {
 
 # {metadata.title}
 
-In this guide, you’ll learn how to send requests from your storefront application to the Medusa application.
+In this guide, you’ll learn how to send requests from your storefront application to the MedusaGo application.
 
-## Connect to the Medusa Application
+## Connect to the MedusaGo Application
 
-To send requests from the storefront to the Medusa application’s Store API Routes, you have two options:
+To send requests from the storefront to the MedusaGo application’s Store API Routes, you have two options:
 
 - **For JavaScript frameworks**: use Medusa’s [JS SDK](../../js-sdk/page.mdx) in any JavaScript framework. This NPM package facilitates interacting with the backend’s REST APIs. All Storefront Development guides use the JS SDK.
-- **For other frontend technologies**: interact directly with the Medusa application by sending requests to its [Store REST APIs](/api/store).
+- **For other frontend technologies**: interact directly with the MedusaGo application by sending requests to its [Store REST APIs](/api/store).
 
 ### Set Up the JS SDK
 
@@ -46,10 +47,10 @@ export const sdk = new Medusa({
 
 Where:
 
-- `NEXT_PUBLIC_MEDUSA_BACKEND_URL` is the URL of your Medusa application. Based on your storefront framework, make sure the environment variable is accessible in the browser. For example, in Next.js, prefix the variable name with `NEXT_PUBLIC_`.
+- `NEXT_PUBLIC_MEDUSA_BACKEND_URL` is the URL of your MedusaGo application. Based on your storefront framework, make sure the environment variable is accessible in the browser. For example, in Next.js, prefix the variable name with `NEXT_PUBLIC_`.
 - `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` is the publishable API key of your storefront. Learn more in the [Publishable API Keys](../publishable-api-keys/page.mdx) guide.
 
-You can then import the `sdk` instance from `src/lib/sdk.ts` and use it to send requests to the Medusa application. For example:
+You can then import the `sdk` instance from `src/lib/sdk.ts` and use it to send requests to the MedusaGo application. For example:
 
 ```ts
 import { sdk } from "@/lib/sdk"
@@ -60,35 +61,37 @@ sdk.store.product.list()
 })
 ```
 
-Refer to the [JS SDK reference](../../js-sdk/page.mdx) to learn more about using the SDK to interact with the Medusa application.
+Refer to the [JS SDK reference](../../js-sdk/page.mdx) to learn more about using the SDK to interact with the MedusaGo application.
 
 ---
 
 ## Configure Store CORS in Medusa
 
-The Medusa application’s API routes are guarded by a CORS middleware. Make sure to set the `storeCors` property of the `http` configuration in `medusa-config.ts` to the storefront’s URL.
+The MedusaGo application’s API routes are guarded by a CORS middleware. Make sure to set the `StoreCors` field of the `HTTP` configuration in `medusa-config.go` to the storefront’s URL.
 
 For example:
 
-```ts title="medusa-config.ts" badgeLabel="Medusa Application" badgeColor="green"
-module.exports = defineConfig({
-  projectConfig: {
-    http: {
-      storeCors: "http://localhost:3000,http://localhost:8000",
-      // ...
-    },
-  },
-  // ...
-})
+```go title="medusa-config.go" badgeLabel="MedusaGo Application" badgeColor="green"
+func medusaConfig() config.InputConfig {
+	return config.InputConfig{
+		ProjectConfig: config.ProjectConfig{
+			HTTP: config.HttpConfig{
+				StoreCors: "http://localhost:3000,http://localhost:8000",
+				// ...
+			},
+		},
+		// ...
+	}
+}
 ```
 
-Refer to the [Medusa configuration](!docs!/learn/configurations/medusa-config#httpstorecors) guide to learn more about configuring CORS in the Medusa application.
+Refer to the [Medusa configuration](!docs!/learn/configurations/medusa-config#httpstorecors) guide to learn more about configuring CORS in the MedusaGo application.
 
 ---
 
 ## Add Search to Your Storefront
 
-The JS SDK sends requests to Medusa’s Store API routes, which is enough for listing and filtering by a field’s exact value. For a search experience with full-text search, facets, and sorting, use the [InstantSearch adapter](../../instantsearch/page.mdx) instead. It’s the recommended approach since [Medusa v2.21.1](https://github.com/medusajs/medusa/releases/tag/v2.21.1), and it requires the [Search Module](../../infrastructure-modules/search/page.mdx) configured with a provider in your Medusa application.
+The JS SDK sends requests to Medusa’s Store API routes, which is enough for listing and filtering by a field’s exact value. For a search experience with full-text search, facets, and sorting, use the [InstantSearch adapter](../../instantsearch/page.mdx) instead. It’s the recommended approach since [Medusa v2.21.1](https://github.com/medusajs/medusa/releases/tag/v2.21.1), and it requires the [Search Module](../../infrastructure-modules/search/page.mdx) configured with a provider in your MedusaGo application.
 
 [InstantSearch](https://www.algolia.com/doc/guides/building-search-ui/what-is-instantsearch/js/) is a family of UI widget libraries, available for React, Vue, Angular, and plain JavaScript. The `@medusajs/instantsearch-adapter` package provides the search client that connects those widgets to Medusa: it converts each widget’s request into a Medusa search query, sends it to the `/store/search` API route, and converts the results back.
 

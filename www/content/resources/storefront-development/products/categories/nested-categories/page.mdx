@@ -1,4 +1,5 @@
 ---
+rewritten: true
 tags:
   - product
   - product category
@@ -34,32 +35,33 @@ Both approaches select specific fields of a child category, which requires the [
 
 Medusa restricts the fields that you can request from a Store API route through an allowed-fields list. The product category routes allow `*category_children`, which returns all fields of a child category. However, they don't allow selecting specific child fields, such as `category_children.id`, and Medusa omits them from the response.
 
-Since selecting specific fields keeps the response size small, add the following middleware to your Medusa application to allow the `category_children.id` and `category_children.name` fields:
+Since selecting specific fields keeps the response size small, add the following middleware to your MedusaGo application (in `src/api/middlewares.go`) to allow the `category_children.id` and `category_children.name` fields:
 
-```ts title="src/api/middlewares.ts"
-import {
-  allowFields,
-  defineMiddlewares,
-} from "@medusajs/framework/http"
+```go title="src/api/middlewares.go"
+package api
 
-export default defineMiddlewares({
-  routes: [
-    {
-      matcher: "/store/product-categories",
-      middlewares: [
-        allowFields(
-          "category_children.id",
-          "category_children.name"
-        ),
-      ],
-    },
-  ],
-})
+import (
+	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/http/middlewares"
+)
+
+// Middlewares is registered in main.go with cli.Options{Middlewares: api.Middlewares}.
+var Middlewares = []medusahttp.MiddlewareRoute{
+	{
+		Matcher: "/store/product-categories",
+		Middlewares: []medusahttp.MiddlewareFunction{
+			middlewares.AllowFields([]string{
+				"category_children.id",
+				"category_children.name",
+			}),
+		},
+	},
+}
 ```
 
 <Note>
 
-`allowFields` is available since Medusa [v2.21.0](https://github.com/medusajs/medusa/releases/tag/v2.21.0). In earlier versions, write the middleware yourself, as explained in the [Allowed Fields](!docs!/learn/fundamentals/api-routes/allowed-fields#how-to-override-allowed-fields-of-medusas-api-routes) documentation.
+`middlewares.AllowFields` mirrors Medusa's `allowFields` helper. Learn more in the [Allowed Fields](!docs!/learn/fundamentals/api-routes/allowed-fields#how-to-override-allowed-fields-of-medusas-api-routes) documentation.
 
 </Note>
 

@@ -44,6 +44,26 @@ const EDITS = [
 const imagesFile = path.join(root, "images.json")
 const images = fs.existsSync(imagesFile) ? JSON.parse(fs.readFileSync(imagesFile, "utf8")) : []
 
+// MedusaGo terminology. Applied to prose only (never inside code fences). "Medusa"
+// stays where it names the upstream project, its API, the Admin or the UI kit.
+const TERMS = [
+  [/\bMedusa (application|applications|server|backend|project|projects|instance|instances|installation)\b/gi, "MedusaGo $1"],
+]
+function applyTerms(text) {
+  let inFence = false
+  return text
+    .split("\n")
+    .map((line) => {
+      if (/^\s*```/.test(line)) inFence = !inFence
+      if (inFence || /^\s*```/.test(line)) return line
+      return TERMS.reduce((l, [re, to]) => l.replace(re, to), line)
+    })
+    .join("\n")
+}
+
+// Pages rewritten by hand (front matter "rewritten: true") are never overwritten.
+const isRewritten = (file) => fs.existsSync(file) && /^---\n(?:[^\n]*\n)*?rewritten: true\n/.test(fs.readFileSync(file, "utf8"))
+
 // Removes a "## heading" section (and a separator right before it) up to the next heading of the same or a higher level.
 function dropSections(text, re) {
   const lines = text.split("\n")
@@ -76,6 +96,10 @@ for (const page of pages) {
   }
   const src = path.join(upstream, appDir, rel, "page.mdx")
   const dst = path.join(root, "content", section, rel, "page.mdx")
+  if (isRewritten(dst)) {
+    console.log("keep rewritten:", `${section}/${rel}`)
+    continue
+  }
   let text = fs.readFileSync(src, "utf8")
   const file = `${section}/${rel || "index"}`
   text = text.replace(/^[ \t]*!\[([^\]]*)\]\((https?:\/\/[^)]+)\)[ \t]*\n?/gm, (_, alt, url) => {
@@ -102,6 +126,7 @@ for (const page of pages) {
       text = out.join("\n")
     }
   }
+  text = applyTerms(text)
   // RBAC is an Enterprise feature that MedusaGo does not include.
   text = text.replace(/^[ \t]*<PermissionsBadge\b[^>]*\/>[ \t]*\n(\n)?/gm, "")
   const flagged = text.split("\n").filter((l) => /rbac|role-based|enterprise|\bpolicies\b|\bPermissionsBadge\b|EnterpriseNotice/i.test(l))

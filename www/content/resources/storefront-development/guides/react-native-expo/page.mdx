@@ -1,4 +1,5 @@
 ---
+rewritten: true
 tags:
   - storefront
   - cart
@@ -26,9 +27,9 @@ export const metadata = {
 
 # {metadata.title}
 
-In this tutorial, you'll learn how to create a mobile app that connects to your Medusa backend with React Native and Expo. You can then publish your app to the Apple App Store and Google Play Store.
+In this tutorial, you'll learn how to create a mobile app that connects to your MedusaGo backend with React Native and Expo. You can then publish your app to the Apple App Store and Google Play Store.
 
-When you install a Medusa application, you get a fully-fledged commerce server and an admin dashboard to manage the commerce store's data. Medusa's [architecture](!docs!/learn/introduction/architecture) is flexible and customizable, allowing you to build your own custom storefronts using any technology you prefer.
+When you install a MedusaGo application, you get a fully-fledged commerce server and an admin dashboard to manage the commerce store's data. Medusa's [architecture](!docs!/learn/introduction/architecture) is flexible and customizable, allowing you to build your own custom storefronts using any technology you prefer.
 
 [React Native](https://reactnative.dev/) allows developers to build native apps using React. [Expo](https://expo.dev/) is a platform for universal React applications that makes it easy to build, deploy, and iterate on native iOS and Android apps.
 
@@ -36,9 +37,9 @@ When you install a Medusa application, you get a fully-fledged commerce server a
 
 By following this tutorial, you'll learn how to:
 
-1. Set up a Medusa application.
+1. Set up a MedusaGo application.
 2. Create an app with React Native and Expo.
-3. Connect the Expo app to the Medusa backend.
+3. Connect the Expo app to the MedusaGo backend.
 4. Implement essential ecommerce features such as product listing, cart management, and checkout.
 
 You can follow this guide whether you're new to Medusa or an advanced Medusa developer. However, this tutorial assumes you have a basic understanding of React Native and JavaScript.
@@ -53,12 +54,12 @@ You can follow this guide whether you're new to Medusa or an advanced Medusa dev
 
 ---
 
-## Step 1: Install a Medusa Application
+## Step 1: Install a MedusaGo Application
 
 <Prerequisites items={[
   {
-    text: "Node.js v20.19.0+ or v22.12.0+",
-    link: "https://nodejs.org/en/download"
+    text: "Go 1.26+",
+    link: "https://go.dev/dl/"
   },
   {
     text: "Git CLI tool",
@@ -70,23 +71,18 @@ You can follow this guide whether you're new to Medusa or an advanced Medusa dev
   }
 ]} />
 
-Start by installing the Medusa application on your machine with the following command:
+Start by installing the MedusaGo application on your machine with the following command:
 
-```bash npx2yarnExec
-npx create-medusa-app@latest
+```bash
+go run github.com/hitkey-io/medusago/packages/cli/create-medusago-app@latest my-medusa-store
 ```
 
-You'll first be asked for the project's name. Then, when you're asked whether you want to install the Next.js Starter Storefront, choose `N` for no. You'll create the Expo app instead.
+You'll be asked, among other things, whether you want to install the Next.js Starter Storefront. Choose `N` for no. You'll create the Expo app instead.
 
-Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name. Once the installation finishes successfully, the Medusa Admin dashboard will open in your browser at `http://localhost:9000/app` with a form to create a new user. Enter the user's credentials and submit the form.
+Afterwards, the installation process will start, which will create the project in a directory with your project's name, create its PostgreSQL database and run the migrations. Once the installation finishes successfully, the Medusa Admin dashboard will open in your browser at `http://localhost:9000/app` with a form to create a new user. Enter the user's credentials and submit the form.
 
 Then, you can log in with the new user and explore the dashboard.
 
-<Note title="Ran into Errors?">
-
-Check out the [troubleshooting guides](../../../troubleshooting/create-medusa-app-errors/page.mdx) for help.
-
-</Note>
 
 ---
 
@@ -94,7 +90,7 @@ Check out the [troubleshooting guides](../../../troubleshooting/create-medusa-ap
 
 In this step, you'll create a new Expo app with React Native.
 
-In a directory separate from your Medusa application, run the following command to create a new Expo project:
+In a directory separate from your MedusaGo application, run the following command to create a new Expo project:
 
 ```bash npx2yarnExec
 npx create-expo-app@latest
@@ -124,7 +120,7 @@ npm install @medusajs/js-sdk @medusajs/types @react-native-async-storage/async-s
 
 You install the following packages:
 
-- `@medusajs/js-sdk`: Medusa's [JS SDK](../../../js-sdk/page.mdx) to interact with the Medusa backend.
+- `@medusajs/js-sdk`: Medusa's [JS SDK](../../../js-sdk/page.mdx) to interact with the MedusaGo backend.
 - `@medusajs/types`: TypeScript types for Medusa, which are useful when working with Medusa's JS SDK.
 - `@react-native-async-storage/async-storage`: An asynchronous key-value storage system for React Native, used to store data like cart ID.
 - `@react-native-picker/picker`: A cross-platform picker component for React Native, used for selecting options like country.
@@ -217,7 +213,7 @@ export const Fonts = Platform.select({
 
 ## Step 5: Initialize Medusa JS SDK
 
-In this step, you'll set up Medusa's [JS SDK](../../../js-sdk/page.mdx) in your Expo app. You'll use the SDK to interact with the Medusa backend.
+In this step, you'll set up Medusa's [JS SDK](../../../js-sdk/page.mdx) in your Expo app. You'll use the SDK to interact with the MedusaGo backend.
 
 To initialize the SDK, create the file `lib/sdk.ts` in your Expo project with the following content:
 
@@ -250,7 +246,7 @@ export const sdk = new Medusa({
 
 You configure the SDK with the:
 
-- Medusa backend URL, which is read from the environment variable `EXPO_PUBLIC_MEDUSA_URL`. If the variable is not set, it defaults to `http://localhost:9000`.
+- MedusaGo backend URL, which is read from the environment variable `EXPO_PUBLIC_MEDUSA_URL`. If the variable is not set, it defaults to `http://localhost:9000`.
 - [Publishable API key](../../publishable-api-keys/page.mdx), which is required to retrieve products in the associated sales channel. It is read from the environment variable `EXPO_PUBLIC_MEDUSA_PUBLISHABLE_API_KEY`.
 
 You also customize the JWT token storage method of the JS SDK to use `AsyncStorage`, which is suitable for React Native apps.
@@ -263,9 +259,9 @@ Refer to the [JS SDK documentation](../../../js-sdk/page.mdx) for more configura
 
 ### Set Environment Variables
 
-Next, you'll set the environment variables in your Expo project. Before you do that, you need to retrieve the Medusa backend URL and the Publishable API key.
+Next, you'll set the environment variables in your Expo project. Before you do that, you need to retrieve the MedusaGo backend URL and the Publishable API key.
 
-The Medusa backend URL is the URL where your Medusa server is running. If you're running the Medusa server locally, it should be the IP address of your machine at the port `9000`. For example, `http://192.168.1.100:9000`.
+The MedusaGo backend URL is the URL where your MedusaGo server is running. If you're running the MedusaGo server locally, it should be the IP address of your machine at the port `9000`. For example, `http://192.168.1.100:9000`.
 
 You can find your machine's local IP address by running the following command in your terminal:
 
@@ -293,10 +289,10 @@ ipconfig
   </CodeTab>
 </CodeTabs>
 
-Next, to get the Publishable API key, start the Medusa application by running the following command in its directory:
+Next, to get the Publishable API key, start the MedusaGo application by running the following command in its `apps/backend` directory:
 
-```bash npm2yarn badgeLabel="Medusa Application" badgeColor="green"
-npm run dev
+```bash badgeLabel="MedusaGo Application" badgeColor="green"
+go run . develop
 ```
 
 Then:
@@ -305,20 +301,20 @@ Then:
 2. Go to **Settings** > **Publishable API Keys**.
 3. Either copy the key of an existing Publishable API key, or create a new one by clicking on the **Create Publishable API Key** button.
 
-Once you have the Medusa backend URL and the Publishable API key, create the file `.env` in the root directory of your Expo project with the following content:
+Once you have the MedusaGo backend URL and the Publishable API key, create the file `.env` in the root directory of your Expo project with the following content:
 
 ```shell title=".env"
 EXPO_PUBLIC_MEDUSA_URL=http://192.168.1.100:9000
 EXPO_PUBLIC_MEDUSA_PUBLISHABLE_API_KEY=your_publishable_api_key
 ```
 
-Make sure to replace the values with your actual Medusa backend URL and Publishable API key.
+Make sure to replace the values with your actual MedusaGo backend URL and Publishable API key.
 
 ### Optional: Update CORS in Medusa
 
-If you plan to test the Expo app in a web browser, you'll need to update the CORS settings in the Medusa backend to allow requests from the Expo development server.
+If you plan to test the Expo app in a web browser, you'll need to update the CORS settings in the MedusaGo backend to allow requests from the Expo development server.
 
-In your Medusa application's directory, add the Expo development server URL to the `STORE_CORS` and `AUTH_CORS` environment variables in the `.env` file:
+In your MedusaGo application's directory, add the Expo development server URL to the `STORE_CORS` and `AUTH_CORS` environment variables in the `.env` file:
 
 ```env
 STORE_CORS=previous_values...,http://localhost:8081
@@ -327,7 +323,7 @@ AUTH_CORS=previous_values...,http://localhost:8081
 
 Append `,http://localhost:8081` to the existing values of `STORE_CORS` and `AUTH_CORS`, which is the default URL for the Expo development server.
 
-Make sure to restart the Medusa server after making changes to the `.env` file.
+Make sure to restart the MedusaGo server after making changes to the `.env` file.
 
 ---
 
@@ -348,7 +344,7 @@ The region context will manage the selected region state and provide it to child
 To create the region context, create the file `context/region-context.tsx` with the following content:
 
 export const regionContextHighlights = [
-  ["7", "regions", "Available regions from the Medusa backend."],
+  ["7", "regions", "Available regions from the MedusaGo backend."],
   ["8", "selectedRegion", "The currently selected region."],
   ["9", "selectedCountryCode", "The selected country code within the selected region."],
   ["10", "setSelectedRegion", "Update the selected region and country code."],
@@ -391,7 +387,7 @@ export function RegionProvider({ children }: { children: ReactNode }) {
 
 You define the `RegionContext` with the following properties that child components can use:
 
-1. `regions`: An array of available regions fetched from the Medusa backend.
+1. `regions`: An array of available regions fetched from the MedusaGo backend.
 2. `selectedRegion`: The currently selected region.
 3. `selectedCountryCode`: The country code of the selected country within the selected region. This is useful as regions can have multiple countries, and you'll allow customers to select their country.
 4. `setSelectedRegion`: A function to update the selected region and country code.
@@ -400,12 +396,12 @@ You define the `RegionContext` with the following properties that child componen
 
 You also define the `RegionProvider` component that will wrap the app and provide the region context to its children.
 
-Next, you'll implement the logic to load the regions from the Medusa backend, and manage the selected region state.
+Next, you'll implement the logic to load the regions from the MedusaGo backend, and manage the selected region state.
 
 Replace the `// TODO load and select regions` comment with the following:
 
 export const regionLoadingHighlights = [
-  ["1", "loadRegions", "Load regions from the Medusa backend."],
+  ["1", "loadRegions", "Load regions from the MedusaGo backend."],
   ["41", "useEffect", "Load regions when the component mounts."],
   ["45", "setSelectedRegion", "Update the selected region and country code."]
 ]
@@ -478,7 +474,7 @@ return (
 )
 ```
 
-You define the `loadRegions` function that fetches the regions from the Medusa backend using the JS SDK. It also loads any previously selected region and country from `AsyncStorage`, or defaults to the first region and its first country.
+You define the `loadRegions` function that fetches the regions from the MedusaGo backend using the JS SDK. It also loads any previously selected region and country from `AsyncStorage`, or defaults to the first region and its first country.
 
 Then, you run the `loadRegions` function when the component mounts using the `useEffect` hook.
 
@@ -848,7 +844,7 @@ You define the `CartContext` with the following properties that child components
 
 You also define the `CartProvider` component that will wrap the app and provide the cart context to its children.
 
-Next, you'll implement the logic to load the cart from the Medusa backend. Replace the `// TODO load cart` comment with the following:
+Next, you'll implement the logic to load the cart from the MedusaGo backend. Replace the `// TODO load cart` comment with the following:
 
 ```tsx title="context/cart-context.tsx"
 const loadCart = useCallback(async () => {
@@ -899,7 +895,7 @@ useEffect(() => {
 // TODO handle region update
 ```
 
-The `loadCart` function creates or retrieves the saved cart from the Medusa backend using the JS SDK. This function runs when the component mounts using the `useEffect` hook.
+The `loadCart` function creates or retrieves the saved cart from the MedusaGo backend using the JS SDK. This function runs when the component mounts using the `useEffect` hook.
 
 Next, you'll implement the logic to handle region updates, as the cart's region must match the selected region.
 
@@ -1121,7 +1117,7 @@ Child components can now access the cart context using the `useCart` hook.
 
 ## Step 8: Create Home Screen
 
-In this step, you'll create the home screen of the app. It will display a hero image with a list of products retrieved from the Medusa backend.
+In this step, you'll create the home screen of the app. It will display a hero image with a list of products retrieved from the MedusaGo backend.
 
 To implement the home screen, you'll create:
 
@@ -1323,7 +1319,7 @@ So, to set up the tab navigation within the drawer navigator, create the directo
 Then, to create the home screen, create the file `app/(drawer)/(tabs)/(home)/index.tsx` with the following content:
 
 export const homeScreenHighlights = [
-  ["22", "fetchProducts", "Fetch products from the Medusa backend based on the selected region."],
+  ["22", "fetchProducts", "Fetch products from the MedusaGo backend based on the selected region."],
   ["42", "useEffect", "Fetch products when the selected region changes."],
   ["48", "onRefresh", "Handle pull-to-refresh to reload products."]
 ]
@@ -1429,7 +1425,7 @@ const styles = StyleSheet.create({
 })
 ```
 
-The home screen component fetches products from the Medusa backend based on the selected region. It manages loading, refreshing, and error states.
+The home screen component fetches products from the MedusaGo backend based on the selected region. It manages loading, refreshing, and error states.
 
 Next, you'll add the return statement to render the home screen UI. Replace the `// TODO add return statement` comment with the following:
 
@@ -1647,10 +1643,10 @@ You can now test the home screen of your app.
 
 There are different ways to run the React Native app, which you can learn about in [Expo's documentation](https://docs.expo.dev/get-started/set-up-your-environment/?platform=ios&device=physical&mode=expo-go). The recommended way is to install the [Expo Go](https://expo.dev/go) app on your mobile device and run the app on it.
 
-Before you run your app, start the Medusa backend by running the following command in the Medusa project directory:
+Before you run your app, start the MedusaGo backend by running the following command in the `apps/backend` directory of the MedusaGo project:
 
-```bash badgeLabel="Medusa Application" badgeColor="green"
-npm run dev
+```bash badgeLabel="MedusaGo Application" badgeColor="green"
+go run . develop
 ```
 
 Then, run the following command in your Expo project directory to start the Expo server:
@@ -1661,7 +1657,7 @@ npm run start
 
 In the terminal, you should see a QR code. Scan it using your device to open the app in Expo Go.
 
-When the app opens, you'll see a home screen displaying a hero image and a list of products fetched from the Medusa application.
+When the app opens, you'll see a home screen displaying a hero image and a list of products fetched from the MedusaGo application.
 
 <Note>
 
@@ -2546,7 +2542,7 @@ useEffect(() => {
 // TODO select variant based on selected options
 ```
 
-The `fetchProduct` function retrieves product details from the Medusa backend using the product ID. The region ID is passed as a query parameter to get prices specific to the selected region.
+The `fetchProduct` function retrieves product details from the MedusaGo backend using the product ID. The region ID is passed as a query parameter to get prices specific to the selected region.
 
 The `selectedOptions` state is initialized with the option values of the product's first variant.
 
@@ -2808,7 +2804,7 @@ A new screen is added to the stack navigator for the product detail screen, allo
 
 ### Test Product Detail Screen
 
-To test out the product detail screen, run your Medusa application and Expo app.
+To test out the product detail screen, run your MedusaGo application and Expo app.
 
 Then, in the home screen, click on a product to view its details. This will open the product detail screen where you can view its images, select options, adjust quantity, and add it to the cart.
 
@@ -3240,7 +3236,7 @@ You add a new tab to the tab navigator for the cart screen. The tab displays a b
 
 ### Test Cart Screen
 
-To test out the cart screen, run your Medusa application and Expo app.
+To test out the cart screen, run your MedusaGo application and Expo app.
 
 Then, add some products to your cart from the product detail screen. You can open the cart by clicking its tab in the bottom navigation.
 
@@ -4526,7 +4522,7 @@ useEffect(() => {
 // TODO handle step transitions and order placement
 ```
 
-You add a `fetchShippingOptions` function that retrieves shipping options, and a `fetchPaymentProviders` function that retrieves payment providers from the Medusa backend.
+You add a `fetchShippingOptions` function that retrieves shipping options, and a `fetchPaymentProviders` function that retrieves payment providers from the MedusaGo backend.
 
 You also add a `useEffect` hook that calls these functions when the user navigates to the shipping or payment steps.
 
@@ -4805,7 +4801,7 @@ If you get a type error regarding the `/checkout` route, the error will be resol
 
 ### Test the Checkout Flow
 
-To test the checkout flow, run your Medusa application and Expo app.
+To test the checkout flow, run your MedusaGo application and Expo app.
 
 Then, in your Expo app, click on the "Proceed to Checkout" button in the cart screen. You should be taken to the checkout screen with the Delivery step as the current step.
 
@@ -5058,7 +5054,7 @@ useEffect(() => {
 // TODO render order details
 ```
 
-The `fetchOrder` function retrieves order details from the Medusa backend using the order ID from the URL parameters.
+The `fetchOrder` function retrieves order details from the MedusaGo backend using the order ID from the URL parameters.
 
 Two `useEffect` hooks are added:
 
@@ -5345,7 +5341,7 @@ If you get a type error regarding the `/order-confirmation/[id]` route, the erro
 
 ### Test the Order Confirmation Screen
 
-To test the order confirmation screen, run your Medusa application and Expo app.
+To test the order confirmation screen, run your MedusaGo application and Expo app.
 
 Then, in your Expo app, go through the checkout flow as before. After selecting a payment provider and placing the order, you should be taken to the order confirmation screen displaying the order details.
 

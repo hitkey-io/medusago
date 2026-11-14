@@ -26,7 +26,7 @@ This feature is available since [Medusa v2.17.0](https://github.com/medusajs/med
 
 If you're building option filters, the recommended approach since [Medusa v2.21.1](https://github.com/medusajs/medusa/releases/tag/v2.21.1) is the [InstantSearch adapter](../../../instantsearch/page.mdx), which returns the option values and how many products match each one in the same response as the products.
 
-The Product Options API routes covered in this guide are still supported, and are the approach to use if your Medusa application doesn't have the [Search Module](../../../infrastructure-modules/search/page.mdx) configured. Refer to the [Filter by Options with InstantSearch](#filter-by-options-with-instantsearch) section for the adapter's equivalent.
+The Product Options API routes covered in this guide are still supported, and are the approach to use if your MedusaGo application doesn't have the [Search Module](../../../infrastructure-modules/search/page.mdx) configured. Refer to the [Filter by Options with InstantSearch](#filter-by-options-with-instantsearch) section for the adapter's equivalent.
 
 </Note>
 
@@ -133,7 +133,7 @@ For example:
 
 export const paginateHighlights = [
   ["21", "offset", "Calculate the number of options to skip based on the current page and limit."],
-  ["27", "count", "The total number of product options in the Medusa application."],
+  ["27", "count", "The total number of product options in the MedusaGo application."],
   ["38", "setHasMorePages", "Set whether there are more pages based on the total count."],
   ["62", "button", "Show a button to load more options if there are more pages."]
 ]
@@ -307,7 +307,7 @@ Product options are commonly used to add filtering functionality to your storefr
 <Prerequisites
   items={[
     {
-      text: "Search Module configured with a provider in the Medusa backend",
+      text: "Search Module configured with a provider in the MedusaGo backend",
       link: "/infrastructure-modules/search"
     },
     {

@@ -1,4 +1,5 @@
 ---
+rewritten: true
 tags:
   - storefront
   - cart
@@ -52,7 +53,7 @@ export const metadata = {
 
 In this guide, you'll learn how to create an express checkout storefront with Medusa.
 
-When you install a Medusa application, you get a fully-fledged commerce server and an admin dashboard to manage the commerce store's data. As for the storefront, you can either install the [Next.js Starter Storefront](../../../nextjs-starter/page.mdx), or create a custom storefront with your preferred tech stack, design, and features. Medusa's [architecture](!docs!/learn/introduction/architecture) is flexible and customizable, allowing you to build a storefront that fits your use case.
+When you install a MedusaGo application, you get a fully-fledged commerce server and an admin dashboard to manage the commerce store's data. As for the storefront, you can either install the [Next.js Starter Storefront](../../../nextjs-starter/page.mdx), or create a custom storefront with your preferred tech stack, design, and features. Medusa's [architecture](!docs!/learn/introduction/architecture) is flexible and customizable, allowing you to build a storefront that fits your use case.
 
 An express checkout storefront is a streamlined shopping experience that focuses on reducing friction during the checkout process, allowing customers to quickly and easily buy products with minimal input. When you have an express checkout storefront, you share a link to purchase one of your products, either through social media, blog posts, or other promotional campaigns, and the customer can complete the purchase with minimal effort.
 
@@ -75,12 +76,12 @@ You can follow this guide whether you're new to Medusa or an advanced Medusa dev
 
 ---
 
-## Step 1: Install a Medusa Application
+## Step 1: Install a MedusaGo Application
 
 <Prerequisites items={[
   {
-    text: "Node.js v20.19.0+ or v22.12.0+",
-    link: "https://nodejs.org/en/download"
+    text: "Go 1.26+",
+    link: "https://go.dev/dl/"
   },
   {
     text: "Git CLI tool",
@@ -92,29 +93,24 @@ You can follow this guide whether you're new to Medusa or an advanced Medusa dev
   }
 ]} />
 
-Start by installing the Medusa application on your machine with the following command:
+Start by installing the MedusaGo application on your machine with the following command:
 
-```bash npx2yarnExec
-npx create-medusa-app@latest
+```bash
+go run github.com/hitkey-io/medusago/packages/cli/create-medusago-app@latest my-medusa-store
 ```
 
-You'll first be asked for the project's name. Then, when you're asked whether you want to install the Next.js Starter Storefront, choose `N` for no. You'll create a custom storefront instead.
+You'll be asked, among other things, whether you want to install the Next.js Starter Storefront. Choose `N` for no. You'll create a custom storefront instead.
 
-Afterwards, the installation process will start, which will install the Medusa application in a directory with your project's name. Once the installation finishes successfully, the Medusa Admin dashboard will open in your browser at `http://localhost:9000/app` with a form to create a new user. Enter the user's credential and submit the form.
+Afterwards, the installation process will start, which will create the project in a directory with your project's name, create its PostgreSQL database and run the migrations. Once the installation finishes successfully, the Medusa Admin dashboard will open in your browser at `http://localhost:9000/app` with a form to create a new user. Enter the user's credentials and submit the form.
 
-Afterwards, you can log in with the new user and explore the dashboard.
+Then, you can log in with the new user and explore the dashboard.
 
-<Note title="Ran to Errors?">
-
-Check out the [troubleshooting guides](../../../troubleshooting/create-medusa-app-errors/page.mdx) for help.
-
-</Note>
 
 ### Change CORS Configurations
 
-The Medusa application enforces Cross Origin Resource Sharing (CORS) security, which means you can only access the Medusa API from configured origins.
+The MedusaGo application enforces Cross Origin Resource Sharing (CORS) security, which means you can only access the Medusa API from configured origins.
 
-The Next.js development server will run on port `3000` by default, which isn't a configured origin in the Medusa application. To add it to configured origins, change the value of `STORE_CORS` and `AUTH_CORS` in the Medusa application's `.env` file to the following:
+The Next.js development server will run on port `3000` by default, which isn't a configured origin in the MedusaGo application. To add it to configured origins, change the value of `STORE_CORS` and `AUTH_CORS` in the MedusaGo application's `.env` file to the following:
 
 ```plain title=".env"
 STORE_CORS=http://localhost:3000
@@ -129,32 +125,33 @@ Learn more about CORS configurations in [this guide](!docs!/learn/configurations
 
 Medusa restricts the fields that you can request from a Store API route through an allowed-fields list. Later in this guide, you'll retrieve a cart with its line items' variant options and its products' options, which the cart routes don't allow by default. Medusa omits any field that isn't allowed from the response.
 
-To allow those fields, create the file `src/api/middlewares.ts` in the Medusa application with the following content:
+To allow those fields, create the file `src/api/middlewares.go` in the MedusaGo application with the following content:
 
-```ts title="src/api/middlewares.ts"
-import {
-  allowFields,
-  defineMiddlewares,
-} from "@medusajs/framework/http"
+```go title="src/api/middlewares.go"
+package api
 
-export default defineMiddlewares({
-  routes: [
-    {
-      matcher: "/store/carts",
-      middlewares: [
-        allowFields(
-          "items.variant.options",
-          "items.product.options"
-        ),
-      ],
-    },
-  ],
-})
+import (
+	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+	"github.com/hitkey-io/medusago/packages/core/framework/src/http/middlewares"
+)
+
+// Middlewares is registered in main.go with cli.Options{Middlewares: api.Middlewares}.
+var Middlewares = []medusahttp.MiddlewareRoute{
+	{
+		Matcher: "/store/carts",
+		Middlewares: []medusahttp.MiddlewareFunction{
+			middlewares.AllowFields([]string{
+				"items.variant.options",
+				"items.product.options",
+			}),
+		},
+	},
+}
 ```
 
 <Note>
 
-`allowFields` is available since Medusa [v2.21.0](https://github.com/medusajs/medusa/releases/tag/v2.21.0). In earlier versions, write the middleware yourself, as explained in the [Allowed Fields](!docs!/learn/fundamentals/api-routes/allowed-fields#how-to-override-allowed-fields-of-medusas-api-routes) documentation.
+`middlewares.AllowFields` mirrors Medusa's `allowFields` helper. Learn more in the [Allowed Fields](!docs!/learn/fundamentals/api-routes/allowed-fields#how-to-override-allowed-fields-of-medusas-api-routes) documentation.
 
 </Note>
 
@@ -176,7 +173,7 @@ Learn more about allowed fields and how to override them in the [Allowed Fields]
 
 ## Step 2: Install Next.js Project
 
-You'll create the express checkout storefront using Next.js. So, to create a Next.js project, run the following command in a directory separate from the Medusa application:
+You'll create the express checkout storefront using Next.js. So, to create a Next.js project, run the following command in a directory separate from the MedusaGo application:
 
 ```bash npx2yarnExec
 npx create-next-app@latest express-checkout
@@ -280,10 +277,10 @@ export const sdk = new Medusa({
 })
 ```
 
-This file exports a configured instance of the Medusa SDK that you can use to send requests to the Medusa application. To configure the SDK, you use the following environment variables:
+This file exports a configured instance of the Medusa SDK that you can use to send requests to the MedusaGo application. To configure the SDK, you use the following environment variables:
 
-- `NEXT_PUBLIC_MEDUSA_BACKEND_URL`: The URL of the Medusa application server. By default, it's set to `http://localhost:9000`.
-- `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`: The publishable API key of the Medusa application. You can find this key in the Medusa Admin dashboard under Settings -> Publishable API Keys.
+- `NEXT_PUBLIC_MEDUSA_BACKEND_URL`: The URL of the MedusaGo application server. By default, it's set to `http://localhost:9000`.
+- `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY`: The publishable API key of the MedusaGo application. You can find this key in the Medusa Admin dashboard under Settings -> Publishable API Keys.
 
 
 ---
@@ -304,7 +301,7 @@ To create the region provider, create the file `providers/region.tsx` with the f
 
 export const regionProviderHighlights1 = [
   ["9", "region", "The region selected by the customer."],
-  ["10", "regions", "A list of regions available in the Medusa application."],
+  ["10", "regions", "A list of regions available in the MedusaGo application."],
   ["11", "setRegion", "A function to set the selected region."],
 ]
 
@@ -332,13 +329,13 @@ const RegionContext = createContext<RegionContextType | null>(null)
 So far, you've created `RegionContextType` which represents the data that the provider's children can access. It holds:
 
 - `region`: The selected region.
-- `regions`: A list of regions available in the Medusa application.
+- `regions`: A list of regions available in the MedusaGo application.
 - `setRegion`: A function to set the selected region.
 
 Next, you'll create the provider component that wraps the storefront with the region context. Add the following content to the file:
 
 export const regionProviderHighlights2 = [
-  ["16", "regions", "A state variable that will hold the list of regions available in the Medusa application."],
+  ["16", "regions", "A state variable that will hold the list of regions available in the MedusaGo application."],
   ["19", "region", "A state variable that will hold the selected region."],
 ]
 
@@ -371,7 +368,7 @@ export const RegionProvider = (
 
 You create a `RegionProvider` component that so far only defines two state variables:
 
-- `regions`: A state variable that will hold the list of regions available in the Medusa application.
+- `regions`: A state variable that will hold the list of regions available in the MedusaGo application.
 - `region`: A state variable that will hold the selected region.
 
 Next, add the following imports to the top of the file:
@@ -387,7 +384,7 @@ import { sdk } from "@/lib/sdk"
 And replace the `TODO` in the `RegionProvider` component with the following content:
 
 export const regionProviderHighlights3 = [
-  ["6", "list", "Retrieve the list of regions from the Medusa application."]
+  ["6", "list", "Retrieve the list of regions from the MedusaGo application."]
 ]
 
 ```tsx title="providers/region.tsx" highlights={regionProviderHighlights3}
@@ -405,7 +402,7 @@ useEffect(() => {
 // TODO set the selected region
 ```
 
-When the component mounts, you fetch the regions from the Medusa application using the JS SDK. You then set the regions in the `regions` state variable.
+When the component mounts, you fetch the regions from the MedusaGo application using the JS SDK. You then set the regions in the `regions` state variable.
 
 Next, replace the new `TODO` with the following content:
 
@@ -413,7 +410,7 @@ export const regionProviderHighlights4 = [
   ["2", "region", "If the region is set, set it in the local storage."],
   ["9", "regionId", "Retrieve the selected region ID from the local storage."],
   ["12", "setRegion", "Set the first region in the list as the selected region if no region is set."],
-  ["16", "retrieve", "Retrieve the details of the selected region from the Medusa application."],
+  ["16", "retrieve", "Retrieve the details of the selected region from the MedusaGo application."],
 ]
 
 ```tsx title="providers/region.tsx" highlights={regionProviderHighlights4}
@@ -444,7 +441,7 @@ useEffect(() => {
 
 You add another `useEffect` hook that sets the selected region when the component first mounts and whenever the region changes. If the region is set, you only set its value in the local storage.
 
-If the region isn't set in the state variable, you try to retrieve the previously selected value from the local storage. If it's not found, you set the first region in the `regions` list as the selected region. Otherwise, you retrieve the previously selected region from the Medusa application using the JS SDK.
+If the region isn't set in the state variable, you try to retrieve the previously selected value from the local storage. If it's not found, you set the first region in the `regions` list as the selected region. Otherwise, you retrieve the previously selected region from the MedusaGo application using the JS SDK.
 
 Finally, replace the last `TODO` with the following content:
 
@@ -590,7 +587,7 @@ export const cartProviderHighlights3 = [
   ["5", "cart", "If the cart is set, set its value in the local storage."],
   ["10", "cartId", "Retrieve the cart ID from the local storage."],
   ["13", "refreshCart", "Create a new cart if the cart is not set."],
-  ["16", "retrieve", "Retrieve the cart from the Medusa application if the cart ID is found in the local storage."],
+  ["16", "retrieve", "Retrieve the cart from the MedusaGo application if the cart ID is found in the local storage."],
 ]
 
 ```tsx title="providers/cart.tsx" highlights={cartProviderHighlights3}
@@ -629,7 +626,7 @@ If the cart isn't set, you either try to retrieve the cart set in local storage,
 Next, you'll add the logic to update the cart when the region changes. Replace the `TODO` with the following:
 
 export const cartProviderHighlights4 = [
-  ["6", "update", "Update the cart's region in the Medusa application if it's changed."]
+  ["6", "update", "Update the cart's region in the MedusaGo application if it's changed."]
 ]
 
 ```tsx title="providers/cart.tsx" highlights={cartProviderHighlights4}
@@ -654,7 +651,7 @@ This `useEffect` hook runs when the region changes. If the cart is set and the r
 You'll now implement the functions that are part of the context's value. Start by adding the `refreshCart` function in the place of the `TODO`:
 
 export const cartProviderHighlights5 = [
-  ["6", "create", "Create the cart in the Medusa application."],
+  ["6", "create", "Create the cart in the MedusaGo application."],
   ["10", "setItem", "Set the cart's ID in the local storage."],
   ["11", "setCart", "Set the cart as a state variable."]
 ]
@@ -684,7 +681,7 @@ Next, add the `addToCart` function in the place of the `TODO`:
 
 export const cartProviderHighlights6 = [
   ["2", "refreshCart", "Create a new cart to add the product to."],
-  ["7", "createLineItem", "Add the product variant to the cart in the Medusa application."],
+  ["7", "createLineItem", "Add the product variant to the cart in the MedusaGo application."],
   ["11", "setCart", "Update the cart's data in the context."]
 ]
 
@@ -712,8 +709,8 @@ In the `addToCart` function, you use the `refreshCart` function to create a new 
 After that, replace the `TODO` with the `updateCart` function:
 
 export const cartProviderHighlights7 = [
-  ["13", "update", "Update the cart's general details in the Medusa application."],
-  ["17", "addShippingMethod", "Set the cart's shipping method in the Medusa application."],
+  ["13", "update", "Update the cart's general details in the MedusaGo application."],
+  ["17", "addShippingMethod", "Set the cart's shipping method in the MedusaGo application."],
   ["20", "setCart", "Update the cart's data in the context."]
 ]
 
@@ -750,7 +747,7 @@ In the `updateCart` function, you update the cart's general details and set the 
 Then, replace the `TODO` with the `updateItemQuantity` function:
 
 export const cartProviderHighlights8 = [
-  ["2", "updateLineItem", "Update the quantity of an item in the cart in the Medusa application."],
+  ["2", "updateLineItem", "Update the quantity of an item in the cart in the MedusaGo application."],
   ["9", "setCart", "Update the cart's data in the context."]
 ]
 
@@ -843,7 +840,7 @@ To create the component, create the file `components/SecondCol/index.tsx` with t
 
 export const secondColHighlights = [
   ["7", "region", "The selected region"],
-  ["7", "regions", "The list of regions in the Medusa application"],
+  ["7", "regions", "The list of regions in the MedusaGo application"],
   ["7", "setRegion", "A function to set the selected region"],
   ["29", "select", "Dropdown to change the selected region."]
 ]
@@ -1220,7 +1217,7 @@ Create the file `components/Product/index.tsx` with the following content:
 
 export const productHighlights1 = [
   ["17", "loading", "Whether an operation is loading."],
-  ["18", "product", "The product's details retrieved from the Medusa application."],
+  ["18", "product", "The product's details retrieved from the MedusaGo application."],
   ["19", "selectedOptions", "The product options that the customer selected."],
   ["22", "quantity", "The quantity to add to the cart."],
   ["23", "region", "The selected region retrieved from the region context."],
@@ -1265,7 +1262,7 @@ You create a `Product` component that receives as a prop the product's handle an
 The component defines the following variables:
 
 - `loading`: A boolean state variable indicating whether an operation is loading, such as the product's details.
-- `product`: A state variable that holds the product's details, which you'll retrieve from the Medusa application.
+- `product`: A state variable that holds the product's details, which you'll retrieve from the MedusaGo application.
 - `selectedOptions`: A state variable that holds the product options that the customer has selected, such as color or size.
 - `quantity`: A state variable that holds the product quantity to add to the cart.
 - `region`: The selected region retrieved from the region context.
@@ -1274,7 +1271,7 @@ The component defines the following variables:
 
 #### Retrieve Product Details
 
-Next, you'll retrieve the product's details from the Medusa application. Start by adding the following imports to the top of the file:
+Next, you'll retrieve the product's details from the MedusaGo application. Start by adding the following imports to the top of the file:
 
 ```tsx title="components/Product/index.tsx"
 import { sdk } from "@/lib/sdk"
@@ -1287,7 +1284,7 @@ import {
 Then, replace the `TODO` in the `Product` component with the following:
 
 export const productHighlights2 = [
-  ["6", "list", "Retrieve the product from the Medusa application by filtering products with the unique handle."],
+  ["6", "list", "Retrieve the product from the MedusaGo application by filtering products with the unique handle."],
   ["9", "fields", "The fields to retrieve along with the default product details."],
 ]
 
@@ -1369,7 +1366,7 @@ You create a `selectedVariant` memoized variable that holds the selected variant
 
 #### Set Price to Show
 
-Next, you'll set the price to show to the customer. The Medusa application returns the price as a number. To display it with currency, you'll create a utility that you'll re-use whenever you show a price.
+Next, you'll set the price to show to the customer. The MedusaGo application returns the price as a number. To display it with currency, you'll create a utility that you'll re-use whenever you show a price.
 
 Create the file `lib/price.ts` with the following content:
 
@@ -1644,15 +1641,15 @@ This will show the product step and expand its details if `activeTab` is `produc
 
 ### Test it Out
 
-To test out what you've implemented so far, first, start the Medusa application by running the following command in the Medusa project's directory:
+To test out what you've implemented so far, first, start the MedusaGo application by running the following command in the `apps/backend` directory of the MedusaGo project:
 
-```bash npm2yarn
-npm run dev
+```bash
+go run . develop
 ```
 
-This will run the Medusa application at `http://localhost:9000`.
+This will run the MedusaGo application at `http://localhost:9000`.
 
-Then, while the Medusa application is running, run the following command in the Next.js project to start the development server:
+Then, while the MedusaGo application is running, run the following command in the Next.js project to start the development server:
 
 ```bash npm2yarn
 npm run dev
@@ -1662,7 +1659,7 @@ This will run the storefront at `http://localhost:3000`. To open the express che
 
 <Note title="Tip">
 
-When you first created the Medusa application, four products, including the `sweatpants` product, were created by default. You can view and add products to your application by going to the Medusa Admin dashboard at `http://localhost:9000/app`.
+When you first created the MedusaGo application, four products, including the `sweatpants` product, were created by default. You can view and add products to your application by going to the Medusa Admin dashboard at `http://localhost:9000/app`.
 
 </Note>
 
@@ -1782,7 +1779,7 @@ Next, you'll implement the function that will be called when the customer submit
 Replace the `TODO` in the `Address` component with the following:
 
 export const addressHighlights2 = [
-  ["8", "updateCart", "Update the cart's shipping address, billing address, and email in the Medusa application."],
+  ["8", "updateCart", "Update the cart's shipping address, billing address, and email in the MedusaGo application."],
   ["33", "push", "Navigate to the shipping step."]
 ]
 
@@ -1968,7 +1965,7 @@ This will show the address details step and expand its details if `activeTab` is
 
 ### Test it Out
 
-While both the Medusa application and the Next.js Starter Storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=address`, you should see the address form where you can input your address details.
+While both the MedusaGo application and the Next.js Starter Storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=address`, you should see the address form where you can input your address details.
 
 
 You can input your address details then click on the "Continue" button. The address will be saved in the cart and the Address card will collapse. The third step's details should be shown, which you'll add next.
@@ -2039,7 +2036,7 @@ You create a `Shipping` component that receives the product's handle and whether
 
 ### Retrieve Shipping Options
 
-In the Medusa application, you can define shipping options for each [stock location](../../../commerce-modules/stock-location/page.mdx), [sales channel](../../../commerce-modules/sales-channel/page.mdx), or other conditions. So, during checkout, you retrieve the shipping options specific to a cart's context and allow the customer to choose from them.
+In the MedusaGo application, you can define shipping options for each [stock location](../../../commerce-modules/stock-location/page.mdx), [sales channel](../../../commerce-modules/sales-channel/page.mdx), or other conditions. So, during checkout, you retrieve the shipping options specific to a cart's context and allow the customer to choose from them.
 
 To do that, first, add the following imports at the top of the file:
 
@@ -2054,7 +2051,7 @@ import { sdk } from "@/lib/sdk"
 Then, replace the `TODO` in the `Shipping` component with the following:
 
 export const shippingHighlights2 = [
-  ["6", "listCartOptions", "Retrieve the shipping options for the cart from the Medusa application."]
+  ["6", "listCartOptions", "Retrieve the shipping options for the cart from the MedusaGo application."]
 ]
 
 ```tsx title="components/Shipping/index.tsx" highlights={shippingHighlights2}
@@ -2090,7 +2087,7 @@ Replace the `TODO` in the `Shipping` component with the following:
 
 export const shippingHighlights3 = [
   ["7", "filter", "Retrieve shipping options with calculated prices only."],
-  ["9", "fetch", "Retrieve the calculated price from the Medusa application."],
+  ["9", "fetch", "Retrieve the calculated price from the MedusaGo application."],
   ["24", "Promise.allSettled", "Wait for all calculated prices to be retrieved."],
   ["33", "setCalculatedPrices", "Set the calculated prices in the state variable."],
 ]
@@ -2136,7 +2133,7 @@ useEffect(() => {
 // TODO add function to format price
 ```
 
-In the `useEffect` hook, you filter the `shippingOptions` to get only the calculated shipping options. Then, you loop over these options to retrieve their calculated price from the Medusa application. You pass to the Calculate Shipping Option API route the cart's ID and any custom data that the fulfillment provider might need to calculate the price.
+In the `useEffect` hook, you filter the `shippingOptions` to get only the calculated shipping options. Then, you loop over these options to retrieve their calculated price from the MedusaGo application. You pass to the Calculate Shipping Option API route the cart's ID and any custom data that the fulfillment provider might need to calculate the price.
 
 Once all shipping option prices are calculated, you set them in the `calculatedPrices` state variable, where the key is the shipping option's ID and the value is the calculated price.
 
@@ -2180,7 +2177,7 @@ Replace the `TODO` in the `Shipping` component with the following:
 export const shippingHighlights4 = [
   ["1", "isButtonDisabled", "Whether the customer can submit their selection."],
   ["5", "handleSubmit", "A function to execute when the customer submits their choice."],
-  ["12", "updateCart", "Update the cart with the selected shipping method in the Medusa application."],
+  ["12", "updateCart", "Update the cart with the selected shipping method in the MedusaGo application."],
   ["15", "data", "Pass any useful custom data for the fulfillment provider."],
   ["23", "router", "Redirect the customer to the next step in the flow."]
 ]
@@ -2308,7 +2305,7 @@ This will show the shipping method selection step and expand its details if `act
 
 ### Test it Out
 
-While both the Medusa application and the Next.js Starter Storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=shipping`, you should see the Shipping step where you can choose a shipping method.
+While both the MedusaGo application and the Next.js Starter Storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=shipping`, you should see the Shipping step where you can choose a shipping method.
 
 
 You can select a shipping option then click on the "Go to payment" button. The shipping method will be saved in the cart and the Shipping card will collapse to show the fourth step's details, which you'll add next.
@@ -2327,7 +2324,7 @@ export const paymentHighlights1 = [
   ["19", "updateItemQuantity", "The function to update the quantity of an item in the cart from the cart context."],
   ["19", "unsetCart", "The function to unset the cart from the cart context."],
   ["20", "loading", "Whether an operation is loading."],
-  ["21", "paymentProviders", "The available payment providers retrieved from the Medusa application."],
+  ["21", "paymentProviders", "The available payment providers retrieved from the MedusaGo application."],
   ["24", "selectedPaymentProvider", "The ID of the selected payment provider."],
   ["25", "router", "The router instance to navigate between steps."]
 ]
@@ -2367,7 +2364,7 @@ You create a `Payment` component that receives the product's handle and whether 
 
 - `cart`, `unsetCart`, and `updateItemQuantity`: The customer's cart, the function to unset the cart, and the function to update the quantity of an item in the cart, retrieved from the cart context.
 - `loading`: A boolean state variable indicating whether an operation is loading.
-- `paymentProviders`: A state variable that holds the available payment providers in the Medusa application.
+- `paymentProviders`: A state variable that holds the available payment providers in the MedusaGo application.
 - `selectedPaymentProvider`: A state variable that holds the ID of the selected payment provider.
 - `router`: The router instance to navigate between steps.
 
@@ -2388,7 +2385,7 @@ import { sdk } from "@/lib/sdk"
 Then, replace the `TODO` in the `Payment` component with the following:
 
 export const paymentHighlights2 = [
-  ["6", "listPaymentProviders", "Retrieve the payment providers of the cart's region from the Medusa application."]
+  ["6", "listPaymentProviders", "Retrieve the payment providers of the cart's region from the MedusaGo application."]
 ]
 
 ```tsx title="components/Payment/index.tsx" highlights={paymentHighlights2}
@@ -2417,7 +2414,7 @@ The API route returns a list of payment providers, which you set in the `payment
 
 After the customer selects the payment provider, you want to save that selection in the cart, but you also may need to show UI for additional actions. For example, if the customer chooses the [Stripe payment provider](../../../commerce-modules/payment/payment-provider/stripe/page.mdx), you want to show them a credit-card form to input their details.
 
-So, you'll implement the logic to first save the payment provider selection in the Medusa application, then optionally show additional UI based on the chosen provider.
+So, you'll implement the logic to first save the payment provider selection in the MedusaGo application, then optionally show additional UI based on the chosen provider.
 
 First, add the following imports at the top of the file:
 
@@ -2431,8 +2428,8 @@ import {
 Then, replace the `TODO` in the `Payment` component with the following:
 
 export const paymentHighlights3 = [
-  ["1", "handleSelectProvider", "A function to save the selected payment provider in the Medusa application."],
-  ["8", "initiatePaymentSession", "Set the chosen payment method in the Medusa application."],
+  ["1", "handleSelectProvider", "A function to save the selected payment provider in the MedusaGo application."],
+  ["8", "initiatePaymentSession", "Set the chosen payment method in the MedusaGo application."],
   ["16", "useEffect", "Trigger the `handleSelectProvider` function whenever the selected payment provider changes."],
   ["24", "paymentUi", "Optionally show additional UI based on the selected payment provider."],
   ["36", "canPlaceOrder", "Whether the customer can place an order."],
@@ -2507,7 +2504,7 @@ After the customer chooses a payment provider and completes any additional steps
 Replace the `TODO` in the `Payment` component with the following:
 
 export const paymentHighlights4 = [
-  ["7", "complete", "Complete the cart and place an order in the Medusa application."],
+  ["7", "complete", "Complete the cart and place an order in the MedusaGo application."],
   ["13", "unsetCart", "Unset the cart from the cart context."],
   ["15", "router.push", "Redirect the customer to the confirmation page."],
 ]
@@ -2694,7 +2691,7 @@ This will show the payment method selection step and expand its details if `acti
 
 ### Test it Out
 
-While both the Medusa application and the Next.js Starter Storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=payment`, you should see the Payment step where you can choose a payment method.
+While both the MedusaGo application and the Next.js Starter Storefront are running, if you refresh the page you had opened or go to `http://localhost:3000/sweatpants?step=payment`, you should see the Payment step where you can choose a payment method.
 
 
 Select a payment provider then click on the "Pay" button. The payment method will be saved in the cart and you'll be redirected to the confirmation page, which currently doesn't exist. You'll add this page next.
@@ -2705,14 +2702,14 @@ Select a payment provider then click on the "Pay" button. The payment method wil
 
 After the customer places an order, you redirect them to a confirmation page that shows them their general order details. In this step, you'll create this confirmation page.
 
-The confirmation page will receive the order's ID as a path parameter. Then, it'll retrieve the order's details from the Medusa application and shows those details to the customer.
+The confirmation page will receive the order's ID as a path parameter. Then, it'll retrieve the order's details from the MedusaGo application and shows those details to the customer.
 
 To create the confirmation page, create the file `app/confirmation/[id]/page.tsx` with the following content:
 
 
 export const confirmationHighlights = [
   ["11", "orderId", "Retrieve the order's ID from the path parameter."],
-  ["13", "order", "Retrieve the order's details from the Medusa application."],
+  ["13", "order", "Retrieve the order's details from the MedusaGo application."],
 ]
 
 ```tsx title="app/confirmation/[id]/page.tsx" highlights={confirmationHighlights}
@@ -2755,13 +2752,13 @@ export default async function ConfirmationPage({
 }
 ```
 
-The `ConfirmationPage` component receives the order ID as a path parameter. In the component, you retrieve the order's details from the Medusa application using the JS SDK.
+The `ConfirmationPage` component receives the order ID as a path parameter. In the component, you retrieve the order's details from the MedusaGo application using the JS SDK.
 
 Then, you show the order's details, including the order number, order date, and a thank you message.
 
 ### Test it Out
 
-While both the Medusa application and the Next.js Starter Storefront are running, either refresh the page you had open from the previous step, or restart the express checkout flow to place an order. You'll see the confirmation page showing the order's details.
+While both the MedusaGo application and the Next.js Starter Storefront are running, either refresh the page you had open from the previous step, or restart the express checkout flow to place an order. You'll see the confirmation page showing the order's details.
 
 
 ---

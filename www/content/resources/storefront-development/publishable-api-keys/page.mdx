@@ -15,7 +15,7 @@ export const metadata = {
 
 # {metadata.title}
 
-In this guide, you'll learn how to create and use the publishable API key in your storefront to interact with the Medusa application's Store API routes.
+In this guide, you'll learn how to create and use the publishable API key in your storefront to interact with the MedusaGo application's Store API routes.
 
 ## What is a Publishable API Key?
 
@@ -23,7 +23,7 @@ When sending requests to the `/store` API routes, you must pass a publishable AP
 
 Publishable API keys specify the scope of a request. Admin users create them, and they can only be used on the client-side, such as in a storefront.
 
-Publishable API keys are associated with sales channels. Then, when the publishable API key is passed in the header of a request, the Medusa application automatically infers what sales channel is being used.
+Publishable API keys are associated with sales channels. Then, when the publishable API key is passed in the header of a request, the MedusaGo application automatically infers what sales channel is being used.
 
 ---
 
@@ -68,7 +68,7 @@ Make sure to replace `apk_123` with the ID of the publishable API key, and `sc_1
 
 ## How to Use Publishable API Key in Storefront Requests
 
-In your storefront, pass the `x-publishable-api-key` in the header of all your requests to the Medusa application.
+In your storefront, pass the `x-publishable-api-key` in the header of all your requests to the MedusaGo application.
 
 For example:
 
@@ -107,4 +107,4 @@ export const sdk = new Medusa({
 
 Where `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` is an environment variable that holds your publishable API key's token. Based on your storefront framework, make sure the environment variable is accessible in the browser. For example, in Next.js, prefix the variable name with `NEXT_PUBLIC_`.
 
-The JS SDK will now take care of passing the publishable API key in the header of all requests to the Medusa application.
+The JS SDK will now take care of passing the publishable API key in the header of all requests to the MedusaGo application.

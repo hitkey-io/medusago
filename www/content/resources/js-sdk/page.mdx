@@ -1,3 +1,7 @@
+---
+rewritten: true
+---
+
 import { CodeTabs, CodeTab, Table, Prerequisites } from "docs-ui"
 
 export const metadata = {
@@ -10,13 +14,13 @@ In this documentation, you'll learn how to install and use Medusa's JS SDK.
 
 ## What is Medusa JS SDK?
 
-Medusa's JS SDK is a library to easily send requests to your Medusa application. You can use it in your admin customizations or custom storefronts.
+Medusa's JS SDK is a library to easily send requests to your MedusaGo application. You can use it in your admin customizations or custom storefronts.
 
 ---
 
 ## How to Install Medusa JS SDK?
 
-The Medusa JS SDK is available in your Medusa application by default. So, you don't need to install it before using it in your admin customizations.
+The Medusa JS SDK is available in your MedusaGo application by default. So, you don't need to install it before using it in your admin customizations.
 
 To install the Medusa JS SDK in other projects, such as a custom storefront, run the following command:
 
@@ -42,7 +46,7 @@ For admin customizations, create this file at `src/admin/lib/config.ts`.
 </Note>
 
 <CodeTabs group="sdk-project">
-  <CodeTab label="Admin (Medusa project)" value="admin-medusa-project">
+  <CodeTab label="Admin (MedusaGo project)" value="admin-medusa-project">
 
 ```ts title="src/admin/lib/sdk.ts"
 import Medusa from "@medusajs/js-sdk"
@@ -95,7 +99,7 @@ export const sdk = new Medusa({
 
 <Note title="Tip">
 
-In Medusa Admin customizations that are created in a Medusa project, you use `import.meta.env` to access environment variables, whereas in customizations built in a Medusa plugin, you use the global variable `__BACKEND_URL__` to access the backend URL. You can learn more in the [Admin Environment Variables](!docs!/learn/fundamentals/admin/environment-variables) chapter.
+In Medusa Admin customizations that are created in a MedusaGo project, you use `import.meta.env` to access environment variables, whereas in customizations built in a Medusa plugin, you use the global variable `__BACKEND_URL__` to access the backend URL. You can learn more in the [Admin Environment Variables](!docs!/learn/fundamentals/admin/environment-variables) chapter.
 
 </Note>
 
@@ -126,7 +130,7 @@ The `Medusa` initializer accepts as a parameter an object with the following pro
       </Table.Cell>
       <Table.Cell>
 
-      A required string indicating the URL to the Medusa backend.
+      A required string indicating the URL to the MedusaGo backend.
 
       </Table.Cell>
       <Table.Cell>
@@ -444,7 +448,7 @@ Since the method returns the raw `Response` object in this case, type the return
 
 ## Migrating from Fetch API to JS SDK
 
-Prefer `sdk.client.fetch` over the raw [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) when sending requests to your Medusa backend.
+Prefer `sdk.client.fetch` over the raw [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) when sending requests to your MedusaGo backend.
 
 The JS SDK's `fetch` method automatically appends authentication headers and other configurations, such as the `globalHeaders` configuration, to your request. It also automatically parses the response to a JavaScript object if the response is a JSON object.
 
@@ -460,35 +464,48 @@ The raw `fetch` function only rejects its Promise on network errors. For error r
 
 The JS SDK supports streaming server-sent events (SSE) using the `client.fetchStream` method. This method is useful when you want to receive real-time updates from the server.
 
-For example, consider you have the following custom API route at `src/api/admin/stream/route.ts`:
+For example, consider you have the following custom API route at `src/api/admin/stream/route.go`:
 
-```ts title="src/api/admin/stream/route.ts"
-import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+```go title="src/api/admin/stream/route.go"
+package stream
 
-export const GET = async (
-  req: MedusaRequest,
-  res: MedusaResponse
-) => {
-  res.writeHead(200, {
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
-    Connection: "keep-alive",
-  })
+import (
+	"fmt"
+	nethttp "net/http"
+	"time"
 
-  const interval = setInterval(() => {
-    res.write("data: Streaming data...\n\n")
-  }, 3000)
+	medusahttp "github.com/hitkey-io/medusago/packages/core/framework/src/http"
+)
 
-  req.on("close", () => {
-    clearInterval(interval)
-    res.end()
-  })
-  
-  req.on("end", () => {
-    clearInterval(interval)
-    res.end()
-  })
+// GET handles GET /admin/stream.
+func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
+	w := res.Handoff()
+	h := w.Header()
+	h.Set("Content-Type", "text/event-stream")
+	h.Set("Cache-Control", "no-cache")
+	h.Set("Connection", "keep-alive")
+	w.WriteHeader(nethttp.StatusOK)
+	flusher, _ := w.(nethttp.Flusher)
+
+	ticker := time.NewTicker(3 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			fmt.Fprint(w, "data: Streaming data...\n\n")
+			if flusher != nil {
+				flusher.Flush()
+			}
+		case <-req.Request.Context().Done():
+			// the client disconnected
+			return nil
+		}
+	}
 }
+
+// Route is registered with cli.Options{Routes: ...}:
+// medusahttp.RouteFile{Path: "/admin/stream", Route: stream.Route}.
+var Route = medusahttp.Route{GET: GET}
 ```
 
 Then, you can use the `client.fetchStream` method in a UI route to receive the streaming data:
@@ -763,7 +780,7 @@ Learn more about localization and translations in the [Translation Module](../co
 
 In admin customizations, use [Tanstack Query](https://tanstack.com/query/latest) with the JS SDK to send requests to custom or existing API routes.
 
-Tanstack Query is installed by default in your Medusa application.
+Tanstack Query is installed by default in your MedusaGo application.
 
 <Note type="warning">
 

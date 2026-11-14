@@ -38,3 +38,13 @@ export const sections: Record<SectionKey, DocsConfig> = {
     project: { title: "Resources", key: "resources" },
   },
 }
+
+// The homepage has no sidebar, but the providers expect one sidebar to exist.
+export const homeConfig: DocsConfig = {
+  ...common,
+  titleSuffix: "MedusaGo Documentation",
+  description: "Documentation of MedusaGo, the Go implementation of the Medusa commerce backend.",
+  basePath: "",
+  sidebars: [{ sidebar_id: "home", title: "Home", items: [] }] as unknown as Sidebar.Sidebar[],
+  project: { title: "Documentation", key: "docs" },
+}

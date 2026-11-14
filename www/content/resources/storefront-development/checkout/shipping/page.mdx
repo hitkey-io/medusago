@@ -25,7 +25,7 @@ To allow the customer to choose a shipping method, you:
 
 1. Retrieve the available shipping options for the cart using the [List Shipping Options API route](!api!/store/shipping-options/list-shipping-options-for-cart) and show them to the customer.
 2. For shipping options whose `price_type=calculated`, you retrieve their calculated price using the [Calculate Shipping Option Price API Route](!api!/store/shipping-options/calculate-shipping-option-price).
-    - The Medusa application calculates the price using the associated fulfillment provider's logic, which may require sending a request to a third-party service.
+    - The MedusaGo application calculates the price using the associated fulfillment provider's logic, which may require sending a request to a third-party service.
 3. When the customer chooses shipping option(s), you use the [Add Shipping Method to Cart API route](!api!/store/carts/add-shipping-method) to add the cart's shipping method(s). You can add a single shipping method or multiple methods in one request.
 
 ---
@@ -290,7 +290,7 @@ export const fetchHighlights = [
 In the example above, you:
 
 - Retrieve the available shipping options of the cart to allow the customer to select from them using the [List Shipping Options API route](!api!/store/shipping-options/list-shipping-options-for-cart).
-- For each shipping option, you retrieve its calculated price from the Medusa application using the [Calculate Shipping Option Price API Route](!api!/store/shipping-options/calculate-shipping-option-price).
+- For each shipping option, you retrieve its calculated price from the MedusaGo application using the [Calculate Shipping Option Price API Route](!api!/store/shipping-options/calculate-shipping-option-price).
 - Once the customer selects a shipping option, you send a request to the [Add Shipping Method to Cart API route](!api!/store/carts/add-shipping-method) to update the cart's shipping method using the selected shipping option.
 
 ---

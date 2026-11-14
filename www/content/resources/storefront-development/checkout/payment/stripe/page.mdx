@@ -27,7 +27,7 @@ For other types of frameworks or tech stacks, the steps are similar. Refer to [S
 
 <Prerequisites items={[
   {
-    text: "Stripe Module Provider installed and configured in your Medusa application.",
+    text: "Stripe Module Provider installed and configured in your MedusaGo application.",
     link: "../../../../commerce-modules/payment/payment-provider/stripe/page.mdx"
   },
   {
@@ -84,12 +84,12 @@ For example, you can create a file holding the following Stripe component:
 export const highlights = [
   ["10", "useCart", "The `useCart` hook was defined in the Cart React Context documentation."],
   ["14", "stripe", "Initialize stripe using the environment variable added in the previous step."],
-  ["20", "clientSecret", "After initializing the payment session of Stripe in the Medusa application,\nthe client secret is available in the payment session's `data`."],
+  ["20", "clientSecret", "After initializing the payment session of Stripe in the MedusaGo application,\nthe client secret is available in the payment session's `data`."],
   ["34", "StripeForm", "The actual form must be a different component nested inside `Elements`."],
-  ["45", "handlePayment", "This function is used to show Stripe's UI to accept payment,\nthen send the request to the Medusa application to complete the cart."],
+  ["45", "handlePayment", "This function is used to show Stripe's UI to accept payment,\nthen send the request to the MedusaGo application to complete the cart."],
   ["62", "confirmCardPayment", "This function shows the UI to the customer to accept the card payment."],
   ["79", "then", "Once the customer enters their card details and submits the form,\nthe Promise resolves and executes this function."],
-  ["86", "complete", "Send a request to the Medusa application\nto complete the cart and place the order."],
+  ["86", "complete", "Send a request to the MedusaGo application\nto complete the cart and place the order."],
   ["88", `data.type === "cart"`, "If the `type` returned is `cart`,\nit means an error occurred and the cart wasn't completed."],
   ["91", `data.type === "order"`, "If the `type` returned is `order`,\nit means the cart was completed and the order was placed successfully."],
   ["95", "refreshCart", "Unset and reset the cart."],
@@ -215,7 +215,7 @@ const StripeForm = ({
 In the code snippet above, you:
 
 1. Create a `StripePayment` component that wraps the actual form with Stripe's `Elements` component.
-    - In the `StripePayment` component, you obtain the client secret from the payment session's `data` field. This is set in the Medusa application after you initialize the payment session using the [Initialize Payment Sessions API route](!api!/store/payment-collections/initialize-payment-session).
+    - In the `StripePayment` component, you obtain the client secret from the payment session's `data` field. This is set in the MedusaGo application after you initialize the payment session using the [Initialize Payment Sessions API route](!api!/store/payment-collections/initialize-payment-session).
 2. Create a `StripeForm` component that holds the actual form. In this component, you implement a `handlePayment` function that does the following:
     - Use Stripe's `confirmCardPayment` method to accept the card details from the customer.
     - Once the customer enters their card details and submit their order, the resolution function of the `confirmCardPayment` method is executed.
