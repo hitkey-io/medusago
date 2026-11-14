@@ -1,0 +1,916 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Price Lists API Routes`,
+}
+
+# {metadata.title}
+
+A price list is a group of prices applied if the specified conditions and rules are satisfied.
+
+Price lists are useful for sales or special prices for special conditions, such as applying prices for a set of customers.
+
+These API routes allow admin users to manage price lists.
+
+## GET /admin/price-lists
+
+**List Price Lists**
+
+Retrieve a list of price lists. The price lists can be filtered by fields such as `id`. The price lists can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the price list's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a price list ID." },
+    { name: "starts_at", type: "`object`", optional: true, description: "Filter by a price list's start date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "ends_at", type: "`object`", optional: true, description: "Filter by the price list's end date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "status", type: "`(\"active\")[]` \\| `(\"draft\")[]`", optional: true, description: "Filter by the price list's status." },
+    { name: "rules_count", type: "`number[]`", optional: true, description: "Filter by the price list's rules count." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.priceList.list()
+.then(({ price_lists, count, limit, offset }) => {
+  console.log(price_lists)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/price-lists' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "price_lists", type: "`object[]`", optional: false, description: "The list of price lists.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price list's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The price list's title." },
+        { name: "description", type: "`string`", optional: false, description: "The price list's description." },
+        { name: "rules", type: "`object`", optional: false, description: "The price list's rules." },
+        { name: "starts_at", type: "`string`", optional: false, description: "The date the price list starts." },
+        { name: "ends_at", type: "`string`", optional: false, description: "The date the price list ends." },
+        { name: "status", type: "`\"draft\"` \\| `\"active\"`", optional: false, description: "The price list's status." },
+        { name: "type", type: "`\"sale\"` \\| `\"override\"`", optional: false, description: "The price list's type." },
+        { name: "prices", type: "`object[]`", optional: false, description: "The price list's prices.", children: [
+            { name: "variant_id", type: "`string`", optional: false, description: "The ID of the product variant this price list is for." },
+            { name: "rules", type: "`object`", optional: false, description: "The price's rules." },
+            { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The price's title." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+            { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+            { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+            { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity that must be available in the cart for the price to be applied." },
+            { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity allowed to be available in the cart for the price to be applied." },
+            { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the price set this price belongs to." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price list was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price list was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price list was deleted." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/price-lists
+
+**Create Price List**
+
+Create a price list.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "q", type: "`string`", optional: true, description: "Apply a search query to the price list's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a specific price list ID." },
+    { name: "starts_at", type: "`object`", optional: true, description: "Filter by a price list's start date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "ends_at", type: "`object`", optional: true, description: "Filter by a price list's end date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "status", type: "`(\"draft\")[]` \\| `(\"active\")[]`", optional: true, description: "Filter by price list statuses." },
+    { name: "rules_count", type: "`number[]`", optional: true, description: "Filter by multiple price list rules count." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "The price list's with deleted." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "title", type: "`string`", optional: false, description: "The price list's title." },
+    { name: "description", type: "`string`", optional: false, description: "The price list's description." },
+    { name: "starts_at", type: "`string`", optional: true, description: "The date and time the price list starts at." },
+    { name: "ends_at", type: "`string`", optional: true, description: "The date and time the price list ends at." },
+    { name: "status", type: "`\"active\"` \\| `\"draft\"`", optional: true, description: "The price list's status." },
+    { name: "type", type: "`\"sale\"` \\| `\"override\"`", optional: true, description: "The price list's type." },
+    { name: "rules", type: "`object`", optional: true, description: "The price list's rules." },
+    { name: "prices", type: "`object[]`", optional: true, description: "The price list's prices.", children: [
+        { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code." },
+        { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+        { name: "variant_id", type: "`string`", optional: false, description: "The ID of the product variant this price is for." },
+        { name: "min_quantity", type: "`number`", optional: true, description: "The minimum quantity required in the cart for this price to be applied." },
+        { name: "max_quantity", type: "`number`", optional: true, description: "The maximum quantity in the cart that shouldn't be crossed for this price to be applied." },
+        { name: "rules", type: "`object`", optional: true, description: "The price's rules." }
+      ] },
+    { name: "metadata", type: "`object`", optional: true, description: "Key-value pairs of custom data." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.priceList.create({
+  title: "My Price List",
+  status: "active",
+  type: "sale",
+  prices: [
+    {
+      variant_id: "variant_123",
+      amount: 10,
+      currency_code: "usd",
+      rules: {
+        region_id: "reg_123"
+      }
+    }
+  ]
+})
+.then(({ price_list }) => {
+  console.log(price_list)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/price-lists' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "title": "{value}",
+  "description": "{value}",
+  "starts_at": "{value}",
+  "ends_at": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "price_list", type: "`object`", optional: false, description: "The price list's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price list's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The price list's title." },
+        { name: "description", type: "`string`", optional: false, description: "The price list's description." },
+        { name: "rules", type: "`object`", optional: false, description: "The price list's rules." },
+        { name: "starts_at", type: "`string`", optional: false, description: "The date the price list starts." },
+        { name: "ends_at", type: "`string`", optional: false, description: "The date the price list ends." },
+        { name: "status", type: "`\"draft\"` \\| `\"active\"`", optional: false, description: "The price list's status." },
+        { name: "type", type: "`\"sale\"` \\| `\"override\"`", optional: false, description: "The price list's type." },
+        { name: "prices", type: "`object[]`", optional: false, description: "The price list's prices.", children: [
+            { name: "variant_id", type: "`string`", optional: false, description: "The ID of the product variant this price list is for." },
+            { name: "rules", type: "`object`", optional: false, description: "The price's rules." },
+            { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The price's title." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+            { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+            { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+            { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity that must be available in the cart for the price to be applied." },
+            { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity allowed to be available in the cart for the price to be applied." },
+            { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the price set this price belongs to." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price list was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price list was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price list was deleted." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `price-list.created`: Emitted when price lists are created.
+
+---
+
+## GET /admin/price-lists/\{id\}
+
+**Get a Price List**
+
+Retrieve a price list by its ID. You can expand the price list's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The price list's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.priceList.retrieve("plist_123")
+.then(({ price_list }) => {
+  console.log(price_list)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/price-lists/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "price_list", type: "`object`", optional: false, description: "The price list's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price list's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The price list's title." },
+        { name: "description", type: "`string`", optional: false, description: "The price list's description." },
+        { name: "rules", type: "`object`", optional: false, description: "The price list's rules." },
+        { name: "starts_at", type: "`string`", optional: false, description: "The date the price list starts." },
+        { name: "ends_at", type: "`string`", optional: false, description: "The date the price list ends." },
+        { name: "status", type: "`\"draft\"` \\| `\"active\"`", optional: false, description: "The price list's status." },
+        { name: "type", type: "`\"sale\"` \\| `\"override\"`", optional: false, description: "The price list's type." },
+        { name: "prices", type: "`object[]`", optional: false, description: "The price list's prices.", children: [
+            { name: "variant_id", type: "`string`", optional: false, description: "The ID of the product variant this price list is for." },
+            { name: "rules", type: "`object`", optional: false, description: "The price's rules." },
+            { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The price's title." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+            { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+            { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+            { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity that must be available in the cart for the price to be applied." },
+            { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity allowed to be available in the cart for the price to be applied." },
+            { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the price set this price belongs to." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price list was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price list was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price list was deleted." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/price-lists/\{id\}
+
+**Update a Price List**
+
+Update a price list's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The price list's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "title", type: "`string`", optional: true, description: "The price list's title." },
+    { name: "description", type: "`string`", optional: true, description: "The price list's description." },
+    { name: "starts_at", type: "`string`", optional: true, description: "The date the price list starts." },
+    { name: "ends_at", type: "`string`", optional: true, description: "The date the price list ends." },
+    { name: "status", type: "`\"active\"` \\| `\"draft\"`", optional: true, description: "The price list's status." },
+    { name: "type", type: "`\"sale\"` \\| `\"override\"`", optional: true, description: "The price list's type." },
+    { name: "rules", type: "`object`", optional: true, description: "The price list's rules." },
+    { name: "metadata", type: "`object`", optional: true, description: "Key-value pairs of custom data." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.priceList.update("plist_123", {
+  title: "My Price List",
+})
+.then(({ price_list }) => {
+  console.log(price_list)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/price-lists/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "description": "{value}",
+  "starts_at": "{value}",
+  "ends_at": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "price_list", type: "`object`", optional: false, description: "The price list's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price list's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The price list's title." },
+        { name: "description", type: "`string`", optional: false, description: "The price list's description." },
+        { name: "rules", type: "`object`", optional: false, description: "The price list's rules." },
+        { name: "starts_at", type: "`string`", optional: false, description: "The date the price list starts." },
+        { name: "ends_at", type: "`string`", optional: false, description: "The date the price list ends." },
+        { name: "status", type: "`\"draft\"` \\| `\"active\"`", optional: false, description: "The price list's status." },
+        { name: "type", type: "`\"sale\"` \\| `\"override\"`", optional: false, description: "The price list's type." },
+        { name: "prices", type: "`object[]`", optional: false, description: "The price list's prices.", children: [
+            { name: "variant_id", type: "`string`", optional: false, description: "The ID of the product variant this price list is for." },
+            { name: "rules", type: "`object`", optional: false, description: "The price's rules." },
+            { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The price's title." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+            { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+            { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+            { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity that must be available in the cart for the price to be applied." },
+            { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity allowed to be available in the cart for the price to be applied." },
+            { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the price set this price belongs to." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price list was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price list was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price list was deleted." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `price-list.updated`: Emitted when price lists are updated.
+
+---
+
+## DELETE /admin/price-lists/\{id\}
+
+**Delete a Price List**
+
+Delete a price list.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The price list's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.priceList.delete("plist_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/price-lists/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The price list's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"price_list\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the price list was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `price-list.deleted`: Emitted when price lists are deleted.
+
+---
+
+## GET /admin/price-lists/\{id\}/prices
+
+**List Prices for a Price List**
+
+Retrieve a list of prices in a price list. The prices can be filtered by fields like FILTER FIELDS. The prices can also be paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The price list's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.priceList.prices("plist_123")
+.then(({ prices }) => {
+  console.log(prices)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/price-lists/{id}/prices' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of prices to return." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the prices." },
+    { name: "count", type: "`number`", optional: false, description: "The maximum number of prices available." },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" },
+    { name: "prices", type: "`object[]`", optional: false, description: "The list of prices associated with the price list.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The price's title." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+        { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+        { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+        { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity that must be available in the cart for the price to be applied." },
+        { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity allowed to be available in the cart for the price to be applied." },
+        { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the associated price set." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/price-lists/\{id\}/prices/batch
+
+**Manage Prices in Price List**
+
+Manage the prices of a price list to create, update, or delete them.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The price list's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "create", type: "`object[]`", optional: true, description: "The prices to create.", children: [
+        { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code." },
+        { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+        { name: "variant_id", type: "`string`", optional: false, description: "The ID of the variant this price is for." },
+        { name: "min_quantity", type: "`number`", optional: true, description: "The minimum quantity that must be available of the associated variant in the cart for this price to apply." },
+        { name: "max_quantity", type: "`number`", optional: true, description: "The maximum quantity that must be available of the associated variant in the cart for this price list to apply." },
+        { name: "rules", type: "`object`", optional: true, description: "Key-value pair rules to apply on the price." }
+      ] },
+    { name: "update", type: "`object[]`", optional: true, description: "The prices to update.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+        { name: "currency_code", type: "`string`", optional: true, description: "The price's currency code." },
+        { name: "amount", type: "`number`", optional: true, description: "The price's amount." },
+        { name: "variant_id", type: "`string`", optional: false, description: "The ID of the variant this price is for." },
+        { name: "min_quantity", type: "`number`", optional: true, description: "The minimum quantity that must be available of the associated variant in the cart for this price to apply." },
+        { name: "max_quantity", type: "`number`", optional: true, description: "The maximum quantity that must be available of the associated variant in the cart for this price list to apply." },
+        { name: "rules", type: "`object`", optional: true, description: "Key-value pair rules to apply on the price." }
+      ] },
+    { name: "delete", type: "`string[]`", optional: true, description: "The prices to delete." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.priceList.batchPrices("plist_123", {
+  create: [{
+    variant_id: "variant_123",
+    currency_code: "usd",
+    amount: 10,
+    rules: {
+      region_id: "reg_123"
+    }
+  }],
+  update: [{
+    id: "price_123",
+    variant_id: "variant_123",
+    amount: 20,
+  }],
+  delete: ["price_123"]
+})
+.then(({ created, updated, deleted }) => {
+  console.log(created, updated, deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/price-lists/{id}/prices/batch' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "created", type: "`object[]`", optional: false, description: "The created prices.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The price's title." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+        { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+        { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+        { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity that must be available in the cart for the price to be applied." },
+        { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity allowed to be available in the cart for the price to be applied." },
+        { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the associated price set." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+      ] },
+    { name: "updated", type: "`object[]`", optional: false, description: "The updated prices.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The price's title." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+        { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+        { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+        { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity that must be available in the cart for the price to be applied." },
+        { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity allowed to be available in the cart for the price to be applied." },
+        { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the associated price set." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+      ] },
+    { name: "deleted", type: "`object`", optional: false, description: "The details of the deleted prices.", children: [
+        { name: "ids", type: "`string[]`", optional: false, description: "The IDs of the deleted prices." },
+        { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"price\"" },
+        { name: "deleted", type: "`boolean`", optional: false, description: "Whether the prices were deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `price-list.prices_added`: Emitted when prices are added to a price list.
+- `price-list.prices_updated`: Emitted when prices in a price list are updated.
+- `price-list.prices_removed`: Emitted when prices are removed from a price list.
+
+---
+
+## POST /admin/price-lists/\{id\}/products
+
+**Remove Products from Price List**
+
+Remove products from a price list.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The price list's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "remove", type: "`string[]`", optional: true, description: "The products to remove from the price list." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.priceList.linkProducts("plist_123", {
+  remove: ["prod_123"]
+})
+.then(({ price_list }) => {
+  console.log(price_list)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/price-lists/{id}/products' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "price_list", type: "`object`", optional: false, description: "The price list's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price list's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The price list's title." },
+        { name: "description", type: "`string`", optional: false, description: "The price list's description." },
+        { name: "rules", type: "`object`", optional: false, description: "The price list's rules." },
+        { name: "starts_at", type: "`string`", optional: false, description: "The date the price list starts." },
+        { name: "ends_at", type: "`string`", optional: false, description: "The date the price list ends." },
+        { name: "status", type: "`\"draft\"` \\| `\"active\"`", optional: false, description: "The price list's status." },
+        { name: "type", type: "`\"sale\"` \\| `\"override\"`", optional: false, description: "The price list's type." },
+        { name: "prices", type: "`object[]`", optional: false, description: "The price list's prices.", children: [
+            { name: "variant_id", type: "`string`", optional: false, description: "The ID of the product variant this price list is for." },
+            { name: "rules", type: "`object`", optional: false, description: "The price's rules." },
+            { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The price's title." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+            { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+            { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+            { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity that must be available in the cart for the price to be applied." },
+            { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity allowed to be available in the cart for the price to be applied." },
+            { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the price set this price belongs to." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price list was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price list was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price list was deleted." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `price-list.prices_added`: Emitted when prices are added to a price list.
+- `price-list.prices_updated`: Emitted when prices in a price list are updated.
+- `price-list.prices_removed`: Emitted when prices are removed from a price list.

@@ -1,0 +1,813 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Shipping Options API Routes`,
+}
+
+# {metadata.title}
+
+A shipping option is a way of shipping an item to or from the customer.
+
+Shipping options are associated with the fulfillment provider used to handle their fulfillment.
+
+Shipping options can be restricted geographically by service zones, and by custom rules, such as an item's weight or the customer's group.
+
+These API routes allow admins to manage shipping options.
+
+## GET /admin/shipping-options
+
+**List Shipping Options**
+
+Retrieve a list of shipping options. The shipping options can be filtered by fields such as `id`. The shipping options can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a shipping option ID." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the shipping option's searchable properties." },
+    { name: "service_zone_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a service zone's ID to retrieve its associated shipping options." },
+    { name: "shipping_profile_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a shipping profile's ID to retrieve its associated shipping options." },
+    { name: "provider_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a fulfillment provider's ID to retrieve its associated shipping options." },
+    { name: "shipping_option_type_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a shipping option type's ID to retrieve its associated shipping options." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by a shipping option's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by a shipping option's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by a shipping option's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "stock_location_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a location ID to retrieve its associated shipping option." },
+    { name: "is_return", type: "`boolean`", optional: true, description: "Filter by whether the shipping option is used for returns." },
+    { name: "admin_only", type: "`boolean`", optional: true, description: "Filter by whether the shipping option is used by admin users only." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.shippingOption.list()
+.then(({ shipping_options, count, limit, offset }) => {
+  console.log(shipping_options)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/shipping-options' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "shipping_options", type: "`object[]`", optional: false, description: "The list of shipping options." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/shipping-options
+
+**Create Shipping Option**
+
+Create a shipping option.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: false, description: "The flat-rate shipping option's name." },
+    { name: "service_zone_id", type: "`string`", optional: false, description: "The ID of the associated service zone." },
+    { name: "shipping_profile_id", type: "`string`", optional: false, description: "The ID of the associated shipping profile." },
+    { name: "data", type: "`object`", optional: true, description: "The flat-rate shipping option's data, useful for the fulfillment provider handling its processing." },
+    { name: "price_type", type: "`\"flat\"` \\| `\"calculated\"`", optional: false, description: "The shipping option's price type. If `flat`, the shipping option has a fixed price set in `prices`. Otherwise, the shipping option's price is calculated by the fulfillment provider." },
+    { name: "provider_id", type: "`string`", optional: false, description: "The ID of the fulfillment provider handling this shipping option." },
+    { name: "type", type: "`object`", optional: true, description: "The shipping option type's details.", children: [
+        { name: "label", type: "`string`", optional: false, description: "The type's label." },
+        { name: "description", type: "`string`", optional: true, description: "The type's description." },
+        { name: "code", type: "`string`", optional: false, description: "The type's code." }
+      ] },
+    { name: "prices", type: "`object[]`", optional: true, description: "The shipping option's prices.", children: [
+        { name: "currency_code", type: "`string`", optional: true, description: "The price's currency code.", example: "usd" },
+        { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+        { name: "rules", type: "`object[]`", optional: true, description: "The price's rules.", children: [
+            { name: "attribute", type: "`string`", optional: false, description: "The rule's attribute." },
+            { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"lte\"` \\| `\"gte\"`", optional: false, description: "The rule's operator." },
+            { name: "value", type: "`number`", optional: false, description: "The rule's value." }
+          ] },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region this price is used in." }
+      ] },
+    { name: "type_id", type: "`string`", optional: true, description: "The ID of the shipping option type that this shipping option belongs to." },
+    { name: "rules", type: "`object[]`", optional: true, description: "The shipping option's rules.", children: [
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The operator used to check whether a rule applies." },
+        { name: "attribute", type: "`string`", optional: false, description: "The name of a property or table that the rule applies to.", example: "customer_group" },
+        { name: "value", type: "`string` \\| `string[]`", optional: false, description: "A value of the attribute that enables this rule." }
+      ] },
+    { name: "metadata", type: "`object`", optional: true, description: "The shipping option's metadata." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.shippingOption.create({
+  name: "Standard Shipping",
+  profile_id: "shp_123",
+})
+.then(({ shipping_option }) => {
+  console.log(shipping_option)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/shipping-options' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "name": "Julie",
+  "service_zone_id": "{value}",
+  "shipping_profile_id": "{value}",
+  "price_type": "{value}",
+  "provider_id": "{value}",
+  "type": {
+    "label": "{value}",
+    "description": "{value}",
+    "code": "{value}"
+  },
+  "prices": []
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "shipping_option", type: "`object`", optional: false, description: "The shipping option's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The shipping option's name." },
+        { name: "price_type", type: "`\"calculated\"` \\| `\"flat\"`", optional: false, description: "The shipping option's price type. If it's `flat`, the price is fixed and is set in the `prices` property. If it's `calculated`, the price is calculated on checkout by the associated fulfillment provider." },
+        { name: "service_zone_id", type: "`string`", optional: false, description: "The ID of the service zone this option belongs to." },
+        { name: "service_zone", type: "`object`", optional: false },
+        { name: "provider_id", type: "`string`", optional: false, description: "The ID of the provider handling fulfillments created from this shipping option." },
+        { name: "provider", type: "`object`", optional: false, description: "The fulfillment provider's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "shipping_option_type_id", type: "`string`", optional: false, description: "The ID of the associated shipping option type." },
+        { name: "type", type: "`object`", optional: false, description: "The shipping option's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." },
+            { name: "label", type: "`string`", optional: false, description: "The type's label." },
+            { name: "description", type: "`string`", optional: false, description: "The type's description." },
+            { name: "code", type: "`string`", optional: false, description: "The type's code." },
+            { name: "shipping_option_id", type: "`string`", optional: false, description: "The type's shipping option id." }
+          ] },
+        { name: "shipping_profile_id", type: "`string`", optional: false, description: "The ID of the associated shipping profile." },
+        { name: "shipping_profile", type: "`object`", optional: false, description: "The shipping profile's details..", children: [
+            { name: "id", type: "`string`", optional: false, description: "The shipping profile's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The shipping profile's name." },
+            { name: "type", type: "`string`", optional: false, description: "The shipping profile's type." },
+            { name: "metadata", type: "`object`", optional: false, description: "The shipping profile's metadata, holds custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the shipping profile was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping profile was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping profile was deleted." }
+          ] },
+        { name: "rules", type: "`object[]`", optional: false, description: "The shipping option's rules.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The shipping option rule's ID." },
+            { name: "attribute", type: "`string`", optional: false, description: "The shipping option rule's attribute.", example: "is_return" },
+            { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The rule's operator." },
+            { name: "value", type: "`string` \\| `string[]`", optional: false, description: "The shipping option rule's value." },
+            { name: "shipping_option_id", type: "`string`", optional: false, description: "The ID of the shipping option this rule is for." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option rule was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option rule was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option rule was deleted." }
+          ] },
+        { name: "prices", type: "`object[]`", optional: false, description: "The shipping option's prices. If the `price_type` is `calculated`, this array will be empty since the price is calculated by the fulfillment provider during checkout.", children: [
+            { name: "price_rules", type: "`object[]`", optional: false, description: "The price's rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The price rule's ID." },
+                { name: "value", type: "`string` \\| `number`", optional: false, description: "The price rule's value." },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The price rule's operator." },
+                { name: "attribute", type: "`string`", optional: false, description: "The price rule's attribute." },
+                { name: "price_id", type: "`string`", optional: false, description: "The ID of the price this rule applies to." },
+                { name: "priority", type: "`number`", optional: false, description: "The price rule's priority." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the price rule was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the price rule was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the price rule was deleted." }
+              ] },
+            { name: "rules_count", type: "`number`", optional: false, description: "The number of rules the price has." },
+            { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The price's title." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+            { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+            { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+            { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity required in the cart for this price to apply." },
+            { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity that the cart's items must not surpass for this price to apply." },
+            { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the price set this price belongs to." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+          ] },
+        { name: "data", type: "`object`", optional: false, description: "The shipping option's data, useful for the fulfillment provider handling fulfillments created from this option." },
+        { name: "metadata", type: "`object`", optional: false, description: "The shipping option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `shipping-option.created`: Emitted when shipping options are created.
+
+---
+
+## GET /admin/shipping-options/\{id\}
+
+**Get a Shipping Option**
+
+Retrieve a shipping option by its ID. You can expand the shipping option's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.shippingOption.retrieve("so_123")
+.then(({ shipping_option }) => {
+  console.log(shipping_option)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/shipping-options/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "shipping_option", type: "`object`", optional: false, description: "The shipping option's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The shipping option's name." },
+        { name: "price_type", type: "`\"calculated\"` \\| `\"flat\"`", optional: false, description: "The shipping option's price type. If it's `flat`, the price is fixed and is set in the `prices` property. If it's `calculated`, the price is calculated on checkout by the associated fulfillment provider." },
+        { name: "service_zone_id", type: "`string`", optional: false, description: "The ID of the service zone this option belongs to." },
+        { name: "service_zone", type: "`object`", optional: false },
+        { name: "provider_id", type: "`string`", optional: false, description: "The ID of the provider handling fulfillments created from this shipping option." },
+        { name: "provider", type: "`object`", optional: false, description: "The fulfillment provider's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "shipping_option_type_id", type: "`string`", optional: false, description: "The ID of the associated shipping option type." },
+        { name: "type", type: "`object`", optional: false, description: "The shipping option's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." },
+            { name: "label", type: "`string`", optional: false, description: "The type's label." },
+            { name: "description", type: "`string`", optional: false, description: "The type's description." },
+            { name: "code", type: "`string`", optional: false, description: "The type's code." },
+            { name: "shipping_option_id", type: "`string`", optional: false, description: "The type's shipping option id." }
+          ] },
+        { name: "shipping_profile_id", type: "`string`", optional: false, description: "The ID of the associated shipping profile." },
+        { name: "shipping_profile", type: "`object`", optional: false, description: "The shipping profile's details..", children: [
+            { name: "id", type: "`string`", optional: false, description: "The shipping profile's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The shipping profile's name." },
+            { name: "type", type: "`string`", optional: false, description: "The shipping profile's type." },
+            { name: "metadata", type: "`object`", optional: false, description: "The shipping profile's metadata, holds custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the shipping profile was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping profile was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping profile was deleted." }
+          ] },
+        { name: "rules", type: "`object[]`", optional: false, description: "The shipping option's rules.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The shipping option rule's ID." },
+            { name: "attribute", type: "`string`", optional: false, description: "The shipping option rule's attribute.", example: "is_return" },
+            { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The rule's operator." },
+            { name: "value", type: "`string` \\| `string[]`", optional: false, description: "The shipping option rule's value." },
+            { name: "shipping_option_id", type: "`string`", optional: false, description: "The ID of the shipping option this rule is for." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option rule was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option rule was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option rule was deleted." }
+          ] },
+        { name: "prices", type: "`object[]`", optional: false, description: "The shipping option's prices. If the `price_type` is `calculated`, this array will be empty since the price is calculated by the fulfillment provider during checkout.", children: [
+            { name: "price_rules", type: "`object[]`", optional: false, description: "The price's rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The price rule's ID." },
+                { name: "value", type: "`string` \\| `number`", optional: false, description: "The price rule's value." },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The price rule's operator." },
+                { name: "attribute", type: "`string`", optional: false, description: "The price rule's attribute." },
+                { name: "price_id", type: "`string`", optional: false, description: "The ID of the price this rule applies to." },
+                { name: "priority", type: "`number`", optional: false, description: "The price rule's priority." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the price rule was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the price rule was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the price rule was deleted." }
+              ] },
+            { name: "rules_count", type: "`number`", optional: false, description: "The number of rules the price has." },
+            { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The price's title." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+            { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+            { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+            { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity required in the cart for this price to apply." },
+            { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity that the cart's items must not surpass for this price to apply." },
+            { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the price set this price belongs to." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+          ] },
+        { name: "data", type: "`object`", optional: false, description: "The shipping option's data, useful for the fulfillment provider handling fulfillments created from this option." },
+        { name: "metadata", type: "`object`", optional: false, description: "The shipping option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/shipping-options/\{id\}
+
+**Update a Shipping Option**
+
+Update a shipping option's details.
+
+When you provide the `prices` array, it replaces the shipping option's existing flat-rate prices:
+
+- A price with a matching `id` is updated.
+- A price without an `id` is created
+- Any existing price whose `id` isn't included in the array is deleted.
+
+The `rules` you provide for a price similarly replace that price's existing rules, so omit a rule to remove it.
+
+Omitting the `prices` property entirely leaves the existing prices unchanged, whereas setting `price_type` to `calculated` removes all flat-rate prices.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: true, description: "The shipping option's name." },
+    { name: "data", type: "`object`", optional: true, description: "The shipping option's data." },
+    { name: "price_type", type: "`\"flat\"` \\| `\"calculated\"`", optional: true, description: "The shipping option's price type." },
+    { name: "provider_id", type: "`string`", optional: true, description: "The shipping option's provider id." },
+    { name: "shipping_profile_id", type: "`string`", optional: true, description: "The shipping option's shipping profile id." },
+    { name: "type", type: "`object`", optional: true, description: "The shipping option type's details.", children: [
+        { name: "label", type: "`string`", optional: false, description: "The type's label." },
+        { name: "description", type: "`string`", optional: true, description: "The type's description." },
+        { name: "code", type: "`string`", optional: false, description: "The type's code." }
+      ] },
+    { name: "type_id", type: "`string`", optional: true, description: "The shipping option's type id." },
+    { name: "prices", type: "`object[]`", optional: true, description: "The shipping option's prices. This array replaces the shipping option's existing prices - a price with a matching `id` is updated, a price without an `id` is created, and any existing price whose `id` isn't included is deleted. Omit this property to leave the existing prices unchanged.", children: [
+        { name: "id", type: "`string`", optional: true, description: "The price's ID. If not provided, a new price is created; existing prices whose ID isn't included in the request are deleted." },
+        { name: "currency_code", type: "`string`", optional: true, description: "The price's currency code.", example: "usd" },
+        { name: "amount", type: "`number`", optional: true, description: "The price's amount." },
+        { name: "rules", type: "`object[]`", optional: true, description: "The price's rules. These rules replace the price's existing rules, so omit a rule to remove it.", children: [
+            { name: "attribute", type: "`string`", optional: false, description: "The rule's attribute." },
+            { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"lte\"` \\| `\"gte\"`", optional: false, description: "The rule's operator." },
+            { name: "value", type: "`number`", optional: false, description: "The rule's value." }
+          ] },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the price is associated with." }
+      ] },
+    { name: "rules", type: "`object[]`", optional: true, description: "The shipping option's rules.", children: [
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The operator used to check whether a rule applies." },
+        { name: "attribute", type: "`string`", optional: false, description: "The name of a property or table that the rule applies to.", example: "customer_group" },
+        { name: "value", type: "`string` \\| `string[]`", optional: false, description: "A value of the attribute that enables this rule." },
+        { name: "id", type: "`string`", optional: true, description: "The rule's ID." }
+      ] },
+    { name: "metadata", type: "`object`", optional: true, description: "The shipping option's metadata." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.shippingOption.update("so_123", {
+  name: "Standard Shipping",
+})
+.then(({ shipping_option }) => {
+  console.log(shipping_option)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/shipping-options/{id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "shipping_option", type: "`object`", optional: false, description: "The shipping option's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The shipping option's name." },
+        { name: "price_type", type: "`\"calculated\"` \\| `\"flat\"`", optional: false, description: "The shipping option's price type. If it's `flat`, the price is fixed and is set in the `prices` property. If it's `calculated`, the price is calculated on checkout by the associated fulfillment provider." },
+        { name: "service_zone_id", type: "`string`", optional: false, description: "The ID of the service zone this option belongs to." },
+        { name: "service_zone", type: "`object`", optional: false },
+        { name: "provider_id", type: "`string`", optional: false, description: "The ID of the provider handling fulfillments created from this shipping option." },
+        { name: "provider", type: "`object`", optional: false, description: "The fulfillment provider's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "shipping_option_type_id", type: "`string`", optional: false, description: "The ID of the associated shipping option type." },
+        { name: "type", type: "`object`", optional: false, description: "The shipping option's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." },
+            { name: "label", type: "`string`", optional: false, description: "The type's label." },
+            { name: "description", type: "`string`", optional: false, description: "The type's description." },
+            { name: "code", type: "`string`", optional: false, description: "The type's code." },
+            { name: "shipping_option_id", type: "`string`", optional: false, description: "The type's shipping option id." }
+          ] },
+        { name: "shipping_profile_id", type: "`string`", optional: false, description: "The ID of the associated shipping profile." },
+        { name: "shipping_profile", type: "`object`", optional: false, description: "The shipping profile's details..", children: [
+            { name: "id", type: "`string`", optional: false, description: "The shipping profile's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The shipping profile's name." },
+            { name: "type", type: "`string`", optional: false, description: "The shipping profile's type." },
+            { name: "metadata", type: "`object`", optional: false, description: "The shipping profile's metadata, holds custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the shipping profile was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping profile was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping profile was deleted." }
+          ] },
+        { name: "rules", type: "`object[]`", optional: false, description: "The shipping option's rules.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The shipping option rule's ID." },
+            { name: "attribute", type: "`string`", optional: false, description: "The shipping option rule's attribute.", example: "is_return" },
+            { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The rule's operator." },
+            { name: "value", type: "`string` \\| `string[]`", optional: false, description: "The shipping option rule's value." },
+            { name: "shipping_option_id", type: "`string`", optional: false, description: "The ID of the shipping option this rule is for." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option rule was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option rule was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option rule was deleted." }
+          ] },
+        { name: "prices", type: "`object[]`", optional: false, description: "The shipping option's prices. If the `price_type` is `calculated`, this array will be empty since the price is calculated by the fulfillment provider during checkout.", children: [
+            { name: "price_rules", type: "`object[]`", optional: false, description: "The price's rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The price rule's ID." },
+                { name: "value", type: "`string` \\| `number`", optional: false, description: "The price rule's value." },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The price rule's operator." },
+                { name: "attribute", type: "`string`", optional: false, description: "The price rule's attribute." },
+                { name: "price_id", type: "`string`", optional: false, description: "The ID of the price this rule applies to." },
+                { name: "priority", type: "`number`", optional: false, description: "The price rule's priority." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the price rule was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the price rule was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the price rule was deleted." }
+              ] },
+            { name: "rules_count", type: "`number`", optional: false, description: "The number of rules the price has." },
+            { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The price's title." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+            { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+            { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+            { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity required in the cart for this price to apply." },
+            { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity that the cart's items must not surpass for this price to apply." },
+            { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the price set this price belongs to." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+          ] },
+        { name: "data", type: "`object`", optional: false, description: "The shipping option's data, useful for the fulfillment provider handling fulfillments created from this option." },
+        { name: "metadata", type: "`object`", optional: false, description: "The shipping option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `shipping-option.updated`: Emitted when shipping options are updated.
+
+---
+
+## DELETE /admin/shipping-options/\{id\}
+
+**Delete a Shipping Option**
+
+Delete a shipping option.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.shippingOption.delete("so_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/shipping-options/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"shipping_option\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the shipping option was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `shipping-option.deleted`: Emitted when shipping options are deleted.
+
+---
+
+## POST /admin/shipping-options/\{id\}/rules/batch
+
+**Manage the Rules of a Shipping Option**
+
+Manage the rules of a shipping option to create, update, or delete them.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "create", type: "`object[]`", optional: true, description: "The shipping option rules to create.", children: [
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The operator used to check whether a rule applies." },
+        { name: "attribute", type: "`string`", optional: false, description: "The name of a property or table that the rule applies to.", example: "customer_group" },
+        { name: "value", type: "`string` \\| `string[]`", optional: false, description: "A value of the attribute that enables this rule." }
+      ] },
+    { name: "update", type: "`object[]`", optional: true, description: "The shipping option rules to update.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The rule's ID." },
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The operator used to check whether a rule applies." },
+        { name: "attribute", type: "`string`", optional: false, description: "The name of a property or table that the rule applies to.", example: "customer_group" },
+        { name: "value", type: "`string` \\| `string[]`", optional: false, description: "A value of the attribute that enables this rule." }
+      ] },
+    { name: "delete", type: "`string[]`", optional: true, description: "The shipping option rules to delete." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.shippingOption.updateRules("so_123", {
+  create: [{ attribute: "enabled_in_store", operator: "eq", value: "true" }],
+})
+.then(({ shipping_option }) => {
+  console.log(shipping_option)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/shipping-options/{id}/rules/batch' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "created", type: "`object[]`", optional: false, description: "The created shipping option rules.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The shipping option rule's ID." },
+        { name: "attribute", type: "`string`", optional: false, description: "The shipping option rule's attribute.", example: "is_return" },
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The rule's operator." },
+        { name: "value", type: "`string` \\| `string[]`", optional: false, description: "The shipping option rule's value." },
+        { name: "shipping_option_id", type: "`string`", optional: false, description: "The ID of the shipping option this rule is for." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option rule was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option rule was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option rule was deleted." }
+      ] },
+    { name: "updated", type: "`object[]`", optional: false, description: "The updated shipping option rules.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The shipping option rule's ID." },
+        { name: "attribute", type: "`string`", optional: false, description: "The shipping option rule's attribute.", example: "is_return" },
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The rule's operator." },
+        { name: "value", type: "`string` \\| `string[]`", optional: false, description: "The shipping option rule's value." },
+        { name: "shipping_option_id", type: "`string`", optional: false, description: "The ID of the shipping option this rule is for." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option rule was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option rule was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option rule was deleted." }
+      ] },
+    { name: "deleted", type: "`object`", optional: false, description: "The details of the deleted shipping option rules.", children: [
+        { name: "ids", type: "`string[]`", optional: false, description: "The IDs of the deleted shipping option rules." },
+        { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"shipping_option_rule\"" },
+        { name: "deleted", type: "`boolean`", optional: false, description: "The deleted's details." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

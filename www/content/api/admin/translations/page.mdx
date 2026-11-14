@@ -1,0 +1,609 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Translations API Routes`,
+}
+
+# {metadata.title}
+
+A translation is a localized version of content in a specific locale. For example, a product description in French.
+These API routes allow admin users to manage translations for different locales and resources.
+
+## GET /admin/translations
+
+**List Translations**
+
+Retrieve a list of translations. The translations can be filtered by fields such as `reference_id` (For example, the ID of a product). The translations can also be sorted or paginated.
+
+<Note title="Feature flag">
+
+This API route is only available when the `translation` feature flag is enabled. Set the `MEDUSA_FF_TRANSLATION` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "q", type: "`string`", optional: true, description: "Search query to filter translations by their fields." },
+    { name: "reference_id", type: "`string` \\| `string[]`", optional: true, description: "Filter translations by a reference ID. For example, the ID of a product." },
+    { name: "reference", type: "`string`", optional: true, description: "Filter translations by the resource they belong to. For example, `product` or `product_variant`." },
+    { name: "locale_code", type: "`string` \\| `string[]`", optional: true, description: "Filter translations by a locale code in BCP 47 format." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "The translation's with deleted." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.translation.list()
+.then(({ translations, count, limit, offset }) => {
+  console.log(translations)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/translations' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of translations returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of translations skipped before retrieving the returned translations." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of translations matching the query." },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" },
+    { name: "translations", type: "`object[]`", optional: false, description: "The list of translations.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The translation's ID." },
+        { name: "reference_id", type: "`string`", optional: false, description: "The ID of the resource that the translation belongs to. For example, the ID of a product.", example: "prod_123" },
+        { name: "reference", type: "`string`", optional: false, description: "The resource that the translation belongs to.", example: "product" },
+        { name: "locale_code", type: "`string`", optional: false, description: "The translation's locale code in BCP 47 format.", example: "fr-FR" },
+        { name: "translations", type: "`object`", optional: false, description: "The translation key-value pairs. Each key is a field in the resource, and the value is the translated text." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date that the translation was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date that the translation was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date that the translation was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/translations/batch
+
+**Manage Translations**
+
+Manage translations in bulk by creating, updating, or deleting multiple translations in a single request. You can manage translations for various resources such as products, product variants, categories, and more.
+
+<Note title="Feature flag">
+
+This API route is only available when the `translation` feature flag is enabled. Set the `MEDUSA_FF_TRANSLATION` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "create", type: "`object[]`", optional: true, description: "The translations to create.", children: [
+        { name: "reference", type: "`string`", optional: false, description: "The resource that the translation belongs to.", example: "product" },
+        { name: "reference_id", type: "`string`", optional: false, description: "The ID of the resource that the translation belongs to. For example, the ID of a product.", example: "prod_123" },
+        { name: "locale_code", type: "`string`", optional: false, description: "The translation's locale code in BCP 47 format.", example: "fr-FR" },
+        { name: "translations", type: "`object`", optional: false, description: "The translation key-value pairs. Each key is a field in the resource, and the value is the translated text." }
+      ] },
+    { name: "update", type: "`object[]`", optional: true, description: "The translations to update.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The ID of the translation to update." },
+        { name: "reference", type: "`string`", optional: true, description: "The resource that the translation belongs to.", example: "product" },
+        { name: "reference_id", type: "`string`", optional: true, description: "The ID of the resource that the translation belongs to. For example, the ID of a product.", example: "prod_123" },
+        { name: "locale_code", type: "`string`", optional: true, description: "The translation's locale code in BCP 47 format.", example: "fr-FR" },
+        { name: "translations", type: "`object`", optional: true, description: "The translation key-value pairs. Each key is a field in the resource, and the value is the translated text." }
+      ] },
+    { name: "delete", type: "`string[]`", optional: true, description: "The translations to delete." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.translation.batch({
+  create: [
+    {
+      reference_id: "prod_123",
+      reference: "product",
+      locale_code: "en-US",
+      translations: { title: "Shirt" }
+    }
+  ],
+  update: [
+    {
+      id: "trans_123",
+      translations: { title: "Pants" }
+    }
+  ],
+  delete: ["trans_321"]
+})
+.then(({ created, updated, deleted }) => {
+  console.log(created, updated, deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/translations/batch' \
+-H 'Authorization: Bearer {access_token}' \
+-H 'Content-Type: application/json' \
+-d '{
+  "create": [
+    {
+      "reference": "product",
+      "reference_id": "prod_123",
+      "locale_code": "fr-FR",
+      "translations": {
+        "title": "Chaussures",
+        "description": "Des chaussures élégantes."
+      }
+    }
+  ]
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "created", type: "`object[]`", optional: false, description: "The created translations.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The translation's ID." },
+        { name: "reference_id", type: "`string`", optional: false, description: "The ID of the resource that the translation belongs to. For example, the ID of a product.", example: "prod_123" },
+        { name: "reference", type: "`string`", optional: false, description: "The resource that the translation belongs to.", example: "product" },
+        { name: "locale_code", type: "`string`", optional: false, description: "The translation's locale code in BCP 47 format.", example: "fr-FR" },
+        { name: "translations", type: "`object`", optional: false, description: "The translation key-value pairs. Each key is a field in the resource, and the value is the translated text." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date that the translation was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date that the translation was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date that the translation was deleted." }
+      ] },
+    { name: "updated", type: "`object[]`", optional: false, description: "The updated translations.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The translation's ID." },
+        { name: "reference_id", type: "`string`", optional: false, description: "The ID of the resource that the translation belongs to. For example, the ID of a product.", example: "prod_123" },
+        { name: "reference", type: "`string`", optional: false, description: "The resource that the translation belongs to.", example: "product" },
+        { name: "locale_code", type: "`string`", optional: false, description: "The translation's locale code in BCP 47 format.", example: "fr-FR" },
+        { name: "translations", type: "`object`", optional: false, description: "The translation key-value pairs. Each key is a field in the resource, and the value is the translated text." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date that the translation was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date that the translation was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date that the translation was deleted." }
+      ] },
+    { name: "deleted", type: "`object`", optional: false, description: "Summary of the deleted translations.", children: [
+        { name: "ids", type: "`string[]`", optional: false, description: "The IDs of the deleted translations." },
+        { name: "object", type: "`string`", optional: false, description: "The type of object deleted.", defaultValue: "\"translation\"" },
+        { name: "deleted", type: "`boolean`", optional: false, description: "Whether the translations were successfully deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `translation.created`: Emitted when translations are created.
+- `translation.updated`: Emitted when translations are updated.
+- `translation.deleted`: Emitted when translations are deleted.
+
+---
+
+## GET /admin/translations/entities
+
+**List Translatable Entities**
+
+Retrieve a list of translatable entities. The entities can be filtered by fields such as `id`. The entities can also be sorted or paginated.
+
+<Note title="Feature flag">
+
+This API route is only available when the `translation` feature flag is enabled. Set the `MEDUSA_FF_TRANSLATION` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "type", type: "`string`", optional: false, description: "Filter by a translatable entity type.", example: "product" },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by an entity's ID." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "The translation's with deleted." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.translation.entities({
+  type: "product"
+})
+.then(({ data, count, offset, limit }) => {
+  console.log(data)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/translations/entities' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "data", type: "`object[]`", optional: false, description: "The list of translatable entities.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The entity's ID." },
+        { name: "translations", type: "`object[]`", optional: false, description: "The entity's translations.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The translation's ID." },
+            { name: "reference_id", type: "`string`", optional: false, description: "The ID of the resource that the translation belongs to. For example, the ID of a product.", example: "prod_123" },
+            { name: "reference", type: "`string`", optional: false, description: "The resource that the translation belongs to.", example: "product" },
+            { name: "locale_code", type: "`string`", optional: false, description: "The translation's locale code in BCP 47 format.", example: "fr-FR" },
+            { name: "translations", type: "`object`", optional: false, description: "The translation key-value pairs. Each key is a field in the resource, and the value is the translated text." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date that the translation was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date that the translation was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date that the translation was deleted." }
+          ] }
+      ] },
+    { name: "count", type: "`number`", optional: false, description: "The total number of translatable entities." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned in the response." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/translations/settings
+
+**List Translation Settings**
+
+Retrieve the list of translatable fields for all entities, such as products and collections. You can also filter the results by entity type or active entities.
+
+<Note title="Feature flag">
+
+This API route is only available when the `translation` feature flag is enabled. Set the `MEDUSA_FF_TRANSLATION` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "entity_type", type: "`string`", optional: true, description: "The entity to retrieve translation settings for.", example: "product" },
+    { name: "is_active", type: "`boolean`", optional: true, description: "Filter resources by whether translations is activated for them or not. If not provided, all resources are returned." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.translation.settings({
+  entity_type: "product"
+})
+.then(({ translation_settings }) => {
+  console.log(translation_settings)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/translations/settings' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "translation_settings", type: "`object`", optional: false, description: "The translation settings details." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/translations/settings/batch
+
+**Manage Translation Settings**
+
+Create, update, or delete multiple translation settings.
+
+<Note title="Feature flag">
+
+This API route is only available when the `translation` feature flag is enabled. Set the `MEDUSA_FF_TRANSLATION` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "create", type: "`object[]`", optional: true, description: "The translation settings to create.", children: [
+        { name: "entity_type", type: "`string`", optional: false, description: "The entity type to create the translation settings for.", example: "product" },
+        { name: "fields", type: "`string[]`", optional: false, description: "The fields to support translations for." },
+        { name: "is_active", type: "`boolean`", optional: true, description: "Whether translations are active for the given entity type." }
+      ] },
+    { name: "update", type: "`object[]`", optional: true, description: "The translation settings to update.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The ID of the translation settings to update." },
+        { name: "entity_type", type: "`string`", optional: true, description: "The entity type to update the translation settings for." },
+        { name: "fields", type: "`string[]`", optional: true, description: "The fields to update translations for." },
+        { name: "is_active", type: "`boolean`", optional: true, description: "Whether translations are active for the given entity type." }
+      ] },
+    { name: "delete", type: "`string[]`", optional: true, description: "The translation settings to delete." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.translation.batchSettings({
+  create: [
+    {
+      entity_type: "product",
+      fields: ["title", "description"],
+      is_active: true
+    }
+  ],
+  update: [
+    {
+      id: "trset_123",
+      fields: ["title", "description", "subtitle"],
+      is_active: true
+    }
+  ],
+  delete: ["trset_456"]
+})
+.then(({ created, updated, deleted }) => {
+  console.log(created, updated, deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/translations/settings/batch' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "created", type: "`object[]`", optional: false, description: "The created translation settings.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The ID of the translation settings." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the translation settings was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the translation settings was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the translation settings was deleted." },
+        { name: "entity_type", type: "`string`", optional: false, description: "The entity type the translation settings are for.", example: "product" },
+        { name: "fields", type: "`string[]`", optional: false, description: "The fields supported for translations." },
+        { name: "is_active", type: "`boolean`", optional: false, description: "Whether translations are active for the given entity type." }
+      ] },
+    { name: "updated", type: "`object[]`", optional: false, description: "The updated translation settings.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The ID of the translation settings." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the translation settings was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the translation settings was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the translation settings was deleted." },
+        { name: "entity_type", type: "`string`", optional: false, description: "The entity type the translation settings are for.", example: "product" },
+        { name: "fields", type: "`string[]`", optional: false, description: "The fields supported for translations." },
+        { name: "is_active", type: "`boolean`", optional: false, description: "Whether translations are active for the given entity type." }
+      ] },
+    { name: "deleted", type: "`object`", optional: false, description: "The deletion result.", children: [
+        { name: "ids", type: "`string[]`", optional: false, description: "The IDs of the deleted translation settings." },
+        { name: "object", type: "`string`", optional: false, description: "The type of object deleted." },
+        { name: "deleted", type: "`boolean`", optional: false, description: "Whether the deletion was successful." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/translations/statistics
+
+**Retrieve Translation Statistics**
+
+Get statistics on translations for specified locales and entity types. This includes overall translation progress for each entity type, and statistics for each locale within those entity types.
+
+<Note title="Feature flag">
+
+This API route is only available when the `translation` feature flag is enabled. Set the `MEDUSA_FF_TRANSLATION` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "locales", type: "`string` \\| `string[]`", optional: false, description: "The locale codes to retrieve translation statistics for. Locale codes are in [BCP 47](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1) format." },
+    { name: "entity_types", type: "`string` \\| `string[]`", optional: false, description: "The table names of entities to retrieve translation statistics for." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.translation.statistics({
+  entity_type: "product"
+})
+.then(({ statistics }) => {
+  console.log(statistics)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/translations/statistics' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "statistics", type: "`object`", optional: false, description: "The translation statistics for different entity types. The key is the entity type, and the value is an object containing the statistics for that entity type.", children: [
+        { name: "[key: string]", type: "`object`", optional: false, children: [
+            { name: "by_locale", type: "`object`", optional: true, description: "The translation statistics of an entity type broken down by locale. The key is the locale code in BCP 47 format, and the value is an object containing the statistics for that locale.", children: [
+                { name: "[key: string]", type: "`object`", optional: false }
+              ] },
+            { name: "expected", type: "`number`", optional: true, description: "The total number of translatable fields across specified locales." },
+            { name: "translated", type: "`number`", optional: true, description: "The number of translated fields across specified locales." },
+            { name: "missing", type: "`number`", optional: true, description: "The number of fields that are yet to be translated across specified locales." }
+          ] }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

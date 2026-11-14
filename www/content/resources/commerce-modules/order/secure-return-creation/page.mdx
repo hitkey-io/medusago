@@ -1,0 +1,41 @@
+---
+tags:
+  - order
+  - auth
+  - name: how to
+    label: Restrict Return Creation
+  - server
+products:
+  - order
+  - auth
+---
+
+export const metadata = {
+  title: `Restrict Return Creation`,
+}
+
+# {metadata.title}
+
+In this guide, you'll learn how Medusa handles access to the [Create Return API route](!api!/store/returns/create-return), and how to restrict access to it in your MedusaGo application.
+
+## How Medusa Handles Return Creation
+
+The `POST /store/returns` API route doesn't require customer authentication. Any request that includes a valid [publishable API key](../../../storefront-development/publishable-api-keys/page.mdx) and a correct order ID creates a return for that order.
+
+Medusa applies this behavior intentionally. Guest customers place orders without an account, so they have no session or token to authenticate with. They still need a way to request a return for the items they received. Requiring authentication would leave guest customers without a self-service return flow.
+
+The order's ID acts as the credential in this flow. Medusa generates order IDs randomly, so guessing an ID requires brute forcing a value from an address space large enough to make the attempt impractical.
+
+<Note>
+
+Medusa doesn't expose a store API route to retrieve or list returns. Customers only create returns, while merchants manage them from the Medusa Admin dashboard.
+
+</Note>
+
+### The receive_now Request Body Parameter
+
+The route accepts a `receive_now` parameter in the request body. When it's enabled, Medusa marks the return's items as received as soon as it creates the return, without waiting for the merchant to receive them.
+
+This is useful in stores that trust the customer's return request, such as digital goods or low-value items. If your store reviews returns before receiving them, reject the parameter as explained in the [Reject the receive_now Parameter](#reject-the-receive_now-parameter) section.
+
+---

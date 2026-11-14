@@ -1,0 +1,904 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Stock Locations API Routes`,
+}
+
+# {metadata.title}
+
+A stock location is where stock-kept items (products) are kept.
+
+Stock locations are linked to fulfillment providers used to fulfill items from this location.
+
+A stock location is also link to a fulfillment set, indicating where an item is fulfilled from  when an order is placed.
+
+These API routes allow admin users to manage stock locations and their linked data.
+
+## GET /admin/stock-locations
+
+**List Stock Locations**
+
+Retrieve a list of stock locations. The stock locations can be filtered by fields such as `id`. The stock locations can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the stock location's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a stock location ID." },
+    { name: "name", type: "`string` \\| `string[]`", optional: true, description: "Filter by a stock location name." },
+    { name: "address_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by an address ID to retrieve its associated locations." },
+    { name: "sales_channel_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a sales channel ID to retrieve its associated locations." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by a stock location's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by a stock location's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by a stock location's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.stockLocation.list()
+.then(({ stock_locations, count, limit, offset }) => {
+  console.log(stock_locations)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/stock-locations' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "stock_locations", type: "`object[]`", optional: false, description: "The list of stock locations.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The location's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The location's name." },
+        { name: "address_id", type: "`string`", optional: false, description: "The ID of the associated address." },
+        { name: "address", type: "`object`", optional: true, description: "The details of the stock location address.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata." }
+          ] },
+        { name: "sales_channels", type: "`object[]`", optional: true, description: "The sales channels associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The sales channel's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The sales channel's name." },
+            { name: "description", type: "`string`", optional: false, description: "The sales channel's description." },
+            { name: "is_disabled", type: "`boolean`", optional: false, description: "Whether the sales channel is disabled." },
+            { name: "metadata", type: "`object`", optional: false, description: "The sales channel's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the sales channel was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the sales channel was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the sales channel was deleted." }
+          ] },
+        { name: "fulfillment_providers", type: "`object[]`", optional: true, description: "The fulfillment providers associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "fulfillment_sets", type: "`object[]`", optional: true, description: "The fulfillment sets associated with the location." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/stock-locations
+
+**Create Stock Location**
+
+Create a stock location.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: false, description: "The stock location's name." },
+    { name: "address_id", type: "`string`", optional: true, description: "The ID of the stock location's address." },
+    { name: "address", type: "`object`", optional: true, description: "The details of the stock location address to create.", children: [
+        { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "usd" },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "province", type: "`string`", optional: true, description: "The address's ISO 3166-2 province code. Must be lower-case.", example: "us-ca" },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata." }
+      ] },
+    { name: "metadata", type: "`object`", optional: true, description: "The stock location's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.stockLocation.create({
+  name: "Main Warehouse",
+  address_id: "addr_123",
+})
+.then(({ stock_location }) => {
+  console.log(stock_location)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/stock-locations' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "name": "Maryam",
+  "address_id": "{value}",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "stock_location", type: "`object`", optional: false, description: "The stock location's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The location's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The location's name." },
+        { name: "address_id", type: "`string`", optional: false, description: "The ID of the associated address." },
+        { name: "address", type: "`object`", optional: true, description: "The details of the stock location address.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata." }
+          ] },
+        { name: "sales_channels", type: "`object[]`", optional: true, description: "The sales channels associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The sales channel's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The sales channel's name." },
+            { name: "description", type: "`string`", optional: false, description: "The sales channel's description." },
+            { name: "is_disabled", type: "`boolean`", optional: false, description: "Whether the sales channel is disabled." },
+            { name: "metadata", type: "`object`", optional: false, description: "The sales channel's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the sales channel was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the sales channel was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the sales channel was deleted." }
+          ] },
+        { name: "fulfillment_providers", type: "`object[]`", optional: true, description: "The fulfillment providers associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "fulfillment_sets", type: "`object[]`", optional: true, description: "The fulfillment sets associated with the location." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/stock-locations/\{id\}
+
+**Get a Stock Location**
+
+Retrieve a stock location by its ID. You can expand the stock location's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The stock location's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.stockLocation.retrieve("sloc_123")
+.then(({ stock_location }) => {
+  console.log(stock_location)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/stock-locations/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "stock_location", type: "`object`", optional: false, description: "The stock location's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The location's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The location's name." },
+        { name: "address_id", type: "`string`", optional: false, description: "The ID of the associated address." },
+        { name: "address", type: "`object`", optional: true, description: "The details of the stock location address.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata." }
+          ] },
+        { name: "sales_channels", type: "`object[]`", optional: true, description: "The sales channels associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The sales channel's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The sales channel's name." },
+            { name: "description", type: "`string`", optional: false, description: "The sales channel's description." },
+            { name: "is_disabled", type: "`boolean`", optional: false, description: "Whether the sales channel is disabled." },
+            { name: "metadata", type: "`object`", optional: false, description: "The sales channel's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the sales channel was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the sales channel was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the sales channel was deleted." }
+          ] },
+        { name: "fulfillment_providers", type: "`object[]`", optional: true, description: "The fulfillment providers associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "fulfillment_sets", type: "`object[]`", optional: true, description: "The fulfillment sets associated with the location." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/stock-locations/\{id\}
+
+**Update a Stock Location**
+
+Update a stock location's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The stock location's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: true, description: "The stock location's name." },
+    { name: "address", type: "`object`", optional: true, description: "The details of the stock location address to create.", children: [
+        { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "usd" },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "province", type: "`string`", optional: true, description: "The address's ISO 3166-2 province code. Must be lower-case.", example: "us-ca" },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata." }
+      ] },
+    { name: "address_id", type: "`string`", optional: true, description: "The ID of an existing stock location address to associate the stock location with." },
+    { name: "metadata", type: "`object`", optional: true, description: "The stock location's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.stockLocation.update("sloc_123", {
+  name: "European Warehouse",
+})
+.then(({ stock_location }) => {
+  console.log(stock_location)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/stock-locations/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "address_id": "{value}",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "stock_location", type: "`object`", optional: false, description: "The stock location's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The location's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The location's name." },
+        { name: "address_id", type: "`string`", optional: false, description: "The ID of the associated address." },
+        { name: "address", type: "`object`", optional: true, description: "The details of the stock location address.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata." }
+          ] },
+        { name: "sales_channels", type: "`object[]`", optional: true, description: "The sales channels associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The sales channel's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The sales channel's name." },
+            { name: "description", type: "`string`", optional: false, description: "The sales channel's description." },
+            { name: "is_disabled", type: "`boolean`", optional: false, description: "Whether the sales channel is disabled." },
+            { name: "metadata", type: "`object`", optional: false, description: "The sales channel's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the sales channel was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the sales channel was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the sales channel was deleted." }
+          ] },
+        { name: "fulfillment_providers", type: "`object[]`", optional: true, description: "The fulfillment providers associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "fulfillment_sets", type: "`object[]`", optional: true, description: "The fulfillment sets associated with the location." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/stock-locations/\{id\}
+
+**Delete a Stock Location**
+
+Delete a stock location.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The stock location's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.stockLocation.delete("sloc_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/stock-locations/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The stock location's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"stock_location\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the stock location was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/stock-locations/\{id\}/fulfillment-providers
+
+**Manage Fulfillment Providers of a Stock Location**
+
+Manage the fulfillment providers to add or remove them from a stock location.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The stock location's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "add", type: "`string[]`", optional: true, description: "The IDs of an entity to add to the other." },
+    { name: "remove", type: "`string[]`", optional: true, description: "The IDs of an entity to remove from the other." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.stockLocation.updateFulfillmentProviders("sloc_123", {
+  add: ["fp_manual_manual"],
+  remove: ["fp_shipstation_shipstation"],
+})
+.then(({ stock_location }) => {
+  console.log(stock_location)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/stock-locations/{id}/fulfillment-providers' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "stock_location", type: "`object`", optional: false, description: "The stock location's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The location's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The location's name." },
+        { name: "address_id", type: "`string`", optional: false, description: "The ID of the associated address." },
+        { name: "address", type: "`object`", optional: true, description: "The details of the stock location address.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata." }
+          ] },
+        { name: "sales_channels", type: "`object[]`", optional: true, description: "The sales channels associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The sales channel's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The sales channel's name." },
+            { name: "description", type: "`string`", optional: false, description: "The sales channel's description." },
+            { name: "is_disabled", type: "`boolean`", optional: false, description: "Whether the sales channel is disabled." },
+            { name: "metadata", type: "`object`", optional: false, description: "The sales channel's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the sales channel was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the sales channel was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the sales channel was deleted." }
+          ] },
+        { name: "fulfillment_providers", type: "`object[]`", optional: true, description: "The fulfillment providers associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "fulfillment_sets", type: "`object[]`", optional: true, description: "The fulfillment sets associated with the location." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/stock-locations/\{id\}/fulfillment-sets
+
+**Add Fulfillment Set to Stock Location**
+
+Create and add a fulfillment set to a stock location.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The stock location's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: false, description: "The fulfillment set's name." },
+    { name: "type", type: "`string`", optional: false, description: "The fulfillment set's type." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.stockLocation.createFulfillmentSet("sloc_123", {
+  name: "Shipping",
+  type: "shipping",
+})
+.then(({ stock_location }) => {
+  console.log(stock_location)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/stock-locations/{id}/fulfillment-sets' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "name": "Helene",
+  "type": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "stock_location", type: "`object`", optional: false, description: "The stock location's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The location's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The location's name." },
+        { name: "address_id", type: "`string`", optional: false, description: "The ID of the associated address." },
+        { name: "address", type: "`object`", optional: true, description: "The details of the stock location address.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata." }
+          ] },
+        { name: "sales_channels", type: "`object[]`", optional: true, description: "The sales channels associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The sales channel's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The sales channel's name." },
+            { name: "description", type: "`string`", optional: false, description: "The sales channel's description." },
+            { name: "is_disabled", type: "`boolean`", optional: false, description: "Whether the sales channel is disabled." },
+            { name: "metadata", type: "`object`", optional: false, description: "The sales channel's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the sales channel was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the sales channel was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the sales channel was deleted." }
+          ] },
+        { name: "fulfillment_providers", type: "`object[]`", optional: true, description: "The fulfillment providers associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "fulfillment_sets", type: "`object[]`", optional: true, description: "The fulfillment sets associated with the location." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/stock-locations/\{id\}/sales-channels
+
+**Manage Sales Channels of a Stock Location**
+
+Manage the sales channels in a stock location by adding or removing them.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The stock location's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "add", type: "`string[]`", optional: true, description: "The IDs of an entity to add to the other." },
+    { name: "remove", type: "`string[]`", optional: true, description: "The IDs of an entity to remove from the other." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.stockLocation.updateSalesChannels("sloc_123", {
+  add: ["sc_123"],
+  remove: ["sc_456"],
+})
+.then(({ stock_location }) => {
+  console.log(stock_location)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/stock-locations/{id}/sales-channels' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "stock_location", type: "`object`", optional: false, description: "The stock location's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The location's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The location's name." },
+        { name: "address_id", type: "`string`", optional: false, description: "The ID of the associated address." },
+        { name: "address", type: "`object`", optional: true, description: "The details of the stock location address.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata." }
+          ] },
+        { name: "sales_channels", type: "`object[]`", optional: true, description: "The sales channels associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The sales channel's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The sales channel's name." },
+            { name: "description", type: "`string`", optional: false, description: "The sales channel's description." },
+            { name: "is_disabled", type: "`boolean`", optional: false, description: "Whether the sales channel is disabled." },
+            { name: "metadata", type: "`object`", optional: false, description: "The sales channel's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the sales channel was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the sales channel was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the sales channel was deleted." }
+          ] },
+        { name: "fulfillment_providers", type: "`object[]`", optional: true, description: "The fulfillment providers associated with the location.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "fulfillment_sets", type: "`object[]`", optional: true, description: "The fulfillment sets associated with the location." },
+        { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

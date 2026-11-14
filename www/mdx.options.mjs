@@ -5,6 +5,8 @@ import remarkDirective from "remark-directive"
 import rehypeSlug from "rehype-slug"
 import rehypeMdxCodeProps from "rehype-mdx-code-props"
 import withExtractedTableOfContents from "@stefanprobst/rehype-extract-toc"
+import { remarkIncludeCode } from "./plugins/include-code.mjs"
+import { remarkPageNumber } from "./plugins/page-number.mjs"
 import {
   crossProjectLinksPlugin,
   localLinksRehypePlugin,
@@ -40,7 +42,11 @@ function localLinksBySection() {
 
 export const mdxOptions = {
   jsxImportSource: "react",
+  // partials (imported *.mdx files) get the components from the provider too
+  providerImportSource: "@mdx-js/react",
   remarkPlugins: [
+    [remarkIncludeCode],
+    [remarkPageNumber],
     [remarkFrontmatter],
     [remarkDirective],
     [resolveAdmonitionsPlugin],

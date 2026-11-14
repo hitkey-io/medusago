@@ -9,7 +9,7 @@ import { pathToFileURL } from "node:url"
 
 const root = path.resolve(import.meta.dirname, "..")
 const sections = process.argv.slice(2)
-const all = sections.length ? sections : fs.readdirSync(path.join(root, "sidebars")).map((f) => f.replace(/\.mjs$/, ""))
+const all = sections.length ? sections : fs.readdirSync(path.join(root, "sidebars")).filter((f) => f.endsWith(".mjs")).map((f) => f.replace(/\.mjs$/, ""))
 
 const { generateSidebar } = await import(pathToFileURL(path.join(root, "vendor/build-scripts/generate-sidebar.ts")).href)
 

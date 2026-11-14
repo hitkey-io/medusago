@@ -1,0 +1,106 @@
+---
+products:
+  - cart
+  - order
+  - payment
+---
+
+import { CodeTabs, CodeTab, Table } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Region Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Region Module and other Commerce Modules.
+
+## Summary
+
+The Region Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        First Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Second Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        [Cart](/references/cart/models/Cart) in [Cart Module](../../cart/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [Region](/references/region/models/Region)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#cart-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Order](/references/order/models/Order) in [Order Module](../../order/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [Region](/references/region/models/Region)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#order-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Region](/references/region/models/Region)
+      </Table.Cell>
+      <Table.Cell>
+        [PaymentProvider](/references/payment/models/PaymentProvider) in [Payment Module](../../payment/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#payment-module)
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## Cart Module
+
+Medusa defines a read-only link between the [Cart Module](../../cart/page.mdx)'s `Cart` data model and the `Region` data model. Because the link is read-only from the `Cart`'s side, you can only retrieve the region of a cart, and not the other way around.
+
+## Order Module
+
+Medusa defines a read-only link between the [Order Module](../../order/page.mdx)'s `Order` data model and the `Region` data model. Because the link is read-only from the `Order`'s side, you can only retrieve the region of an order, and not the other way around.
+
+## Payment Module
+
+You can specify for each region which payment providers are available for use.
+
+Medusa defines a module link between the `PaymentProvider` and the `Region` data models.
+

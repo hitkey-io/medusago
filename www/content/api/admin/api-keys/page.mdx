@@ -1,0 +1,630 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Api Keys API Routes`,
+}
+
+# {metadata.title}
+
+API keys can be used for authentication or resource-scoping.
+
+A secret API key can be used to authenticate admin users.  A publishable API key can be used to scope client requests to one or more sales channels.
+
+These API routes allow admin users to manage both publishable and secret API keys.
+
+## GET /admin/api-keys
+
+**List API Keys**
+
+Retrieve a list of API keys. The API keys can be filtered by fields such as `id`. The API keys can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "A search term to search the API keys' searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by an API key's ID." },
+    { name: "title", type: "`string` \\| `string[]`", optional: true, description: "Filter by an API key's title." },
+    { name: "token", type: "`string` \\| `string[]`", optional: true, description: "Filter by an API key's token." },
+    { name: "type", type: "`\"secret\"` \\| `\"publishable\"`", optional: true, description: "Filter by the API key's type." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the API key's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the API key's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by the API key's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "revoked_at", type: "`object`", optional: true, description: "Filter by the API key's revoke date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.apiKey.list()
+.then(({ api_keys, count, limit, offset }) => {
+  console.log(api_keys)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/api-keys' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total count of items." },
+    { name: "api_keys", type: "`object[]`", optional: false, description: "The list of API keys.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The API key's ID." },
+        { name: "token", type: "`string`", optional: false, description: "The API key's token." },
+        { name: "redacted", type: "`string`", optional: false, description: "The redacted form of the API key's token. This is useful when showing portion of the token. For example `sk_...123`." },
+        { name: "title", type: "`string`", optional: false, description: "The API key's title." },
+        { name: "type", type: "`\"secret\"` \\| `\"publishable\"`", optional: false, description: "The API key's type. `secret` API keys are used for authenticating admin users, and `publishable` API key are used for storefronts and similar clients to scope requests to sales channels." },
+        { name: "last_used_at", type: "`string`", optional: false, description: "The date the API key was last used." },
+        { name: "created_by", type: "`string`", optional: false, description: "The ID of the user that created the API key." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the API key was created." },
+        { name: "revoked_by", type: "`string`", optional: false, description: "The ID of the user that revoked the API key." },
+        { name: "revoked_at", type: "`string`", optional: false, description: "The date the API key was revoked." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/api-keys
+
+**Create Api Key**
+
+Create a secret or publishable API key.
+A secret API key is used for admin authentication.
+
+A publishable API key is used by client applications to set the scope of the request.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "title", type: "`string`", optional: false, description: "The API key's title." },
+    { name: "type", type: "`\"publishable\"` \\| `\"secret\"`", optional: false, description: "The API key's type. Use `secret` for a user's API key; Use `publishable` for Publishable API keys." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.apiKey.create({
+  title: "Development",
+  type: "publishable"
+})
+.then(({ api_key }) => {
+  console.log(api_key)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/api-keys' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "title": "{value}",
+  "type": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "api_key", type: "`object`", optional: false, description: "The API key's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The api key's ID." },
+        { name: "token", type: "`string`", optional: false, description: "The api key's token." },
+        { name: "redacted", type: "`string`", optional: false, description: "The redacted form of the API key's token. This is useful when showing portion of the token.", example: "sk_...123" },
+        { name: "title", type: "`string`", optional: false, description: "The api key's title." },
+        { name: "type", type: "`\"secret\"` \\| `\"publishable\"`", optional: false, description: "The api key's type. `secret` is used for a user's API key, whereas `publishable` is used for Publishable API keys." },
+        { name: "last_used_at", type: "`string`", optional: false, description: "The date and time the API key was last used." },
+        { name: "created_by", type: "`string`", optional: false, description: "The ID of the user that created the API key, if available." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date and time the API key was created." },
+        { name: "revoked_by", type: "`string`", optional: false, description: "The ID of the user that revoked the API key, if available." },
+        { name: "revoked_at", type: "`string`", optional: false, description: "The date and time the API key was revoked. The API key is considered revoked when this property is set." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the API key was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the API key was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/api-keys/\{id\}
+
+**Get API Key**
+
+Retrieve an API key by its ID. You can expand the API key's relations or select the fields that should be returned using the query parameters.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The API key's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.apiKey.retrieve("apk_123")
+.then(({ api_key }) => {
+  console.log(api_key)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/api-keys/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "api_key", type: "`object`", optional: false, description: "The API key's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The api key's ID." },
+        { name: "token", type: "`string`", optional: false, description: "The api key's token." },
+        { name: "redacted", type: "`string`", optional: false, description: "The redacted form of the API key's token. This is useful when showing portion of the token.", example: "sk_...123" },
+        { name: "title", type: "`string`", optional: false, description: "The api key's title." },
+        { name: "type", type: "`\"secret\"` \\| `\"publishable\"`", optional: false, description: "The api key's type. `secret` is used for a user's API key, whereas `publishable` is used for Publishable API keys." },
+        { name: "last_used_at", type: "`string`", optional: false, description: "The date and time the API key was last used." },
+        { name: "created_by", type: "`string`", optional: false, description: "The ID of the user that created the API key, if available." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date and time the API key was created." },
+        { name: "revoked_by", type: "`string`", optional: false, description: "The ID of the user that revoked the API key, if available." },
+        { name: "revoked_at", type: "`string`", optional: false, description: "The date and time the API key was revoked. The API key is considered revoked when this property is set." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the API key was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the API key was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/api-keys/\{id\}
+
+**Update an API Key**
+
+Update an API key's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The API key's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "title", type: "`string`", optional: false, description: "The API key's title." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.apiKey.update("apk_123", {
+  title: "Development"
+})
+.then(({ api_key }) => {
+  console.log(api_key)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/api-keys/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "title": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "api_key", type: "`object`", optional: false, description: "The API key's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The api key's ID." },
+        { name: "token", type: "`string`", optional: false, description: "The api key's token." },
+        { name: "redacted", type: "`string`", optional: false, description: "The redacted form of the API key's token. This is useful when showing portion of the token.", example: "sk_...123" },
+        { name: "title", type: "`string`", optional: false, description: "The api key's title." },
+        { name: "type", type: "`\"secret\"` \\| `\"publishable\"`", optional: false, description: "The api key's type. `secret` is used for a user's API key, whereas `publishable` is used for Publishable API keys." },
+        { name: "last_used_at", type: "`string`", optional: false, description: "The date and time the API key was last used." },
+        { name: "created_by", type: "`string`", optional: false, description: "The ID of the user that created the API key, if available." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date and time the API key was created." },
+        { name: "revoked_by", type: "`string`", optional: false, description: "The ID of the user that revoked the API key, if available." },
+        { name: "revoked_at", type: "`string`", optional: false, description: "The date and time the API key was revoked. The API key is considered revoked when this property is set." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the API key was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the API key was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/api-keys/\{id\}
+
+**Delete an Api Key**
+
+Delete a publishable or secret API key.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The API key's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.apiKey.delete("apk_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/api-keys/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The API key's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the object that was deleted.", defaultValue: "\"api_key\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the API key was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/api-keys/\{id\}/revoke
+
+**Revoke API Key**
+
+Revokes an API key. If the API key is a secret, it can't be used for authentication anymore. If it's publishable, it can't be used by client applications.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The API key's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "revoke_in", type: "`number`", optional: true, description: "The time in seconds to revoke the API key after. If not set, the API key is revoked immediately." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.apiKey.revoke("apk_123")
+.then(({ api_key }) => {
+  console.log(api_key)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/api-keys/{id}/revoke' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "api_key", type: "`object`", optional: false, description: "The API key's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The api key's ID." },
+        { name: "token", type: "`string`", optional: false, description: "The api key's token." },
+        { name: "redacted", type: "`string`", optional: false, description: "The redacted form of the API key's token. This is useful when showing portion of the token.", example: "sk_...123" },
+        { name: "title", type: "`string`", optional: false, description: "The api key's title." },
+        { name: "type", type: "`\"secret\"` \\| `\"publishable\"`", optional: false, description: "The api key's type. `secret` is used for a user's API key, whereas `publishable` is used for Publishable API keys." },
+        { name: "last_used_at", type: "`string`", optional: false, description: "The date and time the API key was last used." },
+        { name: "created_by", type: "`string`", optional: false, description: "The ID of the user that created the API key, if available." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date and time the API key was created." },
+        { name: "revoked_by", type: "`string`", optional: false, description: "The ID of the user that revoked the API key, if available." },
+        { name: "revoked_at", type: "`string`", optional: false, description: "The date and time the API key was revoked. The API key is considered revoked when this property is set." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the API key was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the API key was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/api-keys/\{id\}/sales-channels
+
+**Manage Sales Channels of a Publishable API Key**
+
+Manage the sales channels of a publishable API key, either to associate them or remove them from the API key.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The API key's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "add", type: "`string[]`", optional: true, description: "The IDs of an entity to add to the other." },
+    { name: "remove", type: "`string[]`", optional: true, description: "The IDs of an entity to remove from the other." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.apiKey.batchSalesChannels("apk_123", {
+  add: ["sc_123"],
+  remove: ["sc_321"]
+})
+.then(({ api_key }) => {
+  console.log(api_key)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/api-keys/{id}/sales-channels' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "api_key", type: "`object`", optional: false, description: "The API key's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The api key's ID." },
+        { name: "token", type: "`string`", optional: false, description: "The api key's token." },
+        { name: "redacted", type: "`string`", optional: false, description: "The redacted form of the API key's token. This is useful when showing portion of the token.", example: "sk_...123" },
+        { name: "title", type: "`string`", optional: false, description: "The api key's title." },
+        { name: "type", type: "`\"secret\"` \\| `\"publishable\"`", optional: false, description: "The api key's type. `secret` is used for a user's API key, whereas `publishable` is used for Publishable API keys." },
+        { name: "last_used_at", type: "`string`", optional: false, description: "The date and time the API key was last used." },
+        { name: "created_by", type: "`string`", optional: false, description: "The ID of the user that created the API key, if available." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date and time the API key was created." },
+        { name: "revoked_by", type: "`string`", optional: false, description: "The ID of the user that revoked the API key, if available." },
+        { name: "revoked_at", type: "`string`", optional: false, description: "The date and time the API key was revoked. The API key is considered revoked when this property is set." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the API key was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the API key was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

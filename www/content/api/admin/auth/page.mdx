@@ -1,0 +1,744 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Auth API Routes`,
+}
+
+# {metadata.title}
+
+Auth API routes allow you to manage an admin user's authentication.
+
+## DELETE /auth/mfa/factors/\{id\}
+
+**Disable a Multi-Factor Authentication (MFA) Factor**
+
+Disable a multi-factor authentication (MFA) factor for the authenticated user. Once disabled,
+the factor can no longer be used to verify MFA challenges. When disabling a recovery-code
+factor, a valid recovery code must be provided in the request body.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The MFA factor's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "method", type: "`string`", optional: true, description: "The MFA method used to authorize disabling the factor (for example, `recovery-code`)." },
+    { name: "code", type: "`string`", optional: true, description: "The verification code associated with the provided `method`, used to confirm the disable action." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const { mfa_factor } = await sdk.auth.mfa.disable("authmfa_123")
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/auth/mfa/factors/{id}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /auth/session
+
+**Set Authentication Session**
+
+Set the cookie session ID of an admin user. The admin must be previously authenticated with the `/auth/user/{provider}` API route first, as the JWT token is required in the header of the request.
+
+**Authentication:** none.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/session' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "user", type: "`object`", optional: false, description: "The user's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The user's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The user's email." },
+        { name: "first_name", type: "`string`", optional: false, description: "The user's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The user's last name." },
+        { name: "avatar_url", type: "`string`", optional: false, description: "The URL of the user's avatar." },
+        { name: "metadata", type: "`object`", optional: false, description: "The user's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the user was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the user was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the user was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /auth/session
+
+**Delete Authentication Session**
+
+Deletes the cookie session ID previously set for authentication.
+
+**Authentication:** none.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+await sdk.auth.logout()
+
+// user is now logged out
+// you can't send any requests that require authentication
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/auth/session' \
+-H 'Cookie: connect.sid={sid}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "success", type: "`boolean`", optional: false, description: "Whether the session was deleted successfully." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /auth/token/refresh
+
+**Refresh Authentication Token**
+
+Refresh the authentication token of a user. This is useful after authenticating a user with a third-party service to ensure the token holds the new user's details, or when you don't want users to re-login every day.
+
+**Authentication:** none.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const token = await sdk.auth.refresh()
+
+// all subsequent requests will use the token in the header
+const { user } = await sdk.admin.user.me()
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/token/refresh' \
+-H 'Authorization: Bearer {token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "token", type: "`string`", optional: false, description: "The JWT token used for registration or authentication." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /auth/user/providers
+
+**List Auth Providers for Admin Users**
+
+Retrieve a list of auth providers for the user actor type. This is useful to show the authentication option for the available providers.
+
+**Authentication:** none.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const { providers } = await sdk.auth.listProviders("user")
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/auth/user/providers'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "providers", type: "`object[]`", optional: false, description: "The list of auth providers.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The registered instance ID of the provider, used in authentication routes\n(for example, `okta` in `POST /auth/user/okta`)." },
+        { name: "identifier", type: "`string`", optional: false, description: "The provider's static identifier (for example, `emailpass`)." },
+        { name: "display_name", type: "`string`", optional: false, description: "The name to display for the provider in a frontend application." },
+        { name: "flow", type: "`\"credentials\"` \\| `\"redirect\"`", optional: false, description: "The authentication flow the provider uses:\n\n- `credentials`: the client submits credentials (for example, email and\npassword) directly to the authentication route.\n- `redirect`: the client is redirected to the provider (for example, an external identity provider) and returns through a callback.\n\nA frontend can use this to decide whether to render a credentials form or a\n\"Continue with ...\" redirect button." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /auth/user/\{auth_provider\}
+
+**Authenticate User**
+
+Authenticate a user and receive the JWT token to be used in the header of subsequent requests.
+
+When used with a third-party provider, such as Google, the request returns a `location` property. You redirect to the specified URL in your frontend to continue authentication with the third-party service.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "auth_provider", type: "`string`", optional: false, description: "The provider used for authentication.", example: "emailpass" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+The request body is an empty JSON object.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const result = await sdk.auth.login(
+  "user",
+  "emailpass",
+  {
+    email: "user@gmail.com",
+    password: "supersecret"
+  }
+)
+
+if (typeof result !== "string") {
+  alert("Authentication requires additional steps")
+  // replace with the redirect logic of your application
+  window.location.href = result.location
+  return
+}
+
+// user is now authenticated
+// all subsequent requests will use the token in the header
+const { user } = await sdk.admin.user.me()
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/user/google'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "token", type: "`string`", optional: true, description: "The JWT token used for registration or authentication." },
+    { name: "location", type: "`string`", optional: true, description: "The location to redirect the user to for further authentication with the third-party provider." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /auth/user/\{auth_provider\}/callback
+
+**Validate Authentication Callback**
+
+This API route is used by your dashboard or frontend application when a third-party provider redirects to it after authentication. It validates the authentication with the third-party provider and, if successful, returns an authentication token. All query parameters received from the third-party provider, such as `code`, `state`, and `error`, must be passed as query parameters to this route.
+
+You can decode the JWT token using libraries like [react-jwt](https://www.npmjs.com/package/react-jwt) in the frontend. If the decoded data doesn't  have an `actor_id` property, then you must create a user, typically using the Accept Invite route passing the token in the request's Authorization header.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "auth_provider", type: "`string`", optional: false, description: "The provider used for authentication.", example: "google" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="Google Provider" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+import { decodeToken } from "react-jwt"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const token = await sdk.auth.callback(
+  "user",
+  "google",
+  {
+    code: "123",
+    state: "456"
+  }
+)
+// all subsequent requests will use the token in the header
+
+const decodedToken = decodeToken(token) as { actor_id: string, user_metadata: Record<string, unknown> }
+
+const shouldCreateUser = decodedToken.actor_id === ""
+
+if (shouldCreateUser) {
+  const user = await sdk.admin.invite.accept(
+    {
+      email: decodedToken.user_metadata.email as string,
+      first_name: "John",
+      last_name: "Smith",
+      invite_token: "12345..."
+    },
+  )
+
+  // refresh auth token
+  await sdk.auth.refresh()
+  // all subsequent requests will use the new token in the header
+} else {
+  // User already exists and is authenticated
+}
+```
+
+  </CodeTab>
+  <CodeTab label="GitHub Provider" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+import { decodeToken } from "react-jwt"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const token = await sdk.auth.callback(
+  "user",
+  "github",
+  {
+    code: "123",
+    state: "456"
+  }
+)
+// all subsequent requests will use the token in the header
+
+const decodedToken = decodeToken(token) as { actor_id: string, user_metadata: Record<string, unknown> }
+
+const shouldCreateUser = decodedToken.actor_id === ""
+
+if (shouldCreateUser) {
+  const user = await sdk.admin.invite.accept(
+    {
+      email: decodedToken.user_metadata.email as string,
+      first_name: "John",
+      last_name: "Smith",
+      invite_token: "12345..."
+    },
+  )
+
+  // refresh auth token
+  await sdk.auth.refresh()
+  // all subsequent requests will use the new token in the header
+} else {
+  // User already exists and is authenticated
+}
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "token", type: "`string`", optional: false, description: "The JWT token used for registration or authentication." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /auth/user/\{auth_provider\}/register
+
+**Retrieve Registration JWT Token**
+
+This API route retrieves a registration JWT token of a user that hasn't been registered yet. The token is used in the header of requests that create a user, such as the Accept Invite API route.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "auth_provider", type: "`string`", optional: false, description: "The provider used for authentication.", example: "emailpass" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+The request body is an empty JSON object.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const token = await sdk.auth.register("user", "emailpass", {
+  email: "user@gmail.com",
+  password: "supersecret"
+})
+
+// all subsequent requests will use the token in the header
+const { user } = await sdk.admin.invite.accept(
+  {
+    email: "user@gmail.com",
+    first_name: "John",
+    last_name: "Smith",
+    invite_token: "12345..."
+  },
+)
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/user/emailpass/register' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "email": "admin@medusa-test.com",
+  "password": "supersecret"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "token", type: "`string`", optional: false, description: "The JWT token used for registration or authentication." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /auth/user/\{auth_provider\}/reset-password
+
+**Generate Reset Password Token for Admin User**
+
+Generate a reset password token for an admin user. This API route doesn't reset the admin's password or send them the reset instructions in a notification.
+
+Instead, This API route emits the `auth.password_reset` event, passing it the token as a payload. You can listen to that event in a subscriber as explained in this guide, then send the user a notification. The notification is sent using a Notification Module Provider, and it should have the URL to reset the password in the Medusa Admin dashboard, such as `http://localhost:9000/app/reset-password?token=123`.
+
+ Use the generated token to update the user's password using the Reset Password API route.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "auth_provider", type: "`string`", optional: false, description: "The provider used for authentication.", example: "emailpass" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "identifier", type: "`string`", optional: false, description: "The identifier of the admin user. For example, their email address.", example: "admin@medusa-test.com" },
+    { name: "metadata", type: "`object`", optional: true, description: "Optional metadata to include with the reset password token generation request." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.auth.resetPassword(
+  "user",
+  "emailpass",
+  {
+    identifier: "user@gmail.com"
+  }
+)
+.then(() => {
+  // user receives token
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/user/emailpass/reset-password' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "identifier": "admin@medusa-test.com"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`201` OK. The response body has the content type `text/plain`.
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `auth.password_reset`: Emitted when a reset password token is generated. You can listen to this event to send a reset password email to the user or customer, for example.
+
+---
+
+## POST /auth/user/\{auth_provider\}/update
+
+**Reset an Admin User's Password**
+
+Reset an admin user's password using a reset-password token generated with the Generate Reset Password Token API route. You pass the token as a bearer token in the request's Authorization header.
+
+**Authentication:** reset password token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "auth_provider", type: "`string`", optional: false, description: "The provider used for authentication.", example: "emailpass" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+The request body is an empty JSON object.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.auth.updateProvider(
+  "user",
+  "emailpass",
+  {
+    password: "supersecret"
+  },
+  token
+)
+.then(() => {
+  // password updated
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/user/emailpass/update' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer {token}' \
+--data-raw '{
+  "email": "admin@medusa-test.com",
+  "password": "supersecret"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "success", type: "`boolean`", optional: false, description: "Whether the password was reset successfully." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

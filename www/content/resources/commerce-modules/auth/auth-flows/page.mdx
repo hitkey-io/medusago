@@ -1,0 +1,33 @@
+---
+sidebar_label: "Authentication Flows"
+---
+
+export const metadata = {
+  title: `Authentication Flows with the Auth Main Service`,
+}
+
+# {metadata.title}
+
+In this guide, you'll learn how to use the methods of the Auth Module's service to implement authentication flows and reset a user's password.
+
+<Note>
+
+This guide is only recommended for complex cases, where you may need to heavily customize the authentication flows and need to use the Auth Module's service methods directly. For most use cases, you should use the [auth routes](../authentication-route/page.mdx) instead.
+
+</Note>
+
+## Authentication Methods
+
+## Auth Flow 1: Basic Authentication
+
+The basic authentication flow requires first using the `register` method, then the `authenticate` method.
+
+
+#### Registering Auth Identities with Same Identifier
+
+If an auth identity, such as a `customer`, tries to register with an email of another auth identity, the `register` method returns an error. This can happen either if another customer is using the same email, or an admin user has the same email.
+
+There are two ways to handle this:
+
+- Consider the customer authenticated if the `authenticate` method validates that the email and password are correct. This allows admin users, for example, to authenticate as customers.
+- Return an error message to the customer, informing them that the email is already in use.

@@ -1,0 +1,63 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Loyalty Module`,
+}
+
+# {metadata.title}
+
+In this section of the documentation, you will find resources to learn more about the Loyalty Module and how to use it in your application.
+
+<Note>
+
+The Loyalty Module is part of the Loyalty Plugin. It's compatible with Medusa v2.14.0+.
+
+</Note>
+
+<Note title="Looking for no-code docs?">
+
+Refer to the [Medusa Admin User Guide](!user-guide!/loyalty) to learn how to manage gift cards using the dashboard.
+
+</Note>
+
+Medusa has loyalty related features available through the Loyalty Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in Commerce Modules, such as this Loyalty Module.
+
+<Note>
+
+Learn more about why modules are isolated in [this documentation](!docs!/learn/fundamentals/modules/isolation).
+
+</Note>
+
+## Features
+
+- [Gift Card Products](./gift-cards/page.mdx#gift-card-products): Create physical or digital gift cards as products that customers can purchase
+- [Gift Card Management](!user-guide!/loyalty/gift-cards): Issue, redeem, and track gift cards with unique codes
+- [Cart Integration](./gift-cards/page.mdx#2-apply-to-cart): Apply gift cards as payment during checkout
+
+---
+
+## How to Use the Loyalty Module
+
+### 1. Enable the Plugin
+
+The plugin is part of the MedusaGo repository. Import its package in the `main.go` file of your project to register it with the framework:
+
+```go title="main.go" file="loyalty/loyalty.go" region="import"
+```
+
+Then add it to the `Plugins` of your configuration in `medusa-config.go`:
+
+```go title="medusa-config.go" file="loyalty/loyalty.go" region="plugin"
+```
+
+### 2. Run Migrations
+
+Run the migrations to create the plugin's tables in the database:
+
+```bash
+go run . db:migrate
+```

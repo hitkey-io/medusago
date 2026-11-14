@@ -1,0 +1,814 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Auth API Routes`,
+}
+
+# {metadata.title}
+
+Auth API routes allow you to manage a customer's authentication.
+
+## GET /auth/customer/providers
+
+**List Auth Providers for Customers**
+
+Retrieve a list of auth providers for the customer actor type. This is useful to show the authentication option for the available providers.
+
+**Authentication:** none.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const { providers } = await sdk.auth.listProviders("customer")
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/auth/customer/providers'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "providers", type: "`object[]`", optional: false, description: "The list of auth providers.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The registered instance ID of the provider, used in authentication routes\n(for example, `okta` in `POST /auth/user/okta`)." },
+        { name: "identifier", type: "`string`", optional: false, description: "The provider's static identifier (for example, `emailpass`)." },
+        { name: "display_name", type: "`string`", optional: false, description: "The name to display for the provider in a frontend application." },
+        { name: "flow", type: "`\"credentials\"` \\| `\"redirect\"`", optional: false, description: "The authentication flow the provider uses:\n\n- `credentials`: the client submits credentials (for example, email and\npassword) directly to the authentication route.\n- `redirect`: the client is redirected to the provider (for example, an external identity provider) and returns through a callback.\n\nA frontend can use this to decide whether to render a credentials form or a\n\"Continue with ...\" redirect button." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /auth/customer/\{auth_provider\}
+
+**Authenticate Customer**
+
+Authenticate a customer and receive the JWT token to be used in the header of subsequent requests.
+
+When used with a third-party provider, such as Google, the request returns a `location` property. You redirect to the specified URL in your storefront to continue authentication with the third-party service.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "auth_provider", type: "`string`", optional: false, description: "The provider used for authentication.", example: "emailpass" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+The request body is an empty JSON object.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+const result = await sdk.auth.login(
+  "customer",
+  "emailpass",
+  {
+    email: "customer@gmail.com",
+    password: "supersecret"
+  }
+)
+
+if (typeof result !== "string") {
+  alert("Authentication requires additional steps")
+  // replace with the redirect logic of your application
+  window.location.href = result.location
+  return
+}
+
+// customer is now authenticated
+// all subsequent requests will use the token in the header
+const { customer } = await sdk.store.customer.retrieve()
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/customer/google'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "token", type: "`string`", optional: true, description: "The JWT token used for registration or authentication." },
+    { name: "location", type: "`string`", optional: true, description: "The location to redirect the user to for further authentication with the third-party provider." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /auth/customer/\{auth_provider\}/callback
+
+**Validate Authentication Callback**
+
+This API route is used by your storefront or frontend application when a third-party provider redirects to it after authentication. It validates the authentication with the third-party provider and, if successful, returns an authentication token. All query parameters received from the third-party provider, such as `code`, `state`, and `error`, must be passed as query parameters to this route.
+You can decode the JWT token using libraries like [react-jwt](https://www.npmjs.com/package/react-jwt) in the storefront. If the decoded data doesn't  have an `actor_id` property, then you must register the customer using the Create Customer API route passing the token in the request's Authorization header.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "auth_provider", type: "`string`", optional: false, description: "The provider used for authentication.", example: "google" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="Google Provider" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+import { decodeToken } from "react-jwt"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+const token = await sdk.auth.callback(
+  "customer",
+  "google",
+  {
+    code: "123",
+    state: "456"
+  }
+)
+// all subsequent requests will use the token in the header
+
+const decodedToken = decodeToken(token) as { actor_id: string, user_metadata: Record<string, unknown> }
+
+const shouldCreateCustomer = decodedToken.actor_id === ""
+
+if (shouldCreateCustomer) {
+  const { customer } = await sdk.store.customer.create({
+    email: decodedToken.user_metadata.email as string,
+  })
+
+  // refresh auth token
+  await sdk.auth.refresh()
+  // all subsequent requests will use the new token in the header
+} else {
+  // Customer already exists and is authenticated
+}
+```
+
+  </CodeTab>
+  <CodeTab label="GitHub Provider" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+import { decodeToken } from "react-jwt"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+const token = await sdk.auth.callback(
+  "customer",
+  "github",
+  {
+    code: "123",
+    state: "456"
+  }
+)
+// all subsequent requests will use the token in the header
+
+const decodedToken = decodeToken(token) as { actor_id: string, user_metadata: Record<string, unknown> }
+
+const shouldCreateCustomer = decodedToken.actor_id === ""
+
+if (shouldCreateCustomer) {
+  const { customer } = await sdk.store.customer.create({
+    email: decodedToken.user_metadata.email as string,
+  })
+
+  // refresh auth token
+  await sdk.auth.refresh()
+  // all subsequent requests will use the new token in the header
+} else {
+  // Customer already exists and is authenticated
+}
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "token", type: "`string`", optional: false, description: "The JWT token used for registration or authentication." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /auth/customer/\{auth_provider\}/register
+
+**Retrieve Registration JWT Token**
+
+This API route retrieves a registration JWT token of a customer that hasn't been registered yet. The token is used in the header of requests that create a customer.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "auth_provider", type: "`string`", optional: false, description: "The provider used for authentication.", example: "emailpass" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+The request body is an empty JSON object.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+await sdk.auth.register(
+  "customer",
+  "emailpass",
+  {
+    email: "customer@gmail.com",
+    password: "supersecret"
+  }
+)
+
+// all subsequent requests will use the token in the header
+const { customer } = await sdk.store.customer.create({
+  email: "customer@gmail.com",
+  password: "supersecret"
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/customer/emailpass/register' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "email": "customer@gmail.com",
+  "password": "supersecret"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "token", type: "`string`", optional: false, description: "The JWT token used for registration or authentication." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /auth/customer/\{auth_provider\}/reset-password
+
+**Generate Reset Password Token for Customer**
+
+Generate a reset password token for a customer. This API route doesn't reset the customer password or send them the reset instructions in a notification.
+
+Instead, This API route emits the `auth.password_reset` event, passing it the token as a payload. You can listen to that event in a subscriber as explained in this guide, then send the customer a notification. The notification is sent using a Notification Module Provider, and it should have a URL that accepts a `token` query parameter, allowing the customer to reset their password from the storefront.
+
+ Use the generated token to update the customer's password using the Reset Password API route.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "auth_provider", type: "`string`", optional: false, description: "The provider used for authentication.", example: "emailpass" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "identifier", type: "`string`", optional: false, description: "The customer's identifier for the selected auth provider. For example, for the `emailpass` auth provider, the value is the customer's email.", example: "customer@gmail.com" },
+    { name: "metadata", type: "`object`", optional: true, description: "Optional metadata to include with the reset password token generation request." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.auth.resetPassword(
+  "customer",
+  "emailpass",
+  {
+    identifier: "customer@gmail.com"
+  }
+)
+.then(() => {
+  // user receives token
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/customer/emailpass/reset-password' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "identifier": "customer@gmail.com"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`201` OK. The response body has the content type `text/plain`.
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `auth.password_reset`: Emitted when a reset password token is generated. You can listen to this event to send a reset password email to the user or customer, for example.
+
+---
+
+## POST /auth/customer/\{auth_provider\}/update
+
+**Reset a Customer's Password**
+
+Reset a customer's password using a reset-password token generated with the Generate Reset Password Token API route. You pass the token as a bearer token in the request's Authorization header.
+
+**Authentication:** reset password token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "auth_provider", type: "`string`", optional: false, description: "The provider used for authentication.", example: "emailpass" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+The request body is an empty JSON object.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.auth.updateProvider(
+  "customer",
+  "emailpass",
+  {
+    password: "supersecret"
+  },
+  token
+)
+.then(() => {
+  // password updated
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/customer/emailpass/update' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer {token}' \
+--data-raw '{
+  "email": "customer@gmail.com",
+  "password": "supersecret"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "success", type: "`boolean`", optional: false, description: "Whether the password was reset successfully." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /auth/session
+
+**Set Authentication Session**
+
+Set the cookie session ID of a customer. The customer must be previously authenticated with the `/auth/customer/{provider}` API route first, as the JWT token is required in the header of the request.
+
+**Authentication:** none.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/session' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "user", type: "`object`", optional: false, description: "The customer's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+        { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used for billing by default." },
+        { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used for shipping by default." },
+        { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+        { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+        { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+            { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is used for shipping by default." },
+            { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is used for billing by default." },
+            { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer the address belongs to." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "usd" },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+          ] },
+        { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+        { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the customer was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the customer was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the customer was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## DELETE /auth/session
+
+**Delete Authentication Session**
+
+Deletes the cookie session ID previously set for authentication.
+
+**Authentication:** none.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+await sdk.auth.logout()
+
+// customer is now logged out
+// you can't send any requests that require authentication
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/auth/session' \
+-H 'Cookie: connect.sid={sid}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "success", type: "`boolean`", optional: false, description: "Whether the session was deleted successfully." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /auth/token/refresh
+
+**Refresh Authentication Token**
+
+Refresh the authentication token of a customer. This is useful after authenticating a customer with a third-party service to ensure the token holds the new user's details, or when you don't want customers to re-login every day.
+
+**Authentication:** none.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+const token = await sdk.auth.refresh()
+
+// all subsequent requests will use the token in the header
+const { customer } = await sdk.store.customer.retrieve()
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/token/refresh' \
+-H 'Authorization: Bearer {token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "token", type: "`string`", optional: false, description: "The JWT token used for registration or authentication." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /auth/verification/confirm
+
+**Confirm Customer Verification**
+
+Confirm a verification token of the customer. This API route is used as the last step part of the email verification flow. It can also be used for custom flows, such as phone number verification. Once successfully verified, a customer can complete their registration and log into their account.
+
+**Authentication:** none.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "code", type: "`string`", optional: false, description: "The token, OTP, or any other code that was sent to the customer for verification." },
+    { name: "code_provider", type: "`string`", optional: true, description: "The provider to use for verification. This is optional. When not provided, the default `token` provider is used." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/verification/confirm' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "code": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /auth/verification/request
+
+**Request Customer Verification**
+
+Create a verification request for a customer. This API route is used when a customer logs in, but their email requires verification. It can also be used for custom flows, such as phone number verification. Once successfully requested, a verification code will be generated and an `auth.verification_requested` event will be emitted. You can listen to this event and decide how to deliver the code to the customer.
+
+**Authentication:** none.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "entity_id", type: "`string`", optional: false, description: "The identifier of the user or customer. For example, an email address." },
+    { name: "entity_type", type: "`string`", optional: false, description: "The type of identity being verified. For example, \"email\" or \"phone_number\"." },
+    { name: "code_provider", type: "`string`", optional: false, description: "The provider to use to create the verification token or code. By default, Medusa provides a `token` provider that generates a random token. You can also implement your own provider to generate a code or OTP." },
+    { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs that can be passed to the verification request. This is optional and can be used to store additional information related to the verification request." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/verification/request' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "entity_id": "customer@example.com",
+  "entity_type": "email",
+  "code_provider": "token"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`201` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `auth.verification_requested`: Emitted when a verification code is generated. You can listen to this event and decide how to deliver the code to the user or customer. The payload changed in v2.17.0: `actor_type` and `provider_identity_id` were removed, `provider` was renamed to `code_provider`, and `entity_type` was added. Subscribers written before v2.17.0 must be updated to use the payload below.

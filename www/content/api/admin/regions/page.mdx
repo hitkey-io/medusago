@@ -1,0 +1,497 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Regions API Routes`,
+}
+
+# {metadata.title}
+
+Regions are different countries or geographical regions that the commerce store serves customers in.
+
+These API routes allow admin users to manage regions, their providers, and more.
+
+## GET /admin/regions
+
+**List Regions**
+
+Retrieve a list of regions. The regions can be filtered by fields such as `id`. The regions can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the region's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a region's ID." },
+    { name: "name", type: "`string` \\| `string[]`", optional: true, description: "Filter by a region's name." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by a region's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by a region's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by a region's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "currency_code", type: "`string` \\| `string[]`", optional: true, description: "The region's currency code." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.region.list()
+.then(({ regions, count, limit, offset }) => {
+  console.log(regions)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/regions' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "regions", type: "`object[]`", optional: false, description: "The list of regions.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The region's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The region's name." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The region's currency code.", example: "usd" },
+        { name: "automatic_taxes", type: "`boolean`", optional: true, description: "Whether taxes are applied automatically during checkout." },
+        { name: "countries", type: "`object[]`", optional: true, description: "The region's countries.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The country's ID." },
+            { name: "iso_2", type: "`string`", optional: true, description: "The country's iso 2.", example: "us" },
+            { name: "iso_3", type: "`string`", optional: true, description: "The country's iso 3.", example: "usa" },
+            { name: "num_code", type: "`string`", optional: true, description: "The country's num code.", example: "840" },
+            { name: "name", type: "`string`", optional: true, description: "The country's name." },
+            { name: "display_name", type: "`string`", optional: true, description: "The country's display name." }
+          ] },
+        { name: "payment_providers", type: "`object[]`", optional: true, description: "The region's payment providers.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "Whether the payment provider is enabled." }
+          ] },
+        { name: "metadata", type: "`object`", optional: true, description: "The region's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the region was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the region was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/regions
+
+**Create Region**
+
+Create a region.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: false, description: "The region's name." },
+    { name: "currency_code", type: "`string`", optional: false, description: "The region's currency code.", example: "usd" },
+    { name: "countries", type: "`string[]`", optional: true, description: "The region's countries." },
+    { name: "automatic_taxes", type: "`boolean`", optional: true, description: "Whether taxes are calculated automatically during checkout in this region." },
+    { name: "is_tax_inclusive", type: "`boolean`", optional: true, description: "Whether prices in this region are tax inclusive." },
+    { name: "payment_providers", type: "`string[]`", optional: true, description: "The payment providers enabled in this region." },
+    { name: "metadata", type: "`object`", optional: true, description: "The region's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.region.create({
+  name: "United States",
+  currency_code: "usd",
+})
+.then(({ region }) => {
+  console.log(region)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/regions' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "name": "Heloise",
+  "currency_code": "{value}",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "region", type: "`object`", optional: false, description: "The region's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The region's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The region's name." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The region's currency code.", example: "usd" },
+        { name: "automatic_taxes", type: "`boolean`", optional: true, description: "Whether taxes are applied automatically during checkout." },
+        { name: "countries", type: "`object[]`", optional: true, description: "The region's countries.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The country's ID." },
+            { name: "iso_2", type: "`string`", optional: true, description: "The country's iso 2.", example: "us" },
+            { name: "iso_3", type: "`string`", optional: true, description: "The country's iso 3.", example: "usa" },
+            { name: "num_code", type: "`string`", optional: true, description: "The country's num code.", example: "840" },
+            { name: "name", type: "`string`", optional: true, description: "The country's name." },
+            { name: "display_name", type: "`string`", optional: true, description: "The country's display name." }
+          ] },
+        { name: "payment_providers", type: "`object[]`", optional: true, description: "The region's payment providers.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "Whether the payment provider is enabled." }
+          ] },
+        { name: "metadata", type: "`object`", optional: true, description: "The region's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the region was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the region was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `region.created`: Emitted when regions are created.
+
+---
+
+## GET /admin/regions/\{id\}
+
+**Get a Region**
+
+Retrieve a region by its ID. You can expand the region's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The region's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.region.retrieve("region_123")
+.then(({ region }) => {
+  console.log(region)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/regions/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "region", type: "`object`", optional: false, description: "The region's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The region's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The region's name." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The region's currency code.", example: "usd" },
+        { name: "automatic_taxes", type: "`boolean`", optional: true, description: "Whether taxes are applied automatically during checkout." },
+        { name: "countries", type: "`object[]`", optional: true, description: "The region's countries.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The country's ID." },
+            { name: "iso_2", type: "`string`", optional: true, description: "The country's iso 2.", example: "us" },
+            { name: "iso_3", type: "`string`", optional: true, description: "The country's iso 3.", example: "usa" },
+            { name: "num_code", type: "`string`", optional: true, description: "The country's num code.", example: "840" },
+            { name: "name", type: "`string`", optional: true, description: "The country's name." },
+            { name: "display_name", type: "`string`", optional: true, description: "The country's display name." }
+          ] },
+        { name: "payment_providers", type: "`object[]`", optional: true, description: "The region's payment providers.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "Whether the payment provider is enabled." }
+          ] },
+        { name: "metadata", type: "`object`", optional: true, description: "The region's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the region was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the region was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/regions/\{id\}
+
+**Update a Region**
+
+Update a region's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The region's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: true, description: "The region's name." },
+    { name: "currency_code", type: "`string`", optional: true, description: "The region's currency code." },
+    { name: "countries", type: "`string[]`", optional: true, description: "The region's countries." },
+    { name: "automatic_taxes", type: "`boolean`", optional: true, description: "Whether taxes are calculated automatically for carts in the region." },
+    { name: "payment_providers", type: "`string[]`", optional: true, description: "The payment providers enabled in the region." },
+    { name: "metadata", type: "`object`", optional: true, description: "The region's metadata. Can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+    { name: "is_tax_inclusive", type: "`boolean`", optional: true, description: "Whether the prices in the region are tax inclusive." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.region.update("region_123", {
+  name: "United States",
+})
+.then(({ region }) => {
+  console.log(region)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/regions/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "region", type: "`object`", optional: false, description: "The region's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The region's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The region's name." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The region's currency code.", example: "usd" },
+        { name: "automatic_taxes", type: "`boolean`", optional: true, description: "Whether taxes are applied automatically during checkout." },
+        { name: "countries", type: "`object[]`", optional: true, description: "The region's countries.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The country's ID." },
+            { name: "iso_2", type: "`string`", optional: true, description: "The country's iso 2.", example: "us" },
+            { name: "iso_3", type: "`string`", optional: true, description: "The country's iso 3.", example: "usa" },
+            { name: "num_code", type: "`string`", optional: true, description: "The country's num code.", example: "840" },
+            { name: "name", type: "`string`", optional: true, description: "The country's name." },
+            { name: "display_name", type: "`string`", optional: true, description: "The country's display name." }
+          ] },
+        { name: "payment_providers", type: "`object[]`", optional: true, description: "The region's payment providers.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "Whether the payment provider is enabled." }
+          ] },
+        { name: "metadata", type: "`object`", optional: true, description: "The region's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the region was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the region was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `region.updated`: Emitted when regions are updated.
+
+---
+
+## DELETE /admin/regions/\{id\}
+
+**Delete a Region**
+
+Delete a region.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The region's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.region.delete("region_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/regions/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The region's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"region\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the region was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `region.deleted`: Emitted when regions are deleted.

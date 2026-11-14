@@ -1,0 +1,654 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, Table } from "docs-ui"
+
+export const metadata = {
+  title: `Admin API Reference`,
+}
+
+# {metadata.title}
+
+This reference documents the Admin REST API of the MedusaGo server. The Admin API performs administrative functionality, and it is what the Medusa Admin and any custom admin dashboard use to read and change the data of your store.
+
+All API routes of this reference are prefixed with `/admin`, except for the authentication routes, which are prefixed with `/auth`. During development, they are available under `http://localhost:9000`. In production, replace it with the URL of your MedusaGo server.
+
+The HTTP API of MedusaGo is the same as the one of Medusa v2, so you can use the [Medusa JS SDK](/resources/js-sdk) and any tool that targets the Medusa Admin API as they are.
+
+## Authentication
+
+There are three ways to send authenticated requests to the MedusaGo server: with a JWT token in a bearer authorization header, with a secret API key, or with a cookie session ID.
+
+### 1. Bearer Authorization with JWT Tokens
+
+Use a JWT token in the bearer authorization header of a request. The client manages the authentication state, which suits single-page applications, Jamstack storefronts and mobile applications.
+
+#### How to Obtain the JWT Token
+
+Send a request to the authentication route, passing the user's email and password in the request body.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+const token = await sdk.auth.login("user", "emailpass", {
+  email,
+  password,
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/auth/user/emailpass' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "email": "user@example.com",
+  "password": "supersecret"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+If the authentication succeeds, the response has a `token` property that holds the JWT token.
+
+```json
+{
+  "token": "123..."
+}
+```
+
+#### How to Use the JWT Token
+
+Pass the JWT token in the `Authorization: Bearer` header of the requests.
+
+```bash
+Authorization: Bearer {jwt_token}
+```
+
+If you use the JS SDK, the `login` method sets the token and passes it to subsequent requests, provided that the `auth.type` option of the SDK is `jwt`. Learn more in the [JS SDK configuration](/resources/js-sdk) documentation.
+
+### 2. Secret API Key
+
+Use a secret API key to send authenticated requests as an admin user.
+
+#### How to Create a Secret API Key
+
+Create the key in the Medusa Admin ([Secret API Keys](/user-guide/settings/developer/secret-api-keys)) or with the [Create API Key](/api/admin/api-keys) API route. An `api_key` object is returned in the response, and its `token` property is the secret key.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+const { api_key } = await sdk.admin.apiKey.create({
+  title: "My Token",
+  type: "secret",
+})
+
+console.log(api_key.token)
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/api-keys' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer {jwt_token}' \
+--data '{
+  "title": "my token",
+  "type": "secret"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+#### How to Use the Secret API Key
+
+Pass the key in the `Authorization` header using the Basic scheme.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  // other options...
+  apiKey: "{api_key_token}",
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/products' \
+-H 'Authorization: Basic {api_key_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+A secret API key sent as a bearer token is rejected with a `401` status code.
+
+### 3. Cookie Session ID
+
+When you authenticate and create a cookie session, the browser passes the session cookie (`connect.sid`) with every request, as do tools like Postman.
+
+#### How to Obtain the Cookie Session
+
+You first need a [JWT token](#1-bearer-authorization-with-jwt-tokens). Then, with the JS SDK, set the `auth.type` option to `session`: the `auth.login` method creates the session cookie and passes it in the following requests.
+
+Without the JS SDK, send a request to the `/auth/session` route with the JWT token. Pass the `-v` option to `curl` to view the response headers.
+
+```bash
+curl -v -X POST 'http://localhost:9000/auth/session' \
+--header 'Authorization: Bearer {jwt_token}'
+```
+
+The `Set-Cookie` header of the response has the cookie session ID.
+
+```bash
+Set-Cookie: connect.sid=s%3A2Bu8B...;
+```
+
+#### How to Use the Cookie Session ID
+
+Copy the value after `connect.sid=` (without the trailing `;`) and pass it in the `Cookie` header of the following requests.
+
+```bash
+curl 'http://localhost:9000/admin/products' \
+-H 'Cookie: connect.sid={sid}'
+```
+
+When you send requests with the Fetch API from a browser, pass the `credentials` option with the value `include`.
+
+```ts
+fetch("http://localhost:9000/admin/products", {
+  credentials: "include",
+})
+```
+
+## Manage Metadata
+
+Many data models, such as products and carts, have a `metadata` field that stores custom information as key-value pairs.
+
+When you set or update the `metadata` field through the API routes, the new metadata is merged with the existing metadata.
+
+### Accepted Values in Metadata
+
+The `metadata` is an object of key-value pairs. The keys are strings, and the values can be strings, numbers, booleans, dates, objects, or arrays of any of these. An empty string deletes the property from the metadata. The `metadata` is not validated, so you can store any custom data in it.
+
+```json
+{
+  "metadata": {
+    "category": "electronics",
+    "views": 1500,
+    "is_featured": true,
+    "tags": ["new", "sale"],
+    "details": {
+      "warranty": "2 years",
+      "origin": "USA"
+    }
+  }
+}
+```
+
+### Add or Update a Property in Metadata
+
+To add or update a property, pass it in the request body as a key-value pair. Existing properties are not affected.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+sdk.admin.product.update("prod_123", {
+  metadata: {
+    new_property: "value",
+  },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/products/prod_123' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "metadata": { "new_property": "value" }
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Update Nested Objects in Metadata
+
+Nested objects are not merged. When you update a nested object, pass the entire object, otherwise the properties you omit are removed.
+
+### Remove a Property from Metadata
+
+To remove a property, pass it with an empty string as its value. Other properties are not affected.
+
+```json
+{
+  "metadata": {
+    "property_to_remove": ""
+  }
+}
+```
+
+## Select Fields and Relations
+
+Many API routes accept a `fields` query parameter that selects which fields and relations are returned in a record. Fields and relations are separated by a comma.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+sdk.admin.product.list({
+  fields: "title,handle",
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/products?fields=title,handle' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+This returns only the `title` and `handle` fields of each product, along with the fields that identify the record.
+
+### Fields Operator
+
+By default, only the selected fields and relations are returned. Before a field or relation, you can pass one of these operators:
+
+- `+`: adds the field to the fields returned by default. For example, `+title` returns `title` along with the default fields.
+- `-`: removes the field from the fields returned by default. For example, `-handle` removes `handle` from the default fields.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+sdk.admin.product.list({
+  fields: "+title,-handle",
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/products?fields=%2Btitle,-handle' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Select Relations
+
+To select a relation, pass its name prefixed by `*`. To select several relations, separate them with commas.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+sdk.admin.product.list({
+  fields: "*variants,*options",
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/products?fields=*variants,*options' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Select Fields in a Relation
+
+The `*` prefix selects all the fields of the relation. To select specific fields, use the `<relation>.<field>` format, such as `variants.title`.
+
+### Select Nested Relations
+
+A relation can have relations of its own. Chain the relation names with a dot, and prefix the deepest relation with `*` to select all its fields. For example, `*variants.prices`. Prefixing a relation with `*` only selects that relation's own fields, so a nested relation must be referenced explicitly through its parent.
+
+### Select Custom Linked Data Models
+
+Most API routes that accept `fields` allow you to select data models that a [module link](/learn/fundamentals/module-links) connects to the core data models. For example, if you linked a `Brand` to a `Product`, pass `brand` in `fields` to retrieve the brand of each product.
+
+Some API routes restrict the fields and relations that you can retrieve. In that case, the application must allow the extra fields explicitly.
+
+## Query Parameter Types
+
+This section covers how to pass common data types as query parameters. It is useful if you send requests with cURL or tools like Postman. When you use the JS SDK, you can pass strings, numbers, booleans, arrays and objects directly, and the SDK encodes them.
+
+### Strings
+
+Pass a string as `<parameter_name>=<value>`. Encode characters other than letters and numbers. For example, encode a space as `+` or `%20`.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+sdk.admin.product.list({
+  title: "Blue Shirt",
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl "http://localhost:9000/admin/products?title=Blue%20Shirt" \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Integers and Booleans
+
+Pass them as `<parameter_name>=<value>`, such as `offset=1` or `is_giftcard=true`.
+
+### Date and DateTime
+
+Pass a date as `<parameter_name>=<value>` in the `YYYY-MM-DD` format, or a date and time in the `YYYY-MM-DDTHH:MM:SSZ` format. The `T` and `Z` are fixed.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+sdk.admin.product.list({
+  created_at: { $lt: "2023-02-17T07:22:30Z" },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -g "http://localhost:9000/admin/products?created_at[$lt]=2023-02-17T07:22:30Z" \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Arrays
+
+Pass an array in one of these forms:
+
+- `<parameter_name>[]=<value1>,<value2>`, separating the values with a comma.
+- `<parameter_name>[]=<value1>&<parameter_name>[]=<value2>`, passing each value as a separate query parameter. You can also set the index of each value in the brackets: `<parameter_name>[0]=<value>`.
+
+The `-g` option of `curl` disables the errors that curl throws for the brackets.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+sdk.admin.product.list({
+  sales_channel_id: ["sc_123", "sc_456"],
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -g "http://localhost:9000/admin/products?sales_channel_id[]=sc_123,sc_456" \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Objects
+
+Pass an object as separate query parameters in the form `<parameter_name>[<key>]=<value>`.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+sdk.admin.product.list({
+  created_at: { $lt: "2023-02-17", $gt: "2022-09-17" },
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -g "http://localhost:9000/admin/products?created_at[$lt]=2023-02-17&created_at[$gt]=2022-09-17" \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Filter Operators
+
+Filter parameters, such as `created_at` or `email`, accept either a plain value or an object whose keys are filter operators. The operators are available on the filter parameters of the list API routes:
+
+- `$and`: joins query parameters with an AND condition. Each object has the same shape as the expected query parameters.
+- `$or`: joins query parameters with an OR condition. Each object has the same shape as the expected query parameters.
+- `$eq`: filters by an exact match.
+- `$ne`: filters by values not equal to the parameter.
+- `$in`: filters by values in the array.
+- `$nin`: filters by values not in the array.
+- `$not`: filters by values not matching the conditions in the parameter.
+- `$gt`: filters by values greater than the parameter. Useful for numbers and dates only.
+- `$gte`: filters by values greater than or equal to the parameter. Useful for numbers and dates only.
+- `$lt`: filters by values less than the parameter. Useful for numbers and dates only.
+- `$lte`: filters by values less than or equal to the parameter. Useful for numbers and dates only.
+- `$like`: applies a `like` filter. Useful for strings only.
+- `$re`: applies a regex filter. Useful for strings only.
+- `$ilike`: applies a case-insensitive `like` filter. Useful for strings only.
+- `$fulltext`: filters on full-text properties.
+- `$overlap`: filters arrays that have values overlapping with the parameter.
+- `$contains`: filters arrays that contain some of the values of the parameter.
+- `$contained`: filters arrays that contain all the values of the parameter.
+- `$exists`: filters by whether a value for the parameter exists (is not `null`).
+
+For example, `created_at[$gt]=2022-09-17&created_at[$lt]=2023-02-17` returns the records created between the two dates.
+
+## Pagination
+
+### Query Parameters
+
+List API routes, such as the ones that list customers or products, accept the `limit` and `offset` query parameters.
+
+- `limit` is the maximum number of items to return.
+- `offset` is the number of items to skip before returning the records.
+
+Use `offset` to change between pages. For example, if the limit is `50`, the offset of page `1` is `0` and the offset of page `2` is `50`.
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+sdk.admin.product.list({
+  limit: 5,
+  offset: 0,
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl "http://localhost:9000/admin/products?limit=5&offset=0" \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+### Response Fields
+
+The response of a list API route has these pagination fields next to the records:
+
+- `limit`: the maximum number of items that can be returned.
+- `offset`: the number of items that were skipped.
+- `count`: the total number of items available. Divide it by the `limit` to get the number of pages.
+
+### Sort Order
+
+The `order` query parameter, available on API routes that support pagination, sorts the items by one of their fields. The default direction is ascending. To sort in descending order, prefix the field name with a dash (`-`).
+
+<CodeTabs group="api-intro">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+sdk.admin.product.list({
+  order: "-created_at",
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl "http://localhost:9000/admin/products?order=-created_at" \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+## Errors
+
+When a request fails, the API route responds with a status code in the `4xx` or `5xx` range and a JSON body that describes the error:
+
+```json
+{
+  "type": "not_found",
+  "message": "Product with id: prod_123 was not found"
+}
+```
+
+The `type` field identifies the kind of error, and `message` describes it. Some errors also have a `code` field. The status code follows from the error type:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>Status</Table.HeaderCell>
+      <Table.HeaderCell>Error types</Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>`400`</Table.Cell>
+      <Table.Cell>`invalid_data`, `not_allowed`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`401`</Table.Cell>
+      <Table.Cell>`unauthorized`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`403`</Table.Cell>
+      <Table.Cell>`forbidden`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`404`</Table.Cell>
+      <Table.Cell>`not_found`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`409`</Table.Cell>
+      <Table.Cell>`conflict`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`422`</Table.Cell>
+      <Table.Cell>`duplicate_error`, `payment_authorization_error`</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>`500`</Table.Cell>
+      <Table.Cell>`database_error`, `unexpected_state`, `invalid_argument`, `unknown_error`</Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+## Admin API Routes
+
+The API routes are grouped by the resource they manage:
+
+- [Api Keys](/api/admin/api-keys)
+- [Auth](/api/admin/auth)
+- [Campaigns](/api/admin/campaigns)
+- [Claims](/api/admin/claims)
+- [Collections](/api/admin/collections)
+- [Currencies](/api/admin/currencies)
+- [Customer Groups](/api/admin/customer-groups)
+- [Customers](/api/admin/customers)
+- [Draft Orders](/api/admin/draft-orders)
+- [Exchanges](/api/admin/exchanges)
+- [Feature Flags](/api/admin/feature-flags)
+- [Fulfillment Providers](/api/admin/fulfillment-providers)
+- [Fulfillment Sets](/api/admin/fulfillment-sets)
+- [Fulfillments](/api/admin/fulfillments)
+- [Gift Cards](/api/admin/gift-cards)
+- [Index](/api/admin/index)
+- [Inventory Items](/api/admin/inventory-items)
+- [Invites](/api/admin/invites)
+- [Layouts](/api/admin/layouts)
+- [Locales](/api/admin/locales)
+- [Modules](/api/admin/modules)
+- [Multi-Factor Authentication](/api/admin/multi-factor-authentication)
+- [Notifications](/api/admin/notifications)
+- [Order Changes](/api/admin/order-changes)
+- [Order Edits](/api/admin/order-edits)
+- [Orders](/api/admin/orders)
+- [Payment Collections](/api/admin/payment-collections)
+- [Payments](/api/admin/payments)
+- [Plugins](/api/admin/plugins)
+- [Price Lists](/api/admin/price-lists)
+- [Price Preferences](/api/admin/price-preferences)
+- [Product Categories](/api/admin/product-categories)
+- [Product Options](/api/admin/product-options)
+- [Product Tags](/api/admin/product-tags)
+- [Product Types](/api/admin/product-types)
+- [Product Variants](/api/admin/product-variants)
+- [Products](/api/admin/products)
+- [Promotions](/api/admin/promotions)
+- [Property Labels](/api/admin/property-labels)
+- [Refund Reasons](/api/admin/refund-reasons)
+- [Regions](/api/admin/regions)
+- [Reservations](/api/admin/reservations)
+- [Return Reasons](/api/admin/return-reasons)
+- [Returns](/api/admin/returns)
+- [Sales Channels](/api/admin/sales-channels)
+- [Search](/api/admin/search)
+- [Search Indexes](/api/admin/search-indexes)
+- [Shipping Option Types](/api/admin/shipping-option-types)
+- [Shipping Options](/api/admin/shipping-options)
+- [Shipping Profiles](/api/admin/shipping-profiles)
+- [Stock Locations](/api/admin/stock-locations)
+- [Store Credit Accounts](/api/admin/store-credit-accounts)
+- [Stores](/api/admin/stores)
+- [Tax Providers](/api/admin/tax-providers)
+- [Tax Rates](/api/admin/tax-rates)
+- [Tax Regions](/api/admin/tax-regions)
+- [Translations](/api/admin/translations)
+- [Uploads](/api/admin/uploads)
+- [Users](/api/admin/users)
+- [Views](/api/admin/views)
+- [Workflows Executions](/api/admin/workflows-executions)

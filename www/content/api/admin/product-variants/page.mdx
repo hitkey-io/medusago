@@ -1,0 +1,221 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Product Variants API Routes`,
+}
+
+# {metadata.title}
+
+A product variant is a saleable form of the product.
+
+Each variant has different option values. For example, a "Shirt" product may have a  "Blue" variant and a "Green" variant. Customers choose from these variants when they buy the product.
+
+These API routes allow admin users to manage product variants.
+
+## GET /admin/product-variants
+
+**List Product Variants**
+
+Retrieve a list of product variants. The product variants can be filtered by fields such as `id`. The product variants can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the product variant's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a variant's ID." },
+    { name: "manage_inventory", type: "`boolean`", optional: true, description: "Filter by whether a variant's `manage_inventory` is enabled." },
+    { name: "allow_backorder", type: "`boolean`", optional: true, description: "Filter by whether backorder is allowed for a variant." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the product variant's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the product variant's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by the product variant's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "ean", type: "`string` \\| `string[]`", optional: true, description: "The product variant's ean." },
+    { name: "upc", type: "`string` \\| `string[]`", optional: true, description: "The product variant's upc." },
+    { name: "barcode", type: "`string` \\| `string[]`", optional: true, description: "The product variant's barcode." },
+    { name: "sku", type: "`string` \\| `string[]`", optional: true, description: "Filter by an SKU." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productVariant.list()
+.then(({ variants, count, limit, offset }) => {
+  console.log(variants)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/product-variants' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "variants", type: "`object[]`", optional: false, description: "The product variant's variants.", children: [
+        { name: "prices", type: "`object[]`", optional: false, description: "The variant's prices.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The price's title." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+            { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+            { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+            { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity that must be available in the cart for the price to be applied." },
+            { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity allowed to be available in the cart for the price to be applied." },
+            { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the associated price set." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The variant's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The variant's title." },
+        { name: "sku", type: "`string`", optional: false, description: "The variant's SKU." },
+        { name: "barcode", type: "`string`", optional: false, description: "The variant's barcode." },
+        { name: "ean", type: "`string`", optional: false, description: "The variant's EAN code." },
+        { name: "upc", type: "`string`", optional: false, description: "The variant's UPC." },
+        { name: "allow_backorder", type: "`boolean`", optional: false, description: "Whether the variant can be ordered even if it's out of stock." },
+        { name: "manage_inventory", type: "`boolean`", optional: false, description: "Whether the MedusaGo application manages the variant's inventory quantity and availablility. If disabled, the variant is always considered in stock." },
+        { name: "inventory_quantity", type: "`number`", optional: true, description: "The variant's inventory quantity. This is only included if you pass in the `fields` query parameter a `+variants.inventory_quantity` parameter." },
+        { name: "hs_code", type: "`string`", optional: false, description: "The variant's HS code." },
+        { name: "origin_country", type: "`string`", optional: false, description: "The variant's origin country." },
+        { name: "mid_code", type: "`string`", optional: false, description: "The variant's MID code." },
+        { name: "material", type: "`string`", optional: false, description: "The variant's material." },
+        { name: "weight", type: "`number`", optional: false, description: "The variant's weight." },
+        { name: "length", type: "`number`", optional: false, description: "The variant's length." },
+        { name: "height", type: "`number`", optional: false, description: "The variant's height." },
+        { name: "width", type: "`number`", optional: false, description: "The variant's width." },
+        { name: "variant_rank", type: "`number`", optional: true, description: "The variant's rank among its sibling variants." },
+        { name: "options", type: "`object[]`", optional: false, description: "The variant's option values.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+            { name: "value", type: "`string`", optional: false, description: "The value." },
+            { name: "option", type: "`object`", optional: true, description: "The product option's details.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+                { name: "title", type: "`string`", optional: false, description: "The product option's title." },
+                { name: "values", type: "`object[]`", optional: true, description: "The product option's values." },
+                { name: "metadata", type: "`object`", optional: true, description: "The product option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: true, description: "The date the product option was created." },
+                { name: "updated_at", type: "`string`", optional: true, description: "The date the product option was updated." },
+                { name: "deleted_at", type: "`string`", optional: true, description: "The date the product option was deleted." },
+                { name: "products", type: "`object[]`", optional: true, description: "The products that use the option." },
+                { name: "is_exclusive", type: "`boolean`", optional: false, description: "Whether the option is exclusive to a product." }
+              ] },
+            { name: "option_id", type: "`string`", optional: true, description: "The ID of the option this value belongs to." },
+            { name: "metadata", type: "`object`", optional: true, description: "The value's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the value was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the value was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the value was deleted." },
+            { name: "rank", type: "`number`", optional: true, description: "The rank of the value among other option values." }
+          ] },
+        { name: "product", type: "`object`", optional: true },
+        { name: "product_id", type: "`string`", optional: true, description: "The ID of the product that the variant belongs to." },
+        { name: "calculated_price", type: "`object`", optional: true, description: "The calculated price's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The calculated price's ID." },
+            { name: "is_calculated_price_price_list", type: "`boolean`", optional: true, description: "Whether the calculated price belongs to a price list." },
+            { name: "is_calculated_price_tax_inclusive", type: "`boolean`", optional: true, description: "Whether the calculated price is tax inclusive." },
+            { name: "calculated_amount", type: "`number`", optional: false, description: "The amount of the calculated price, or `null` if there isn't a calculated price. This is the amount shown to the customer." },
+            { name: "calculated_amount_with_tax", type: "`number`", optional: true, description: "The calculated price's amount with taxes applied." },
+            { name: "calculated_amount_without_tax", type: "`number`", optional: true, description: "The calculated price's amount without taxes applied." },
+            { name: "is_original_price_price_list", type: "`boolean`", optional: true, description: "Whether the original price belongs to a price list." },
+            { name: "is_original_price_tax_inclusive", type: "`boolean`", optional: true, description: "Whether the original price is tax inclusive." },
+            { name: "original_amount", type: "`number`", optional: false, description: "The amount of the original price, or `null` if there isn't an original price. This amount is useful to compare with the `calculated_amount`, such as to check for discounted value." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The calculated price's currency code.", example: "usd" },
+            { name: "calculated_price", type: "`object`", optional: true, description: "The calculated price's details." },
+            { name: "original_price", type: "`object`", optional: true, description: "The original price's details." },
+            { name: "original_amount_with_tax", type: "`number`", optional: false, description: "The amount of the original price with taxes applied." },
+            { name: "original_amount_without_tax", type: "`number`", optional: false, description: "The amount of the original price without taxes." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the variant was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the variant was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the variant was deleted." },
+        { name: "metadata", type: "`object`", optional: true, description: "The variant's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "inventory_items", type: "`object[]`", optional: true, description: "The variant's inventory items.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The ID of the association." },
+            { name: "variant_id", type: "`string`", optional: false, description: "The associated product variant's ID." },
+            { name: "variant", type: "`object`", optional: true },
+            { name: "inventory_item_id", type: "`string`", optional: false, description: "The associated inventory item's ID." },
+            { name: "inventory", type: "`object`", optional: true, description: "The inventory item's details.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+                { name: "sku", type: "`string`", optional: true, description: "The inventory item's sku." },
+                { name: "origin_country", type: "`string`", optional: true, description: "The inventory item's origin country." },
+                { name: "hs_code", type: "`string`", optional: true, description: "The inventory item's HS code." },
+                { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the inventory item requires shipping." },
+                { name: "mid_code", type: "`string`", optional: true, description: "The inventory item's MID code." },
+                { name: "material", type: "`string`", optional: true, description: "The inventory item's material." },
+                { name: "weight", type: "`number`", optional: true, description: "The inventory item's weight." },
+                { name: "length", type: "`number`", optional: true, description: "The inventory item's length." },
+                { name: "height", type: "`number`", optional: true, description: "The inventory item's height." },
+                { name: "width", type: "`number`", optional: true, description: "The inventory item's width." },
+                { name: "title", type: "`string`", optional: true, description: "The inventory item's title." },
+                { name: "description", type: "`string`", optional: true, description: "The inventory item's description." },
+                { name: "thumbnail", type: "`string`", optional: true, description: "The thumbnail URL of the inventory item." },
+                { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs, used to store additional information about the inventory item." },
+                { name: "location_levels", type: "`object[]`", optional: true, description: "The inventory item's location levels." },
+                { name: "stocked_quantity", type: "`number`", optional: false, description: "The inventory item's stocked quantity." },
+                { name: "reserved_quantity", type: "`number`", optional: false, description: "The inventory item's reserved quantity." },
+                { name: "unit_of_measure", type: "`string`", optional: true, description: "The inventory's unit of measure.", example: "kg" }
+              ] },
+            { name: "required_quantity", type: "`number`", optional: true, description: "The inventory item's required quantity." }
+          ] },
+        { name: "images", type: "`object[]`", optional: true, description: "The variant's images.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The image's ID." },
+            { name: "url", type: "`string`", optional: false, description: "The image's URL." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the image was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the image was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the image was deleted." },
+            { name: "metadata", type: "`object`", optional: true, description: "The image's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "rank", type: "`number`", optional: false, description: "The image's rank among its sibling images." }
+          ] },
+        { name: "thumbnail", type: "`string`", optional: false, description: "The variant's thumbnail." },
+        { name: "translations", type: "`object[]`", optional: true, description: "The variant's translations.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The translation's ID." },
+            { name: "reference_id", type: "`string`", optional: false, description: "The ID of the resource that the translation belongs to. For example, the ID of a product.", example: "prod_123" },
+            { name: "reference", type: "`string`", optional: false, description: "The resource that the translation belongs to.", example: "product" },
+            { name: "locale_code", type: "`string`", optional: false, description: "The translation's locale code in BCP 47 format.", example: "fr-FR" },
+            { name: "translations", type: "`object`", optional: false, description: "The translation key-value pairs. Each key is a field in the resource, and the value is the translated text." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date that the translation was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date that the translation was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date that the translation was deleted." }
+          ] }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

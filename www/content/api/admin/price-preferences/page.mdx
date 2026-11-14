@@ -1,0 +1,418 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Price Preferences API Routes`,
+}
+
+# {metadata.title}
+
+A price preference is used to specify whether tax-inclusiveness is enabled for a context, such as a region or currency code.
+
+These API routes allow admin users to manage whether a region or currency is tax inclusive.
+
+## GET /admin/price-preferences
+
+**List Price Preferences**
+
+Retrieve a list of price preferences. The price preferences can be filtered by fields such as `id`. The price preferences can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a price preference ID." },
+    { name: "attribute", type: "`string` \\| `string[]`", optional: true, description: "Filter by a price preference's attribute." },
+    { name: "value", type: "`string` \\| `string[]`", optional: true, description: "Filter by a price preference's value." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to apply on the price preference's searchable properties." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.pricePreference.list()
+.then(({ price_preferences, count, limit, offset }) => {
+  console.log(price_preferences)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/price-preferences' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total count of items." },
+    { name: "price_preferences", type: "`object[]`", optional: false, description: "The list of price preferences.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price preference's ID." },
+        { name: "attribute", type: "`string`", optional: false, description: "The price preference's attribute.", example: "region_id" },
+        { name: "value", type: "`string`", optional: false, description: "The price preference's value.", example: "reg_123" },
+        { name: "is_tax_inclusive", type: "`boolean`", optional: false, description: "Whether prices matching this preference include taxes." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price preference was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price preference was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price preference was deleted." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/price-preferences
+
+**Create Price Preference**
+
+Create a price preference.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "attribute", type: "`string`", optional: false, description: "The name of the attribute the price preference applies on.", example: "currency_code" },
+    { name: "value", type: "`string`", optional: false, description: "The attribute's value.", example: "usd" },
+    { name: "is_tax_inclusive", type: "`boolean`", optional: true, description: "Whether the price is tax inclusive if the value of the specified attribute matches the specified value." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.pricePreference.create({
+  attribute: "region_id",
+  value: "region_123",
+  is_tax_inclusive: true
+})
+.then(({ price_preference }) => {
+  console.log(price_preference)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/price-preferences' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "price_preference", type: "`object`", optional: false, description: "The price preference's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price preference's ID." },
+        { name: "attribute", type: "`string`", optional: false, description: "The price preference's attribute.", example: "region_id" },
+        { name: "value", type: "`string`", optional: false, description: "The price preference's value.", example: "reg_123" },
+        { name: "is_tax_inclusive", type: "`boolean`", optional: false, description: "Whether prices matching this preference include taxes." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price preference was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price preference was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price preference was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/price-preferences/\{id\}
+
+**Get a Price Preference**
+
+Retrieve a price preference by its ID. You can expand the price preference's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The price preference's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.pricePreference.retrieve("prpref_123")
+.then(({ price_preference }) => {
+  console.log(price_preference)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/price-preferences/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "price_preference", type: "`object`", optional: false, description: "The price preference's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price preference's ID." },
+        { name: "attribute", type: "`string`", optional: false, description: "The price preference's attribute.", example: "region_id" },
+        { name: "value", type: "`string`", optional: false, description: "The price preference's value.", example: "reg_123" },
+        { name: "is_tax_inclusive", type: "`boolean`", optional: false, description: "Whether prices matching this preference include taxes." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price preference was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price preference was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price preference was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/price-preferences/\{id\}
+
+**Update a Price Preference**
+
+Update a price preference's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The price preference's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "attribute", type: "`string`", optional: true, description: "The price preference's attribute.", example: "region_id" },
+    { name: "value", type: "`string`", optional: true, description: "The price preference's value.", example: "reg_123" },
+    { name: "is_tax_inclusive", type: "`boolean`", optional: true, description: "Whether prices are tax inclusive for this price preference." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.pricePreference.update("prpref_123", {
+  is_tax_inclusive: true
+})
+.then(({ price_preference }) => {
+  console.log(price_preference)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/price-preferences/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "price_preference", type: "`object`", optional: false, description: "The price preference's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The price preference's ID." },
+        { name: "attribute", type: "`string`", optional: false, description: "The price preference's attribute.", example: "region_id" },
+        { name: "value", type: "`string`", optional: false, description: "The price preference's value.", example: "reg_123" },
+        { name: "is_tax_inclusive", type: "`boolean`", optional: false, description: "Whether prices matching this preference include taxes." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the price preference was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the price preference was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the price preference was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/price-preferences/\{id\}
+
+**Delete a Price Preference**
+
+Delete a price preference.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The price preference's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.pricePreference.delete("prpref_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/price-preferences/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The price preference's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"price_preference\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the price preference was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

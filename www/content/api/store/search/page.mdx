@@ -1,0 +1,218 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Search API Routes`,
+}
+
+# {metadata.title}
+
+Search the indexes that your application exposes to the storefront.
+
+An index is only searchable through these API routes once it's allowed with the `configureStoreSearch` middleware.
+
+## POST /store/search
+
+**Search Indexes**
+
+Search the indexes that your application exposes to the storefront. An index is only searchable through this route once it's allowed with the `configureStoreSearch` middleware, and a query for any other index is answered with a `404` error. Pass a single query, or a `queries` array to run a batch of queries in one round-trip to the search engine. For an index whose entity is `product`, Medusa also restricts the results to published products in the sales channels of the request's publishable API key.
+
+**Authentication:** none.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "queries", type: "`object[]`", optional: true, description: "The queries to run, in the order their results are returned in.", children: [
+        { name: "entity", type: "`string`", optional: false, description: "The name of the index to query, which defaults to the index whose name\nequals the entity." },
+        { name: "fields", type: "`string[]`", optional: true, description: "The dotted paths of the fields the search engine returns. Only fields stored in the search index can be passed here." },
+        { name: "filters", type: "`object`", optional: true, description: "The filters to apply, including the free-text query as `q`.", children: [
+            { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+            { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+            { name: "$not", type: "`object`", optional: true, description: "Filter by values not matching the conditions in this parameter.", children: [
+                { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+                { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+                { name: "$not", type: "`object`", optional: true, description: "Filter by values not matching the conditions in this parameter.", children: [
+                    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+                    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+                    { name: "$not", type: "`object`", optional: true, description: "Filter by values not matching the conditions in this parameter." },
+                    { name: "q", type: "`string`", optional: true, description: "The free-text query to match the documents against." }
+                  ] },
+                { name: "q", type: "`string`", optional: true, description: "The free-text query to match the documents against." }
+              ] },
+            { name: "q", type: "`string`", optional: true, description: "The free-text query to match the documents against." }
+          ] },
+        { name: "pagination", type: "`object`", optional: true, description: "How a search query's results are paginated and sorted.", children: [
+            { name: "skip", type: "`number`", optional: true, description: "The number of documents to skip before the returned hits. It's mutually exclusive with `cursor`." },
+            { name: "take", type: "`number`", optional: true, description: "The maximum number of hits to return." },
+            { name: "order", type: "`object`", optional: true, description: "The fields to sort the hits by, keyed by each field's dotted path. The reserved `_score` key sorts by relevance." },
+            { name: "cursor", type: "`string`", optional: true, description: "An opaque provider cursor, as returned in a previous result's `metadata.next_cursor`. It's mutually exclusive with `skip`." }
+          ] },
+        { name: "search_options", type: "`object`", optional: true, description: "The options changing how a search query is matched, scored, and aggregated.", children: [
+            { name: "attributes_to_search_on", type: "`string[]`", optional: true, description: "The dotted paths of the fields to match the free-text query against. It defaults to every field marked `searchable` on the index." },
+            { name: "match_strategy", type: "`\"any\"` \\| `\"all\"` \\| `\"last\"`", optional: true, description: "How query terms combine.\n\n- `\"all\"` (default): every term must appear as a complete token.\n- `\"any\"`: at least one term must match.\n- `\"last\"`: typeahead. Completed terms must match in full; the last term\n  is a prefix, so `\"my sear\"` matches `\"My search results\"`." },
+            { name: "typo_tolerance", type: "`boolean`", optional: true, description: "Whether to match terms that are misspelled by a character or two. It's ignored unless the query includes a free-text `q` and the searched fields have typo tolerance enabled in the index's settings." },
+            { name: "facets", type: "`string[]` \\| `object[]`", optional: true, description: "The facets to compute alongside the hits. A string is shorthand for a `value` facet on that field.", children: [
+                { name: "field", type: "`string`", optional: false, description: "The dotted path of the field to facet on." },
+                { name: "type", type: "`\"value\"`", optional: true, description: "Count the documents per distinct value of the field. This is the default\nfacet type." },
+                { name: "limit", type: "`number`", optional: true, description: "The maximum number of facet values to return." },
+                { name: "sort", type: "`\"count\"` \\| `\"alpha\"`", optional: true, description: "Whether to order the returned values by their count or alphabetically." },
+                { name: "query", type: "`string`", optional: true, description: "Restrict the returned facet values to those matching this string." },
+                { name: "ranges", type: "`object[]`", optional: true, description: "The ranges to count the documents of.", children: [
+                    { name: "key", type: "`string`", optional: true, description: "A key identifying the range in the result." },
+                    { name: "from", type: "`string` \\| `number`", optional: true, description: "The range's inclusive lower bound." },
+                    { name: "to", type: "`string` \\| `number`", optional: true, description: "The range's exclusive upper bound." }
+                  ] }
+              ] },
+            { name: "disjunctive_facets", type: "`boolean`", optional: true, description: "Whether to compute each facet ignoring the filter on that same field, so a storefront keeps showing sibling values of an active filter." },
+            { name: "highlight", type: "`boolean` \\| `object`", optional: true, description: "Whether to highlight the matched terms in every field the query searches on. It's applied only when the query includes a free-text `q`.", children: [
+                { name: "fields", type: "`string[]`", optional: false, description: "The dotted paths of the fields to highlight." },
+                { name: "pre_tag", type: "`string`", optional: true, description: "The tag inserted before a matched term. Defaults to `<mark>`." },
+                { name: "post_tag", type: "`string`", optional: true, description: "The tag inserted after a matched term. Defaults to `</mark>`." },
+                { name: "snippet", type: "`boolean` \\| `object`", optional: true, description: "Whether to crop a fragment around the match rather than returning the whole field, optionally specifying the fragment's length.", children: [
+                    { name: "length", type: "`number`", optional: false, description: "The length of the cropped fragment." }
+                  ] }
+              ] },
+            { name: "distinct", type: "`string`", optional: true, description: "Return at most one hit per distinct value of this field." },
+            { name: "min_score", type: "`number`", optional: true, description: "Discard the hits scoring below this threshold." },
+            { name: "include_score", type: "`boolean`", optional: true, description: "Whether to return each hit's relevance score." },
+            { name: "locales", type: "`string[]`", optional: true, description: "A query-time language hint, such as `[\"en\"]`, for engines that analyze per language. A provider that can't honor it rejects the query rather than silently matching differently." },
+            { name: "vector", type: "`object`", optional: true, description: "The options of a vector, or semantic, search.", children: [
+                { name: "field", type: "`string`", optional: true, description: "The dotted path of the `vector` field to search in. It's optional when the index declares exactly one vector field." },
+                { name: "value", type: "`number[]`", optional: true, description: "A pre-computed embedding to search with. It's mutually exclusive with `query`." },
+                { name: "query", type: "`string`", optional: true, description: "The text that the search engine embeds at query time. It requires the vector field to enable `embed`, and it's mutually exclusive with `value`." },
+                { name: "semantic_ratio", type: "`number`", optional: true, description: "How much the semantic score contributes relative to the keyword score, where `0` is keyword-only and `1` is semantic-only. It defaults to `1` when there's no free-text query, and `0.5` when both run together." }
+              ] },
+            { name: "count", type: "`\"estimated\"` \\| `\"exact\"` \\| `\"none\"`", optional: true, description: "How the total number of matching documents is computed. `\"exact\"` may be\nrejected or slow depending on the provider." }
+          ] }
+      ] },
+    { name: "entity", type: "`string`", optional: true, description: "The name of the index to query, which defaults to the index whose name\nequals the entity." },
+    { name: "fields", type: "`string[]`", optional: true, description: "The dotted paths of the fields the search engine returns. Only fields stored in the search index can be passed here." },
+    { name: "filters", type: "`object`", optional: true, description: "The filters to apply, including the free-text query as `q`.", children: [
+        { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+        { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+        { name: "$not", type: "`object`", optional: true, description: "Filter by values not matching the conditions in this parameter.", children: [
+            { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+            { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+            { name: "$not", type: "`object`", optional: true, description: "Filter by values not matching the conditions in this parameter.", children: [
+                { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+                { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+                { name: "$not", type: "`object`", optional: true, description: "Filter by values not matching the conditions in this parameter.", children: [
+                    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+                    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+                    { name: "$not", type: "`object`", optional: true, description: "Filter by values not matching the conditions in this parameter." },
+                    { name: "q", type: "`string`", optional: true, description: "The free-text query to match the documents against." }
+                  ] },
+                { name: "q", type: "`string`", optional: true, description: "The free-text query to match the documents against." }
+              ] },
+            { name: "q", type: "`string`", optional: true, description: "The free-text query to match the documents against." }
+          ] },
+        { name: "q", type: "`string`", optional: true, description: "The free-text query to match the documents against." }
+      ] },
+    { name: "pagination", type: "`object`", optional: true, description: "How a search query's results are paginated and sorted.", children: [
+        { name: "skip", type: "`number`", optional: true, description: "The number of documents to skip before the returned hits. It's mutually exclusive with `cursor`." },
+        { name: "take", type: "`number`", optional: true, description: "The maximum number of hits to return." },
+        { name: "order", type: "`object`", optional: true, description: "The fields to sort the hits by, keyed by each field's dotted path. The reserved `_score` key sorts by relevance." },
+        { name: "cursor", type: "`string`", optional: true, description: "An opaque provider cursor, as returned in a previous result's `metadata.next_cursor`. It's mutually exclusive with `skip`." }
+      ] },
+    { name: "search_options", type: "`object`", optional: true, description: "The options changing how a search query is matched, scored, and aggregated.", children: [
+        { name: "attributes_to_search_on", type: "`string[]`", optional: true, description: "The dotted paths of the fields to match the free-text query against. It defaults to every field marked `searchable` on the index." },
+        { name: "match_strategy", type: "`\"any\"` \\| `\"all\"` \\| `\"last\"`", optional: true, description: "How query terms combine.\n\n- `\"all\"` (default): every term must appear as a complete token.\n- `\"any\"`: at least one term must match.\n- `\"last\"`: typeahead. Completed terms must match in full; the last term\n  is a prefix, so `\"my sear\"` matches `\"My search results\"`." },
+        { name: "typo_tolerance", type: "`boolean`", optional: true, description: "Whether to match terms that are misspelled by a character or two. It's ignored unless the query includes a free-text `q` and the searched fields have typo tolerance enabled in the index's settings." },
+        { name: "facets", type: "`string[]` \\| `object[]`", optional: true, description: "The facets to compute alongside the hits. A string is shorthand for a `value` facet on that field.", children: [
+            { name: "field", type: "`string`", optional: false, description: "The dotted path of the field to facet on." },
+            { name: "type", type: "`\"value\"`", optional: true, description: "Count the documents per distinct value of the field. This is the default\nfacet type." },
+            { name: "limit", type: "`number`", optional: true, description: "The maximum number of facet values to return." },
+            { name: "sort", type: "`\"count\"` \\| `\"alpha\"`", optional: true, description: "Whether to order the returned values by their count or alphabetically." },
+            { name: "query", type: "`string`", optional: true, description: "Restrict the returned facet values to those matching this string." },
+            { name: "ranges", type: "`object[]`", optional: true, description: "The ranges to count the documents of.", children: [
+                { name: "key", type: "`string`", optional: true, description: "A key identifying the range in the result." },
+                { name: "from", type: "`string` \\| `number`", optional: true, description: "The range's inclusive lower bound." },
+                { name: "to", type: "`string` \\| `number`", optional: true, description: "The range's exclusive upper bound." }
+              ] }
+          ] },
+        { name: "disjunctive_facets", type: "`boolean`", optional: true, description: "Whether to compute each facet ignoring the filter on that same field, so a storefront keeps showing sibling values of an active filter." },
+        { name: "highlight", type: "`boolean` \\| `object`", optional: true, description: "Whether to highlight the matched terms in every field the query searches on. It's applied only when the query includes a free-text `q`.", children: [
+            { name: "fields", type: "`string[]`", optional: false, description: "The dotted paths of the fields to highlight." },
+            { name: "pre_tag", type: "`string`", optional: true, description: "The tag inserted before a matched term. Defaults to `<mark>`." },
+            { name: "post_tag", type: "`string`", optional: true, description: "The tag inserted after a matched term. Defaults to `</mark>`." },
+            { name: "snippet", type: "`boolean` \\| `object`", optional: true, description: "Whether to crop a fragment around the match rather than returning the whole field, optionally specifying the fragment's length.", children: [
+                { name: "length", type: "`number`", optional: false, description: "The length of the cropped fragment." }
+              ] }
+          ] },
+        { name: "distinct", type: "`string`", optional: true, description: "Return at most one hit per distinct value of this field." },
+        { name: "min_score", type: "`number`", optional: true, description: "Discard the hits scoring below this threshold." },
+        { name: "include_score", type: "`boolean`", optional: true, description: "Whether to return each hit's relevance score." },
+        { name: "locales", type: "`string[]`", optional: true, description: "A query-time language hint, such as `[\"en\"]`, for engines that analyze per language. A provider that can't honor it rejects the query rather than silently matching differently." },
+        { name: "vector", type: "`object`", optional: true, description: "The options of a vector, or semantic, search.", children: [
+            { name: "field", type: "`string`", optional: true, description: "The dotted path of the `vector` field to search in. It's optional when the index declares exactly one vector field." },
+            { name: "value", type: "`number[]`", optional: true, description: "A pre-computed embedding to search with. It's mutually exclusive with `query`." },
+            { name: "query", type: "`string`", optional: true, description: "The text that the search engine embeds at query time. It requires the vector field to enable `embed`, and it's mutually exclusive with `value`." },
+            { name: "semantic_ratio", type: "`number`", optional: true, description: "How much the semantic score contributes relative to the keyword score, where `0` is keyword-only and `1` is semantic-only. It defaults to `1` when there's no free-text query, and `0.5` when both run together." }
+          ] },
+        { name: "count", type: "`\"estimated\"` \\| `\"exact\"` \\| `\"none\"`", optional: true, description: "How the total number of matching documents is computed. `\"exact\"` may be\nrejected or slow depending on the provider." }
+      ] }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/search' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "results", type: "`object[]`", optional: false, description: "The results of the posted queries, in the order they were sent in.", children: [
+        { name: "hits", type: "`object[]`", optional: false, description: "The documents matching the query, ordered by the query's sort or by relevance.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The value of the index's primary key for this document. `query.search` uses\nit to hydrate the rest of the entity through `query.graph`." },
+            { name: "score", type: "`number`", optional: true, description: "The hit's relevance score. It's only returned when the query enables `include_score`." },
+            { name: "document", type: "`object`", optional: false, description: "The retrievable fields the search engine returned for this document." },
+            { name: "highlights", type: "`object`", optional: true, description: "The highlighted fragments of the matched fields, keyed by each field's dotted path. They're only returned when the query enables `highlight`." }
+          ] },
+        { name: "facets", type: "`object`", optional: true, description: "The computed facets, keyed by the field they were requested on." },
+        { name: "metadata", type: "`object`", optional: false, description: "The pagination and timing details of a search result.", children: [
+            { name: "skip", type: "`number`", optional: false, description: "The number of documents skipped before the returned hits." },
+            { name: "take", type: "`number`", optional: false, description: "The maximum number of hits returned." },
+            { name: "count", type: "`number`", optional: false, description: "The total number of matching documents. Most providers only estimate it, and it's `null` when the query sets its `count` strategy to `none`." },
+            { name: "next_cursor", type: "`string`", optional: true, description: "The cursor to pass in the next query's pagination to retrieve the next page, on providers that paginate with cursors." },
+            { name: "query", type: "`string`", optional: true, description: "The free-text query that the result was computed for." },
+            { name: "processing_time_ms", type: "`number`", optional: true, description: "How long the search engine took to run the query, in milliseconds." }
+          ] },
+        { name: "provider_metadata", type: "`object`", optional: true, description: "Extra details the search provider returned, passed through as-is." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.

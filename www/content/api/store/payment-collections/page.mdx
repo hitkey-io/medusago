@@ -1,0 +1,527 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Payment Collections API Routes`,
+}
+
+# {metadata.title}
+
+A cart must have a payment collection with an authorized payment session.
+
+Use these API routes during checkout to set the cart's payment provider and authorize its payment session.
+
+## POST /store/payment-collections
+
+**Create Payment Collection**
+
+Create a payment collection for a cart. This is used during checkout, where the payment collection holds the cart's payment sessions.
+
+**Authentication:** none.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "cart_id", type: "`string`", optional: false, description: "The ID of the cart this payment collection is for." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.payment.initiatePaymentSession(
+  cart, // assuming you already have the cart object.
+  {
+    provider_id: "pp_stripe_stripe",
+    data: {
+      // any data relevant for the provider.
+    }
+  }
+)
+.then(({ payment_collection }) => {
+  console.log(payment_collection)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/payment-collections' \
+-H 'Content-Type: application/json' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+--data-raw '{
+  "cart_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "payment_collection", type: "`object`", optional: false, description: "The payment collection's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The payment collection's ID." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The payment collection's currency code." },
+        { name: "amount", type: "`number`", optional: false, description: "The total amount to be paid." },
+        { name: "authorized_amount", type: "`number`", optional: true, description: "The total authorized amount of the collection's payments." },
+        { name: "captured_amount", type: "`number`", optional: true, description: "The total captured amount of the collection's payments." },
+        { name: "refunded_amount", type: "`number`", optional: true, description: "The total refunded amount of the collection's payments." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the payment collection was completed." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the payment collection was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the payment collection was updated." },
+        { name: "metadata", type: "`object`", optional: true, description: "The payment collection's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "status", type: "`\"canceled\"` \\| `\"not_paid\"` \\| `\"awaiting\"` \\| `\"authorized\"` \\| `\"partially_authorized\"`", optional: false, description: "The payment collection's status." },
+        { name: "payment_providers", type: "`object[]`", optional: false, description: "The payment provider used to process the collection's payments and sessions.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment provider's ID." }
+          ] },
+        { name: "payment_sessions", type: "`object[]`", optional: true, description: "The payment collection's payment sessions.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment session's ID." },
+            { name: "amount", type: "`number`", optional: false, description: "The payment session's amount." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The payment session's currency code.", example: "usd" },
+            { name: "provider_id", type: "`string`", optional: false, description: "The ID of the payment provider processing this session." },
+            { name: "data", type: "`object`", optional: false, description: "The payment session's data, useful for the payment provider processing the payment." },
+            { name: "context", type: "`object`", optional: true, description: "The context around the payment, such as the customer's details." },
+            { name: "status", type: "`\"authorized\"` \\| `\"captured\"` \\| `\"canceled\"` \\| `\"pending\"` \\| `\"requires_more\"` \\| `\"error\"`", optional: false, description: "The payment session's status." },
+            { name: "authorized_at", type: "`string`", optional: true, description: "The date the payment session was authorized." },
+            { name: "payment_collection", type: "`object`", optional: true },
+            { name: "payment", type: "`object`", optional: true, description: "The payment's details.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The payment's ID." },
+                { name: "amount", type: "`number`", optional: false, description: "The payment's amount." },
+                { name: "authorized_amount", type: "`number`", optional: true, description: "The amount authorized of the payment." },
+                { name: "currency_code", type: "`string`", optional: false, description: "The payment's currency code." },
+                { name: "provider_id", type: "`string`", optional: false, description: "The ID of the payment provider used to process this payment." },
+                { name: "data", type: "`object`", optional: true, description: "The payment's data, useful for processing by the payment provider." },
+                { name: "created_at", type: "`string`", optional: true, description: "The date the payment was created." },
+                { name: "updated_at", type: "`string`", optional: true, description: "The date the payment was updated." },
+                { name: "captured_at", type: "`string`", optional: true, description: "The date the payment was captured." },
+                { name: "canceled_at", type: "`string`", optional: true, description: "The date the payment was canceled." },
+                { name: "captured_amount", type: "`number`", optional: true, description: "The captured amount of the payment." },
+                { name: "refunded_amount", type: "`number`", optional: true, description: "The refunded amount of the payment." },
+                { name: "captures", type: "`object[]`", optional: true, description: "The details of payment captures." },
+                { name: "refunds", type: "`object[]`", optional: true, description: "The details of payment refunds." },
+                { name: "payment_collection", type: "`object`", optional: true },
+                { name: "payment_session", type: "`object`", optional: true }
+              ] }
+          ] },
+        { name: "payments", type: "`object[]`", optional: true, description: "The payment collection's payments.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment's ID." },
+            { name: "amount", type: "`number`", optional: false, description: "The payment's amount." },
+            { name: "authorized_amount", type: "`number`", optional: true, description: "The amount authorized of the payment." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The payment's currency code." },
+            { name: "provider_id", type: "`string`", optional: false, description: "The ID of the payment provider used to process this payment." },
+            { name: "data", type: "`object`", optional: true, description: "The payment's data, useful for processing by the payment provider." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the payment was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the payment was updated." },
+            { name: "captured_at", type: "`string`", optional: true, description: "The date the payment was captured." },
+            { name: "canceled_at", type: "`string`", optional: true, description: "The date the payment was canceled." },
+            { name: "captured_amount", type: "`number`", optional: true, description: "The captured amount of the payment." },
+            { name: "refunded_amount", type: "`number`", optional: true, description: "The refunded amount of the payment." },
+            { name: "captures", type: "`object[]`", optional: true, description: "The details of payment captures.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The payment capture's ID." },
+                { name: "amount", type: "`number`", optional: false, description: "The captured amount." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the capture was created." },
+                { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that captured the payment." },
+                { name: "payment", type: "`object`", optional: false }
+              ] },
+            { name: "refunds", type: "`object[]`", optional: true, description: "The details of payment refunds.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The refund's ID." },
+                { name: "amount", type: "`number`", optional: false, description: "The refund's amount." },
+                { name: "refund_reason_id", type: "`string`", optional: true, description: "The ID of the refund reason." },
+                { name: "note", type: "`string`", optional: true, description: "More details about the refund." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the refund was created." },
+                { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created the refund." },
+                { name: "payment", type: "`object`", optional: false },
+                { name: "refund_reason", type: "`object`", optional: true, description: "The refund reason's details." },
+                { name: "idempotency_key", type: "`string`", optional: true, description: "The refund's idempotency key." }
+              ] },
+            { name: "payment_collection", type: "`object`", optional: true },
+            { name: "payment_session", type: "`object`", optional: true }
+          ] }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /store/payment-collections/\{id\}/payment-sessions
+
+**Initialize Payment Session of a Payment Collection**
+
+Initialize and add a payment session to a payment collection. This is used during checkout, where you create a payment collection for the cart, then initialize a payment session for the payment provider that the customer chooses.
+It's highly recommended to have an amount greater than `0` in the payment collection, as some payment providers, such as Stripe, require a non-zero amount to create a payment session. Otherwise, an error will be thrown on the payment provider's side.
+In cases where you want to create a payment session for a payment collection with an amount of `0`, you can use the Manual System Payment Provider instead of third-party payment providers. The Manual System Payment Provider is built into Medusa and allows you to create payment sessions without interacting with an external payment provider.
+Make sure to configure the Manual System Payment Provider in your store's region. Learn more in the Manage Region user guide.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The payment collection's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "provider_id", type: "`string`", optional: false, description: "The ID of the payment provider the customer chose.", example: "pp_stripe_stripe" },
+    { name: "data", type: "`object`", optional: true, description: "Any data necessary for the payment provider to process the payment." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/payment-collections/{id}/payment-sessions' \
+-H 'Content-Type: application/json' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+--data-raw '{
+  "provider_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "payment_collection", type: "`object`", optional: false, description: "The payment collection's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The payment collection's ID." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The payment collection's currency code." },
+        { name: "amount", type: "`number`", optional: false, description: "The total amount to be paid." },
+        { name: "authorized_amount", type: "`number`", optional: true, description: "The total authorized amount of the collection's payments." },
+        { name: "captured_amount", type: "`number`", optional: true, description: "The total captured amount of the collection's payments." },
+        { name: "refunded_amount", type: "`number`", optional: true, description: "The total refunded amount of the collection's payments." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the payment collection was completed." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the payment collection was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the payment collection was updated." },
+        { name: "metadata", type: "`object`", optional: true, description: "The payment collection's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "status", type: "`\"canceled\"` \\| `\"not_paid\"` \\| `\"awaiting\"` \\| `\"authorized\"` \\| `\"partially_authorized\"`", optional: false, description: "The payment collection's status." },
+        { name: "payment_providers", type: "`object[]`", optional: false, description: "The payment provider used to process the collection's payments and sessions.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment provider's ID." }
+          ] },
+        { name: "payment_sessions", type: "`object[]`", optional: true, description: "The payment collection's payment sessions.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment session's ID." },
+            { name: "amount", type: "`number`", optional: false, description: "The payment session's amount." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The payment session's currency code.", example: "usd" },
+            { name: "provider_id", type: "`string`", optional: false, description: "The ID of the payment provider processing this session." },
+            { name: "data", type: "`object`", optional: false, description: "The payment session's data, useful for the payment provider processing the payment." },
+            { name: "context", type: "`object`", optional: true, description: "The context around the payment, such as the customer's details." },
+            { name: "status", type: "`\"authorized\"` \\| `\"captured\"` \\| `\"canceled\"` \\| `\"pending\"` \\| `\"requires_more\"` \\| `\"error\"`", optional: false, description: "The payment session's status." },
+            { name: "authorized_at", type: "`string`", optional: true, description: "The date the payment session was authorized." },
+            { name: "payment_collection", type: "`object`", optional: true },
+            { name: "payment", type: "`object`", optional: true, description: "The payment's details.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The payment's ID." },
+                { name: "amount", type: "`number`", optional: false, description: "The payment's amount." },
+                { name: "authorized_amount", type: "`number`", optional: true, description: "The amount authorized of the payment." },
+                { name: "currency_code", type: "`string`", optional: false, description: "The payment's currency code." },
+                { name: "provider_id", type: "`string`", optional: false, description: "The ID of the payment provider used to process this payment." },
+                { name: "data", type: "`object`", optional: true, description: "The payment's data, useful for processing by the payment provider." },
+                { name: "created_at", type: "`string`", optional: true, description: "The date the payment was created." },
+                { name: "updated_at", type: "`string`", optional: true, description: "The date the payment was updated." },
+                { name: "captured_at", type: "`string`", optional: true, description: "The date the payment was captured." },
+                { name: "canceled_at", type: "`string`", optional: true, description: "The date the payment was canceled." },
+                { name: "captured_amount", type: "`number`", optional: true, description: "The captured amount of the payment." },
+                { name: "refunded_amount", type: "`number`", optional: true, description: "The refunded amount of the payment." },
+                { name: "captures", type: "`object[]`", optional: true, description: "The details of payment captures." },
+                { name: "refunds", type: "`object[]`", optional: true, description: "The details of payment refunds." },
+                { name: "payment_collection", type: "`object`", optional: true },
+                { name: "payment_session", type: "`object`", optional: true }
+              ] }
+          ] },
+        { name: "payments", type: "`object[]`", optional: true, description: "The payment collection's payments.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment's ID." },
+            { name: "amount", type: "`number`", optional: false, description: "The payment's amount." },
+            { name: "authorized_amount", type: "`number`", optional: true, description: "The amount authorized of the payment." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The payment's currency code." },
+            { name: "provider_id", type: "`string`", optional: false, description: "The ID of the payment provider used to process this payment." },
+            { name: "data", type: "`object`", optional: true, description: "The payment's data, useful for processing by the payment provider." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the payment was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the payment was updated." },
+            { name: "captured_at", type: "`string`", optional: true, description: "The date the payment was captured." },
+            { name: "canceled_at", type: "`string`", optional: true, description: "The date the payment was canceled." },
+            { name: "captured_amount", type: "`number`", optional: true, description: "The captured amount of the payment." },
+            { name: "refunded_amount", type: "`number`", optional: true, description: "The refunded amount of the payment." },
+            { name: "captures", type: "`object[]`", optional: true, description: "The details of payment captures.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The payment capture's ID." },
+                { name: "amount", type: "`number`", optional: false, description: "The captured amount." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the capture was created." },
+                { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that captured the payment." },
+                { name: "payment", type: "`object`", optional: false }
+              ] },
+            { name: "refunds", type: "`object[]`", optional: true, description: "The details of payment refunds.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The refund's ID." },
+                { name: "amount", type: "`number`", optional: false, description: "The refund's amount." },
+                { name: "refund_reason_id", type: "`string`", optional: true, description: "The ID of the refund reason." },
+                { name: "note", type: "`string`", optional: true, description: "More details about the refund." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the refund was created." },
+                { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created the refund." },
+                { name: "payment", type: "`object`", optional: false },
+                { name: "refund_reason", type: "`object`", optional: true, description: "The refund reason's details." },
+                { name: "idempotency_key", type: "`string`", optional: true, description: "The refund's idempotency key." }
+              ] },
+            { name: "payment_collection", type: "`object`", optional: true },
+            { name: "payment_session", type: "`object`", optional: true }
+          ] }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /store/payment-collections/\{id\}/payment-sessions/\{session_id\}
+
+**Update Payment Session**
+
+Update a payment session's client data, such as payment details collected by the payment provider's checkout component. The data is merged into the session's `data.client`.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The payment collection's ID." },
+    { name: "session_id", type: "`string`", optional: false, description: "The payment session's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "client_data", type: "`object`", optional: false, description: "Data to merge into the session's `data.client`, such as payment details\ncollected by the provider's checkout component. Set a property to `null` to remove it." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.payment.updatePaymentSession(
+  "paycol_123",
+  "payses_123",
+  {
+    client_data: {
+      // any data relevant for the provider.
+    }
+  }
+)
+.then(({ payment_collection }) => {
+  console.log(payment_collection)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/payment-collections/{id}/payment-sessions/{session_id}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "client_data": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "payment_collection", type: "`object`", optional: false, description: "The payment collection's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The payment collection's ID." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The payment collection's currency code." },
+        { name: "amount", type: "`number`", optional: false, description: "The total amount to be paid." },
+        { name: "authorized_amount", type: "`number`", optional: true, description: "The total authorized amount of the collection's payments." },
+        { name: "captured_amount", type: "`number`", optional: true, description: "The total captured amount of the collection's payments." },
+        { name: "refunded_amount", type: "`number`", optional: true, description: "The total refunded amount of the collection's payments." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the payment collection was completed." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the payment collection was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the payment collection was updated." },
+        { name: "metadata", type: "`object`", optional: true, description: "The payment collection's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "status", type: "`\"canceled\"` \\| `\"not_paid\"` \\| `\"awaiting\"` \\| `\"authorized\"` \\| `\"partially_authorized\"`", optional: false, description: "The payment collection's status." },
+        { name: "payment_providers", type: "`object[]`", optional: false, description: "The payment provider used to process the collection's payments and sessions.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment provider's ID." }
+          ] },
+        { name: "payment_sessions", type: "`object[]`", optional: true, description: "The payment collection's payment sessions.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment session's ID." },
+            { name: "amount", type: "`number`", optional: false, description: "The payment session's amount." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The payment session's currency code.", example: "usd" },
+            { name: "provider_id", type: "`string`", optional: false, description: "The ID of the payment provider processing this session." },
+            { name: "data", type: "`object`", optional: false, description: "The payment session's data, useful for the payment provider processing the payment." },
+            { name: "context", type: "`object`", optional: true, description: "The context around the payment, such as the customer's details." },
+            { name: "status", type: "`\"authorized\"` \\| `\"captured\"` \\| `\"canceled\"` \\| `\"pending\"` \\| `\"requires_more\"` \\| `\"error\"`", optional: false, description: "The payment session's status." },
+            { name: "authorized_at", type: "`string`", optional: true, description: "The date the payment session was authorized." },
+            { name: "payment_collection", type: "`object`", optional: true },
+            { name: "payment", type: "`object`", optional: true, description: "The payment's details.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The payment's ID." },
+                { name: "amount", type: "`number`", optional: false, description: "The payment's amount." },
+                { name: "authorized_amount", type: "`number`", optional: true, description: "The amount authorized of the payment." },
+                { name: "currency_code", type: "`string`", optional: false, description: "The payment's currency code." },
+                { name: "provider_id", type: "`string`", optional: false, description: "The ID of the payment provider used to process this payment." },
+                { name: "data", type: "`object`", optional: true, description: "The payment's data, useful for processing by the payment provider." },
+                { name: "created_at", type: "`string`", optional: true, description: "The date the payment was created." },
+                { name: "updated_at", type: "`string`", optional: true, description: "The date the payment was updated." },
+                { name: "captured_at", type: "`string`", optional: true, description: "The date the payment was captured." },
+                { name: "canceled_at", type: "`string`", optional: true, description: "The date the payment was canceled." },
+                { name: "captured_amount", type: "`number`", optional: true, description: "The captured amount of the payment." },
+                { name: "refunded_amount", type: "`number`", optional: true, description: "The refunded amount of the payment." },
+                { name: "captures", type: "`object[]`", optional: true, description: "The details of payment captures." },
+                { name: "refunds", type: "`object[]`", optional: true, description: "The details of payment refunds." },
+                { name: "payment_collection", type: "`object`", optional: true },
+                { name: "payment_session", type: "`object`", optional: true }
+              ] }
+          ] },
+        { name: "payments", type: "`object[]`", optional: true, description: "The payment collection's payments.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment's ID." },
+            { name: "amount", type: "`number`", optional: false, description: "The payment's amount." },
+            { name: "authorized_amount", type: "`number`", optional: true, description: "The amount authorized of the payment." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The payment's currency code." },
+            { name: "provider_id", type: "`string`", optional: false, description: "The ID of the payment provider used to process this payment." },
+            { name: "data", type: "`object`", optional: true, description: "The payment's data, useful for processing by the payment provider." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the payment was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the payment was updated." },
+            { name: "captured_at", type: "`string`", optional: true, description: "The date the payment was captured." },
+            { name: "canceled_at", type: "`string`", optional: true, description: "The date the payment was canceled." },
+            { name: "captured_amount", type: "`number`", optional: true, description: "The captured amount of the payment." },
+            { name: "refunded_amount", type: "`number`", optional: true, description: "The refunded amount of the payment." },
+            { name: "captures", type: "`object[]`", optional: true, description: "The details of payment captures.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The payment capture's ID." },
+                { name: "amount", type: "`number`", optional: false, description: "The captured amount." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the capture was created." },
+                { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that captured the payment." },
+                { name: "payment", type: "`object`", optional: false }
+              ] },
+            { name: "refunds", type: "`object[]`", optional: true, description: "The details of payment refunds.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The refund's ID." },
+                { name: "amount", type: "`number`", optional: false, description: "The refund's amount." },
+                { name: "refund_reason_id", type: "`string`", optional: true, description: "The ID of the refund reason." },
+                { name: "note", type: "`string`", optional: true, description: "More details about the refund." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the refund was created." },
+                { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created the refund." },
+                { name: "payment", type: "`object`", optional: false },
+                { name: "refund_reason", type: "`object`", optional: true, description: "The refund reason's details." },
+                { name: "idempotency_key", type: "`string`", optional: true, description: "The refund's idempotency key." }
+              ] },
+            { name: "payment_collection", type: "`object`", optional: true },
+            { name: "payment_session", type: "`object`", optional: true }
+          ] }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.

@@ -1,0 +1,540 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Workflows Executions API Routes`,
+}
+
+# {metadata.title}
+
+These API routes allow you to track workflow executions in your MedusaGo application.
+
+Depending on the workflow engine you use, executions may only be retained for a short while, or only until the MedusaGo application is restarted.
+
+## GET /admin/workflows-executions
+
+**List Workflows Executions**
+
+Retrieve a list of workflows executions. The workflows executions can be filtered by fields such as `id`. The workflows executions can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "transaction_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a transaction ID." },
+    { name: "workflow_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a workflow ID." },
+    { name: "q", type: "`string`", optional: true, description: "Search query to filter by a workflow execution's searchable fields." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "state", type: "`string` \\| `string[]`", optional: true, description: "Filter by a workflow execution's state." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the workflow execution's creation date. Accepts the [filter operators](/api/admin#filter-operators)." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.workflowExecution.list()
+.then(({ workflow_executions, count, limit, offset }) => {
+  console.log(workflow_executions)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/workflows-executions' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "workflow_executions", type: "`object[]`", optional: false, description: "The workflows execution's workflow executions.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The workflow execution's ID." },
+        { name: "workflow_id", type: "`string`", optional: false, description: "The ID of the workflow." },
+        { name: "transaction_id", type: "`string`", optional: false, description: "The workflow execution's transaction ID." },
+        { name: "execution", type: "`object`", optional: false, description: "The workflow execution's steps details.", children: [
+            { name: "steps", type: "`object`", optional: false, description: "The execution's steps. Each object key is a step ID, and the value is the object whose properties are shown below.", children: [
+                { name: "[key: string]", type: "`object`", optional: false }
+              ] }
+          ] },
+        { name: "context", type: "`object`", optional: false, description: "The workflow execution's context.", children: [
+            { name: "data", type: "`object`", optional: true, description: "The context's data.", children: [
+                { name: "invoke", type: "`object`", optional: false, description: "The step's invokation details." },
+                { name: "payload", type: "`any`", optional: true, description: "the payload of the transaction." }
+              ] },
+            { name: "compensate", type: "`object`", optional: false, description: "The context's compensate." },
+            { name: "errors", type: "`object[]`", optional: false, description: "The context's errors.", children: [
+                { name: "error", type: "`object`", optional: false, description: "The error's details." },
+                { name: "action", type: "`string`", optional: false, description: "The error's action." },
+                { name: "handlerType", type: "`string`", optional: false, description: "The error's handler type." }
+              ] }
+          ] },
+        { name: "state", type: "`\"not_started\"` \\| `\"invoking\"` \\| `\"waiting_to_compensate\"` \\| `\"compensating\"` \\| `\"done\"` \\| `\"reverted\"` \\| `\"failed\"`", optional: false, description: "The workflow execution's state." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the workflow execution was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the workflow execution was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the workflow execution was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/workflows-executions/\{id\}
+
+**Get a Workflows Execution**
+
+Retrieve a workflows execution by its ID. You can expand the workflows execution's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The workflows execution's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.workflowExecution.retrieve("wrk_123")
+.then(({ workflow_execution }) => {
+  console.log(workflow_execution)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/workflows-executions/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "workflow_execution", type: "`object`", optional: false, description: "The workflows execution's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The workflow execution's ID." },
+        { name: "workflow_id", type: "`string`", optional: false, description: "The ID of the workflow." },
+        { name: "transaction_id", type: "`string`", optional: false, description: "The workflow execution's transaction ID." },
+        { name: "execution", type: "`object`", optional: false, description: "The workflow execution's steps details.", children: [
+            { name: "steps", type: "`object`", optional: false, description: "The execution's steps. Each object key is a step ID, and the value is the object whose properties are shown below.", children: [
+                { name: "[key: string]", type: "`object`", optional: false }
+              ] }
+          ] },
+        { name: "context", type: "`object`", optional: false, description: "The workflow execution's context.", children: [
+            { name: "data", type: "`object`", optional: true, description: "The context's data.", children: [
+                { name: "invoke", type: "`object`", optional: false, description: "The step's invokation details." },
+                { name: "payload", type: "`any`", optional: true, description: "the payload of the transaction." }
+              ] },
+            { name: "compensate", type: "`object`", optional: false, description: "The context's compensate." },
+            { name: "errors", type: "`object[]`", optional: false, description: "The context's errors.", children: [
+                { name: "error", type: "`object`", optional: false, description: "The error's details." },
+                { name: "action", type: "`string`", optional: false, description: "The error's action." },
+                { name: "handlerType", type: "`string`", optional: false, description: "The error's handler type." }
+              ] }
+          ] },
+        { name: "state", type: "`\"not_started\"` \\| `\"invoking\"` \\| `\"waiting_to_compensate\"` \\| `\"compensating\"` \\| `\"done\"` \\| `\"reverted\"` \\| `\"failed\"`", optional: false, description: "The workflow execution's state." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the workflow execution was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the workflow execution was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the workflow execution was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/workflows-executions/\{workflow_id\}/run
+
+**Execute a Workflow**
+
+Execute a workflow by its ID.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "workflow_id", type: "`string`", optional: false, description: "The workflow's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "input", type: "`any`", optional: true, description: "The input to pass to the workflow. Can be of any type." },
+    { name: "transaction_id", type: "`string`", optional: true, description: "The ID of the workflow execution's transaction." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/workflows-executions/{workflow_id}/run' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "acknowledgement", type: "`object`", optional: false, description: "The workflow's details", children: [
+        { name: "workflowId", type: "`string`", optional: false, description: "The ID of the executed workflow." },
+        { name: "transactionId", type: "`string`", optional: false, description: "The ID of the workflow exection's transaction. Use this later to track the workflow execution's progress or succeed / fail its steps." },
+        { name: "parentStepIdempotencyKey", type: "`string`", optional: true, description: "The idempotency key of the workflow execution." },
+        { name: "hasFinished", type: "`boolean`", optional: false, description: "Whether the workflow execution has finished." },
+        { name: "hasFailed", type: "`boolean`", optional: false, description: "Whether the workflow execution has failed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/workflows-executions/\{workflow_id\}/steps/failure
+
+**Fail a Step in a Workflow's Execution**
+
+Set the status of a step in a workflow's execution as failed. This is useful for long-running workflows.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "workflow_id", type: "`string`", optional: false, description: "The workflows execution's workflow id." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "transaction_id", type: "`string`", optional: false, description: "The workflows execution's transaction ID." },
+    { name: "step_id", type: "`string`", optional: false, description: "The ID of the step whose status was changed." },
+    { name: "response", type: "`any`", optional: true, description: "Sets the step's response. It accepts any type." },
+    { name: "compensate_input", type: "`any`", optional: true, description: "Sets the compensation function's input. It accepts any response." },
+    { name: "action", type: "`\"invoke\"` \\| `\"compensate\"`", optional: true, description: "Whether to invoke or compensate the step." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/workflows-executions/{workflow_id}/steps/failure' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "transaction_id": "{value}",
+  "step_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "success", type: "`boolean`", optional: false, description: "Whether the workflow step has failed successfully." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/workflows-executions/\{workflow_id\}/steps/success
+
+**Succeed a Step in a Workflow's Execution**
+
+Set the status of a step in a workflow's execution as successful. This is useful for long-running workflows.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "workflow_id", type: "`string`", optional: false, description: "The workflows execution's workflow id." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "transaction_id", type: "`string`", optional: false, description: "The workflows execution's transaction ID." },
+    { name: "step_id", type: "`string`", optional: false, description: "The ID of the step whose status was changed." },
+    { name: "response", type: "`any`", optional: true, description: "Sets the step's response. It accepts any type." },
+    { name: "compensate_input", type: "`any`", optional: true, description: "Sets the compensation function's input. It accepts any response." },
+    { name: "action", type: "`\"invoke\"` \\| `\"compensate\"`", optional: true, description: "Whether to invoke or compensate the step." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/workflows-executions/{workflow_id}/steps/success' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "transaction_id": "{value}",
+  "step_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "success", type: "`boolean`", optional: false, description: "Whether the workflow step was succeeded." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/workflows-executions/\{workflow_id\}/subscribe
+
+**Subscribe to a Workflow's Execution**
+
+Subscribe to a workflow's execution to receive real-time information about its steps, status, and data.
+This route returns an event stream that you can consume using the [EventSource API](https://developer.mozilla.org/en-US/docs/Web/API/EventSource).
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "workflow_id", type: "`string`", optional: false, description: "The workflows execution's workflow id." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/workflows-executions/{workflow_id}/subscribe' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` Stream of the step's status. The response body has the content type `text/event-stream`.
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/workflows-executions/\{workflow_id\}/\{transaction_id\}
+
+**Get Workflow Execution's Details**
+
+Get the details of the workflow's execution.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "workflow_id", type: "`string`", optional: false, description: "The workflows execution's workflow id." },
+    { name: "transaction_id", type: "`string`", optional: false, description: "The workflows execution's transaction id." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/workflows-executions/{workflow_id}/{transaction_id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "workflow_execution", type: "`object`", optional: false, description: "The workflows execution's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The workflow execution's ID." },
+        { name: "workflow_id", type: "`string`", optional: false, description: "The ID of the workflow." },
+        { name: "transaction_id", type: "`string`", optional: false, description: "The workflow execution's transaction ID." },
+        { name: "execution", type: "`object`", optional: false, description: "The workflow execution's steps details.", children: [
+            { name: "steps", type: "`object`", optional: false, description: "The execution's steps. Each object key is a step ID, and the value is the object whose properties are shown below.", children: [
+                { name: "[key: string]", type: "`object`", optional: false }
+              ] }
+          ] },
+        { name: "context", type: "`object`", optional: false, description: "The workflow execution's context.", children: [
+            { name: "data", type: "`object`", optional: true, description: "The context's data.", children: [
+                { name: "invoke", type: "`object`", optional: false, description: "The step's invokation details." },
+                { name: "payload", type: "`any`", optional: true, description: "the payload of the transaction." }
+              ] },
+            { name: "compensate", type: "`object`", optional: false, description: "The context's compensate." },
+            { name: "errors", type: "`object[]`", optional: false, description: "The context's errors.", children: [
+                { name: "error", type: "`object`", optional: false, description: "The error's details." },
+                { name: "action", type: "`string`", optional: false, description: "The error's action." },
+                { name: "handlerType", type: "`string`", optional: false, description: "The error's handler type." }
+              ] }
+          ] },
+        { name: "state", type: "`\"not_started\"` \\| `\"invoking\"` \\| `\"waiting_to_compensate\"` \\| `\"compensating\"` \\| `\"done\"` \\| `\"reverted\"` \\| `\"failed\"`", optional: false, description: "The workflow execution's state." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the workflow execution was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the workflow execution was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the workflow execution was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/workflows-executions/\{workflow_id\}/\{transaction_id\}/subscribe
+
+**Subscribe to Workflow Execution Events**
+
+Subscribe to workflow execution events for a specific workflow and transaction. This endpoint establishes a Server-Sent Events (SSE) connection, allowing clients to receive real-time updates about the workflow execution. The events include details such as the event type, workflow ID, transaction ID, step information, response, result, and any errors that occur during the execution.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "workflow_id", type: "`string`", optional: false, description: "The ID of the workflow to subscribe to." },
+    { name: "transaction_id", type: "`string`", optional: false, description: "The ID of the workflow execution transaction to subscribe to." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/workflows-executions/{workflow_id}/{transaction_id}/subscribe' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

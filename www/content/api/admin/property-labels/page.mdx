@@ -1,0 +1,398 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Property Labels API Routes`,
+}
+
+# {metadata.title}
+
+## GET /admin/property-labels
+
+**List Property Labels**
+
+Retrieve a list of property labels. The property labels can be filtered by fields such as `id`. The property labels can also be sorted or paginated.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "entity", type: "`string`", optional: true, description: "The property label's entity." },
+    { name: "property", type: "`string`", optional: true, description: "The property label's property." },
+    { name: "q", type: "`string`", optional: true, description: "The property label's q." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "The property label's with deleted." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/property-labels' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "property_labels", type: "`object[]`", optional: false, description: "TThe list of property labels.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The property label's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The entity the property label belongs to." },
+        { name: "property", type: "`string`", optional: false, description: "The property the label is associated with." },
+        { name: "label", type: "`string`", optional: false, description: "The label for the property." },
+        { name: "description", type: "`string`", optional: true, description: "The property label's description." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the property label was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the property label was last updated." }
+      ] },
+    { name: "count", type: "`number`", optional: false, description: "The total number of property labels." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/property-labels
+
+**Create Property Label**
+
+Create a property label.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "entity", type: "`string`", optional: false, description: "The name of the entity the property label belongs to." },
+    { name: "property", type: "`string`", optional: false, description: "The property the label is for." },
+    { name: "label", type: "`string`", optional: false, description: "The label to use for the property." },
+    { name: "description", type: "`string`", optional: true, description: "The description of the property label." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/property-labels' \
+-H 'Authorization: Bearer {access_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "entity": "{value}",
+  "property": "{value}",
+  "label": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`201` OK
+
+<TypeList
+  types={[
+    { name: "property_label", type: "`object`", optional: false, description: "The property label's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The property label's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The entity the property label belongs to." },
+        { name: "property", type: "`string`", optional: false, description: "The property the label is associated with." },
+        { name: "label", type: "`string`", optional: false, description: "The label for the property." },
+        { name: "description", type: "`string`", optional: true, description: "The property label's description." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the property label was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the property label was last updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/property-labels/batch
+
+**Create Property Label**
+
+Create a property label.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "create", type: "`object[]`", optional: true, description: "The property labels to create.", children: [
+        { name: "entity", type: "`string`", optional: false, description: "The name of the entity the property label belongs to." },
+        { name: "property", type: "`string`", optional: false, description: "The property the label is for." },
+        { name: "label", type: "`string`", optional: false, description: "The label to use for the property." },
+        { name: "description", type: "`string`", optional: true, description: "The description of the property label." }
+      ] },
+    { name: "update", type: "`object[]`", optional: true, description: "The property labels to update.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The ID of the property label to update." },
+        { name: "label", type: "`string`", optional: true, description: "The updated label of the property label." },
+        { name: "description", type: "`string`", optional: true, description: "The updated description of the property label." }
+      ] },
+    { name: "delete", type: "`string[]`", optional: true, description: "The property labels to delete." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/property-labels/batch' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "created", type: "`object[]`", optional: false, description: "The created property labels.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The property label's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The entity the property label belongs to." },
+        { name: "property", type: "`string`", optional: false, description: "The property the label is associated with." },
+        { name: "label", type: "`string`", optional: false, description: "The label for the property." },
+        { name: "description", type: "`string`", optional: true, description: "The property label's description." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the property label was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the property label was last updated." }
+      ] },
+    { name: "updated", type: "`object[]`", optional: false, description: "The updated property labels.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The property label's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The entity the property label belongs to." },
+        { name: "property", type: "`string`", optional: false, description: "The property the label is associated with." },
+        { name: "label", type: "`string`", optional: false, description: "The label for the property." },
+        { name: "description", type: "`string`", optional: true, description: "The property label's description." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the property label was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the property label was last updated." }
+      ] },
+    { name: "deleted", type: "`object[]`", optional: false, description: "The deleted property labels.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The ID of the deleted property label." },
+        { name: "object", type: "`string`", optional: false, description: "The type of the deleted object." },
+        { name: "deleted", type: "`boolean`", optional: false, description: "Indicates if the property label was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/property-labels/\{id\}
+
+**Get a Property Label**
+
+Retrieve a property label by its ID.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The property label's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/property-labels/{id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "property_label", type: "`object`", optional: false, description: "The property label's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The property label's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The entity the property label belongs to." },
+        { name: "property", type: "`string`", optional: false, description: "The property the label is associated with." },
+        { name: "label", type: "`string`", optional: false, description: "The label for the property." },
+        { name: "description", type: "`string`", optional: true, description: "The property label's description." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the property label was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the property label was last updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/property-labels/\{id\}
+
+**Update a Property Label**
+
+Update a property label's details.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The property label's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "label", type: "`string`", optional: true, description: "The label of the property." },
+    { name: "description", type: "`string`", optional: true, description: "The property label's description." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/property-labels/{id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "property_label", type: "`object`", optional: false, description: "The property label's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The property label's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The entity the property label belongs to." },
+        { name: "property", type: "`string`", optional: false, description: "The property the label is associated with." },
+        { name: "label", type: "`string`", optional: false, description: "The label for the property." },
+        { name: "description", type: "`string`", optional: true, description: "The property label's description." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the property label was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the property label was last updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/property-labels/\{id\}
+
+**Delete a Property Label**
+
+Delete a property label.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The property label's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/property-labels/{id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The ID of the deleted property label." },
+    { name: "object", type: "`string`", optional: false, description: "The type of the deleted object, which is `property_label`." },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the property label was successfully deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

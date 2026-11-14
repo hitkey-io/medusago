@@ -1,0 +1,83 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Search API Routes`,
+}
+
+# {metadata.title}
+
+Search the entities that have a search index and are registered as search entities in the Medusa Admin dashboard.
+
+## GET /admin/search
+
+**Search Admin**
+
+Search entities that have a search index and are defined as search entities in the Medusa Admin.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "q", type: "`string`", optional: true, description: "A query to run full-text search against the search index." },
+    { name: "entity", type: "`string[]`", optional: true, description: "The entities to run the search against." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.search.list({ q: "shirt", limit: 5 })
+.then(({ results }) => {
+  console.log(results)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/search' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "results", type: "`object[]`", optional: false, description: "The search results for each entity, in the order the entities were requested.", children: [
+        { name: "entity", type: "`string`", optional: false, description: "The name of the entity the search result belongs to." },
+        { name: "data", type: "`object[]`", optional: false, description: "The documents the index holds, in relevance order." },
+        { name: "count", type: "`number`", optional: false, description: "An estimate of the total number of documents matching the search query." },
+        { name: "offset", type: "`number`", optional: false, description: "The number of documents to skip before returning results." },
+        { name: "limit", type: "`number`", optional: false, description: "The maximum number of documents to return in the result set." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

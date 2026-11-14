@@ -1,0 +1,885 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Views API Routes`,
+}
+
+# {metadata.title}
+
+A view configuration is a saved data-table view for an entity, such as products or orders. It lets admin users customize how a table shows its data, then save that customization as a reusable view.
+These API routes allow admin users to manage the system default and personal views.
+
+## GET /admin/views/entities
+
+**List Views**
+
+Retrieve a list of views. The views can be filtered by fields such as `id`. The views can also be sorted or paginated.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.views.listEntities()
+.then(({ entities }) => {
+  console.log(entities)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/views/entities' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "entities", type: "`object[]`", optional: false, description: "The list of entities.", children: [
+        { name: "name", type: "`string`", optional: false, description: "The entity's name." },
+        { name: "pluralName", type: "`string`", optional: false, description: "The entity's plural name." },
+        { name: "module", type: "`string`", optional: false, description: "The module the entity belongs to." },
+        { name: "propertyCount", type: "`number`", optional: false, description: "The number of properties the entity has." },
+        { name: "hasOverrides", type: "`boolean`", optional: false, description: "Whether the entity has overrides." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/views/\{entity\}/columns
+
+**List Columns in View**
+
+Retrieve a list of columns in a view for an entity. The columns are retrieved for the authenticated admin user.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "entity", type: "`string`", optional: false, description: "The entity to retrieve its columns (for example, `orders`)" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const { columns } = await sdk.admin.views.columns("orders")
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/views/{entity}/columns' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "columns", type: "`object[]`", optional: false, description: "The view's columns.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The column's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The column's name. This is displayed in the view header." },
+        { name: "description", type: "`string`", optional: true, description: "The column's description." },
+        { name: "field", type: "`string`", optional: false, description: "The column's field in the entity." },
+        { name: "sortable", type: "`boolean`", optional: false, description: "Whether the column is sortable." },
+        { name: "hideable", type: "`boolean`", optional: false, description: "Whether the column is hideable." },
+        { name: "default_visible", type: "`boolean`", optional: false, description: "Whether the column is visible by default." },
+        { name: "data_type", type: "`\"string\"` \\| `\"number\"` \\| `\"boolean\"` \\| `\"object\"` \\| `\"date\"` \\| `\"currency\"` \\| `\"enum\"`", optional: false, description: "The data type of the column's value." },
+        { name: "semantic_type", type: "`string`", optional: true, description: "The column's semantic type. It can be `computed`, or other primitive types." },
+        { name: "context", type: "`string`", optional: true, description: "The column's context. It can be `display` or `generic`." },
+        { name: "computed", type: "`object`", optional: true, description: "A computed column's details. Only available if the column's `semantic_type` is `computed`.", children: [
+            { name: "type", type: "`string`", optional: false, description: "The computed's type for rendering." },
+            { name: "required_fields", type: "`string[]`", optional: false, description: "The required fields in the computed column." },
+            { name: "optional_fields", type: "`string[]`", optional: false, description: "The optional fields in the computed column." }
+          ] },
+        { name: "relationship", type: "`object`", optional: true, description: "The relationship details. Only available for relationship columns.", children: [
+            { name: "entity", type: "`string`", optional: false, description: "The related entity." },
+            { name: "field", type: "`string`", optional: false, description: "The field in the related entity." }
+          ] },
+        { name: "default_order", type: "`number`", optional: true, description: "The column's sort order in the default view configuration." },
+        { name: "category", type: "`\"status\"` \\| `\"metadata\"` \\| `\"identifier\"` \\| `\"timestamp\"` \\| `\"metric\"` \\| `\"relationship\"`", optional: true, description: "The column's category." },
+        { name: "render_mode", type: "`string`", optional: true, description: "The column's render mode." },
+        { name: "filter", type: "`object`", optional: true, description: "The column's filter.", children: [
+            { name: "enabled", type: "`boolean`", optional: false, description: "Whether the column's filter is enabled." },
+            { name: "operators", type: "`string[]`", optional: true, description: "The filter's operators." },
+            { name: "enumValues", type: "`string[]`", optional: true, description: "The filter's enum values, if the filter supports enums." },
+            { name: "relationship", type: "`object`", optional: true, description: "The filter's relationship details. Only available if the filter is a relationship filter.", children: [
+                { name: "entity", type: "`string`", optional: false, description: "The entity the relationship filter is for." },
+                { name: "value_field", type: "`string`", optional: false, description: "The relationship filter's value field." },
+                { name: "display_field", type: "`string`", optional: false, description: "The relationship filter's display field." },
+                { name: "multiple", type: "`boolean`", optional: false, description: "Whether the relationship filter allows multiple selections." },
+                { name: "endpoint", type: "`string`", optional: false, description: "The relationship filter's endpoint." },
+                { name: "filter_key", type: "`string`", optional: true, description: "The relationship's filter key." }
+              ] }
+          ] },
+        { name: "source", type: "`object`", optional: true, description: "The column's source details. Only available if the column is from a source.", children: [
+            { name: "module", type: "`string`", optional: false, description: "The source's module." },
+            { name: "entity", type: "`string`", optional: false, description: "The source's entity." }
+          ] },
+        { name: "custom_label", type: "`boolean`", optional: true, description: "Whether the column has a custom label." },
+        { name: "label_id", type: "`string`", optional: true, description: "The ID of the column's label, if it has a custom label." },
+        { name: "metadata", type: "`object`", optional: true, description: "The column's metadata." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/views/\{entity\}/configurations
+
+**List View Configurations**
+
+Retrieve a list of view configurations of an entity. The configurations can be filtered by fields like `id`. The configurations can also be paginated. An admin user can only retrieve their own configurations.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "entity", type: "`string`", optional: false, description: "The entity to retrieve its view configurations (for example, `orders`)" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a view configuration ID." },
+    { name: "entity", type: "`string` \\| `string[]`", optional: true, description: "Filter by an entity." },
+    { name: "name", type: "`string` \\| `string[]`", optional: true, description: "Filter by a view's name." },
+    { name: "user_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by the ID of the user who owns the view." },
+    { name: "is_system_default", type: "`boolean`", optional: true, description: "Filter by whether the view is a system default." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by a view configuration's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by a view configuration's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.views.listConfigurations("orders")
+.then(({ view_configurations, count, limit, offset }) => {
+  console.log(view_configurations)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/views/{entity}/configurations' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of returned items." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" },
+    { name: "view_configurations", type: "`object[]`", optional: false, description: "The list of view configurations.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The view configuration's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The entity the view configuration belongs to." },
+        { name: "name", type: "`string`", optional: false, description: "The view configuration's name." },
+        { name: "user_id", type: "`string`", optional: false, description: "The ID of the user the view configuration belongs to. If `null`, the view configuration is a system default." },
+        { name: "is_system_default", type: "`boolean`", optional: false, description: "Whether the view configuration is the system default." },
+        { name: "configuration", type: "`object`", optional: true, description: "The view's configuration.", children: [
+            { name: "visible_columns", type: "`string[]`", optional: false, description: "The configuration's visible columns." },
+            { name: "column_order", type: "`string[]`", optional: false, description: "The columns in the order they should be displayed." },
+            { name: "column_widths", type: "`object`", optional: true, description: "The column widths in the view." },
+            { name: "filters", type: "`object`", optional: true, description: "The filters applied to the view." },
+            { name: "sorting", type: "`object`", optional: true, description: "The sorting applied to the view.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The ID of the sorting column." },
+                { name: "desc", type: "`boolean`", optional: false, description: "Whether the sorting is descending." }
+              ] },
+            { name: "search", type: "`string`", optional: true, description: "The configuration's search." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the view configuration was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the view configuration was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/views/\{entity\}/configurations
+
+**Create View Configuration**
+
+Create a new view configuration for an entity. If `is_system_default` is set to true, the created configuration will be set as the system default for the specified entity. Otherwise, it will be a custom configuration for the admin user.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "entity", type: "`string`", optional: false, description: "The entity to create its view configuration (for example, `orders`)." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "is_system_default", type: "`boolean`", optional: true, description: "Whether the view is the system default. If so, it will be used as the default view for all users that don't have a custom active view set." },
+    { name: "set_active", type: "`boolean`", optional: true, description: "Whether the view is set as active." },
+    { name: "configuration", type: "`object`", optional: true, description: "The view's configuration.", children: [
+        { name: "visible_columns", type: "`string[]`", optional: false, description: "The configuration's visible columns." },
+        { name: "column_order", type: "`string[]`", optional: false, description: "The columns in the order they should be displayed." },
+        { name: "search", type: "`string`", optional: true, description: "The search query used in the view." },
+        { name: "column_widths", type: "`object`", optional: true, description: "The column widths in the view." },
+        { name: "filters", type: "`object`", optional: true, description: "The filters applied to the view." },
+        { name: "sorting", type: "`object`", optional: true, description: "The sorting applied to the view.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The ID of the sorting column." },
+            { name: "desc", type: "`boolean`", optional: false, description: "Whether the sorting is descending." }
+          ] }
+      ] },
+    { name: "name", type: "`string`", optional: true, description: "The view's name." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const { view_configuration } = await sdk.admin.views.createConfiguration(
+  "orders",
+  {
+    name: "My Orders View",
+    configuration: {
+      visible_columns: ["display_id", "status"],
+      column_order: ["display_id", "status"],
+    },
+  }
+)
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/views/{entity}/configurations' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+-d '{
+  "is_system_default": true,
+  "name": "Custom View"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "view_configuration", type: "`object`", optional: false, description: "The details of a view configuration.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The view configuration's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The entity the view configuration belongs to." },
+        { name: "name", type: "`string`", optional: false, description: "The view configuration's name." },
+        { name: "user_id", type: "`string`", optional: false, description: "The ID of the user the view configuration belongs to. If `null`, the view configuration is a system default." },
+        { name: "is_system_default", type: "`boolean`", optional: false, description: "Whether the view configuration is the system default." },
+        { name: "configuration", type: "`object`", optional: true, description: "The view's configuration.", children: [
+            { name: "visible_columns", type: "`string[]`", optional: false, description: "The configuration's visible columns." },
+            { name: "column_order", type: "`string[]`", optional: false, description: "The columns in the order they should be displayed." },
+            { name: "column_widths", type: "`object`", optional: true, description: "The column widths in the view." },
+            { name: "filters", type: "`object`", optional: true, description: "The filters applied to the view." },
+            { name: "sorting", type: "`object`", optional: true, description: "The sorting applied to the view.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The ID of the sorting column." },
+                { name: "desc", type: "`boolean`", optional: false, description: "Whether the sorting is descending." }
+              ] },
+            { name: "search", type: "`string`", optional: true, description: "The configuration's search." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the view configuration was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the view configuration was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/views/\{entity\}/configurations/active
+
+**Get Active View Configuration**
+
+Get the active view configurations for an entity. If no active view is set, `null` is returned. An admin user can only retrieve their own active configuration.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "entity", type: "`string`", optional: false, description: "The entity to retrieve its active view configurations (for example, `orders`)." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.views.retrieveActiveConfiguration("orders")
+.then(({ view_configuration, active_view_configuration_id }) => {
+  console.log(view_configuration)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/views/{entity}/configurations/active' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "view_configuration", type: "`object`", optional: false, description: "The details of a view configuration.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The view configuration's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The entity the view configuration belongs to." },
+        { name: "name", type: "`string`", optional: false, description: "The view configuration's name." },
+        { name: "user_id", type: "`string`", optional: false, description: "The ID of the user the view configuration belongs to. If `null`, the view configuration is a system default." },
+        { name: "is_system_default", type: "`boolean`", optional: false, description: "Whether the view configuration is the system default." },
+        { name: "configuration", type: "`object`", optional: true, description: "The view's configuration.", children: [
+            { name: "visible_columns", type: "`string[]`", optional: false, description: "The configuration's visible columns." },
+            { name: "column_order", type: "`string[]`", optional: false, description: "The columns in the order they should be displayed." },
+            { name: "column_widths", type: "`object`", optional: true, description: "The column widths in the view." },
+            { name: "filters", type: "`object`", optional: true, description: "The filters applied to the view." },
+            { name: "sorting", type: "`object`", optional: true, description: "The sorting applied to the view.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The ID of the sorting column." },
+                { name: "desc", type: "`boolean`", optional: false, description: "Whether the sorting is descending." }
+              ] },
+            { name: "search", type: "`string`", optional: true, description: "The configuration's search." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the view configuration was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the view configuration was updated." }
+      ] },
+    { name: "is_default_active", type: "`boolean`", optional: true, description: "Whether the active view configuration is the system default." },
+    { name: "default_type", type: "`\"code\"` \\| `\"system\"`", optional: true, description: "The type of the default view configuration if the active view is the system default. It will be `system` if the active view is the system default, `code` if no active view is set, or `undefined` if the active view isn't the system default." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/views/\{entity\}/configurations/active
+
+**Make View Configuration Active**
+
+Make a view configuration active. This will set the given view configuration as the active one for the specified entity for the admin user. An admin user can only set their own configurations as active. If the view configuration ID is `null`, the active view configuration will be cleared, and the `code` or system default view configuration type will be used as the active view.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "entity", type: "`string`", optional: false, description: "The entity to update its view configuration (for example, `orders`)." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "view_configuration_id", type: "`string`", optional: false, description: "The ID of the view configuration to set as active. If `null`, the active view configuration will be cleared, and the `code` or system default view configuration will be used as the active view." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+await sdk.admin.views.setActiveConfiguration("orders", {
+  view_configuration_id: "viewconfig_123",
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/views/{entity}/configurations/active' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "view_configuration_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "success", type: "`boolean`", optional: false, description: "Whether the operation was successful." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/views/\{entity\}/configurations/\{id\}
+
+**Get View Configuration**
+
+Retrieve a view configuration for an entity. An admin user can only retrieve their own configurations.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "entity", type: "`string`", optional: false, description: "The entity to retrieve its view configurations (for example, `orders`)" },
+    { name: "id", type: "`string`", optional: false, description: "The ID of the view configuration to retrieve." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.views.retrieveConfiguration("orders", "viewconfig_123")
+.then(({ view_configuration }) => {
+  console.log(view_configuration)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/views/{entity}/configurations/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "view_configuration", type: "`object`", optional: false, description: "The details of a view configuration.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The view configuration's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The entity the view configuration belongs to." },
+        { name: "name", type: "`string`", optional: false, description: "The view configuration's name." },
+        { name: "user_id", type: "`string`", optional: false, description: "The ID of the user the view configuration belongs to. If `null`, the view configuration is a system default." },
+        { name: "is_system_default", type: "`boolean`", optional: false, description: "Whether the view configuration is the system default." },
+        { name: "configuration", type: "`object`", optional: true, description: "The view's configuration.", children: [
+            { name: "visible_columns", type: "`string[]`", optional: false, description: "The configuration's visible columns." },
+            { name: "column_order", type: "`string[]`", optional: false, description: "The columns in the order they should be displayed." },
+            { name: "column_widths", type: "`object`", optional: true, description: "The column widths in the view." },
+            { name: "filters", type: "`object`", optional: true, description: "The filters applied to the view." },
+            { name: "sorting", type: "`object`", optional: true, description: "The sorting applied to the view.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The ID of the sorting column." },
+                { name: "desc", type: "`boolean`", optional: false, description: "Whether the sorting is descending." }
+              ] },
+            { name: "search", type: "`string`", optional: true, description: "The configuration's search." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the view configuration was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the view configuration was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/views/\{entity\}/configurations/\{id\}
+
+**Update View Configuration**
+
+Update the view configuration of an entity. An admin user can only update their own configurations.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "entity", type: "`string`", optional: false, description: "The entity to update its view configuration (for example, `orders`)." },
+    { name: "id", type: "`string`", optional: false, description: "The view configuration's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "set_active", type: "`boolean`", optional: true, description: "Whether the view is set as active." },
+    { name: "name", type: "`string`", optional: true, description: "The view's name." },
+    { name: "is_system_default", type: "`boolean`", optional: true, description: "Whether the view is the system default." },
+    { name: "configuration", type: "`object`", optional: true, description: "The view's configuration.", children: [
+        { name: "search", type: "`string`", optional: true, description: "The search query used in the view." },
+        { name: "visible_columns", type: "`string[]`", optional: true, description: "The configuration's visible columns." },
+        { name: "column_order", type: "`string[]`", optional: true, description: "The columns in the order they should be displayed." },
+        { name: "column_widths", type: "`object`", optional: true, description: "The column widths in the view." },
+        { name: "filters", type: "`object`", optional: true, description: "The filters applied to the view." },
+        { name: "sorting", type: "`object`", optional: true, description: "The sorting applied to the view.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The ID of the sorting column." },
+            { name: "desc", type: "`boolean`", optional: false, description: "Whether the sorting is descending." }
+          ] }
+      ] }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const { view_configuration } = await sdk.admin.views.updateConfiguration(
+  "orders",
+  "viewconfig_123",
+  {
+    name: "Updated View",
+  }
+)
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/views/{entity}/configurations/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+-d '{
+  "is_system_default": true
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "view_configuration", type: "`object`", optional: false, description: "The details of a view configuration.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The view configuration's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The entity the view configuration belongs to." },
+        { name: "name", type: "`string`", optional: false, description: "The view configuration's name." },
+        { name: "user_id", type: "`string`", optional: false, description: "The ID of the user the view configuration belongs to. If `null`, the view configuration is a system default." },
+        { name: "is_system_default", type: "`boolean`", optional: false, description: "Whether the view configuration is the system default." },
+        { name: "configuration", type: "`object`", optional: true, description: "The view's configuration.", children: [
+            { name: "visible_columns", type: "`string[]`", optional: false, description: "The configuration's visible columns." },
+            { name: "column_order", type: "`string[]`", optional: false, description: "The columns in the order they should be displayed." },
+            { name: "column_widths", type: "`object`", optional: true, description: "The column widths in the view." },
+            { name: "filters", type: "`object`", optional: true, description: "The filters applied to the view." },
+            { name: "sorting", type: "`object`", optional: true, description: "The sorting applied to the view.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The ID of the sorting column." },
+                { name: "desc", type: "`boolean`", optional: false, description: "Whether the sorting is descending." }
+              ] },
+            { name: "search", type: "`string`", optional: true, description: "The configuration's search." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the view configuration was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the view configuration was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/views/\{entity\}/configurations/\{id\}
+
+**Remove View Configurations**
+
+Remove view configurations of an entity. An admin user can only delete their own configurations.
+
+<Note title="Feature flag">
+
+This API route is only available when the `view_configurations` feature flag is enabled. Set the `MEDUSA_FF_VIEW_CONFIGURATIONS` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "entity", type: "`string`", optional: false, description: "The entity to delete its view configuration (for example, `orders`)" },
+    { name: "id", type: "`string`", optional: false, description: "The ID of the view configuration to delete" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+const { id, object, deleted } = await sdk.admin.views.deleteConfiguration(
+  "orders",
+  "viewconfig_123"
+)
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/views/{entity}/configurations/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The ID of the deleted View Configuration." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", example: "view_configuration" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the view was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

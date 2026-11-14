@@ -1,0 +1,52 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, ChildDocs } from "docs-ui"
+
+export const metadata = {
+  title: `Payment Module`,
+}
+
+# {metadata.title}
+
+In this section of the documentation, you will find resources to learn more about the Payment Module and how to use it in your application.
+
+<Note title="Looking for no-code docs?">
+
+Refer to the [Medusa Admin User Guide](!user-guide!/orders/payments) to learn how to manage order payments using the dashboard.
+
+</Note>
+
+Medusa has payment related features available out-of-the-box through the Payment Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in Commerce Modules, such as this Payment Module.
+
+<Note>
+
+Learn more about why modules are isolated in [this documentation](!docs!/learn/fundamentals/modules/isolation).
+
+</Note>
+
+## Payment Features
+
+- [Authorize, Capture, and Refund Payments](./payment/page.mdx): Authorize, capture, and refund payments for a single resource.
+- [Payment Collection Management](./payment-collection/page.mdx): Store and manage all payments of a single resources, such as a cart, in payment collections.
+- [Integrate Third-Party Payment Providers](./payment-provider/page.mdx): Use payment providers like [Stripe](./payment-provider/stripe/page.mdx) and [Adyen](./payment-provider/adyen/page.mdx) to handle and process payments, or integrate custom payment providers.
+- [Saved Payment Methods](./account-holder/page.mdx): Save payment methods for customers in third-party payment providers.
+- [Handle Webhook Events](./webhook-events/page.mdx): Handle webhook events from third-party providers and process the associated payment.
+
+---
+
+## Configure Payment Module
+
+The Payment Module accepts options for further configurations. Refer to [this documentation](./module-options/page.mdx) for details on the module's options.
+
+---
+
+## Providers
+
+Medusa provides the following payment providers out-of-the-box. You can use them to process payments for orders, returns, and other resources.
+
+<ChildDocs showItems={["Providers"]} hideTitle />
+
+---
+

@@ -1,0 +1,83 @@
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Accept Payment in Checkout Flow`,
+}
+
+# {metadata.title}
+
+In this guide, you'll learn how to implement it using workflows or the Payment Module.
+
+## Why Implement the Payment Flow?
+
+Medusa already provides a built-in payment flow that allows you to accept payments from customers, which you can learn about in the [Accept Payment Flow in Checkout](../payment-checkout-flow/page.mdx) guide.
+
+You may need to implement a custom payment flow if you have a different use case, or you're using the Payment Module separately from the MedusaGo application.
+
+This guide will help you understand how to implement a payment flow using the Payment Module's main service or workflows.
+
+You can also follow this guide to get a general understanding of how the payment flow works in the MedusaGo application.
+
+---
+
+## How to Implement the Accept Payment Flow?
+
+<Note title="Tip">
+
+For a guide on how to implement this flow in the storefront, check out [this guide](../../../storefront-development/checkout/payment/page.mdx).
+
+</Note>
+
+<Note>
+
+It's highly recommended to use Medusa's workflows to implement this flow. Use the Payment Module's main service for more complex cases.
+
+</Note>
+
+#### Handling Deferred Authorization
+
+Some payment methods (for example, bank transfers, payment links, or vouchers like OXXO or boleto) don't authorize immediately. For these methods, the payment provider returns a `pending_authorization` status instead of `authorized`.
+
+When this happens:
+
+- `authorizePaymentSession` returns `null` instead of a payment object.
+- The payment session's `status` is updated to `pending_authorization`.
+- The cart can still be completed and an order is created with an "awaiting" payment status.
+- Medusa will re-attempt authorization automatically when it receives a webhook event from the payment provider confirming the payment.
+- Admins can also manually trigger a re-check from the order details page in the Medusa Admin.
+
+<Note>
+
+Support for `pending_authorization` is available since Medusa [v2.17.2](https://github.com/medusajs/medusa/releases/tag/v2.17.2).
+
+</Note>
+
+### 5. Payment Flow Complete
+
+The payment flow is complete once the payment session is authorized and the payment is created.
+
+You can then:
+
+- Complete the cart using the [completeCartWorkflow](/references/medusa-workflows/completeCartWorkflow) if you're using the MedusaGo application.
+- Capture the payment either using the [capturePaymentWorkflow](/references/medusa-workflows/capturePaymentWorkflow) or [capturePayment method](/references/payment/capturePayment). 
+- Refund captured amounts using the [refundPaymentsWorkflow](/references/medusa-workflows/refundPaymentsWorkflow) or [refundPayment method](/references/payment/refundPayment).
+
+<Note>
+
+Some payment providers allow capturing the payment automatically once it's authorized. In that case, you don't need to do it manually.
+
+</Note>
+
+### Capture Payments
+
+To capture a payment, use the `capturePaymentWorkflow` or the Payment Module's `capturePayment` method.
+
+If you pass an `amount`, it must be greater than 0. If you omit the `amount`, Medusa captures the full payment amount.
+
+<Note>
+
+Before [Medusa v2.18.0](https://github.com/medusajs/medusa/releases/tag/v2.18.0), passing `0` as the capture amount was treated as if no amount was provided, defaulting to the full payment amount. Now, passing `0` or a negative number throws an error.
+
+</Note>
+
+---

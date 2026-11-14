@@ -1,0 +1,395 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Stores API Routes`,
+}
+
+# {metadata.title}
+
+A store holds the main configuration and information of your commerce store, such as supported currencies or default sales channel.
+
+By default, the MedusaGo application has one default store. There are no API routes to create more stores. Instead, you'd have  to handle that customization manually.
+
+These API routes allow admin users to manage their store.
+
+## GET /admin/stores
+
+**List Stores**
+
+Retrieve a list of stores. The stores can be filtered by fields such as `id`. The stores can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the store's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a store ID." },
+    { name: "name", type: "`string` \\| `string[]`", optional: true, description: "Filter by a store name." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.store.list()
+.then(({ stores, count, limit, offset }) => {
+  console.log(stores)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/stores' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "stores", type: "`object[]`", optional: false, description: "The list of stores.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The store's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The store's name." },
+        { name: "supported_currencies", type: "`object[]`", optional: false, description: "The store's supported currencies.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The currency's ID." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The currency's code.", example: "usd" },
+            { name: "store_id", type: "`string`", optional: false, description: "The ID of the store this currency belongs to." },
+            { name: "is_default", type: "`boolean`", optional: false, description: "Whether this currency is the default in the store." },
+            { name: "currency", type: "`object`", optional: false, description: "The currency's currencies.", children: [
+                { name: "code", type: "`string`", optional: false, description: "The currency's code.", example: "usd" },
+                { name: "symbol", type: "`string`", optional: false, description: "The currency's symbol.", example: "$" },
+                { name: "symbol_native", type: "`string`", optional: false, description: "The currency's native symbol, if different than the symbol.", example: "$" },
+                { name: "name", type: "`string`", optional: false, description: "The currency's name." },
+                { name: "decimal_digits", type: "`number`", optional: false, description: "The number of digits after the decimal for prices in this currency." },
+                { name: "rounding", type: "`number`", optional: false, description: "The rounding percision applied on prices in this currency." },
+                { name: "created_at", type: "`string`", optional: false, description: "The currency's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The currency's update date." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The currency's deletion date." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the currency was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the currency was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the currency was deleted." }
+          ] },
+        { name: "default_sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel used by default in the store." },
+        { name: "default_region_id", type: "`string`", optional: false, description: "The ID of the region used by default in the store." },
+        { name: "default_location_id", type: "`string`", optional: false, description: "The ID of the stock location used by default in the store." },
+        { name: "metadata", type: "`object`", optional: false, description: "The store's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the store was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the store was updated." },
+        { name: "supported_locales", type: "`object[]`", optional: false, description: "The store's supported locales.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The locale's ID." },
+            { name: "locale_code", type: "`string`", optional: false, description: "The locale's code in BCP 47 format." },
+            { name: "store_id", type: "`string`", optional: false, description: "The ID of the store to which the locale belongs." },
+            { name: "locale", type: "`object`", optional: false, description: "The locale's details.", children: [
+                { name: "code", type: "`string`", optional: false, description: "The locale's code in BCP 47 format.", example: "fr-FR" },
+                { name: "name", type: "`string`", optional: false, description: "The locale's display name." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date and time at which the locale was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date and time at which the locale was last updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date and time at which the locale was deleted." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the locale was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the locale was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the locale was deleted." }
+          ] }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/stores/\{id\}
+
+**Get a Store**
+
+Retrieve a store by its ID. You can expand the store's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The store's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.store.retrieve("store_123")
+.then(({ store }) => {
+  console.log(store)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/stores/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "store", type: "`object`", optional: false, description: "The store's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The store's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The store's name." },
+        { name: "supported_currencies", type: "`object[]`", optional: false, description: "The store's supported currencies.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The currency's ID." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The currency's code.", example: "usd" },
+            { name: "store_id", type: "`string`", optional: false, description: "The ID of the store this currency belongs to." },
+            { name: "is_default", type: "`boolean`", optional: false, description: "Whether this currency is the default in the store." },
+            { name: "currency", type: "`object`", optional: false, description: "The currency's currencies.", children: [
+                { name: "code", type: "`string`", optional: false, description: "The currency's code.", example: "usd" },
+                { name: "symbol", type: "`string`", optional: false, description: "The currency's symbol.", example: "$" },
+                { name: "symbol_native", type: "`string`", optional: false, description: "The currency's native symbol, if different than the symbol.", example: "$" },
+                { name: "name", type: "`string`", optional: false, description: "The currency's name." },
+                { name: "decimal_digits", type: "`number`", optional: false, description: "The number of digits after the decimal for prices in this currency." },
+                { name: "rounding", type: "`number`", optional: false, description: "The rounding percision applied on prices in this currency." },
+                { name: "created_at", type: "`string`", optional: false, description: "The currency's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The currency's update date." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The currency's deletion date." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the currency was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the currency was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the currency was deleted." }
+          ] },
+        { name: "default_sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel used by default in the store." },
+        { name: "default_region_id", type: "`string`", optional: false, description: "The ID of the region used by default in the store." },
+        { name: "default_location_id", type: "`string`", optional: false, description: "The ID of the stock location used by default in the store." },
+        { name: "metadata", type: "`object`", optional: false, description: "The store's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the store was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the store was updated." },
+        { name: "supported_locales", type: "`object[]`", optional: false, description: "The store's supported locales.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The locale's ID." },
+            { name: "locale_code", type: "`string`", optional: false, description: "The locale's code in BCP 47 format." },
+            { name: "store_id", type: "`string`", optional: false, description: "The ID of the store to which the locale belongs." },
+            { name: "locale", type: "`object`", optional: false, description: "The locale's details.", children: [
+                { name: "code", type: "`string`", optional: false, description: "The locale's code in BCP 47 format.", example: "fr-FR" },
+                { name: "name", type: "`string`", optional: false, description: "The locale's display name." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date and time at which the locale was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date and time at which the locale was last updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date and time at which the locale was deleted." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the locale was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the locale was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the locale was deleted." }
+          ] }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/stores/\{id\}
+
+**Update a Store**
+
+Update a store's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The store's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: true, description: "The store's name." },
+    { name: "supported_currencies", type: "`object[]`", optional: true, description: "The store's supported currencies.", children: [
+        { name: "currency_code", type: "`string`", optional: false, description: "The currency's code.", example: "usd" },
+        { name: "is_default", type: "`boolean`", optional: true, description: "Whether the currency is the default in the store." },
+        { name: "is_tax_inclusive", type: "`boolean`", optional: true, description: "Whether prices using this currency are tax inclusive." }
+      ] },
+    { name: "default_sales_channel_id", type: "`string`", optional: true, description: "The ID of the default sales channel in the store." },
+    { name: "default_region_id", type: "`string`", optional: true, description: "The ID of the default region in the store." },
+    { name: "default_location_id", type: "`string`", optional: true, description: "The ID of the default stock location in the store." },
+    { name: "metadata", type: "`object`", optional: true, description: "The store's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+    { name: "supported_locales", type: "`object[]`", optional: true, description: "The store's supported locales.", children: [
+        { name: "locale_code", type: "`string`", optional: false, description: "The locale's code in [BCP 47 format](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1).", example: "fr-FR" }
+      ] }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.store.update("store_123", {
+  name: "My Store",
+})
+.then(({ store }) => {
+  console.log(store)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/stores/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "name": "Melvina",
+  "default_sales_channel_id": "{value}",
+  "default_region_id": "{value}",
+  "default_location_id": "{value}",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "store", type: "`object`", optional: false, description: "The store's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The store's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The store's name." },
+        { name: "supported_currencies", type: "`object[]`", optional: false, description: "The store's supported currencies.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The currency's ID." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The currency's code.", example: "usd" },
+            { name: "store_id", type: "`string`", optional: false, description: "The ID of the store this currency belongs to." },
+            { name: "is_default", type: "`boolean`", optional: false, description: "Whether this currency is the default in the store." },
+            { name: "currency", type: "`object`", optional: false, description: "The currency's currencies.", children: [
+                { name: "code", type: "`string`", optional: false, description: "The currency's code.", example: "usd" },
+                { name: "symbol", type: "`string`", optional: false, description: "The currency's symbol.", example: "$" },
+                { name: "symbol_native", type: "`string`", optional: false, description: "The currency's native symbol, if different than the symbol.", example: "$" },
+                { name: "name", type: "`string`", optional: false, description: "The currency's name." },
+                { name: "decimal_digits", type: "`number`", optional: false, description: "The number of digits after the decimal for prices in this currency." },
+                { name: "rounding", type: "`number`", optional: false, description: "The rounding percision applied on prices in this currency." },
+                { name: "created_at", type: "`string`", optional: false, description: "The currency's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The currency's update date." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The currency's deletion date." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the currency was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the currency was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the currency was deleted." }
+          ] },
+        { name: "default_sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel used by default in the store." },
+        { name: "default_region_id", type: "`string`", optional: false, description: "The ID of the region used by default in the store." },
+        { name: "default_location_id", type: "`string`", optional: false, description: "The ID of the stock location used by default in the store." },
+        { name: "metadata", type: "`object`", optional: false, description: "The store's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the store was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the store was updated." },
+        { name: "supported_locales", type: "`object[]`", optional: false, description: "The store's supported locales.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The locale's ID." },
+            { name: "locale_code", type: "`string`", optional: false, description: "The locale's code in BCP 47 format." },
+            { name: "store_id", type: "`string`", optional: false, description: "The ID of the store to which the locale belongs." },
+            { name: "locale", type: "`object`", optional: false, description: "The locale's details.", children: [
+                { name: "code", type: "`string`", optional: false, description: "The locale's code in BCP 47 format.", example: "fr-FR" },
+                { name: "name", type: "`string`", optional: false, description: "The locale's display name." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date and time at which the locale was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date and time at which the locale was last updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date and time at which the locale was deleted." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the locale was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the locale was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the locale was deleted." }
+          ] }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

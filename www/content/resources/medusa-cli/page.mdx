@@ -1,0 +1,325 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `Medusa CLI Reference`,
+}
+
+# {metadata.title}
+
+In this reference, you'll find the commands of the Medusa CLI that a MedusaGo application provides, and the options of each command.
+
+## How to Run the CLI
+
+The CLI is part of your MedusaGo project. The `main.go` file of the project passes your configuration and customisations to it, so you run its commands with `go run` from the project's directory (`apps/backend` in a project created with `create-medusago-app`):
+
+```bash
+go run . <command> [options]
+```
+
+For example, `go run . db:migrate`. A built application, which is the `.medusa/server/medusa` executable that the [build command](#build) creates, accepts the same commands: `./medusa db:migrate`.
+
+The repository also contains a stock CLI, `packages/cli/medusa-cli`, for projects that don't have Go code and are configured only with a `medusa-config.json`, `medusa-config.yaml`, or `medusa-config.yml` file. It provides the same commands.
+
+Before running a command, the CLI loads the `.env` file of the directory it runs from. Learn more in the [Environment Variables chapter](!docs!/learn/fundamentals/environment-variables).
+
+### Global Options
+
+All commands accept the following options:
+
+- `-h, --help`: Show the help of the CLI, or of a command when you pass it after the command name.
+- `-v, --version`: Show the version of the CLI and of Medusa that your application mirrors.
+- `--verbose`, `--json`, `--no-color`: Accepted for compatibility but ignored. Configure the output with the [logging environment variables](!docs!/learn/debugging-and-testing/logging) instead.
+
+If you pass an unknown option or command, the CLI shows an error, and suggests the closest command name.
+
+### Commands That Aren't Supported
+
+The following commands of Medusa's CLI exist for compatibility, but MedusaGo doesn't implement them. They print an error and exit with a non-zero status, except where noted:
+
+- `new`: Use [create-medusago-app](!resources!/create-medusa-app) to create a project.
+- `lint`: Use `go vet` or your Go linter. The `--lint` option of `develop` and `build` is ignored.
+- `plugin:db:generate`, `plugin:build`, `plugin:develop`, `plugin:publish`, and `plugin:add`: Plugins are Go packages that you import into your application, so there's nothing to build or publish with the CLI.
+- `mcloud`: Not supported.
+- `codemod`: There are no codemods, so any codemod name results in an "Unknown codemod" error.
+- `telemetry`: It only prints whether telemetry is enabled or disabled. MedusaGo doesn't collect usage data.
+
+---
+
+## db:setup
+
+Create the database, run its migrations, and sync links.
+
+```bash
+go run . db:setup
+```
+
+The command runs [db:create](#dbcreate), then [db:migrate](#dbmigrate).
+
+### Options
+
+- `--db <name>`: The name of the database to create.
+- `--interactive`: Show prompts. It's enabled by default. Use `--no-interactive` to run the command without prompts.
+- `--skip-links`: Don't sync links.
+- `--skip-search`: Don't create or alter search indexes.
+- `--execute-all-links`: Execute all link actions, including the unsafe ones, without prompts.
+- `--execute-safe-links`: Execute only the safe link actions.
+- `--execute-all-search`: Execute all search index actions, including the unsafe ones.
+- `--execute-safe-search`: Execute only the safe search index actions.
+
+---
+
+## db:create
+
+Create the database that your application uses.
+
+```bash
+go run . db:create
+```
+
+The command connects to the PostgreSQL server in `DATABASE_URL`, which must be in your `.env` file or in the environment, and creates the database if it doesn't exist. It then saves the database's name as `DB_NAME` in your `.env` file.
+
+The database's name is, in order of priority, the `--db` option, the `DB_NAME` variable in `.env`, or `medusa-<directory name>`. In a terminal, the command shows the name as a default value in a prompt.
+
+### Options
+
+- `--db <name>`: The name of the database to create.
+- `--interactive`: Show prompts. It's enabled by default. Use `--no-interactive` to run the command without prompts.
+
+---
+
+## db:migrate
+
+Migrate the database by running the pending migrations.
+
+```bash
+go run . db:migrate
+```
+
+The command:
+
+1. Runs the pending migrations of every enabled module and module provider. The migrations of a module run in a single transaction.
+2. Syncs the link tables with the links defined by MedusaGo and your application.
+3. Creates and alters the search indexes, if the Search Module is enabled.
+4. Runs the loaders of the modules, which create the initial data, such as the currencies and the module providers.
+5. Runs the data migration scripts that haven't been run yet.
+
+Running the command again when nothing is pending doesn't change the database.
+
+Link syncing never drops tables unless you pass `--execute-all-links`. The command doesn't prompt: tables of removed links are reported and left in place by default, and the links whose tables differ from their definition are reported and left unchanged.
+
+### Options
+
+- `--skip-scripts`: Don't run the data migration scripts.
+- `--skip-links`: Don't sync links.
+- `--skip-search`: Don't create or alter search indexes.
+- `--execute-all-links`: Execute all link actions, including dropping the tables of removed links.
+- `--execute-safe-links`: Execute only the safe link actions. This is the default behaviour.
+- `--execute-all-search`: Execute all search index actions, including dropping indexes that no definition declares any more.
+- `--execute-safe-search`: Execute only the safe search index actions. This is the default behaviour.
+- `--concurrency <number>`: Accepted for compatibility, with no effect. Modules are migrated one at a time.
+- `--all-or-nothing`: Accepted for compatibility, with no effect. Each module's migrations already run in one transaction.
+
+---
+
+## db:migrate:scripts
+
+Run all migration scripts that haven't run yet.
+
+```bash
+go run . db:migrate:scripts
+```
+
+Migration scripts update data after a release, such as filling a new column. Each script runs once, and the command records it in the `script_migrations` table. [db:migrate](#dbmigrate) runs the scripts too, unless you pass `--skip-scripts`.
+
+---
+
+## db:migrate:search
+
+Create and alter the search indexes that your application declares.
+
+```bash
+go run . db:migrate:search
+```
+
+If the Search Module isn't configured, the command logs that it's skipping the indexes.
+
+### Options
+
+- `--execute-all-search`: Drop the indexes that no definition declares any more, in addition to creating and altering indexes.
+- `--execute-safe-search`: Leave those indexes in place. This is the default behaviour.
+
+---
+
+## db:rollback
+
+Revert the last executed migration of one or more modules.
+
+```bash
+go run . db:rollback <modules...>
+```
+
+You must pass at least one module key, such as `cart` or `product`. The command fails if a key isn't the key of an enabled module.
+
+For example:
+
+```bash
+go run . db:rollback cart product
+```
+
+---
+
+## db:generate
+
+Generate the migrations of the data models of your own modules.
+
+```bash
+go run . db:generate <modules...>
+```
+
+You must pass at least one module key, which is the key of a module of your project. The command compares the module's data models to the snapshot of its existing migrations, and writes the migration of the changes as Go code in the `migrations` directory of the module, along with an `index.go` file that lists the module's migrations. It then logs `Migrations generated`.
+
+Only modules of your project, which are loaded from a local path, can generate migrations. Pass the generated list to your module's definition so that [db:migrate](#dbmigrate) runs it. Learn more in the [Write Migration chapter](!docs!/learn/fundamentals/data-models/write-migration).
+
+---
+
+## db:sync-links
+
+Sync the database schema with the links defined by MedusaGo and by your application.
+
+```bash
+go run . db:sync-links
+```
+
+The command creates the tables of new links and updates the tables whose definition changed. [db:migrate](#dbmigrate) runs the same step, unless you pass `--skip-links`.
+
+### Options
+
+- `--execute-all`: Execute all actions, including dropping the tables of removed links.
+- `--execute-safe`: Execute only the safe actions. This is the default behaviour.
+- `--concurrency <number>`: Accepted for compatibility, with no effect.
+
+---
+
+## develop
+
+Start the development server. The command watches your project and restarts the server when a file changes.
+
+```bash
+go run . develop
+```
+
+The command starts the server with `NODE_ENV` set to `development`, so it reads `.env` and logs in the development format. If the project is a Go module, it compiles your application into `.medusa/develop/medusa` before every start, so changes to your Go code take effect after the restart. The command polls the project's files every half a second, and ignores the files and directories whose names start with a dot, `node_modules`, `dist`, `static`, `private`, `src/admin`, and `.medusa`.
+
+The Medusa Admin is served from the dashboard that's embedded in the application, at `http://localhost:9000/app`. Changes to your [admin customisations](!docs!/learn/fundamentals/admin) aren't compiled by this command.
+
+### Options
+
+- `-H, --host <host>`: Set the host the server listens on. The default is the `HOST` environment variable.
+- `-p, --port <port>`: Set the port the server listens on. The default is the `PORT` environment variable, or `9000`.
+- `--types`: Accepted for compatibility, with no effect.
+- `--lint`, `--fix`: Accepted for compatibility, and ignored.
+
+---
+
+## start
+
+Start the server in production mode.
+
+```bash
+go run . start
+```
+
+The command sets `NODE_ENV` to `production` unless it's already set. In production, the session cookie is `Secure`, so logging in to the Medusa Admin requires HTTPS. Learn more in the [Build chapter](!docs!/learn/build#authentication-locally-in-production-build).
+
+The command logs `Server is ready on port: <port>` when the server accepts requests, and shuts the server down gracefully when it receives an interrupt or a termination signal. The server responds with `OK` at `GET /health`.
+
+To start a production build, run the built executable from the `.medusa/server` directory:
+
+```bash
+cd .medusa/server
+./medusa start
+```
+
+### Options
+
+- `-H, --host <host>`: Set the host the server listens on. The default is the `HOST` environment variable. When it's empty, the server listens on all network interfaces.
+- `-p, --port <port>`: Set the port the server listens on. The default is the `PORT` environment variable, or `9000`.
+- `--types`: Accepted for compatibility, with no effect.
+- `--cluster`, `--workers`, `--servers`: Cluster mode isn't supported. If you pass `--cluster`, the command logs a warning and starts a single server process. Learn more in the [Worker Mode chapter](!docs!/learn/production/worker-mode).
+
+---
+
+## build
+
+Create a production build of your application.
+
+```bash
+go run . build
+```
+
+The command writes the build to the `.medusa/server` directory: an executable named `medusa` compiled with `go build`, the Medusa Admin in `public/admin`, and a copy of your `medusa-config.json` or `medusa-config.yaml` file if you have one. If your project isn't a Go module, the stock CLI executable is copied instead.
+
+Learn more in the [Build chapter](!docs!/learn/build).
+
+### Options
+
+- `--admin-only`: Build only the Medusa Admin, into the `.medusa/admin` directory, with the admin options compiled in. Use it to host the dashboard separately from the server.
+- `--quiet`: Accepted for compatibility, with no effect.
+- `--lint`, `--fix`: Accepted for compatibility, and ignored.
+
+---
+
+## user
+
+Create an admin user, or an invite for one.
+
+```bash
+go run . user -e admin@medusajs.com -p supersecret
+```
+
+The command creates the user with the `emailpass` auth provider, using the credentials you pass. It doesn't start the server.
+
+To create an invite instead, pass the `--invite` option. The command logs the invite token, which you use to create the user in the Medusa Admin at `/app/invite?token=<token>`:
+
+```bash
+go run . user -e admin@medusajs.com --invite
+```
+
+### Options
+
+- `-e, --email <email>`: The user's email.
+- `-p, --password <password>`: The user's password. It's required unless you pass `--invite`.
+- `-i, --id <id>`: Accepted for compatibility, with no effect.
+- `--invite`: Create an invite and log its token, instead of creating a user.
+
+---
+
+## exec
+
+Run a function that your project defines.
+
+```bash
+go run . exec <name> [args...]
+```
+
+Go can't load a source file at run time, so scripts are registered by name in your `main.go` file, in the `Scripts` option of the CLI:
+
+```go title="main.go" file="project/scripts.go" region="register"
+```
+
+A script is a function that receives the container of the loaded application, and the arguments that follow its name on the command line:
+
+```go title="src/scripts/hello.go" file="project/scripts.go" region="hello"
+```
+
+You then run it with:
+
+```bash
+go run . exec hello Medusa
+```
+
+You can also pass the path of the script's source file, such as `./src/scripts/hello.go`. The command maps the path to a registered name: the path relative to `src/scripts`, without the extension. If the name isn't registered, the command lists the registered scripts.
+
+The command loads the application without serving the Medusa Admin, and runs the script in the `server` [worker mode](!docs!/learn/production/worker-mode). Learn more in the [Custom CLI Scripts chapter](!docs!/learn/fundamentals/custom-cli-scripts).

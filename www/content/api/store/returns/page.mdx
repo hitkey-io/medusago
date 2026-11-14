@@ -1,0 +1,134 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Returns API Routes`,
+}
+
+# {metadata.title}
+
+Customers can request to return items in their order. The admin user then receives and handles the return.
+
+These API routes allows customers to create a return.
+
+## POST /store/returns
+
+**Create Return**
+
+Create a return for an order's items. The admin receives the return and process it from their side. This API route doesn't require customer authentication, so that guest customers can request a return for their orders. To restrict access to this API route, refer to the Restrict Return Creation guide.
+
+**Authentication:** none.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "order_id", type: "`string`", optional: false, description: "The ID of the order this return is created for." },
+    { name: "items", type: "`object[]`", optional: false, description: "The return's items.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+        { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+        { name: "reason_id", type: "`string`", optional: true, description: "The ID of the associated return reason." },
+        { name: "note", type: "`string`", optional: true, description: "A note with more details about the returned item." }
+      ] },
+    { name: "return_shipping", type: "`object`", optional: false, description: "The return's shipping details.", children: [
+        { name: "option_id", type: "`string`", optional: false, description: "The ID of the shipping option to use." },
+        { name: "price", type: "`number`", optional: true, description: "The shipping's price." }
+      ] },
+    { name: "note", type: "`string`", optional: true, description: "A note with more details about the return." },
+    { name: "receive_now", type: "`boolean`", optional: true, description: "Whether to mark the return as received." },
+    { name: "location_id", type: "`string`", optional: true, description: "The ID of the location that items are returned to." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/returns' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "order_id": "order_123",
+  "items": [
+    {
+      "id": "id_XbfptxUVo2io9EI",
+      "quantity": 7916429753974784,
+      "reason_id": "{value}",
+      "note": "{value}"
+    }
+  ],
+  "return_shipping": {
+    "option_id": "{value}",
+    "price": 1068364080349184
+  },
+  "note": "{value}",
+  "location_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "return", type: "`object`", optional: false, description: "The return's details.", children: [
+        { name: "items", type: "`object[]`", optional: false, description: "The return's items.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+            { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+            { name: "received_quantity", type: "`number`", optional: false, description: "The item's received quantity." },
+            { name: "damaged_quantity", type: "`number`", optional: false, description: "The item's damaged quantity." },
+            { name: "reason_id", type: "`string`", optional: true, description: "The ID of the item's reason." },
+            { name: "note", type: "`string`", optional: true, description: "A note with more details on why the item is returned." },
+            { name: "item_id", type: "`string`", optional: false, description: "The ID of the item in the order." },
+            { name: "return_id", type: "`string`", optional: false, description: "The ID of the return this item belongs to." },
+            { name: "metadata", type: "`object`", optional: true, description: "The item's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." }
+          ] },
+        { name: "status", type: "`\"received\"` \\| `\"canceled\"` \\| `\"requested\"` \\| `\"open\"` \\| `\"partially_received\"`", optional: true, description: "The return's status." },
+        { name: "id", type: "`string`", optional: false, description: "The return's ID." },
+        { name: "display_id", type: "`number`", optional: false, description: "The return's display ID." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the return was created." },
+        { name: "order_id", type: "`string`", optional: false, description: "The ID of the order this return belongs to." },
+        { name: "location_id", type: "`string`", optional: true, description: "The ID of the location the return items are being returned to." },
+        { name: "canceled_at", type: "`string`", optional: false, description: "The date the return was canceled." },
+        { name: "exchange_id", type: "`string`", optional: true, description: "The ID of the associated exchange." },
+        { name: "claim_id", type: "`string`", optional: true, description: "The ID of the associated claim." },
+        { name: "refund_amount", type: "`number`", optional: true, description: "The amount to be refunded." },
+        { name: "received_at", type: "`string`", optional: false, description: "The date the return items were received." },
+        { name: "created_by", type: "`string`", optional: false, description: "The ID of the user that created the return." },
+        { name: "requested_at", type: "`string`", optional: false, description: "The date the return was requested." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `order.return_requested`: Emitted when a return request is confirmed.
+- `order.return_received`: Emitted when a return is marked as received.

@@ -1,0 +1,1346 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Inventory Items API Routes`,
+}
+
+# {metadata.title}
+
+An inventory item is a stock-kept product whose inventory is managed.
+
+These API routes allow admin users to manage inventory items.
+
+## GET /admin/inventory-items
+
+**List Inventory Items**
+
+Retrieve a list of inventory items. The inventory items can be filtered by fields such as `id`. The inventory items can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "The inventory item's q." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "The inventory item's ID." },
+    { name: "sku", type: "`string` \\| `string[]`", optional: true, description: "The inventory item's sku." },
+    { name: "origin_country", type: "`string` \\| `string[]`", optional: true, description: "The inventory item's origin country." },
+    { name: "mid_code", type: "`string` \\| `string[]`", optional: true, description: "The inventory item's mid code." },
+    { name: "hs_code", type: "`string` \\| `string[]`", optional: true, description: "The inventory item's hs code." },
+    { name: "material", type: "`string` \\| `string[]`", optional: true, description: "The inventory item's material." },
+    { name: "requires_shipping", type: "`boolean`", optional: true, description: "The inventory item's requires shipping." },
+    { name: "weight", type: "`object`", optional: true, description: "Filter the inventory item's weight. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "length", type: "`object`", optional: true, description: "Filter the inventory item's length. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "height", type: "`object`", optional: true, description: "Filter by the inventory item's height. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "width", type: "`object`", optional: true, description: "Filter by the inventory item's width. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "location_levels", type: "`object`", optional: true, description: "Filter by the inventory item's associated location IDs.", children: [
+        { name: "location_id", type: "`string` \\| `string[]`", optional: true, description: "The associated location's ID." }
+      ] },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.inventoryItem.list()
+.then(({ inventory_items, count, limit, offset }) => {
+  console.log(inventory_items)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/inventory-items' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "inventory_items", type: "`object[]`", optional: false, description: "The inventory item's inventory items.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+        { name: "sku", type: "`string`", optional: true, description: "The inventory item's sku." },
+        { name: "origin_country", type: "`string`", optional: true, description: "The inventory item's origin country." },
+        { name: "hs_code", type: "`string`", optional: true, description: "The inventory item's HS code." },
+        { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the inventory item requires shipping." },
+        { name: "mid_code", type: "`string`", optional: true, description: "The inventory item's MID code." },
+        { name: "material", type: "`string`", optional: true, description: "The inventory item's material." },
+        { name: "weight", type: "`number`", optional: true, description: "The inventory item's weight." },
+        { name: "length", type: "`number`", optional: true, description: "The inventory item's length." },
+        { name: "height", type: "`number`", optional: true, description: "The inventory item's height." },
+        { name: "width", type: "`number`", optional: true, description: "The inventory item's width." },
+        { name: "title", type: "`string`", optional: true, description: "The inventory item's title." },
+        { name: "description", type: "`string`", optional: true, description: "The inventory item's description." },
+        { name: "thumbnail", type: "`string`", optional: true, description: "The thumbnail URL of the inventory item." },
+        { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs, used to store additional information about the inventory item." },
+        { name: "location_levels", type: "`object[]`", optional: true, description: "The inventory item's location levels.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The location level's ID." },
+            { name: "created_at", type: "`string`", optional: false, description: "The location level's created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The location level's updated at." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The location level's deleted at." },
+            { name: "inventory_item_id", type: "`string`", optional: false, description: "The location level's inventory item id." },
+            { name: "location_id", type: "`string`", optional: false, description: "The location level's location id." },
+            { name: "stocked_quantity", type: "`number`", optional: false, description: "The location level's stocked quantity." },
+            { name: "reserved_quantity", type: "`number`", optional: false, description: "The location level's reserved quantity." },
+            { name: "incoming_quantity", type: "`number`", optional: false, description: "The location level's incoming quantity." },
+            { name: "metadata", type: "`object`", optional: false, description: "The location level's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "inventory_item", type: "`object`", optional: true },
+            { name: "available_quantity", type: "`number`", optional: false, description: "The location level's available quantity." }
+          ] },
+        { name: "stocked_quantity", type: "`number`", optional: false, description: "The inventory item's stocked quantity." },
+        { name: "reserved_quantity", type: "`number`", optional: false, description: "The inventory item's reserved quantity." },
+        { name: "unit_of_measure", type: "`string`", optional: true, description: "The inventory's unit of measure.", example: "kg" }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/inventory-items
+
+**Create Inventory Item**
+
+Create an inventory item.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "sku", type: "`string`", optional: true, description: "The inventory item's SKU." },
+    { name: "hs_code", type: "`string`", optional: true, description: "The inventory item's HS code." },
+    { name: "weight", type: "`number`", optional: true, description: "The inventory item's weight." },
+    { name: "length", type: "`number`", optional: true, description: "The inventory item's length." },
+    { name: "height", type: "`number`", optional: true, description: "The inventory item's height." },
+    { name: "width", type: "`number`", optional: true, description: "The inventory item's width." },
+    { name: "origin_country", type: "`string`", optional: true, description: "The inventory item's origin country." },
+    { name: "mid_code", type: "`string`", optional: true, description: "The inventory item's mid code." },
+    { name: "material", type: "`string`", optional: true, description: "The inventory item's material." },
+    { name: "title", type: "`string`", optional: true, description: "The inventory item's title." },
+    { name: "description", type: "`string`", optional: true, description: "The description of the variant associated with the inventory item." },
+    { name: "requires_shipping", type: "`boolean`", optional: true, description: "Whether the item requires shipping." },
+    { name: "thumbnail", type: "`string`", optional: true, description: "The inventory item's thumbnail." },
+    { name: "metadata", type: "`object`", optional: true, description: "The inventory item's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+    { name: "location_levels", type: "`object[]`", optional: true, description: "The inventory item's location levels.", children: [
+        { name: "location_id", type: "`string`", optional: false, description: "The ID of the associated location." },
+        { name: "stocked_quantity", type: "`number`", optional: true, description: "The inventory level's stocked quantity." },
+        { name: "incoming_quantity", type: "`number`", optional: true, description: "The inventory level's incoming quantity." }
+      ] },
+    { name: "unit_of_measure", type: "`string`", optional: true, description: "The inventory item's unit of measure.", example: "kg" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.inventoryItem.create({
+  sku: "SHIRT"
+})
+.then(({ inventory_item }) => {
+  console.log(inventory_item)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/inventory-items' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "sku": "{value}",
+  "hs_code": "{value}",
+  "weight": 2857134683324416,
+  "length": 2322256963305472,
+  "height": 8391220613087232,
+  "width": 1297863250280448,
+  "origin_country": "{value}",
+  "mid_code": "{value}",
+  "material": "{value}",
+  "title": "{value}",
+  "description": "{value}",
+  "thumbnail": "{value}",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "inventory_item", type: "`object`", optional: false, description: "The inventory item's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+        { name: "sku", type: "`string`", optional: true, description: "The inventory item's sku." },
+        { name: "origin_country", type: "`string`", optional: true, description: "The inventory item's origin country." },
+        { name: "hs_code", type: "`string`", optional: true, description: "The inventory item's HS code." },
+        { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the inventory item requires shipping." },
+        { name: "mid_code", type: "`string`", optional: true, description: "The inventory item's MID code." },
+        { name: "material", type: "`string`", optional: true, description: "The inventory item's material." },
+        { name: "weight", type: "`number`", optional: true, description: "The inventory item's weight." },
+        { name: "length", type: "`number`", optional: true, description: "The inventory item's length." },
+        { name: "height", type: "`number`", optional: true, description: "The inventory item's height." },
+        { name: "width", type: "`number`", optional: true, description: "The inventory item's width." },
+        { name: "title", type: "`string`", optional: true, description: "The inventory item's title." },
+        { name: "description", type: "`string`", optional: true, description: "The inventory item's description." },
+        { name: "thumbnail", type: "`string`", optional: true, description: "The thumbnail URL of the inventory item." },
+        { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs, used to store additional information about the inventory item." },
+        { name: "location_levels", type: "`object[]`", optional: true, description: "The inventory item's location levels.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The location level's ID." },
+            { name: "created_at", type: "`string`", optional: false, description: "The location level's created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The location level's updated at." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The location level's deleted at." },
+            { name: "inventory_item_id", type: "`string`", optional: false, description: "The location level's inventory item id." },
+            { name: "location_id", type: "`string`", optional: false, description: "The location level's location id." },
+            { name: "stocked_quantity", type: "`number`", optional: false, description: "The location level's stocked quantity." },
+            { name: "reserved_quantity", type: "`number`", optional: false, description: "The location level's reserved quantity." },
+            { name: "incoming_quantity", type: "`number`", optional: false, description: "The location level's incoming quantity." },
+            { name: "metadata", type: "`object`", optional: false, description: "The location level's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "inventory_item", type: "`object`", optional: true },
+            { name: "available_quantity", type: "`number`", optional: false, description: "The location level's available quantity." }
+          ] },
+        { name: "stocked_quantity", type: "`number`", optional: false, description: "The inventory item's stocked quantity." },
+        { name: "reserved_quantity", type: "`number`", optional: false, description: "The inventory item's reserved quantity." },
+        { name: "unit_of_measure", type: "`string`", optional: true, description: "The inventory's unit of measure.", example: "kg" }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `inventory-item.created`: Emitted when inventory items are created.
+- `inventory-level.created`: Emitted when inventory levels are created.
+
+---
+
+## POST /admin/inventory-items/export
+
+**Export Inventory Items**
+
+Start an inventory items export process to retrieve a CSV of exported inventory items.
+
+You'll receive in the response the transaction ID of the workflow generating the CSV file. To check the status of the execution, send a GET request to `/admin/workflows-executions/export-inventory-items/:transaction-id`.
+Once the execution finishes successfully, a notification is created for the export. You can retrieve the notifications using the `/admin/notification` API route to retrieve the file's download URL.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "The ID of the inventory item to export." },
+    { name: "q", type: "`string`", optional: true, description: "Search query to apply on inventory item searchable fields to filter the results." },
+    { name: "sku", type: "`string` \\| `string[]`", optional: true, description: "Filter by the inventory item's sku." },
+    { name: "origin_country", type: "`string` \\| `string[]`", optional: true, description: "Filter by the inventory item's origin country." },
+    { name: "mid_code", type: "`string` \\| `string[]`", optional: true, description: "Filter by the inventory item's mid code." },
+    { name: "hs_code", type: "`string` \\| `string[]`", optional: true, description: "Filter by the inventory item's hs code." },
+    { name: "material", type: "`string` \\| `string[]`", optional: true, description: "Filter by the inventory item's material." },
+    { name: "requires_shipping", type: "`boolean`", optional: true, description: "Filter by whether the inventory item requires shipping." },
+    { name: "weight", type: "`number` \\| `object`", optional: true, description: "Filter by the inventory item's weight. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "length", type: "`number` \\| `object`", optional: true, description: "Filter by the inventory item's length. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "height", type: "`number` \\| `object`", optional: true, description: "Filter by the inventory item's height. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "width", type: "`number` \\| `object`", optional: true, description: "Filter by the inventory item's width. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "location_levels", type: "`object`", optional: true, description: "Filter by the inventory item's location levels.", children: [
+        { name: "location_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a location ID." }
+      ] },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include soft-deleted items in the results." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.inventoryItem.export({})
+.then(({ transaction_id }) => {
+  console.log(transaction_id)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/inventory-items/export' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`202` OK
+
+<TypeList
+  types={[
+    { name: "transaction_id", type: "`string`", optional: false, description: "The ID of the workflow execution's transaction. Use it to check the status of the export by sending a GET request to `/admin/workflows-executions/export-inventory-items/:transaction-id`" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/inventory-items/location-levels/batch
+
+**Manage Inventory Levels**
+
+Manage inventory levels to create, update, or delete them.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "create", type: "`object[]`", optional: true, description: "The inventory levels to create.", children: [
+        { name: "location_id", type: "`string`", optional: false, description: "The ID of the associated stock location." },
+        { name: "inventory_item_id", type: "`string`", optional: false, description: "The ID of the associated inventory item." },
+        { name: "stocked_quantity", type: "`number`", optional: true, description: "The stocked quantity." },
+        { name: "incoming_quantity", type: "`number`", optional: true, description: "The incoming quantity to be added to stock." }
+      ] },
+    { name: "update", type: "`object[]`", optional: true, description: "The inventory levels to update.", children: [
+        { name: "location_id", type: "`string`", optional: false, description: "The ID of the associated stock location." },
+        { name: "inventory_item_id", type: "`string`", optional: false, description: "The ID of the associated inventory item." },
+        { name: "stocked_quantity", type: "`number`", optional: true, description: "The stocked quantity." },
+        { name: "incoming_quantity", type: "`number`", optional: true, description: "The incoming quantity to be added to stock." },
+        { name: "id", type: "`string`", optional: true, description: "The update's ID." }
+      ] },
+    { name: "delete", type: "`string[]`", optional: true, description: "The IDs of the inventory levels to delete." },
+    { name: "force", type: "`boolean`", optional: true, description: "Whether to delete specified inventory levels even if they have a non-zero stocked quantity." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.inventoryItem.batchInventoryItemsLocationLevels({
+  create: [{
+    inventory_item_id: "iitem_123",
+    location_id: "sloc_123",
+    stocked_quantity: 10
+  }],
+  delete: ["ilvl_123"]
+})
+.then(({ created, updated, deleted }) => {
+  console.log(created, updated, deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/inventory-items/location-levels/batch' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "create": [
+    {
+      "location_id": "sloc_123",
+      "inventory_item_id": "iitem_123",
+      "stocked_quantity": 100,
+      "incoming_quantity": 50
+    }
+  ],
+  "update": [
+    {
+      "location_id": "sloc_456",
+      "inventory_item_id": "iitem_456",
+      "stocked_quantity": 200,
+      "incoming_quantity": 75
+    }
+  ],
+  "delete": [
+    "iilev_123"
+  ]
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "created", type: "`object[]`", optional: true, description: "The created inventory levels.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The location level's ID." },
+        { name: "created_at", type: "`string`", optional: false, description: "The location level's created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The location level's updated at." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The location level's deleted at." },
+        { name: "inventory_item_id", type: "`string`", optional: false, description: "The location level's inventory item id." },
+        { name: "location_id", type: "`string`", optional: false, description: "The location level's location id." },
+        { name: "stocked_quantity", type: "`number`", optional: false, description: "The location level's stocked quantity." },
+        { name: "reserved_quantity", type: "`number`", optional: false, description: "The location level's reserved quantity." },
+        { name: "incoming_quantity", type: "`number`", optional: false, description: "The location level's incoming quantity." },
+        { name: "metadata", type: "`object`", optional: false, description: "The location level's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "inventory_item", type: "`object`", optional: true },
+        { name: "available_quantity", type: "`number`", optional: false, description: "The location level's available quantity." }
+      ] },
+    { name: "updated", type: "`object[]`", optional: true, description: "The updated inventory levels.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The location level's ID." },
+        { name: "created_at", type: "`string`", optional: false, description: "The location level's created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The location level's updated at." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The location level's deleted at." },
+        { name: "inventory_item_id", type: "`string`", optional: false, description: "The location level's inventory item id." },
+        { name: "location_id", type: "`string`", optional: false, description: "The location level's location id." },
+        { name: "stocked_quantity", type: "`number`", optional: false, description: "The location level's stocked quantity." },
+        { name: "reserved_quantity", type: "`number`", optional: false, description: "The location level's reserved quantity." },
+        { name: "incoming_quantity", type: "`number`", optional: false, description: "The location level's incoming quantity." },
+        { name: "metadata", type: "`object`", optional: false, description: "The location level's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "inventory_item", type: "`object`", optional: true },
+        { name: "available_quantity", type: "`number`", optional: false, description: "The location level's available quantity." }
+      ] },
+    { name: "deleted", type: "`string[]`", optional: true, description: "The IDs of deleted inventory levels." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `inventory-level.created`: Emitted when inventory levels are created.
+- `inventory-level.updated`: Emitted when inventory levels are updated. This includes adjustments to the stocked or reserved quantity, such as during order fulfillment.
+- `inventory-level.deleted`: Emitted when inventory levels are deleted.
+
+---
+
+## GET /admin/inventory-items/\{id\}
+
+**Get a Inventory Item**
+
+Retrieve a inventory item by its ID. You can expand the inventory item's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.inventoryItem.retrieve("iitem_123")
+.then(({ inventory_item }) => {
+  console.log(inventory_item)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/inventory-items/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "inventory_item", type: "`object`", optional: false, description: "The inventory item's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+        { name: "sku", type: "`string`", optional: true, description: "The inventory item's sku." },
+        { name: "origin_country", type: "`string`", optional: true, description: "The inventory item's origin country." },
+        { name: "hs_code", type: "`string`", optional: true, description: "The inventory item's HS code." },
+        { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the inventory item requires shipping." },
+        { name: "mid_code", type: "`string`", optional: true, description: "The inventory item's MID code." },
+        { name: "material", type: "`string`", optional: true, description: "The inventory item's material." },
+        { name: "weight", type: "`number`", optional: true, description: "The inventory item's weight." },
+        { name: "length", type: "`number`", optional: true, description: "The inventory item's length." },
+        { name: "height", type: "`number`", optional: true, description: "The inventory item's height." },
+        { name: "width", type: "`number`", optional: true, description: "The inventory item's width." },
+        { name: "title", type: "`string`", optional: true, description: "The inventory item's title." },
+        { name: "description", type: "`string`", optional: true, description: "The inventory item's description." },
+        { name: "thumbnail", type: "`string`", optional: true, description: "The thumbnail URL of the inventory item." },
+        { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs, used to store additional information about the inventory item." },
+        { name: "location_levels", type: "`object[]`", optional: true, description: "The inventory item's location levels.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The location level's ID." },
+            { name: "created_at", type: "`string`", optional: false, description: "The location level's created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The location level's updated at." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The location level's deleted at." },
+            { name: "inventory_item_id", type: "`string`", optional: false, description: "The location level's inventory item id." },
+            { name: "location_id", type: "`string`", optional: false, description: "The location level's location id." },
+            { name: "stocked_quantity", type: "`number`", optional: false, description: "The location level's stocked quantity." },
+            { name: "reserved_quantity", type: "`number`", optional: false, description: "The location level's reserved quantity." },
+            { name: "incoming_quantity", type: "`number`", optional: false, description: "The location level's incoming quantity." },
+            { name: "metadata", type: "`object`", optional: false, description: "The location level's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "inventory_item", type: "`object`", optional: true },
+            { name: "available_quantity", type: "`number`", optional: false, description: "The location level's available quantity." }
+          ] },
+        { name: "stocked_quantity", type: "`number`", optional: false, description: "The inventory item's stocked quantity." },
+        { name: "reserved_quantity", type: "`number`", optional: false, description: "The inventory item's reserved quantity." },
+        { name: "unit_of_measure", type: "`string`", optional: true, description: "The inventory's unit of measure.", example: "kg" }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/inventory-items/\{id\}
+
+**Update an Inventory Item**
+
+Update an inventory item's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "sku", type: "`string`", optional: true, description: "The inventory item's SKU." },
+    { name: "hs_code", type: "`string`", optional: true, description: "The inventory item's HS code." },
+    { name: "weight", type: "`number`", optional: true, description: "The inventory item's weight." },
+    { name: "length", type: "`number`", optional: true, description: "The inventory item's length." },
+    { name: "height", type: "`number`", optional: true, description: "The inventory item's height." },
+    { name: "width", type: "`number`", optional: true, description: "The inventory item's width." },
+    { name: "origin_country", type: "`string`", optional: true, description: "The inventory item's origin country." },
+    { name: "mid_code", type: "`string`", optional: true, description: "The inventory item's MID code." },
+    { name: "material", type: "`string`", optional: true, description: "The inventory item's material." },
+    { name: "title", type: "`string`", optional: true, description: "The inventory item's title." },
+    { name: "description", type: "`string`", optional: true, description: "The inventory item's description." },
+    { name: "requires_shipping", type: "`boolean`", optional: true, description: "Whether the inventory item requires shipping." },
+    { name: "thumbnail", type: "`string`", optional: true, description: "The URL of an image to be used as the inventory item's thumbnail. You can use the Upload API routes to upload an image and get its URL." },
+    { name: "metadata", type: "`object`", optional: true, description: "The inventory item's metadata. Can be custom data in key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+    { name: "unit_of_measure", type: "`string`", optional: true, description: "The inventory item's unit of measure.", example: "kg" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.inventoryItem.update("iitem_123", {
+  sku: "SHIRT"
+})
+.then(({ inventory_item }) => {
+  console.log(inventory_item)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/inventory-items/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "sku": "{value}",
+  "hs_code": "{value}",
+  "weight": 8979922215239680,
+  "length": 667491233693696,
+  "height": 6328111551479808,
+  "width": 7175104570064896,
+  "origin_country": "{value}",
+  "mid_code": "{value}",
+  "material": "{value}",
+  "title": "{value}",
+  "description": "{value}",
+  "thumbnail": "{value}",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "inventory_item", type: "`object`", optional: false, description: "The inventory item's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+        { name: "sku", type: "`string`", optional: true, description: "The inventory item's sku." },
+        { name: "origin_country", type: "`string`", optional: true, description: "The inventory item's origin country." },
+        { name: "hs_code", type: "`string`", optional: true, description: "The inventory item's HS code." },
+        { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the inventory item requires shipping." },
+        { name: "mid_code", type: "`string`", optional: true, description: "The inventory item's MID code." },
+        { name: "material", type: "`string`", optional: true, description: "The inventory item's material." },
+        { name: "weight", type: "`number`", optional: true, description: "The inventory item's weight." },
+        { name: "length", type: "`number`", optional: true, description: "The inventory item's length." },
+        { name: "height", type: "`number`", optional: true, description: "The inventory item's height." },
+        { name: "width", type: "`number`", optional: true, description: "The inventory item's width." },
+        { name: "title", type: "`string`", optional: true, description: "The inventory item's title." },
+        { name: "description", type: "`string`", optional: true, description: "The inventory item's description." },
+        { name: "thumbnail", type: "`string`", optional: true, description: "The thumbnail URL of the inventory item." },
+        { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs, used to store additional information about the inventory item." },
+        { name: "location_levels", type: "`object[]`", optional: true, description: "The inventory item's location levels.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The location level's ID." },
+            { name: "created_at", type: "`string`", optional: false, description: "The location level's created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The location level's updated at." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The location level's deleted at." },
+            { name: "inventory_item_id", type: "`string`", optional: false, description: "The location level's inventory item id." },
+            { name: "location_id", type: "`string`", optional: false, description: "The location level's location id." },
+            { name: "stocked_quantity", type: "`number`", optional: false, description: "The location level's stocked quantity." },
+            { name: "reserved_quantity", type: "`number`", optional: false, description: "The location level's reserved quantity." },
+            { name: "incoming_quantity", type: "`number`", optional: false, description: "The location level's incoming quantity." },
+            { name: "metadata", type: "`object`", optional: false, description: "The location level's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "inventory_item", type: "`object`", optional: true },
+            { name: "available_quantity", type: "`number`", optional: false, description: "The location level's available quantity." }
+          ] },
+        { name: "stocked_quantity", type: "`number`", optional: false, description: "The inventory item's stocked quantity." },
+        { name: "reserved_quantity", type: "`number`", optional: false, description: "The inventory item's reserved quantity." },
+        { name: "unit_of_measure", type: "`string`", optional: true, description: "The inventory's unit of measure.", example: "kg" }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `inventory-item.updated`: Emitted when inventory items are updated.
+
+---
+
+## DELETE /admin/inventory-items/\{id\}
+
+**Delete Inventory Item**
+
+Delete an inventory item.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.inventoryItem.delete("iitem_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/inventory-items/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"inventory_item\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the inventory item was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `inventory-item.deleted`: Emitted when inventory items are deleted.
+
+---
+
+## GET /admin/inventory-items/\{id\}/location-levels
+
+**List Inventory Levels**
+
+Retrieve a list of inventory levels associated with an inventory item. The inventory levels can be filtered by fields like `location_id`. The inventory levels can also be paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "location_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by the inventory item's location ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.inventoryItem.listLevels("iitem_123")
+.then(({ inventory_levels, count, limit, offset }) => {
+  console.log(inventory_levels)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/inventory-items/{id}/location-levels' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "inventory_levels", type: "`object[]`", optional: false, description: "The inventory item's inventory levels.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The inventory level's ID." },
+        { name: "inventory_item_id", type: "`string`", optional: false, description: "The ID of the associated inventory item." },
+        { name: "location_id", type: "`string`", optional: false, description: "The ID of the associated location." },
+        { name: "stocked_quantity", type: "`number`", optional: false, description: "The inventory level's stocked quantity." },
+        { name: "reserved_quantity", type: "`number`", optional: false, description: "The inventory level's reserved quantity." },
+        { name: "available_quantity", type: "`number`", optional: false, description: "The inventory level's available quantity." },
+        { name: "incoming_quantity", type: "`number`", optional: false, description: "The inventory level's incoming quantity." },
+        { name: "metadata", type: "`object`", optional: true, description: "The inventory level's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/inventory-items/\{id\}/location-levels
+
+**Create Inventory Level for Inventory Item**
+
+Create an inventory level for an inventory item.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "location_id", type: "`string`", optional: false, description: "The ID of the associated location." },
+    { name: "stocked_quantity", type: "`number`", optional: true, description: "The inventory level's stocked quantity." },
+    { name: "incoming_quantity", type: "`number`", optional: true, description: "The inventory level's incoming quantity." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/inventory-items/{id}/location-levels' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "location_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "inventory_item", type: "`object`", optional: false, description: "The inventory item's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+        { name: "sku", type: "`string`", optional: true, description: "The inventory item's sku." },
+        { name: "origin_country", type: "`string`", optional: true, description: "The inventory item's origin country." },
+        { name: "hs_code", type: "`string`", optional: true, description: "The inventory item's HS code." },
+        { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the inventory item requires shipping." },
+        { name: "mid_code", type: "`string`", optional: true, description: "The inventory item's MID code." },
+        { name: "material", type: "`string`", optional: true, description: "The inventory item's material." },
+        { name: "weight", type: "`number`", optional: true, description: "The inventory item's weight." },
+        { name: "length", type: "`number`", optional: true, description: "The inventory item's length." },
+        { name: "height", type: "`number`", optional: true, description: "The inventory item's height." },
+        { name: "width", type: "`number`", optional: true, description: "The inventory item's width." },
+        { name: "title", type: "`string`", optional: true, description: "The inventory item's title." },
+        { name: "description", type: "`string`", optional: true, description: "The inventory item's description." },
+        { name: "thumbnail", type: "`string`", optional: true, description: "The thumbnail URL of the inventory item." },
+        { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs, used to store additional information about the inventory item." },
+        { name: "location_levels", type: "`object[]`", optional: true, description: "The inventory item's location levels.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The location level's ID." },
+            { name: "created_at", type: "`string`", optional: false, description: "The location level's created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The location level's updated at." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The location level's deleted at." },
+            { name: "inventory_item_id", type: "`string`", optional: false, description: "The location level's inventory item id." },
+            { name: "location_id", type: "`string`", optional: false, description: "The location level's location id." },
+            { name: "stocked_quantity", type: "`number`", optional: false, description: "The location level's stocked quantity." },
+            { name: "reserved_quantity", type: "`number`", optional: false, description: "The location level's reserved quantity." },
+            { name: "incoming_quantity", type: "`number`", optional: false, description: "The location level's incoming quantity." },
+            { name: "metadata", type: "`object`", optional: false, description: "The location level's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "inventory_item", type: "`object`", optional: true },
+            { name: "available_quantity", type: "`number`", optional: false, description: "The location level's available quantity." }
+          ] },
+        { name: "stocked_quantity", type: "`number`", optional: false, description: "The inventory item's stocked quantity." },
+        { name: "reserved_quantity", type: "`number`", optional: false, description: "The inventory item's reserved quantity." },
+        { name: "unit_of_measure", type: "`string`", optional: true, description: "The inventory's unit of measure.", example: "kg" }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `inventory-level.created`: Emitted when inventory levels are created.
+
+---
+
+## POST /admin/inventory-items/\{id\}/location-levels/batch
+
+**Manage Inventory Levels of Inventory Item**
+
+Manage the inventory levels of an inventory item to create or delete them.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "create", type: "`object[]`", optional: true, description: "The inventory levels to create.", children: [
+        { name: "location_id", type: "`string`", optional: false, description: "The ID of the associated location." },
+        { name: "stocked_quantity", type: "`number`", optional: true, description: "The inventory level's stocked quantity." },
+        { name: "incoming_quantity", type: "`number`", optional: true, description: "The inventory level's incoming quantity." }
+      ] },
+    { name: "update", type: "`object[]`", optional: true, description: "The inventory levels to update.", children: [
+        { name: "stocked_quantity", type: "`number`", optional: true, description: "The inventory level's stocked quantity." },
+        { name: "incoming_quantity", type: "`number`", optional: true, description: "The inventory level's incoming quantity." },
+        { name: "location_id", type: "`string`", optional: false, description: "The associated stock location's ID." },
+        { name: "id", type: "`string`", optional: true, description: "The ID of the location level." }
+      ] },
+    { name: "delete", type: "`string[]`", optional: true, description: "The inventory levels to delete." },
+    { name: "force", type: "`boolean`", optional: true, description: "Whether to delete specified inventory levels even if they have a non-zero stocked quantity." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.inventoryItem.batchInventoryItemLocationLevels("iitem_123", {
+  create: [{
+    location_id: "sloc_123",
+    stocked_quantity: 10
+  }],
+  delete: ["ilvl_123"]
+})
+.then(({ created, updated, deleted }) => {
+  console.log(created, updated, deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/inventory-items/{id}/location-levels/batch' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `inventory-level.created`: Emitted when inventory levels are created.
+- `inventory-level.updated`: Emitted when inventory levels are updated. This includes adjustments to the stocked or reserved quantity, such as during order fulfillment.
+- `inventory-level.deleted`: Emitted when inventory levels are deleted.
+
+---
+
+## POST /admin/inventory-items/\{id\}/location-levels/\{location_id\}
+
+**Update an Inventory Level of an Inventory Item**
+
+Updates the details of an inventory item's inventory level using its associated location ID.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+    { name: "location_id", type: "`string`", optional: false, description: "The ID of the location associated with the inventory level." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "stocked_quantity", type: "`number`", optional: true, description: "The inventory level's stocked quantity." },
+    { name: "incoming_quantity", type: "`number`", optional: true, description: "The inventory level's incoming quantity." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.inventoryItem.updateLevel(
+  "iitem_123",
+  "sloc_123",
+  {
+    stocked_quantity: 10
+  }
+)
+.then(({ inventory_item }) => {
+  console.log(inventory_item)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/inventory-items/{id}/location-levels/{location_id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "inventory_item", type: "`object`", optional: false, description: "The inventory item's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+        { name: "sku", type: "`string`", optional: true, description: "The inventory item's sku." },
+        { name: "origin_country", type: "`string`", optional: true, description: "The inventory item's origin country." },
+        { name: "hs_code", type: "`string`", optional: true, description: "The inventory item's HS code." },
+        { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the inventory item requires shipping." },
+        { name: "mid_code", type: "`string`", optional: true, description: "The inventory item's MID code." },
+        { name: "material", type: "`string`", optional: true, description: "The inventory item's material." },
+        { name: "weight", type: "`number`", optional: true, description: "The inventory item's weight." },
+        { name: "length", type: "`number`", optional: true, description: "The inventory item's length." },
+        { name: "height", type: "`number`", optional: true, description: "The inventory item's height." },
+        { name: "width", type: "`number`", optional: true, description: "The inventory item's width." },
+        { name: "title", type: "`string`", optional: true, description: "The inventory item's title." },
+        { name: "description", type: "`string`", optional: true, description: "The inventory item's description." },
+        { name: "thumbnail", type: "`string`", optional: true, description: "The thumbnail URL of the inventory item." },
+        { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs, used to store additional information about the inventory item." },
+        { name: "location_levels", type: "`object[]`", optional: true, description: "The inventory item's location levels.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The location level's ID." },
+            { name: "created_at", type: "`string`", optional: false, description: "The location level's created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The location level's updated at." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The location level's deleted at." },
+            { name: "inventory_item_id", type: "`string`", optional: false, description: "The location level's inventory item id." },
+            { name: "location_id", type: "`string`", optional: false, description: "The location level's location id." },
+            { name: "stocked_quantity", type: "`number`", optional: false, description: "The location level's stocked quantity." },
+            { name: "reserved_quantity", type: "`number`", optional: false, description: "The location level's reserved quantity." },
+            { name: "incoming_quantity", type: "`number`", optional: false, description: "The location level's incoming quantity." },
+            { name: "metadata", type: "`object`", optional: false, description: "The location level's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "inventory_item", type: "`object`", optional: true },
+            { name: "available_quantity", type: "`number`", optional: false, description: "The location level's available quantity." }
+          ] },
+        { name: "stocked_quantity", type: "`number`", optional: false, description: "The inventory item's stocked quantity." },
+        { name: "reserved_quantity", type: "`number`", optional: false, description: "The inventory item's reserved quantity." },
+        { name: "unit_of_measure", type: "`string`", optional: true, description: "The inventory's unit of measure.", example: "kg" }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `inventory-level.updated`: Emitted when inventory levels are updated. This includes adjustments to the stocked or reserved quantity, such as during order fulfillment.
+
+---
+
+## DELETE /admin/inventory-items/\{id\}/location-levels/\{location_id\}
+
+**Remove Inventory Level of Inventory Item**
+
+Remove the inventory level of an inventory item.
+
+If the inventory level has reserved quantity greater than `0`, an error is thrown.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+    { name: "location_id", type: "`string`", optional: false, description: "The inventory item's location id." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.inventoryItem.deleteLevel(
+  "iitem_123",
+  "sloc_123",
+)
+.then(({ deleted, parent: inventoryItem }) => {
+  console.log(deleted, inventoryItem)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/inventory-items/{id}/location-levels/{location_id}' \ -H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object." },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the Inventory Item was deleted." },
+    { name: "parent", type: "`object`", optional: true, description: "The inventory item's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The inventory item's ID." },
+        { name: "sku", type: "`string`", optional: true, description: "The inventory item's sku." },
+        { name: "origin_country", type: "`string`", optional: true, description: "The inventory item's origin country." },
+        { name: "hs_code", type: "`string`", optional: true, description: "The inventory item's HS code." },
+        { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the inventory item requires shipping." },
+        { name: "mid_code", type: "`string`", optional: true, description: "The inventory item's MID code." },
+        { name: "material", type: "`string`", optional: true, description: "The inventory item's material." },
+        { name: "weight", type: "`number`", optional: true, description: "The inventory item's weight." },
+        { name: "length", type: "`number`", optional: true, description: "The inventory item's length." },
+        { name: "height", type: "`number`", optional: true, description: "The inventory item's height." },
+        { name: "width", type: "`number`", optional: true, description: "The inventory item's width." },
+        { name: "title", type: "`string`", optional: true, description: "The inventory item's title." },
+        { name: "description", type: "`string`", optional: true, description: "The inventory item's description." },
+        { name: "thumbnail", type: "`string`", optional: true, description: "The thumbnail URL of the inventory item." },
+        { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs, used to store additional information about the inventory item." },
+        { name: "location_levels", type: "`object[]`", optional: true, description: "The inventory item's location levels.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The location level's ID." },
+            { name: "created_at", type: "`string`", optional: false, description: "The location level's created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The location level's updated at." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The location level's deleted at." },
+            { name: "inventory_item_id", type: "`string`", optional: false, description: "The location level's inventory item id." },
+            { name: "location_id", type: "`string`", optional: false, description: "The location level's location id." },
+            { name: "stocked_quantity", type: "`number`", optional: false, description: "The location level's stocked quantity." },
+            { name: "reserved_quantity", type: "`number`", optional: false, description: "The location level's reserved quantity." },
+            { name: "incoming_quantity", type: "`number`", optional: false, description: "The location level's incoming quantity." },
+            { name: "metadata", type: "`object`", optional: false, description: "The location level's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "inventory_item", type: "`object`", optional: true },
+            { name: "available_quantity", type: "`number`", optional: false, description: "The location level's available quantity." }
+          ] },
+        { name: "stocked_quantity", type: "`number`", optional: false, description: "The inventory item's stocked quantity." },
+        { name: "reserved_quantity", type: "`number`", optional: false, description: "The inventory item's reserved quantity." },
+        { name: "unit_of_measure", type: "`string`", optional: true, description: "The inventory's unit of measure.", example: "kg" }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `inventory-level.deleted`: Emitted when inventory levels are deleted.

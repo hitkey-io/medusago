@@ -1,0 +1,104 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Payment Providers API Routes`,
+}
+
+# {metadata.title}
+
+Each region has a set of payment providers enabled.
+
+During checkout, you retrieve the available payment providers in the customer's region to show them to the customer. Customers then choose their preferred provider to authorize their payment and place their order.
+
+These API routes allow customers to view available payment providers in their region.
+
+## GET /store/payment-providers
+
+**List Payment Providers**
+
+Retrieve a list of payment providers. You must provide the `region_id` query parameter to retrieve the payment providers enabled in that region.
+
+**Authentication:** none.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "region_id", type: "`string`", optional: false, description: "Filter by a region ID to get the payment providers enabled in that region." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.payment.listPaymentProviders({
+  region_id: "reg_123"
+})
+.then(({ payment_providers, count, offset, limit }) => {
+  console.log(payment_providers)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/payment-providers' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "payment_providers", type: "`object[]`", optional: false, description: "The list of payment providers.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The payment provider's ID." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.

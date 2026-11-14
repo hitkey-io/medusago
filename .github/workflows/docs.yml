@@ -1,0 +1,67 @@
+name: docs
+
+# Builds the documentation site (www/) and publishes it to GitHub Pages
+# (medusago.hitkey.io). Pull requests only build and check it.
+on:
+  push:
+    branches: [develop, main]
+    paths: ["www/**", ".github/workflows/docs.yml"]
+  pull_request:
+    paths: ["www/**", ".github/workflows/docs.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: www
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Every Go snippet of the documentation lives in www/examples and must compile.
+      - name: Check the Go examples
+        working-directory: www/examples
+        run: |
+          go build ./...
+          go vet ./...
+
+      - name: Build the site
+        env:
+          STRICT_TERMS: "1"
+          STRICT_LINKS: "1"
+        run: bun run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: www/dist
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/develop'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

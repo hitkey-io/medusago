@@ -1,0 +1,222 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Search Indexes API Routes`,
+}
+
+# {metadata.title}
+
+A search index stores the documents of an entity so they can be searched.
+
+These API routes allow admin users to list the registered search indexes, rebuild them, and delete them.
+
+## GET /admin/search-indexes
+
+**List Search Indexes**
+
+Retrieve the list of search indexes registered in your application, including each index's provider, lifecycle status, and the fields it stores. If the Search Module isn't installed in your application, `enabled` is `false` and `search_indexes` is an empty array.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.search.listIndexes()
+.then(({ search_indexes, enabled }) => {
+  console.log(search_indexes, enabled)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/search-indexes' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "search_indexes", type: "`object[]`", optional: false, description: "The registered search indexes.", children: [
+        { name: "name", type: "`string`", optional: false, description: "The index's unique name, which is the name you pass to `query.search({ entity })` to search the index." },
+        { name: "entity", type: "`string`", optional: false, description: "The name of the data model that `query.graph` uses as an entry point to retrieve fields that aren't stored in the index." },
+        { name: "provider", type: "`string`", optional: false, description: "The identifier of the Search Module Provider backing this index, such as `pg-search`." },
+        { name: "status", type: "`\"error\"` \\| `\"pending\"` \\| `\"building\"` \\| `\"ready\"`", optional: false, description: "The index's lifecycle status. `pending` means the index was created but isn't filled yet, `building` means a seed or reindexing is in progress, `ready` means the index is serving documents, and `error` means the last seed or reindexing failed." },
+        { name: "fields", type: "`object[]`", optional: false, description: "The leaf fields stored in the index, each with the capabilities declared on it.", children: [
+            { name: "name", type: "`string`", optional: false, description: "The field's dotted path in the index, such as `title` or `variants.sku`." },
+            { name: "type", type: "`string`", optional: false, description: "The field's type in the index, such as `text`, `keyword`, `integer`, `float`, `date`, `boolean`, `geo`, `object`, or `vector`." },
+            { name: "searchable", type: "`boolean`", optional: false, description: "Whether the field is matched against a free-text search query." },
+            { name: "filterable", type: "`boolean`", optional: false, description: "Whether the field can be used in a search query's filters." },
+            { name: "sortable", type: "`boolean`", optional: false, description: "Whether search results can be sorted by this field." },
+            { name: "facetable", type: "`boolean`", optional: false, description: "Whether the field can be used to build facets of search results." }
+          ] }
+      ] },
+    { name: "enabled", type: "`boolean`", optional: false, description: "Whether the Search Module is installed in the application. When `false`, `search_indexes` is an empty array." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/search-indexes/\{id\}
+
+**Delete a Search Index**
+
+Delete a search index and every physical index built for it in the search engine. The index's definition isn't removed, so the next time search index migrations run, the index is built again from scratch at version 1.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The search index's name, such as `product`." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.search.deleteIndex("product")
+.then(({ deleted, deleted_versions }) => {
+  console.log(deleted, deleted_versions)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/search-indexes/{id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The name of the deleted search index." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"search_index\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the search index was deleted successfully." },
+    { name: "deleted_versions", type: "`number`", optional: false, description: "The number of the index's versions that were dropped. It's `0` when the index is registered but was never migrated." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/search-indexes/\{id\}/reindex
+
+**Reindex a Search Index**
+
+Rebuild a search index's documents using the `seed` function of its index definition. The rebuild runs in the background, so the response is returned immediately with the ID of the triggered job. Use the List Search Indexes API route to check the index's `status` and know when the rebuild is done.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The search index's name, such as `product`." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "since", type: "`string`", optional: true, description: "Rebuild only the documents that changed at or after this date, as an ISO 8601 date-time string. Like `filters`, this always rebuilds the index in place, as a version built from a subset of documents is never swapped in." },
+    { name: "filters", type: "`object`", optional: true, description: "Filters passed to the `seed` function of the index definition to rebuild only a subset of the index's documents. The accepted shape is defined by the index, such as `{ ids: [\"prod_123\"] }` if the index supports it." },
+    { name: "strategy", type: "`\"swap\"` \\| `\"in_place\"`", optional: true, description: "How to rebuild the index. `swap` builds a new version of the index and swaps it in once it's ready, whereas `in_place` rewrites the version that's currently serving documents. This property is ignored, and the rebuild always runs in place, when `filters` or `since` is set.", defaultValue: "\"swap\"" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.search.reindex("product")
+.then(({ job_id, indexes }) => {
+  console.log(job_id, indexes)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/search-indexes/{id}/reindex' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`202` OK
+
+<TypeList
+  types={[
+    { name: "job_id", type: "`string`", optional: false, description: "The ID of the triggered reindexing job." },
+    { name: "indexes", type: "`string[]`", optional: false, description: "The names of the indexes being reindexed." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

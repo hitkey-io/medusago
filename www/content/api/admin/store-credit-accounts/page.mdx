@@ -1,0 +1,711 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Store Credit Accounts API Routes`,
+}
+
+# {metadata.title}
+
+A store credit account is a ledger of store credit transactions for a customer. They hold the customer's store credit balance,  including their credit and debit amounts.
+Store credit accounts allow you to build features that let customers pay for items using their store credit balance, such as gift cards or loyalty points.
+These API routes allow admin users to manage store credit accounts, their transactions, and more.
+
+Store Credit Account routes are only available when the loyalty plugin is installed.
+
+## GET /admin/store-credit-accounts
+
+**List Store Credit Accounts**
+
+Retrieve a list of store credit accounts. The store credit accounts can be filtered by fields such as `id`. The store credit accounts can also be sorted or paginated.
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields.\nThe fields and relations to retrieve separated by commas.\n\nLearn more in the [API reference](/api/store#select-fields-and-relations)." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by the store credit account's ID." },
+    { name: "customer_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by customer ID(s) to retrieve their store credit accounts." },
+    { name: "currency_code", type: "`string` \\| `string[]`", optional: true, description: "Filter by currency code(s) to retrieve store credit accounts in specific currencies." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by a store credit account's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by a store credit account's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "An array of filters to apply on the entity, where each item in the array is joined with an \"and\" condition." },
+    { name: "$or", type: "`object[]`", optional: true, description: "An array of filters to apply on the entity, where each item in the array is joined with an \"or\" condition." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "code", type: "`string` \\| `string[]`", optional: true, description: "Filter by a store credit account code." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/store-credit-accounts' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of store credit accounts to return." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of store credit accounts to skip before retrieving the results." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of store credit accounts available." },
+    { name: "store_credit_accounts", type: "`object[]`", optional: false, description: "The list of store credit accounts.", children: [
+        { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+            { name: "has_account", type: "`boolean`", optional: false, description: "Whether the customer is registered." },
+            { name: "groups", type: "`object[]`", optional: true, description: "The customer's groups.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The customer group's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The customer group's name." },
+                { name: "customers", type: "`object[]`", optional: false, description: "The customer group's customers." },
+                { name: "metadata", type: "`object`", optional: false, description: "The customer group's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The customer group's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The customer group's update date." }
+              ] },
+            { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+            { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default billing address." },
+            { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default shipping address." },
+            { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+            { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+            { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+                { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+                { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is the default shipping address." },
+                { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is the default billing address." },
+                { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that this address belongs to." },
+                { name: "company", type: "`string`", optional: false, description: "The customer's company." },
+                { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+                { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+                { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+                { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+                { name: "city", type: "`string`", optional: false, description: "The address's city." },
+                { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+                { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+                { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+                { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+                { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The address's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The address's update date." }
+              ] },
+            { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+            { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created this customer, if available." },
+            { name: "created_at", type: "`string`", optional: true, description: "The customer's creation date." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The customer's update date." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The customer's deletion date." }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The store credit account's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer that the store credit account belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The store credit account's currency code.", example: "usd" },
+        { name: "credits", type: "`number`", optional: false, description: "The account's credits." },
+        { name: "debits", type: "`number`", optional: false, description: "The account's debits." },
+        { name: "balance", type: "`number`", optional: false, description: "The account's balance." },
+        { name: "metadata", type: "`object`", optional: false, description: "The store credit account's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the store credit account was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the store credit account was updated at." },
+        { name: "code", type: "`string`", optional: true, description: "The store credit account's code." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The store credit account's estimate count.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/store-credit-accounts
+
+**Create Store Credit Account**
+
+Create a store credit account.
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "currency_code", type: "`string`", optional: false, description: "The store credit account's currency code.", example: "usd" },
+    { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer that the store credit account belongs to." },
+    { name: "metadata", type: "`object`", optional: true, description: "The store credit account's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/store-credit-accounts' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "currency_code": "nzd",
+  "customer_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "store_credit_account", type: "`object`", optional: false, description: "The store credit account's details.", children: [
+        { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+            { name: "has_account", type: "`boolean`", optional: false, description: "Whether the customer is registered." },
+            { name: "groups", type: "`object[]`", optional: true, description: "The customer's groups.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The customer group's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The customer group's name." },
+                { name: "customers", type: "`object[]`", optional: false, description: "The customer group's customers." },
+                { name: "metadata", type: "`object`", optional: false, description: "The customer group's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The customer group's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The customer group's update date." }
+              ] },
+            { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+            { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default billing address." },
+            { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default shipping address." },
+            { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+            { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+            { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+                { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+                { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is the default shipping address." },
+                { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is the default billing address." },
+                { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that this address belongs to." },
+                { name: "company", type: "`string`", optional: false, description: "The customer's company." },
+                { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+                { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+                { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+                { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+                { name: "city", type: "`string`", optional: false, description: "The address's city." },
+                { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+                { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+                { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+                { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+                { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The address's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The address's update date." }
+              ] },
+            { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+            { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created this customer, if available." },
+            { name: "created_at", type: "`string`", optional: true, description: "The customer's creation date." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The customer's update date." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The customer's deletion date." }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The store credit account's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer that the store credit account belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The store credit account's currency code.", example: "usd" },
+        { name: "credits", type: "`number`", optional: false, description: "The account's credits." },
+        { name: "debits", type: "`number`", optional: false, description: "The account's debits." },
+        { name: "balance", type: "`number`", optional: false, description: "The account's balance." },
+        { name: "metadata", type: "`object`", optional: false, description: "The store credit account's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the store credit account was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the store credit account was updated at." },
+        { name: "code", type: "`string`", optional: true, description: "The store credit account's code." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/store-credit-accounts/\{id\}
+
+**Get a Store Credit Account**
+
+Retrieve a store credit account by its ID. You can expand the store credit account's relations or select the fields that should be returned.
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The store credit account's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields.\nThe fields and relations to retrieve separated by commas.\n\nLearn more in the [API reference](/api/store#select-fields-and-relations)." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by the store credit account's ID." },
+    { name: "customer_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by customer ID(s) to retrieve their store credit accounts." },
+    { name: "currency_code", type: "`string` \\| `string[]`", optional: true, description: "Filter by currency code(s) to retrieve store credit accounts in specific currencies." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by a store credit account's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by a store credit account's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "An array of filters to apply on the entity, where each item in the array is joined with an \"and\" condition." },
+    { name: "$or", type: "`object[]`", optional: true, description: "An array of filters to apply on the entity, where each item in the array is joined with an \"or\" condition." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "code", type: "`string` \\| `string[]`", optional: true, description: "Filter by a store credit account's code." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/store-credit-accounts/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "store_credit_account", type: "`object`", optional: false, description: "The store credit account's details.", children: [
+        { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+            { name: "has_account", type: "`boolean`", optional: false, description: "Whether the customer is registered." },
+            { name: "groups", type: "`object[]`", optional: true, description: "The customer's groups.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The customer group's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The customer group's name." },
+                { name: "customers", type: "`object[]`", optional: false, description: "The customer group's customers." },
+                { name: "metadata", type: "`object`", optional: false, description: "The customer group's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The customer group's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The customer group's update date." }
+              ] },
+            { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+            { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default billing address." },
+            { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default shipping address." },
+            { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+            { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+            { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+                { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+                { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is the default shipping address." },
+                { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is the default billing address." },
+                { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that this address belongs to." },
+                { name: "company", type: "`string`", optional: false, description: "The customer's company." },
+                { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+                { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+                { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+                { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+                { name: "city", type: "`string`", optional: false, description: "The address's city." },
+                { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+                { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+                { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+                { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+                { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The address's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The address's update date." }
+              ] },
+            { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+            { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created this customer, if available." },
+            { name: "created_at", type: "`string`", optional: true, description: "The customer's creation date." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The customer's update date." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The customer's deletion date." }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The store credit account's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer that the store credit account belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The store credit account's currency code.", example: "usd" },
+        { name: "credits", type: "`number`", optional: false, description: "The account's credits." },
+        { name: "debits", type: "`number`", optional: false, description: "The account's debits." },
+        { name: "balance", type: "`number`", optional: false, description: "The account's balance." },
+        { name: "metadata", type: "`object`", optional: false, description: "The store credit account's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the store credit account was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the store credit account was updated at." },
+        { name: "code", type: "`string`", optional: true, description: "The store credit account's code." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/store-credit-accounts/\{id\}/credit
+
+**Add Credit to Store Credit Account**
+
+Add credit to a store credit account
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The store credit account's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "amount", type: "`number`", optional: false, description: "The amount to credit the store credit account with." },
+    { name: "note", type: "`string`", optional: true, description: "An additional note to add to the store credit transaction." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/store-credit-accounts/{id}/credit' \
+-H 'Authorization: Bearer {access_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "amount": 39
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "store_credit_account", type: "`object`", optional: false, description: "The store credit account's details.", children: [
+        { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+            { name: "has_account", type: "`boolean`", optional: false, description: "Whether the customer is registered." },
+            { name: "groups", type: "`object[]`", optional: true, description: "The customer's groups.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The customer group's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The customer group's name." },
+                { name: "customers", type: "`object[]`", optional: false, description: "The customer group's customers." },
+                { name: "metadata", type: "`object`", optional: false, description: "The customer group's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The customer group's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The customer group's update date." }
+              ] },
+            { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+            { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default billing address." },
+            { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default shipping address." },
+            { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+            { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+            { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+                { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+                { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is the default shipping address." },
+                { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is the default billing address." },
+                { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that this address belongs to." },
+                { name: "company", type: "`string`", optional: false, description: "The customer's company." },
+                { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+                { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+                { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+                { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+                { name: "city", type: "`string`", optional: false, description: "The address's city." },
+                { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+                { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+                { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+                { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+                { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The address's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The address's update date." }
+              ] },
+            { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+            { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created this customer, if available." },
+            { name: "created_at", type: "`string`", optional: true, description: "The customer's creation date." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The customer's update date." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The customer's deletion date." }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The store credit account's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer that the store credit account belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The store credit account's currency code.", example: "usd" },
+        { name: "credits", type: "`number`", optional: false, description: "The account's credits." },
+        { name: "debits", type: "`number`", optional: false, description: "The account's debits." },
+        { name: "balance", type: "`number`", optional: false, description: "The account's balance." },
+        { name: "metadata", type: "`object`", optional: false, description: "The store credit account's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the store credit account was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the store credit account was updated at." },
+        { name: "code", type: "`string`", optional: true, description: "The store credit account's code." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/store-credit-accounts/\{id\}/debit
+
+**Debit a Store Credit Account**
+
+Debit an amount from a store credit account, deducting it from the customer's store credit balance. The debit is recorded as a `debit` transaction on the account that references the authenticated admin user.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The store credit account's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "amount", type: "`number`", optional: false, description: "The amount to debit from the store credit account, in the major currency unit. It's deducted from the customer's store credit balance." },
+    { name: "note", type: "`string`", optional: true, description: "An additional note to add to the store credit transaction." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/store-credit-accounts/{id}/debit' \
+-H 'Authorization: Bearer {access_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "amount": 24
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "store_credit_account", type: "`object`", optional: false, description: "The store credit account's details.", children: [
+        { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+            { name: "has_account", type: "`boolean`", optional: false, description: "Whether the customer is registered." },
+            { name: "groups", type: "`object[]`", optional: true, description: "The customer's groups.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The customer group's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The customer group's name." },
+                { name: "customers", type: "`object[]`", optional: false, description: "The customer group's customers." },
+                { name: "metadata", type: "`object`", optional: false, description: "The customer group's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The customer group's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The customer group's update date." }
+              ] },
+            { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+            { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default billing address." },
+            { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default shipping address." },
+            { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+            { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+            { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+                { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+                { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is the default shipping address." },
+                { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is the default billing address." },
+                { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that this address belongs to." },
+                { name: "company", type: "`string`", optional: false, description: "The customer's company." },
+                { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+                { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+                { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+                { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+                { name: "city", type: "`string`", optional: false, description: "The address's city." },
+                { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+                { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+                { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+                { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+                { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The address's creation date." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The address's update date." }
+              ] },
+            { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+            { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created this customer, if available." },
+            { name: "created_at", type: "`string`", optional: true, description: "The customer's creation date." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The customer's update date." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The customer's deletion date." }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The store credit account's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer that the store credit account belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The store credit account's currency code.", example: "usd" },
+        { name: "credits", type: "`number`", optional: false, description: "The account's credits." },
+        { name: "debits", type: "`number`", optional: false, description: "The account's debits." },
+        { name: "balance", type: "`number`", optional: false, description: "The account's balance." },
+        { name: "metadata", type: "`object`", optional: false, description: "The store credit account's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the store credit account was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the store credit account was updated at." },
+        { name: "code", type: "`string`", optional: true, description: "The store credit account's code." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/store-credit-accounts/\{id\}/transactions
+
+**List Transactions**
+
+Retrieve a list of transactions in a store credit account. The transactions can be filtered by fields like FILTER FIELDS. The transactions can also be paginated.
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The store credit account's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a transaction ID." },
+    { name: "transaction_group_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a transaction group ID." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by a transaction's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by a transaction's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "q", type: "`string`", optional: true, description: "Search query to filter the transactions by their searchable fields." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/store-credit-accounts/{id}/transactions' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of transactions to return." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of transactions to skip before retrieving the results." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of transactions available." },
+    { name: "transactions", type: "`object[]`", optional: false, description: "The list of transactions.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The transaction's ID." },
+        { name: "account_id", type: "`string`", optional: false, description: "The ID of the store credit account that the transaction belongs to." },
+        { name: "type", type: "`\"credit\"` \\| `\"debit\"`", optional: false, description: "The transaction's type." },
+        { name: "amount", type: "`number`", optional: false, description: "The transaction's amount." },
+        { name: "account", type: "`object`", optional: false, description: "The store credit account's details.", children: [
+            { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+                { name: "has_account", type: "`boolean`", optional: false, description: "Whether the customer is registered." },
+                { name: "groups", type: "`object[]`", optional: true, description: "The customer's groups." },
+                { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+                { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default billing address." },
+                { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default shipping address." },
+                { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+                { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+                { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+                { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses." },
+                { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+                { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created this customer, if available." },
+                { name: "created_at", type: "`string`", optional: true, description: "The customer's creation date." },
+                { name: "updated_at", type: "`string`", optional: true, description: "The customer's update date." },
+                { name: "deleted_at", type: "`string`", optional: true, description: "The customer's deletion date." }
+              ] },
+            { name: "id", type: "`string`", optional: false, description: "The store credit account's ID." },
+            { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer that the store credit account belongs to." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The store credit account's currency code.", example: "usd" },
+            { name: "credits", type: "`number`", optional: false, description: "The account's credits." },
+            { name: "debits", type: "`number`", optional: false, description: "The account's debits." },
+            { name: "balance", type: "`number`", optional: false, description: "The account's balance." },
+            { name: "metadata", type: "`object`", optional: false, description: "The store credit account's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the store credit account was created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the store credit account was updated at." },
+            { name: "code", type: "`string`", optional: true, description: "The store credit account's code." }
+          ] },
+        { name: "note", type: "`string`", optional: true, description: "The transaction's note." },
+        { name: "reference", type: "`string`", optional: true, description: "The transaction's reference." },
+        { name: "reference_id", type: "`string`", optional: true, description: "The transaction's reference ID." },
+        { name: "metadata", type: "`object`", optional: false, description: "The transaction's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the transaction was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the transaction was updated at." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The store credit account's estimate count.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

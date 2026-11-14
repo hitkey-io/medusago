@@ -1,0 +1,150 @@
+---
+products:
+  - api key
+  - cart
+  - order
+  - product
+  - stock location
+---
+
+import { CodeTabs, CodeTab, Table } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Sales Channel Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Sales Channel Module and other Commerce Modules.
+
+## Summary
+
+The Sales Channel Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        First Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Second Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        [ApiKey](/references/api-key/models/ApiKey) in [API Key Module](../../api-key/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [SalesChannel](/references/sales-channel/models/SalesChannel)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#api-key-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Cart](/references/cart/models/Cart) in [Cart Module](../../cart/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [SalesChannel](/references/sales-channel/models/SalesChannel)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#cart-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Order](/references/order/models/Order) in [Order Module](../../order/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [SalesChannel](/references/sales-channel/models/SalesChannel)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#order-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [Product](/references/product/models/Product) in [Product Module](../../product/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [SalesChannel](/references/sales-channel/models/SalesChannel)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#product-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [SalesChannel](/references/sales-channel/models/SalesChannel)
+      </Table.Cell>
+      <Table.Cell>
+        [StockLocation](/references/stock-location-next/models/StockLocation) in [Stock Location Module](../../stock-location/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#stock-location-module)
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## API Key Module
+
+A publishable API key allows you to easily specify the sales channel scope in a client request.
+
+Medusa defines a link between the `ApiKey` and the `SalesChannel` data models.
+
+
+## Cart Module
+
+Medusa defines a read-only link between the [Cart Module](../../cart/page.mdx)'s `Cart` data model and the `SalesChannel` data model. Because the link is read-only from the `Cart`'s side, you can only retrieve the sales channel of a cart, and not the other way around.
+
+## Order Module
+
+Medusa defines a read-only link between the [Order Module](../../order/page.mdx)'s `Order` data model and the `SalesChannel` data model. Because the link is read-only from the `Order`'s side, you can only retrieve the sales channel of an order, and not the other way around.
+
+## Product Module
+
+A product has different availability for different sales channels. Medusa defines a link between the `Product` and the `SalesChannel` data models.
+
+
+A product can be available in more than one sales channel. You can retrieve only the products of a sales channel.
+
+## Stock Location Module
+
+A stock location is associated with a sales channel. This scopes inventory quantities associated with that stock location by the associated sales channel.
+
+Medusa defines a link between the `SalesChannel` and `StockLocation` data models.
+

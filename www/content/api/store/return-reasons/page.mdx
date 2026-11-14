@@ -1,0 +1,150 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Return Reasons API Routes`,
+}
+
+# {metadata.title}
+
+A return reason is a possible reason a customer wants to return an item.
+
+Use these API routes when implementing return creation flow in your storefront to allow customers to select their return reason.
+
+## GET /store/return-reasons
+
+**List Return Reasons**
+
+Retrieve a list of return reasons. The return reasons can be sorted or paginated.
+
+**Authentication:** none.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/return-reasons' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "return_reasons", type: "`object[]`", optional: false, description: "The list of return reasons.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The return reason's ID." },
+        { name: "value", type: "`string`", optional: false, description: "The return reason's value." },
+        { name: "label", type: "`string`", optional: false, description: "The return reason's label." },
+        { name: "description", type: "`string`", optional: true, description: "The return reason's description." },
+        { name: "metadata", type: "`object`", optional: true, description: "The return reason's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the return reason was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the return reason was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## GET /store/return-reasons/\{id\}
+
+**Get a Return Reason**
+
+Retrieve a return reason by its ID. You can expand the return reason's relations or select the fields that should be returned.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The return reason's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/return-reasons/{id}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "return_reason", type: "`object`", optional: false, description: "The return reason's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The return reason's ID." },
+        { name: "value", type: "`string`", optional: false, description: "The return reason's value." },
+        { name: "label", type: "`string`", optional: false, description: "The return reason's label." },
+        { name: "description", type: "`string`", optional: true, description: "The return reason's description." },
+        { name: "metadata", type: "`object`", optional: true, description: "The return reason's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the return reason was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the return reason was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.

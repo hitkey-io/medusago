@@ -1,0 +1,134 @@
+---
+generate_toc: true
+---
+
+export const metadata = {
+  title: `create-medusago-app CLI Tool`,
+}
+
+# {metadata.title}
+
+In this reference, you'll learn how to use `create-medusago-app` to create a MedusaGo project, and what the tool does while it runs.
+
+`create-medusago-app` is the MedusaGo equivalent of Medusa's project creator tool. It sets up a project directory, a PostgreSQL database, and an admin invite, and starts your application.
+
+## Prerequisites
+
+<Prerequisites items={[
+  {
+    text: "Go v1.26 or later",
+    link: "https://go.dev/dl/"
+  },
+  {
+    text: "Git CLI tool",
+    link: "https://git-scm.com/downloads"
+  },
+  {
+    text: "PostgreSQL installed and running",
+    link: "https://www.postgresql.org/download/"
+  }
+]} />
+
+If you choose to install the storefront, you also need Node.js, as the storefront is a JavaScript application. The tool checks for `git` and `go` when it starts, and for `node` if you choose the storefront.
+
+---
+
+## Usage
+
+Run the tool with `go run`. You don't need to install it first:
+
+```bash
+go run github.com/hitkey-io/medusago/packages/cli/create-medusago-app@latest my-medusa-store
+```
+
+`my-medusa-store` is the name of the project's directory. The name can't contain a dot (`.`), and a directory with that name must not exist yet. If you don't pass a name, or the name isn't valid, the tool asks for one.
+
+The general format is:
+
+```bash
+create-medusago-app [options] [project-name]
+```
+
+The options can come before or after the project name. Run the tool with `-h` to list them.
+
+---
+
+## What the Tool Does
+
+When you run the tool, it:
+
+1. Checks that Git and Go are installed.
+2. Asks whether to install the storefront, unless you pass `--with-nextjs-starter`. If you choose it, the tool checks that Node.js is installed.
+3. Connects to PostgreSQL and creates the database `medusa-<project name>`, unless you pass `--skip-db` or `--db-url`. It first tries the `postgres` user without a password on `localhost:5432`. If that fails, it asks for your PostgreSQL username and password, and for the database's name. If a database with the name exists, it asks for another name.
+4. Clones the [MedusaGo starter](https://github.com/hitkey-io/medusago-starter) (a shallow clone of its `main` branch) into the project directory, and removes its `.git` directory. If you didn't choose the storefront, it removes the `apps/storefront` directory.
+5. Writes the `apps/backend/.env` file with the application's environment variables.
+6. Downloads the backend's Go dependencies, and installs the storefront's dependencies if you chose it.
+7. Compiles the backend, and runs [`db:migrate`](!resources!/medusa-cli#dbmigrate) with it.
+8. Creates an invite for the admin user `admin@medusa-test.com` with the [`user --invite`](!resources!/medusa-cli#user) command.
+9. If you chose the storefront, sets its `NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY` to the publishable API key in the database.
+10. Unless you pass `--skip-db` or `--no-browser`, starts the backend with `go run . develop`, and the storefront with its `dev` script. When the backend is ready, it opens `http://localhost:9000/app/invite?token=<token>&first_run=true` in your browser, where you create your admin user.
+
+The application runs until you stop the tool with `Ctrl+C`. The tool then stops the servers and shows how to start them again:
+
+```bash
+cd my-medusa-store/apps/backend
+go run . develop
+```
+
+### The Project
+
+The project follows the layout of the [MedusaGo starter](https://github.com/hitkey-io/medusago-starter): the backend, with the Medusa Admin, is in `apps/backend`, and the storefront is in `apps/storefront`. Learn more in the [Installation chapter](!docs!/learn/installation#project-files).
+
+### The .env File
+
+The tool creates the `.env` file of the backend with the following variables:
+
+- `STORE_CORS`, `ADMIN_CORS`, and `AUTH_CORS`: The URLs that can access the Store API routes, the Admin API routes, and the authentication routes, set for local development.
+- `JWT_SECRET` and `COOKIE_SECRET`: Set to `supersecret`. Change them before you deploy.
+- `AUTH_MFA_ENCRYPTION_KEY`: A random key.
+- `REDIS_URL`: Set to `redis://localhost:6379`. The starter's configuration doesn't read it, so the application doesn't use Redis until you set it up. Learn more in the [Environment Variables chapter](!docs!/learn/fundamentals/environment-variables).
+- `DB_NAME` and `DATABASE_URL`: The database's name and connection URL, unless you pass `--skip-db`.
+
+---
+
+## Options
+
+- `--repo-url <url>`: The URL of the repository to create the project from, instead of the MedusaGo starter. It must have the same layout as the starter, with the backend in `apps/backend`.
+- `--version <version>`: The version of MedusaGo to install. The tool runs `go get github.com/hitkey-io/medusago@<version>` in the backend before it downloads the dependencies. By default, the project uses the version in the starter's `go.mod` file.
+- `--skip-db`: Skip creating the database, running the migrations, and creating the admin invite. It also skips starting the servers and opening the browser. The `.env` file doesn't include `DATABASE_URL`.
+- `--db-url <url>`: Skip creating the database, and use the PostgreSQL database at this URL. The database must already exist. The tool throws an error if it can't connect. It still runs the migrations and opens the Medusa Admin.
+- `--no-migrations`: Skip running the migrations and creating the admin invite. Use it with `--db-url`, and a database that already has all the migrations. Otherwise, the application fails with unexpected errors.
+- `--no-browser`: Don't start the servers or open the browser at the end. The tool only shows the success message.
+- `--directory-path <path>`: The directory to create the project in. The project is created in `<path>/<project-name>`.
+- `--with-nextjs-starter`: Install the storefront along with the backend, without asking.
+- `--use-npm`, `--use-yarn`, `--use-pnpm`: The package manager that installs and runs the storefront. The default is `npm`. You can only pass one of them.
+- `--verbose`: Show the output of the underlying commands. Useful for debugging.
+- `--seed`: Accepted for compatibility with Medusa's tool, with no effect.
+
+### Examples
+
+Create a project with the storefront, in a specific directory:
+
+```bash
+go run github.com/hitkey-io/medusago/packages/cli/create-medusago-app@latest my-medusa-store --with-nextjs-starter --directory-path ~/projects
+```
+
+Create a project that uses an existing database, and don't start the servers:
+
+```bash
+go run github.com/hitkey-io/medusago/packages/cli/create-medusago-app@latest my-medusa-store --db-url "postgres://postgres:postgres@localhost/my-database" --no-browser
+```
+
+Create a project without a database, to set it up yourself later:
+
+```bash
+go run github.com/hitkey-io/medusago/packages/cli/create-medusago-app@latest my-medusa-store --skip-db
+```
+
+---
+
+## Troubleshooting
+
+- **MedusaGo requires Go 1.26 or later**: Install Go from [go.dev/dl](https://go.dev/dl/), and make sure the `go` command is in your `PATH`.
+- **Couldn't connect to PostgreSQL**: Make sure PostgreSQL is running on `localhost:5432`, and that the credentials you enter are correct. If your server is elsewhere, create the database yourself and pass `--db-url`.
+- **A CORS error in the browser**: Make sure the URL of your storefront and admin are in the `STORE_CORS`, `ADMIN_CORS`, and `AUTH_CORS` variables of the `.env` file. Learn more in the [MedusaGo Configurations chapter](!docs!/learn/configurations/medusa-config#httpstorecors).

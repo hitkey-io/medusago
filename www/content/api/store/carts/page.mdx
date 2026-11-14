@@ -1,0 +1,2191 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Carts API Routes`,
+}
+
+# {metadata.title}
+
+A cart is a virtual shopping bag that customers can use to add items they want to purchase.
+
+A cart is then used to checkout and place an order.
+
+These API routes allow customers to create and manage their cart, and place an order.
+
+## POST /store/carts
+
+**Create Cart**
+
+Create a cart.
+
+**Authentication:** none.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "region_id", type: "`string`", optional: true, description: "The ID of the cart's region. This affects the prices and currency of the cart." },
+    { name: "shipping_address", type: "`object`", optional: true, description: "The address's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the address belongs to." },
+        { name: "first_name", type: "`string`", optional: true, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The address's last name." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The address's country code.", example: "us" },
+        { name: "province", type: "`string`", optional: true, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+      ] },
+    { name: "billing_address", type: "`object`", optional: true, description: "The address's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the address belongs to." },
+        { name: "first_name", type: "`string`", optional: true, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The address's last name." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The address's country code.", example: "us" },
+        { name: "province", type: "`string`", optional: true, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+      ] },
+    { name: "email", type: "`string`", optional: true, description: "The email of the cart's customer." },
+    { name: "currency_code", type: "`string`", optional: true, description: "The cart's currency code. If not provided, the region's currency is used. This affects prices in the cart, as well.", example: "usd" },
+    { name: "items", type: "`object[]`", optional: true, description: "The cart's items.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The item's title." },
+        { name: "subtitle", type: "`string`", optional: true, description: "The item's subtitle." },
+        { name: "thumbnail", type: "`string`", optional: true, description: "The item's thumbnail URL." },
+        { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+        { name: "product", type: "`object`", optional: true, description: "The product's details." },
+        { name: "product_id", type: "`string`", optional: true, description: "The ID of the associated product." },
+        { name: "product_title", type: "`string`", optional: true, description: "The item's product title." },
+        { name: "product_description", type: "`string`", optional: true, description: "The item's product description." },
+        { name: "product_subtitle", type: "`string`", optional: true, description: "The item's product subtitle." },
+        { name: "product_type", type: "`string`", optional: true, description: "The ID of the associated product's type." },
+        { name: "product_collection", type: "`string`", optional: true, description: "The ID of the associated product's collection." },
+        { name: "product_handle", type: "`string`", optional: true, description: "The item's product handle." },
+        { name: "variant", type: "`object`", optional: true, description: "The variant's details." },
+        { name: "variant_id", type: "`string`", optional: true, description: "The ID of the associated product variant." },
+        { name: "variant_sku", type: "`string`", optional: true, description: "The item's variant SKU." },
+        { name: "variant_barcode", type: "`string`", optional: true, description: "The item's variant barcode." },
+        { name: "variant_title", type: "`string`", optional: true, description: "The item's variant title." },
+        { name: "variant_option_values", type: "`object`", optional: true, description: "The associated variant's value for the product's options." },
+        { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the item requires shipping." },
+        { name: "is_discountable", type: "`boolean`", optional: false, description: "Whether the item is discountable." },
+        { name: "is_tax_inclusive", type: "`boolean`", optional: false, description: "Whether the item's price includes taxes." },
+        { name: "compare_at_unit_price", type: "`number`", optional: true, description: "The original price of the item before a promotion or sale." },
+        { name: "unit_price", type: "`number`", optional: false, description: "The price of a single quantity of the item." },
+        { name: "tax_lines", type: "`object[]`", optional: true, description: "The item's tax lines." },
+        { name: "adjustments", type: "`object[]`", optional: true, description: "The item's adjustments." },
+        { name: "cart", type: "`object`", optional: false },
+        { name: "cart_id", type: "`string`", optional: false, description: "The ID of the cart that the line item belongs to." },
+        { name: "metadata", type: "`object`", optional: true, description: "The item's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the item was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the item was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the item was deleted." },
+        { name: "original_total", type: "`number`", optional: true, description: "The line item's original total before discounts, including taxes. This field is only available if you expand the `items.*` relation. Learn more in the Cart Totals guide." },
+        { name: "original_subtotal", type: "`number`", optional: true, description: "The line item's original subtotal before discounts, excluding taxes. This field is only available if you expand the `items.*` relation. Learn more in the Cart Totals guide." },
+        { name: "original_tax_total", type: "`number`", optional: true, description: "The line item's original tax total before discounts. This field is only available if you expand the `items.*` relation. Learn more in the Cart Totals guide." },
+        { name: "item_total", type: "`number`", optional: true, description: "The line item's total after discounts, including taxes. This field is only available if you expand the `items.*` relation. Learn more in the Cart Totals guide." },
+        { name: "item_subtotal", type: "`number`", optional: true, description: "The line item's subtotal before discounts, excluding taxes. This field is only available if you expand the `items.*` relation. Learn more in the Cart Totals guide." },
+        { name: "item_tax_total", type: "`number`", optional: true, description: "The line item's tax total after discounts. This field is only available if you expand the `items.*` relation. Learn more in the Cart Totals guide." },
+        { name: "total", type: "`number`", optional: true, description: "The line item's total after discounts, including taxes. This field is only available if you expand the `items.*` relation. Learn more in the Cart Totals guide." },
+        { name: "subtotal", type: "`number`", optional: true, description: "The line item's subtotal before discounts, excluding taxes. This field is only available if you expand the `items.*` relation. Learn more in the Cart Totals guide." },
+        { name: "tax_total", type: "`number`", optional: true, description: "The line item's tax total after discounts. This field is only available if you expand the `items.*` relation. Learn more in the Cart Totals guide." },
+        { name: "discount_total", type: "`number`", optional: true, description: "The total amount of discounts applied to the line item, including the tax portion of discounts. This field is only available if you expand the `items.*` relation. Learn more in the Cart Totals guide." },
+        { name: "discount_tax_total", type: "`number`", optional: true, description: "The total amount of discounts applied to the line item's tax. Represents the tax portion of discounts. This field is only available if you expand the `items.*` relation. Learn more in the Cart Totals guide." }
+      ] },
+    { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the sales channel that cart is created in. If not provided, the store's default sales channel is associated with the cart instead.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+    { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.cart.create({
+  region_id: "reg_123"
+})
+.then(({ cart }) => {
+  console.log(cart)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/carts' \
+-H 'Content-Type: application/json' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+--data-raw '{
+  "region_id": "reg_123"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `cart.created`: Emitted when a cart is created.
+
+---
+
+## GET /store/carts/\{id\}
+
+**Get a Cart**
+
+Retrieve a cart by its ID. You can expand the cart's relations or select the fields that should be returned.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.cart.retrieve("cart_123")
+.then(({ cart }) => {
+  console.log(cart)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/carts/{id}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /store/carts/\{id\}
+
+**Update a Cart**
+
+Update a cart's details. This unsets the payment methods chosen before, and the customer would have to choose them again. Also, if the customer has chosen a shipping method whose option isn't valid for the cart's shipping address anymore, the shipping method will be unset. For example, if the shipping option is valid only in the US geo zone, and the shipping address's country code is `DE`, the shipping method will be unset.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "region_id", type: "`string`", optional: true, description: "The ID of the associated region. This can affect the prices and currency code of the cart." },
+    { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer that the cart belongs to." },
+    { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the associated sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+    { name: "email", type: "`string`", optional: true, description: "The email of the customer that the cart belongs to." },
+    { name: "currency_code", type: "`string`", optional: true, description: "The cart's currency code.", example: "usd" },
+    { name: "shipping_address_id", type: "`string`", optional: true, description: "The ID of the cart's shipping address." },
+    { name: "billing_address_id", type: "`string`", optional: true, description: "The ID of the cart's billing address." },
+    { name: "billing_address", type: "`object`", optional: true, description: "The address to create.", children: [
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer this address belongs to." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "first_name", type: "`string`", optional: true, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The address's last name." },
+        { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The address's country code.", example: "us" },
+        { name: "province", type: "`string`", optional: true, description: "The address's ISO 3166-2 province code. Must be lower-case.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "id", type: "`string`", optional: true, description: "The ID of an existing address to update." }
+      ] },
+    { name: "shipping_address", type: "`object`", optional: true, description: "The address to create.", children: [
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer this address belongs to." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "first_name", type: "`string`", optional: true, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The address's last name." },
+        { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The address's country code.", example: "us" },
+        { name: "province", type: "`string`", optional: true, description: "The address's ISO 3166-2 province code. Must be lower-case.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "id", type: "`string`", optional: true, description: "The ID of an existing address to update." }
+      ] },
+    { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, ca hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.cart.update("cart_123", {
+  region_id: "reg_123"
+})
+.then(({ cart }) => {
+  console.log(cart)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/carts/{id}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `cart.updated`: Emitted when a cart's details are updated.
+- `cart.region_updated`: Emitted when the cart's region is updated. This event is emitted alongside the `cart.updated` event.
+
+---
+
+## POST /store/carts/\{id\}/complete
+
+**Complete Cart**
+
+Complete a cart and place an order.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.cart.complete("cart_123")
+.then((data) => {
+  if(data.type === "cart") {
+    // an error occurred
+    console.log(data.error, data.cart)
+  } else {
+    // order placed successfully
+    console.log(data.order)
+  }
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/carts/{id}/complete' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "type", type: "`string`", optional: false, description: "The type of the returned object. In this case, the order is returned because the cart was completed successfully.", defaultValue: "\"order\"" },
+    { name: "order", type: "`object`", optional: true, description: "The order's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the associated region." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order was placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code.", example: "usd" },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address" },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address" },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_collections", type: "`object[]`", optional: true, description: "The order's payment collections." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The order's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the order, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the order's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card's amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The total amount of credit lines applied to the order, including taxes. Subtracted from the final total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The sum of all discounts applied to line items, including the tax portion of discounts." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The sum of all discounts applied to shipping methods, including the tax portion of discounts." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] },
+    { name: "cart", type: "`object`", optional: true, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] },
+    { name: "error", type: "`object`", optional: true, description: "The error's details.", children: [
+        { name: "message", type: "`string`", optional: false, description: "The error's message." },
+        { name: "name", type: "`string`", optional: false, description: "The error's name." },
+        { name: "type", type: "`string`", optional: false, description: "The error's type. Can be a MedusaError type or `payment_authorization_error` or `payment_requires_more_error` for payment-related errors." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `order.placed`: Emitted when an order is placed, or when a draft order is converted to an order.
+- `reservation-item.created`: Emitted when reservations are created.
+
+---
+
+## POST /store/carts/\{id\}/customer
+
+**Change Cart's Customer to Logged-in Customer**
+
+Change the cart's customer to the currently logged-in customer. This is useful when you create the cart for a guest customer, then they log in with their account.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+// TODO must be authenticated as the customer to set the cart's customer
+sdk.store.cart.transferCart("cart_123")
+.then(({ cart }) => {
+  console.log(cart)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/carts/{id}/customer' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `cart.customer_transferred`: Emitted when the customer in the cart is transferred.
+
+---
+
+## POST /store/carts/\{id\}/gift-cards
+
+**Add Gift Card to Cart**
+
+Add a Gift Card to a cart
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "code", type: "`string`", optional: false, description: "The gift card's code." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/carts/{id}/gift-cards' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "code": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## DELETE /store/carts/\{id\}/gift-cards
+
+**Remove Gift Card from Cart**
+
+Remove a Gift Card from a cart.
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "code", type: "`string`", optional: false, description: "The gift card code to remove from the cart." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/store/carts/{id}/gift-cards' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "code": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /store/carts/\{id\}/line-items
+
+**Add Line Item to Cart**
+
+Add a product variant as a line item in the cart.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "variant_id", type: "`string`", optional: false, description: "The ID of the product variant to add as a line item." },
+    { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+    { name: "metadata", type: "`object`", optional: true, description: "The item's metadata, can hold custom key-value pairs." },
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.cart.createLineItem("cart_123", {
+  variant_id: "variant_123",
+  quantity: 1
+})
+.then(({ cart }) => {
+  console.log(cart)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/carts/{id}/line-items' \
+-H 'Content-Type: application/json' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+--data-raw '{
+  "variant_id": "{value}",
+  "quantity": 3360689747918848,
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `cart.updated`: Emitted when a cart's details are updated.
+
+---
+
+## POST /store/carts/\{id\}/line-items/\{line_id\}
+
+**Update a Line Item in a Cart**
+
+Update a line item's details in the cart.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+    { name: "line_id", type: "`string`", optional: false, description: "The line item's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+    { name: "metadata", type: "`object`", optional: true, description: "The item's metadata, can hold custom key-value pairs." },
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.cart.updateLineItem(
+  "cart_123",
+  "li_123",
+  {
+    quantity: 1
+  }
+)
+.then(({ cart }) => {
+  console.log(cart)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/carts/{id}/line-items/{line_id}' \
+-H 'Content-Type: application/json' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+--data-raw '{
+  "quantity": 8980402259623936,
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `cart.updated`: Emitted when a cart's details are updated.
+
+---
+
+## DELETE /store/carts/\{id\}/line-items/\{line_id\}
+
+**Remove Line Item from Cart**
+
+Remove a line item from a cart.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+    { name: "line_id", type: "`string`", optional: false, description: "The line item's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.cart.deleteLineItem(
+  "cart_123",
+  "li_123"
+)
+.then(({ deleted, parent: cart }) => {
+  console.log(deleted, cart)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/store/carts/{id}/line-items/{line_id}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The ID of the deleted line item." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"line-item\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the item was deleted." },
+    { name: "parent", type: "`object`", optional: true, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `cart.updated`: Emitted when a cart's details are updated.
+
+---
+
+## POST /store/carts/\{id\}/promotions
+
+**Add Promotions to Cart**
+
+Add a list of promotions to a cart.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "promo_codes", type: "`string[]`", optional: false, description: "Promotion codes to add to the cart." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.cart.addPromotions("cart_123", {
+  promo_codes: ["20OFF"]
+})
+.then(({ cart }) => {
+  console.log(cart)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/carts/{id}/promotions' \
+-H 'Content-Type: application/json' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+--data-raw '{
+  "promo_codes": [
+    "{value}"
+  ]
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## DELETE /store/carts/\{id\}/promotions
+
+**Remove Promotions from Cart**
+
+Remove a list of promotions from a cart.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "promo_codes", type: "`string[]`", optional: false, description: "The promotion code to remove from the cart." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.cart.removePromotions("cart_123", {
+  promo_codes: ["20OFF"]
+})
+.then(({ cart }) => {
+  console.log(cart)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/store/carts/{id}/promotions' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "promo_codes": ["{value}"]
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /store/carts/\{id\}/shipping-methods
+
+**Add Shipping Method to Cart**
+
+Add a shipping method to a cart. Use this API route when the customer chooses their preferred shipping option.
+
+If the chosen shipping option's `price_type` is `calculated`, its price is computed by the associated fulfillment provider when it's added to the cart. If the provider fails to calculate the price, this route returns an error.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "option_id", type: "`string`", optional: false, description: "The ID of the shipping option to add to the cart." },
+    { name: "data", type: "`object`", optional: true, description: "Any additional data relevant for the third-party fulfillment provider to process the shipment." },
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.cart.addShippingMethod("cart_123", {
+  option_id: "so_123",
+  data: {
+    // custom data for fulfillment provider.
+  }
+})
+.then(({ cart }) => {
+  console.log(cart)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/carts/{id}/shipping-methods' \
+-H 'Content-Type: application/json' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+--data-raw '{
+  "option_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `cart.updated`: Emitted when a cart's details are updated.
+
+---
+
+## POST /store/carts/\{id\}/store-credits
+
+**Add Store Credit to Cart**
+
+Add a Store Credit to a cart
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "amount", type: "`number`", optional: false, description: "The amount of store credits to add to the cart." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/carts/{id}/store-credits' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "amount": 48
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /store/carts/\{id\}/taxes
+
+**Calculate Cart Taxes**
+
+Calculate the cart's tax lines and amounts.
+
+Medusa recalculates a cart's tax lines automatically on cart changes when the cart's region has `automatic_taxes` enabled, so you typically don't need to use this route. Use this route to force a recalculation, such as when `automatic_taxes` is disabled, which also triggers a fresh calculation from your third-party tax provider, if you use one.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The cart's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/carts/{id}/taxes' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "cart", type: "`object`", optional: false, description: "The cart's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The cart's ID." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the cart belongs to." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the cart belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the cart's sales channel. The created order is associated with the same sales channel.\n\nA product's availability in a sales channel only filters the products you retrieve. Medusa doesn't reject a variant added to the cart when its product isn't available in the cart's sales channel. Refer to the guide in the external documentation to learn how to enforce that validation." },
+        { name: "email", type: "`string`", optional: true, description: "The email of the customer the cart belongs to." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The cart's currency code.", example: "usd" },
+        { name: "shipping_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "billing_address", type: "`object`", optional: true, description: "The address's details." },
+        { name: "items", type: "`object[]`", optional: true, description: "The cart's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The cart's shipping methods." },
+        { name: "payment_collection", type: "`object`", optional: true, description: "The payment collection's details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The cart's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the cart was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the cart was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The sum of all line items' original totals before discounts, including taxes." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' original subtotals before discounts, excluding taxes." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' original tax totals before discounts." },
+        { name: "item_total", type: "`number`", optional: false, description: "The sum of all line items' totals after discounts, including taxes." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The sum of all line items' subtotals before discounts, excluding taxes." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The sum of all line items' tax totals after discounts." },
+        { name: "original_total", type: "`number`", optional: false, description: "The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `original_item_subtotal` and `original_shipping_subtotal`." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`." },
+        { name: "total", type: "`number`", optional: false, description: "The cart's final total after discounts and credit lines, including taxes." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart, including the tax portion of discounts." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The total gift card amount applied on the cart." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the gift card amount." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' totals after discounts, including taxes." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' subtotals before discounts, excluding taxes." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' tax totals after discounts." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original totals before discounts, including taxes." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The sum of all shipping methods' original subtotals before discounts, excluding taxes." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The sum of all shipping methods' original tax totals before discounts." },
+        { name: "promotions", type: "`object[]`", optional: false, description: "The cart's promotions." },
+        { name: "completed_at", type: "`string`", optional: true, description: "The date the cart was completed." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.

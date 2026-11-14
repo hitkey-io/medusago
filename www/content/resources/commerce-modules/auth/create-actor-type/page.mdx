@@ -1,0 +1,69 @@
+---
+sidebar_label: "Create Actor Type"
+tags:
+    - auth
+    - how to
+    - server
+---
+
+export const metadata = {
+  title: `How to Create an Actor Type`,
+}
+
+# {metadata.title}
+
+In this document, learn how to create an actor type and authenticate its associated data model.
+
+## Test Custom Actor Type Authentication Flow
+
+To authenticate managers:
+
+1. Send a `POST` request to `/auth/manager/emailpass/register` to create an auth identity for the manager:
+
+```bash
+curl -X POST 'http://localhost:9000/auth/manager/emailpass/register' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+    "email": "manager@gmail.com",
+    "password": "supersecret"
+}'
+```
+
+Copy the returned token to use it in the next request.
+
+2. Send a `POST` request to `/manager` to create a manager:
+
+```bash
+curl -X POST 'http://localhost:9000/manager' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer {token}' \
+--data-raw '{
+    "first_name": "John",
+    "last_name": "Doe",
+    "email": "manager@gmail.com"
+}'
+```
+
+Replace `{token}` with the token returned in the previous step.
+
+3. Send a `POST` request to `/auth/manager/emailpass` again to retrieve an authenticated token for the manager:
+
+```bash
+curl -X POST 'http://localhost:9000/auth/manager/emailpass' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+    "email": "manager@gmail.com",
+    "password": "supersecret"
+}'
+```
+
+4. You can now send authenticated requests as a manager. For example, send a `GET` request to `/manager/me` to retrieve the authenticated manager’s details:
+
+```bash
+curl 'http://localhost:9000/manager/me' \
+-H 'Authorization: Bearer {token}'
+```
+
+Whenever you want to log in as a manager, use the `/auth/manager/emailpass` API route, as explained in step 3.
+
+---

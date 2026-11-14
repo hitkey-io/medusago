@@ -1,0 +1,161 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Fulfillment Providers API Routes`,
+}
+
+# {metadata.title}
+
+A fulfillment provider is a third-party integration or custom logic used to  fulfill an order's items.
+
+Fulfillment providers are installed as module providers.
+
+## GET /admin/fulfillment-providers
+
+**List Fulfillment Providers**
+
+Retrieve a list of fulfillment providers. The fulfillment providers can be filtered by fields such as `id`. The fulfillment providers can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a fulfillment provider's ID." },
+    { name: "is_enabled", type: "`boolean`", optional: true, description: "Filter by whether the fulfillment provider is enabled." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter a fulfillment provider's searchable properties." },
+    { name: "stock_location_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by associated stock location's ID." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.fulfillmentProvider.list()
+.then(({ fulfillment_providers, count, limit, offset }) => {
+  console.log(fulfillment_providers)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/fulfillment-providers' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total count of items." },
+    { name: "fulfillment_providers", type: "`object[]`", optional: false, description: "The list of fulfillment providers.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+        { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/fulfillment-providers/\{id\}/options
+
+**List Fulfillment Options**
+
+Retrieve the list of fulfillment options of a fulfillment provider. These options may be retrieved from an integrated third-party service.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The fulfillment provider's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.fulfillmentProvider.listFulfillmentOptions("fp_123")
+.then(({ fulfillment_options }) => {
+  console.log(fulfillment_options)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/fulfillment-providers/{id}/options' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "fulfillment_options", type: "`object[]`", optional: false, description: "The list of fulfillment options.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The fulfillment option's ID." },
+        { name: "is_return", type: "`boolean`", optional: false, description: "Whether the fulfillment option is used for returns." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

@@ -18,7 +18,7 @@ const ALWAYS = [
   [/\bnpx medusa\b|\byarn medusa\b/, 'use "go run . <command>"'],
   [/\bcreate-medusa-app\b(?!-errors)/, "use create-medusago-app"],
   [/@medusajs\/(framework\/(http|workflows-sdk|modules-sdk|utils|framework)|medusa|core-flows|workflows-sdk|modules-sdk|cli|test-utils)\b/, "backend TypeScript package"],
-  [/\bMedusa Cloud\b|\bcloud\.medusajs\.com\b|\bmedusa-cloud\b/i, "Medusa Cloud is not part of MedusaGo"],
+  [/\bMedusa Cloud\b|\bcloud\.medusajs\.com\b|\bmedusa-cloud\b|!cloud!|\bCloud (user|account|project)s?\b/i, "Medusa Cloud is not part of MedusaGo"],
   [/\b(RBAC|role-based access control|Single Sign-On|OIDC)\b/, "Enterprise feature"],
 ]
 // Anywhere except the frontend sections: backend TypeScript.
@@ -26,7 +26,7 @@ const BACKEND_ONLY = [
   [/```(ts|tsx|typescript|js|javascript)\b/, "server code must be Go"],
   [/\bNode\.js\b|\bnpm\b|\byarn\b|\bpnpm\b/, "MedusaGo needs Go, not Node"],
 ]
-const FRONTEND = /^(user-guide|ui|api)\/|^resources\/(storefront-development|js-sdk|nextjs-starter|admin-components|admin-widget-injection-zones|instantsearch)\//
+const FRONTEND = /^(user-guide|ui|api)\/|^resources\/(storefront-development|js-sdk|nextjs-starter|admin-components|admin-widget-injection-zones|instantsearch)\/|^resources\/commerce-modules\/[^/]+\/(admin-widget-zones|js-sdk)\/|^learn\/(fundamentals\/admin|customization\/customize-admin|storefront-development)(\/|$)/
 
 let problems = 0
 for (const file of walk(content).filter((f) => f.endsWith(".mdx"))) {
@@ -34,6 +34,7 @@ for (const file of walk(content).filter((f) => f.endsWith(".mdx"))) {
   const text = fs.readFileSync(file, "utf8")
   const rules = FRONTEND.test(rel) ? ALWAYS : [...ALWAYS, ...BACKEND_ONLY]
   text.split("\n").forEach((line, i) => {
+    if (line.includes("terms-ok")) return // {/* terms-ok */}: the line names the upstream project on purpose
     for (const [re, why] of rules) {
       if (re.test(line)) {
         problems++

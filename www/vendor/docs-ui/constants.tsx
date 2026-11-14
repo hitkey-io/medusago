@@ -200,72 +200,12 @@ export const navDropdownItems: NavigationItem[] = [
           },
         ],
       },
-      {
-        type: "sub-menu",
-        title: "Infrastructure Modules",
-        link: "/resources/infrastructure-modules",
-        sidebar_id: "infrastructure-modules",
-        items: [
-          {
-            type: "link",
-            title: "Analytics",
-            link: "/resources/infrastructure-modules/analytics",
-          },
-          {
-            type: "link",
-            title: "Caching",
-            link: "/resources/infrastructure-modules/caching",
-          },
-          {
-            type: "link",
-            title: "Event",
-            link: "/resources/infrastructure-modules/event",
-          },
-          {
-            type: "link",
-            title: "File",
-            link: "/resources/infrastructure-modules/file",
-          },
-          {
-            type: "link",
-            title: "Locking",
-            link: "/resources/infrastructure-modules/locking",
-          },
-          {
-            type: "link",
-            title: "Notification",
-            link: "/resources/infrastructure-modules/notification",
-          },
-          {
-            type: "link",
-            title: "Search",
-            link: "/resources/infrastructure-modules/search",
-          },
-          {
-            type: "link",
-            title: "Workflow Engine",
-            link: "/resources/infrastructure-modules/workflow-engine",
-          },
-        ],
-      },
     ],
   },
   {
     type: "dropdown",
     title: "Build",
     children: [
-      {
-        type: "link",
-        title: "Recipes",
-        link: "/resources/recipes",
-        sidebar_id: "recipes",
-      },
-      {
-        type: "link",
-        title: "Integrations",
-        link: "/resources/integrations",
-        sidebar_id: "integrations",
-      },
       {
         type: "link",
         title: "Storefront",
@@ -277,7 +217,6 @@ export const navDropdownItems: NavigationItem[] = [
   {
     type: "dropdown",
     title: "Tools",
-    link: "/resources/tools",
     children: [
       {
         type: "sub-menu",
@@ -297,11 +236,6 @@ export const navDropdownItems: NavigationItem[] = [
       },
       {
         type: "link",
-        title: "InstantSearch Adapter",
-        link: "/resources/instantsearch",
-      },
-      {
-        type: "link",
         title: "JS SDK",
         link: "/resources/js-sdk",
         sidebar_id: "js-sdk",
@@ -318,18 +252,11 @@ export const navDropdownItems: NavigationItem[] = [
         link: "/resources/nextjs-starter",
         sidebar_id: "nextjs-starter",
       },
-      {
-        type: "link",
-        title: "Medusa UI",
-        link: "/ui",
-        sidebar_id: "ui",
-      },
     ],
   },
   {
     type: "dropdown",
     title: "Reference",
-    link: "/resources/references-overview",
     children: [
       {
         type: "link",
@@ -350,23 +277,6 @@ export const navDropdownItems: NavigationItem[] = [
         type: "link",
         title: "Admin Injection Zones",
         link: "/resources/admin-widget-injection-zones",
-      },
-      {
-        type: "link",
-        title: "Container Resources",
-        link: "/resources/medusa-container-resources",
-      },
-      {
-        type: "link",
-        title: "Data Model Repository",
-        link: "/resources/data-model-repository-reference",
-        sidebar_id: "data-model-repository-reference",
-      },
-      {
-        type: "link",
-        title: "Service Factory",
-        link: "/resources/service-factory-reference",
-        sidebar_id: "service-factory-reference",
       },
     ],
   },

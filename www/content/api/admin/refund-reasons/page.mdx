@@ -1,0 +1,425 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Refund Reasons API Routes`,
+}
+
+# {metadata.title}
+
+A refund reason is a possible reason used when issuing a refund to the customer, such as when returning an item and refunding the customer.
+
+These API routes allow admin users to manage refund reasons.
+
+## GET /admin/refund-reasons
+
+**List Refund Reasons**
+
+Retrieve a list of refund reasons. The refund reasons can be filtered by fields such as `id`. The refund reasons can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a refund reason's ID." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the refund reason's searchable properties." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.refundReason.list()
+.then(({ refund_reasons, count, limit, offset }) => {
+  console.log(refund_reasons)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/refund-reasons' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "refund_reasons", type: "`object[]`", optional: false, description: "The refund reason's refund reasons.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The refund reason's ID." },
+        { name: "label", type: "`string`", optional: false, description: "The refund reason's label." },
+        { name: "description", type: "`string`", optional: true, description: "The refund reason's description." },
+        { name: "metadata", type: "`object`", optional: true, description: "The refund reason's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the refund reason was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the refund reason was updated." },
+        { name: "code", type: "`string`", optional: false, description: "The refund reason's code." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/refund-reasons
+
+**Create Refund Reason**
+
+Create a refund reason.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "label", type: "`string`", optional: false, description: "The refund reason's label." },
+    { name: "description", type: "`string`", optional: true, description: "The refund reason's description." },
+    { name: "code", type: "`string`", optional: false, description: "The refund reason's code." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.refundReason.create({
+  code: "refund",
+  label: "Refund",
+})
+.then(({ refund_reason }) => {
+  console.log(refund_reason)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/refund-reasons' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "label": "{value}",
+  "code": "{value}",
+  "description": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "refund_reason", type: "`object`", optional: false, description: "The refund reason's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The refund reason's ID." },
+        { name: "label", type: "`string`", optional: false, description: "The refund reason's label." },
+        { name: "description", type: "`string`", optional: true, description: "The refund reason's description." },
+        { name: "metadata", type: "`object`", optional: true, description: "The refund reason's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the refund reason was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the refund reason was updated." },
+        { name: "code", type: "`string`", optional: false, description: "The refund reason's code." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/refund-reasons/\{id\}
+
+**Get a Refund Reason**
+
+Retrieve a refund reason by its ID. You can expand the refund reason's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The refund reason's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.refundReason.retrieve("refr_123")
+.then(({ refund_reason }) => {
+  console.log(refund_reason)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/refund-reasons/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "refund_reason", type: "`object`", optional: false, description: "The refund reason's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The refund reason's ID." },
+        { name: "label", type: "`string`", optional: false, description: "The refund reason's label." },
+        { name: "description", type: "`string`", optional: true, description: "The refund reason's description." },
+        { name: "metadata", type: "`object`", optional: true, description: "The refund reason's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the refund reason was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the refund reason was updated." },
+        { name: "code", type: "`string`", optional: false, description: "The refund reason's code." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/refund-reasons/\{id\}
+
+**Update a Refund Reason**
+
+Update a refund reason's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The refund reason's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "label", type: "`string`", optional: true, description: "The refund reason's label." },
+    { name: "description", type: "`string`", optional: true, description: "The refund reason's description." },
+    { name: "code", type: "`string`", optional: true, description: "The refund reason's code." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.refundReason.update("ret_123", {
+  code: "refund",
+  label: "Refund",
+})
+.then(({ refund_reason }) => {
+  console.log(refund_reason)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/refund-reasons/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "description": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "refund_reason", type: "`object`", optional: false, description: "The refund reason's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The refund reason's ID." },
+        { name: "label", type: "`string`", optional: false, description: "The refund reason's label." },
+        { name: "description", type: "`string`", optional: true, description: "The refund reason's description." },
+        { name: "metadata", type: "`object`", optional: true, description: "The refund reason's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the refund reason was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the refund reason was updated." },
+        { name: "code", type: "`string`", optional: false, description: "The refund reason's code." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/refund-reasons/\{id\}
+
+**Delete a Refund Reason**
+
+Delete a refund reason.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The refund reason's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.refundReason.delete("ret_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/refund-reasons/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The refund reason's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"refund_reason\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the refund reason was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

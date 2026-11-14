@@ -1,0 +1,97 @@
+import { Prerequisites, CodeTabs, CodeTab, Table } from "docs-ui"
+
+export const metadata = {
+  title: `Translate Custom Data Models`,
+}
+
+# {metadata.title}
+
+In this chapter, you'll learn how to support translations for your custom data models using the Translation Module.
+
+<Prerequisites
+  items={[
+    {
+      text: "Medusa v2.12.4 or later",
+      link: "https://github.com/medusajs/medusa/releases/tag/v2.12.4"
+    },
+    {
+      text: "Translation Module Configured",
+      link: "/commerce-modules/translation#configure-translation-module",
+    },
+  ]}
+/>
+
+## Summary
+
+The Translation Module allows you to extend translation capabilities to custom data models in your MedusaGo application. Then, you can [manage translations from the Medusa Admin](!user-guide!/settings/translations), and serve translated resources in your configured locales.
+
+By following this guide, you'll learn how to:
+
+- Configure the Translation Module to support translations for your custom data models.
+- Manage translations for your custom data models from the Medusa Admin.
+- Serve translated resources in your configured locales.
+
+---
+
+## Step 2: Manage Translations from Medusa Admin
+
+After configuring the Translation Module, you can manage translations for your custom data models from the Medusa Admin.
+
+Run the following command to start the MedusaGo application:
+
+```bash
+go run . develop
+```
+
+Then, open the Medusa Admin and go to Settings -> Translations. You should see your custom data model in the list of translatable resources.
+
+
+Click the Edit button for your custom data model to manage translations for its resources. You can manage translations for the configured locales and fields.
+
+Learn more in the [Translations User Guide](!user-guide!/settings/translations).
+
+---
+
+## Step 3: Serve Translated Resources
+
+Finally, you can serve translated resources for your custom data models in your configured locales. This section focuses on returning records with translated fields from API routes.
+
+## Step 4: Test the Implementation
+
+To test the implementation, start the MedusaGo application if you haven't already:
+
+```bash
+go run . develop
+```
+
+Then, send a request to your custom API route with the desired locale. For example:
+
+```bash
+curl "http://localhost:9000/store/posts?locale=fr-FR" \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+This should return the list of blog posts with their French translations for the `title` field if available:
+
+```json
+{
+  "posts": [
+    {
+      "id": "post_123",
+      "title": "Titre de l'Article"
+    },
+    {
+      "id": "post_456",
+      "title": "Un Autre Titre"
+    }
+  ]
+}
+```
+
+---
+
+## Manage Translations with the Translation Module Service
+
+For more complex cases, you can manage translations for your custom data models programmatically using the Translation Module's service. You can create, update, delete, and retrieve translations of any resource using the service's methods.
+
+Refer to the [Translation Module service reference](/references/translation) for a full list of available methods and how to use them.

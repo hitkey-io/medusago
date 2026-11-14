@@ -1,0 +1,442 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Shipping Option Types API Routes`,
+}
+
+# {metadata.title}
+
+Shipping option types define a group of shipping options with shared shipping characterstics. For example,  you may have "Standard" and "Express" shipping option types.
+These API routes allow admins to manage shipping option types.
+
+## GET /admin/shipping-option-types
+
+**List Shipping Option Types**
+
+Retrieve a list of shipping option types. The shipping option types can be filtered by fields such as `id`. The shipping option types can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "q", type: "`string`", optional: true, description: "Search query to apply on the shipping option type's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a shipping option type's ID." },
+    { name: "label", type: "`string` \\| `string[]`", optional: true, description: "Filter by a shipping option type's label." },
+    { name: "code", type: "`string` \\| `string[]`", optional: true, description: "Filter by a shipping option type's code." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by a shipping option type's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by a shipping option type's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by a shipping option type's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "description", type: "`string` \\| `string[]`", optional: true, description: "Filter by a shipping option type's description." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.shippingOptionType.list()
+.then(({ shipping_option_types, count, limit, offset }) => {
+  console.log(shipping_option_types)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/shipping-option-types' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before returning the results." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" },
+    { name: "shipping_option_types", type: "`object[]`", optional: false, description: "The list of shipping option types.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." },
+        { name: "label", type: "`string`", optional: false, description: "The type's label." },
+        { name: "description", type: "`string`", optional: false, description: "The type's description." },
+        { name: "code", type: "`string`", optional: false, description: "The type's code." },
+        { name: "shipping_option_id", type: "`string`", optional: false, description: "The type's shipping option id." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/shipping-option-types
+
+**Create Shipping Option Type**
+
+Create a shipping option type.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "label", type: "`string`", optional: false, description: "The type's label." },
+    { name: "description", type: "`string`", optional: true, description: "The type's description." },
+    { name: "code", type: "`string`", optional: false, description: "The type's code." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.shippingOptionType.create({
+  label: "Standard",
+  code: "standard",
+  description: "Ship in 2-3 days."
+})
+.then(({ shipping_option_type }) => {
+  console.log(shipping_option_type)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/shipping-option-types' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "label": "{value}",
+  "code": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "shipping_option_type", type: "`object`", optional: false, description: "The shipping option's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." },
+        { name: "label", type: "`string`", optional: false, description: "The type's label." },
+        { name: "description", type: "`string`", optional: false, description: "The type's description." },
+        { name: "code", type: "`string`", optional: false, description: "The type's code." },
+        { name: "shipping_option_id", type: "`string`", optional: false, description: "The type's shipping option id." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `shipping-option-type.created`: Emitted when shipping option types are created.
+
+---
+
+## GET /admin/shipping-option-types/\{id\}
+
+**Get a Shipping Option Type**
+
+Retrieve a shipping option type by its ID. You can expand the shipping option type's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The shipping option type's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.shippingOptionType.retrieve("sotype_123")
+.then(({ shipping_option_type }) => {
+  console.log(shipping_option_type)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/shipping-option-types/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "shipping_option_type", type: "`object`", optional: false, description: "The shipping option's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." },
+        { name: "label", type: "`string`", optional: false, description: "The type's label." },
+        { name: "description", type: "`string`", optional: false, description: "The type's description." },
+        { name: "code", type: "`string`", optional: false, description: "The type's code." },
+        { name: "shipping_option_id", type: "`string`", optional: false, description: "The type's shipping option id." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/shipping-option-types/\{id\}
+
+**Update a Shipping Option Type**
+
+Update a shipping option type's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The shipping option type's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "code", type: "`string`", optional: true, description: "The shipping option type's code." },
+    { name: "description", type: "`string`", optional: true, description: "The shipping option type's description." },
+    { name: "label", type: "`string`", optional: true, description: "The shipping option type's label." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.shippingOptionType.update("sotype_123", {
+  code: "express"
+})
+.then(({ shipping_option_type }) => {
+  console.log(shipping_option_type)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/shipping-option-types/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "shipping_option_type", type: "`object`", optional: false, description: "The shipping option's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." },
+        { name: "label", type: "`string`", optional: false, description: "The type's label." },
+        { name: "description", type: "`string`", optional: false, description: "The type's description." },
+        { name: "code", type: "`string`", optional: false, description: "The type's code." },
+        { name: "shipping_option_id", type: "`string`", optional: false, description: "The type's shipping option id." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `shipping-option-type.updated`: Emitted when shipping option types are updated.
+
+---
+
+## DELETE /admin/shipping-option-types/\{id\}
+
+**Delete a Shipping Option Type**
+
+Delete a shipping option type.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The shipping option type's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.shippingOptionType.delete("sotype_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/shipping-option-types/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The shipping option type's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"shipping_option_type\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the Shipping Option Type was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `shipping-option-type.deleted`: Emitted when shipping option types are deleted.

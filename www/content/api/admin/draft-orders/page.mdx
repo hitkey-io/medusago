@@ -1,0 +1,1977 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Draft Orders API Routes`,
+}
+
+# {metadata.title}
+
+A draft order is an order created by the admin user. This is useful for orders created offline or from clients other than a storefront, such as a third-party integration.
+
+These API routes allow admin users to create and manage draft orders.
+
+## GET /admin/draft-orders
+
+**List Draft Orders**
+
+Retrieve a list of draft orders. The draft orders can be filtered by fields such as `id`. The draft orders can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "id", type: "`string` \\| `string[]` \\| `object`", optional: true, description: "Filter by a draft order's ID. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "sales_channel_id", type: "`string[]`", optional: true, description: "Filter by the associated sales channels to retrieve its draft orders." },
+    { name: "region_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by region IDs to retrieve their associated draft orders." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the order's searchable properties." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the draft order's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the draft order's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "customer_id", type: "`string` \\| `string[]`", optional: true, description: "The draft order's customer id." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.list()
+.then(({ draft_orders, count, limit, offset }) => {
+  console.log(draft_orders)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/draft-orders' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items retrieved." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total count of items available." },
+    { name: "draft_orders", type: "`object[]`", optional: false, description: "The list of draft orders.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The draft order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The draft order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "items", type: "`object[]`", optional: false, description: "The draft order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The draft order's shipping methods." },
+        { name: "status", type: "`string`", optional: false, description: "The draft order's status." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The draft order's currency code.", example: "usd" },
+        { name: "id", type: "`string`", optional: false, description: "The draft order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The draft order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the draft order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that the draft order belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel that the draft order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The customer email associated with the draft order." },
+        { name: "display_id", type: "`number`", optional: true, description: "The draft order's display ID." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The draft order's payment status. Possible values: `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `canceled`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The draft order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The draft order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The draft order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the draft order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the draft order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the draft order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the draft order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the draft order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the draft order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The draft order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The draft order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The draft order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The draft order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The draft order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The draft order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The draft order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of draft order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The draft order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The draft order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The draft order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The draft order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The draft order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's shipping excluding promotions." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The draft order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The draft order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the draft order." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders
+
+**Create Draft Order**
+
+Create a draft order. This creates an order with the `is_draft_order` property enabled. You can later convert the draft order to an order.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "status", type: "`\"completed\"`", optional: true, description: "The draft order's status." },
+    { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the associated sales channel." },
+    { name: "email", type: "`string`", optional: false, description: "The email of the draft order's customer." },
+    { name: "customer_id", type: "`string`", optional: false, description: "The ID of the draft order's customer." },
+    { name: "billing_address", type: "`string` \\| `object`", optional: true, description: "The draft order's billing address.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the address belongs to." },
+        { name: "first_name", type: "`string`", optional: true, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The address's last name." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The address's country code.", example: "us" },
+        { name: "province", type: "`string`", optional: true, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+      ] },
+    { name: "shipping_address", type: "`string` \\| `object`", optional: true, description: "The draft order's shipping address.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the address belongs to." },
+        { name: "first_name", type: "`string`", optional: true, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The address's last name." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The address's country code.", example: "us" },
+        { name: "province", type: "`string`", optional: true, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+      ] },
+    { name: "items", type: "`object[]`", optional: true, description: "The draft order's items.", children: [
+        { name: "title", type: "`string`", optional: false, description: "The item's title." },
+        { name: "sku", type: "`string`", optional: false, description: "The item's SKU." },
+        { name: "barcode", type: "`string`", optional: false, description: "The item's barcode." },
+        { name: "variant_id", type: "`string`", optional: false, description: "The ID of the associated product variant." },
+        { name: "unit_price", type: "`string` \\| `number` \\| `object`", optional: false, description: "The item's unit price.", children: [
+            { name: "value", type: "`string`", optional: false, description: "The unit price's value." },
+            { name: "precision", type: "`number`", optional: false, description: "The unit price's rounding precision." }
+          ] },
+        { name: "quantity", type: "`number`", optional: false, description: "The item's ordered quantity." },
+        { name: "metadata", type: "`object`", optional: false, description: "The item's metadata." }
+      ] },
+    { name: "region_id", type: "`string`", optional: false, description: "The ID of the associated region." },
+    { name: "promo_codes", type: "`string[]`", optional: true, description: "The promotion codes applied on the draft order." },
+    { name: "currency_code", type: "`string`", optional: false, description: "The draft order's currency code." },
+    { name: "no_notification_order", type: "`boolean`", optional: true, description: "Whether to send the customer notifications on order changes." },
+    { name: "shipping_methods", type: "`object[]`", optional: false, description: "The draft order's shipping methods.", children: [
+        { name: "shipping_method_id", type: "`string`", optional: true, description: "The ID of an existing shipping method." },
+        { name: "name", type: "`string`", optional: false, description: "The shipping method's name." },
+        { name: "option_id", type: "`string`", optional: false, description: "The ID of the shipping option this method is created from." },
+        { name: "data", type: "`object`", optional: true, description: "The shipping method's data, useful for fulfillment providers." },
+        { name: "amount", type: "`string` \\| `number` \\| `object`", optional: false, description: "The shipping method's amount.", children: [
+            { name: "value", type: "`string`", optional: false, description: "The amount's value." },
+            { name: "precision", type: "`number`", optional: false, description: "The amount's rounding precision." }
+          ] }
+      ] },
+    { name: "metadata", type: "`object`", optional: false, description: "The draft order's metadata." },
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.create({
+  email: "test@test.com",
+  items: [
+    {
+      variant_id: "variant_123",
+      quantity: 1,
+    },
+  ],
+  region_id: "region_123",
+  sales_channel_id: "sc_123",
+})
+.then(({ draft_order }) => {
+  console.log(draft_order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "sales_channel_id": "{value}",
+  "email": "Bartholome.Goodwin90@yahoo.com",
+  "customer_id": "{value}",
+  "region_id": "{value}",
+  "currency_code": "{value}",
+  "shipping_methods": [
+    {
+      "shipping_method_id": "{value}",
+      "order_id": "{value}",
+      "name": "Cheyanne",
+      "option_id": "{value}"
+    }
+  ],
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "draft_order", type: "`object`", optional: false, description: "The draft order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The draft order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The draft order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "items", type: "`object[]`", optional: false, description: "The draft order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The draft order's shipping methods." },
+        { name: "status", type: "`string`", optional: false, description: "The draft order's status." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The draft order's currency code.", example: "usd" },
+        { name: "id", type: "`string`", optional: false, description: "The draft order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The draft order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the draft order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that the draft order belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel that the draft order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The customer email associated with the draft order." },
+        { name: "display_id", type: "`number`", optional: true, description: "The draft order's display ID." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The draft order's payment status. Possible values: `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `canceled`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The draft order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The draft order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The draft order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the draft order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the draft order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the draft order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the draft order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the draft order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the draft order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The draft order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The draft order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The draft order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The draft order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The draft order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The draft order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The draft order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of draft order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The draft order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The draft order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The draft order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The draft order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The draft order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's shipping excluding promotions." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The draft order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The draft order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the draft order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/draft-orders/\{id\}
+
+**Get a Draft Order**
+
+Retrieve a draft order by its ID. You can expand the draft order's relations or select the fields that should be returned using the query parameters.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.retrieve("order_123")
+.then(({ draft_order }) => {
+  console.log(draft_order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/draft-orders/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "draft_order", type: "`object`", optional: false, description: "The draft order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The draft order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The draft order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "items", type: "`object[]`", optional: false, description: "The draft order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The draft order's shipping methods." },
+        { name: "status", type: "`string`", optional: false, description: "The draft order's status." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The draft order's currency code.", example: "usd" },
+        { name: "id", type: "`string`", optional: false, description: "The draft order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The draft order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the draft order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that the draft order belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel that the draft order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The customer email associated with the draft order." },
+        { name: "display_id", type: "`number`", optional: true, description: "The draft order's display ID." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The draft order's payment status. Possible values: `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `canceled`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The draft order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The draft order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The draft order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the draft order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the draft order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the draft order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the draft order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the draft order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the draft order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The draft order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The draft order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The draft order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The draft order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The draft order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The draft order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The draft order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of draft order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The draft order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The draft order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The draft order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The draft order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The draft order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's shipping excluding promotions." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The draft order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The draft order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the draft order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders/\{id\}
+
+**Update a Draft Order**
+
+Update a draft order's details. This doesn't include updating the draft order's items, shipping methods, or promotions. To update those, you need to create an edit that you can later request or confirm.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "email", type: "`string`", optional: true, description: "The customer email associated with the draft order." },
+    { name: "shipping_address", type: "`object`", optional: true, description: "The address's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the address belongs to." },
+        { name: "first_name", type: "`string`", optional: true, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The address's last name." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The address's country code.", example: "us" },
+        { name: "province", type: "`string`", optional: true, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+      ] },
+    { name: "billing_address", type: "`object`", optional: true, description: "The address's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the address belongs to." },
+        { name: "first_name", type: "`string`", optional: true, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The address's last name." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The address's country code.", example: "us" },
+        { name: "province", type: "`string`", optional: true, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+      ] },
+    { name: "metadata", type: "`object`", optional: true, description: "The draft order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+    { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer associated with the draft order." },
+    { name: "sales_channel_id", type: "`string`", optional: true, description: "The ID of the sales channel associated with the draft order." },
+    { name: "locale", type: "`string`", optional: true, description: "The draft order's locale." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.update("order_123", {
+  email: "test@test.com",
+})
+.then(({ draft_order }) => {
+  console.log(draft_order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "email": "test@test.com"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "draft_order", type: "`object`", optional: false, description: "The draft order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The draft order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The draft order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "items", type: "`object[]`", optional: false, description: "The draft order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The draft order's shipping methods." },
+        { name: "status", type: "`string`", optional: false, description: "The draft order's status." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The draft order's currency code.", example: "usd" },
+        { name: "id", type: "`string`", optional: false, description: "The draft order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The draft order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the draft order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that the draft order belongs to." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel that the draft order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The customer email associated with the draft order." },
+        { name: "display_id", type: "`number`", optional: true, description: "The draft order's display ID." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The draft order's payment status. Possible values: `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `canceled`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The draft order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The draft order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The draft order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the draft order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the draft order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the draft order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the draft order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the draft order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the draft order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The draft order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The draft order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The draft order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The draft order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The draft order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The draft order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The draft order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of draft order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The draft order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The draft order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The draft order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The draft order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The draft order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the draft order's shipping excluding promotions." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The draft order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The draft order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the draft order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `order.updated`: Emitted when the details of an order or draft order is updated. This doesn't include updates made by an edit.
+
+---
+
+## DELETE /admin/draft-orders/\{id\}
+
+**Delete a Draft Order**
+
+Delete a draft order.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.delete("order_123")
+.then(({ id, object, deleted }) => {
+  console.log(id, object, deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/draft-orders/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders/\{id\}/convert-to-order
+
+**Convert a Draft Order to an Order**
+
+Convert a draft order to an order. This will finalize the draft order and create a new order with the same details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.convertToOrder("order_123")
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}/convert-to-order' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `order.placed`: Emitted when an order is placed, or when a draft order is converted to an order.
+- `reservation-item.created`: Emitted when reservations are created.
+
+---
+
+## POST /admin/draft-orders/\{id\}/edit
+
+**Create a Draft Order Edit**
+
+Create an edit on a draft order. This will allow you to make changes to the draft order's items, shipping methods, or promotions. Once you've made the necessar changes, you can later either request the edit (which requires a confirmation from the customer), or force-confirm the edit.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.beginEdit("order_123")
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}/edit' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/draft-orders/\{id\}/edit
+
+**Cancel Edit on Draft Order**
+
+Cancel an unconfirmed edit on a draft order.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.cancelEdit("order_123")
+.then(({ id, object, deleted }) => {
+  console.log(id, object, deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/draft-orders/{id}/edit' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders/\{id\}/edit/confirm
+
+**Confirm an Edit on a Draft Order**
+
+Confirm an edit on a draft order. This will apply the changes made to the draft order.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.confirmEdit("order_123")
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}/edit/confirm' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders/\{id\}/edit/items
+
+**Add Item to Draft Order Edit**
+
+Add an item to a draft order edit.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "items", type: "`object[]`", optional: true, description: "The items to add to the draft order.", children: [
+        { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+        { name: "variant_id", type: "`string`", optional: true, description: "The ID of the variant to add to the draft order." },
+        { name: "title", type: "`string`", optional: true, description: "The item's title." },
+        { name: "unit_price", type: "`number`", optional: true, description: "The item's unit price." },
+        { name: "compare_at_unit_price", type: "`number`", optional: true, description: "The original price of the item before a promotion or sale." },
+        { name: "internal_note", type: "`string`", optional: true, description: "A note viewed only by admin users about the item." },
+        { name: "allow_backorder", type: "`boolean`", optional: true, description: "Whether the item can be purchased if it's out of stock." },
+        { name: "metadata", type: "`object`", optional: true, description: "The item's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+      ] }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.addItems("order_123", {
+  items: [
+    {
+      variant_id: "variant_123",
+      quantity: 1,
+    },
+  ],
+})
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}/edit/items' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders/\{id\}/edit/items/item/\{item_id\}
+
+**Update Existing Item in Draft Order Edit**
+
+Update an existing item in a draft order edit.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." },
+    { name: "item_id", type: "`string`", optional: false, description: "The item's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+    { name: "unit_price", type: "`number`", optional: true, description: "The item's unit price." },
+    { name: "compare_at_unit_price", type: "`number`", optional: true, description: "The original price of the item before a promotion or sale." },
+    { name: "internal_note", type: "`string`", optional: true, description: "A note viewed only by admin users about the item." },
+    { name: "metadata", type: "`object`", optional: true, description: "Key-value pairs of custom data." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.updateItem("order_123", "item_123", {
+  quantity: 2,
+})
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}/edit/items/item/{item_id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "quantity": 0
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders/\{id\}/edit/items/\{action_id\}
+
+**Update New Item in Draft Order Edit**
+
+Update a new item that was added to a draft order edit by the ID of the item's `ITEM_ADD` action.
+
+Every item has an `actions` property, whose value is an array of actions. You can check the action's name using its `action` property, and use the value of the `id` property.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." },
+    { name: "action_id", type: "`string`", optional: false, description: "The ID of the item's `ITEM_ADD` action." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+    { name: "unit_price", type: "`number`", optional: true, description: "The item's unit price." },
+    { name: "compare_at_unit_price", type: "`number`", optional: true, description: "The original price of the item before a promotion or sale." },
+    { name: "internal_note", type: "`string`", optional: true, description: "A note viewed only by admin users about the item." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.updateActionItem("order_123", "action_123", {
+  quantity: 2,
+})
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}/edit/items/{action_id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "quantity": 39
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/draft-orders/\{id\}/edit/items/\{action_id\}
+
+**Remove Item from Draft Order Edit**
+
+Remove an order item from a draft order edit by the ID of the item's `ITEM_ADD` or `ITEM_UPDATE` action.
+
+Every item has an `actions` property, whose value is an array of actions. You can check the action's name using its `action` property, and use the value of the `id` property.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." },
+    { name: "action_id", type: "`string`", optional: false, description: "The ID of the order item's `ITEM_ADD` or `ITEM_UPDATE` action." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.removeActionItem("order_123", "action_123")
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/draft-orders/{id}/edit/items/{action_id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders/\{id\}/edit/promotions
+
+**Add Promotions to Draft Order Edit**
+
+Add promotions to a draft order edit.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "promo_codes", type: "`string[]`", optional: false, description: "The list promotion codes to add to the draft order." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.addPromotions("order_123", {
+  promo_codes: ["PROMO_CODE_1", "PROMO_CODE_2"],
+})
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}/edit/promotions' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "promo_codes": [
+    "{value}"
+  ]
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "draft_order_preview", type: "`object`", optional: false, description: "The draft order preview's details.", children: [
+        { name: "return_requested_total", type: "`number`", optional: false, description: "The total of the requested return." },
+        { name: "order_change", type: "`object`", optional: false, description: "The order change's details." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The order's shipping methods." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version when this preview is applied." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the order's associated region." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel that the order was placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order preview's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The draft order preview's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the draft order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/draft-orders/\{id\}/edit/promotions
+
+**Remove Promotions from Draft Order Edit**
+
+Remove specified promotions from a draft order edit.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "promo_codes", type: "`string[]`", optional: false, description: "The promotion codes to remove from the draft order." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.removePromotions("order_123", {
+  promo_codes: ["PROMO_CODE_1", "PROMO_CODE_2"],
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/draft-orders/{id}/edit/promotions' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "draft_order_preview", type: "`object`", optional: false, description: "The draft order preview's details.", children: [
+        { name: "return_requested_total", type: "`number`", optional: false, description: "The total of the requested return." },
+        { name: "order_change", type: "`object`", optional: false, description: "The order change's details." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The order's shipping methods." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version when this preview is applied." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the order's associated region." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel that the order was placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order preview's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The draft order preview's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the draft order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the draft order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders/\{id\}/edit/request
+
+**Request Edit on Draft Order**
+
+Change the status of a draft order's edit to be requested. Later, the edit can be confirmed or canceled.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.requestEdit("order_123")
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}/edit/request' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders/\{id\}/edit/shipping-methods
+
+**Add Shipping Method to Draft Order Edit**
+
+Add a shipping method to a draft order edit.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "shipping_option_id", type: "`string`", optional: false, description: "The ID of the shipping option that this method is created from." },
+    { name: "custom_amount", type: "`number`", optional: true, description: "A custom amount to be charged for this shipping method. If not provided, the shipping option's amount will be used." },
+    { name: "description", type: "`string`", optional: true, description: "The shipping method's description." },
+    { name: "internal_note", type: "`string`", optional: true, description: "A note viewed only by admin users about the shipping method." },
+    { name: "metadata", type: "`object`", optional: true, description: "The shipping method's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.addShippingMethod("order_123", {
+  shipping_option_id: "shipping_option_123",
+})
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}/edit/shipping-methods' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "shipping_option_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders/\{id\}/edit/shipping-methods/method/\{method_id\}
+
+**Update Existing Shipping Method in Draft Order Edit**
+
+Update an existing shipping method in a draft order edit.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." },
+    { name: "method_id", type: "`string`", optional: false, description: "The ID of the shipping method." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "shipping_option_id", type: "`string`", optional: true, description: "The ID of the associated shipping option." },
+    { name: "custom_amount", type: "`number`", optional: true, description: "The custom amount of the shipping method. If not provided, the shipping option's amount will be used." },
+    { name: "internal_note", type: "`string`", optional: true, description: "A note viewed only by admin users about the shipping method." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.updateShippingMethod("order_123", "sm_123", {
+ shipping_option_id: "so_123",
+})
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}/edit/shipping-methods/method/{method_id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/draft-orders/\{id\}/edit/shipping-methods/method/\{method_id\}
+
+**Remove Shipping Method from Draft Order Edit**
+
+Remove an existing shipping method from a draft order edit.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." },
+    { name: "method_id", type: "`string`", optional: false, description: "The shipping method's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.removeShippingMethod(
+  "order_123", 
+  "shipping_method_123"
+)
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/draft-orders/{id}/edit/shipping-methods/method/{method_id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/draft-orders/\{id\}/edit/shipping-methods/\{action_id\}
+
+**Update New Shipping Method in Draft Order Edit**
+
+Update a new shipping method that was added to a draft order edit using the `ID` of the method's `SHIPPING_ADD` action.
+
+Every shipping method has an `actions` property, whose value is an array of actions. You can check the action's name using its `action` property, and use the value of the `id` property.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." },
+    { name: "action_id", type: "`string`", optional: false, description: "The ID of the shipping method's `SHIPPING_ADD` action." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "shipping_option_id", type: "`string`", optional: false, description: "The ID of the associated shipping option." },
+    { name: "custom_amount", type: "`number`", optional: true, description: "The custom amount of the shipping method. If not provided, the shipping option's amount will be used." },
+    { name: "description", type: "`string`", optional: true, description: "The shipping method's description." },
+    { name: "internal_note", type: "`string`", optional: true, description: "A note viewed only by admin users about the shipping method." },
+    { name: "metadata", type: "`object`", optional: true, description: "The shipping method's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.updateShippingMethod("order_123", "action_123", {
+  shipping_option_id: "shipping_option_123",
+})
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/draft-orders/{id}/edit/shipping-methods/{action_id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "shipping_option_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/draft-orders/\{id\}/edit/shipping-methods/\{action_id\}
+
+**Remove New Shipping Method from Draft Order**
+
+Remove a shipping method that was added to a draft order edit using the `ID` of the method's `SHIPPING_ADD` action.
+
+Every shipping method has an `actions` property, whose value is an array of actions. You can check the action's name using its `action` property, and use the value of the `id` property.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The draft order's ID." },
+    { name: "action_id", type: "`string`", optional: false, description: "The ID of the shipping method's `SHIPPING_ADD` action." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.draftOrder.removeShippingMethod("order_123", "action_123")
+.then(({ draft_order_preview }) => {
+  console.log(draft_order_preview)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/draft-orders/{id}/edit/shipping-methods/{action_id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

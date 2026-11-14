@@ -1,0 +1,69 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Modules API Routes`,
+}
+
+# {metadata.title}
+
+A module is a package of reusable commerce or architectural functionality installed in a MedusaGo application, such as the Product Module or a custom module.
+These API routes allow admin users to retrieve the installed modules, for example to check whether a module is installed.
+
+## GET /admin/modules
+
+**List Modules**
+
+Retrieve the modules installed in the MedusaGo application. You can use this API route to check whether a module is installed.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.module.list()
+.then(({ modules }) => {
+  const isInstalled = modules.some((module) => module.key === "brand")
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/modules' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "modules", type: "`object[]`", optional: false, description: "The modules installed in the MedusaGo application.", children: [
+        { name: "key", type: "`string`", optional: false, description: "The module's key, such as the name of a custom module." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

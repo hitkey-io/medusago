@@ -1,0 +1,610 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Gift Cards API Routes`,
+}
+
+# {metadata.title}
+
+A gift card is a prepaid card that can be used to pay for items during checkout.
+Gift cards can be purchased by customers, or created by admin users. When a gift card is redeemed, its amount is added to the customer's store credit account, which can then be used to pay for items during checkout.
+These API routes allow admin users to manage gift cards, transfer gift cards between customers, and more.
+
+Gift Card routes are only available through the Loyalty Plugin.
+
+## GET /admin/gift-cards
+
+**List Gift Cards**
+
+Retrieve a list of gift cards. The gift cards can be filtered by fields such as `id`. The gift cards can also be sorted or paginated.
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "The gift card's ID." },
+    { name: "customer_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a customer ID to retrieve their gift cards." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by a gift card's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by a gift card's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "The gift card's with deleted." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/gift-cards' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of gift cards to return." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of gift cards to skip before retrieving the results." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of gift cards available." },
+    { name: "gift_cards", type: "`object[]`", optional: false, description: "The list of gift cards.", children: [
+        { name: "line_item", type: "`object`", optional: false, description: "The item's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The item's title." },
+            { name: "subtitle", type: "`string`", optional: false, description: "The item's subtitle." },
+            { name: "thumbnail", type: "`string`", optional: false, description: "The URL of the item's thumbnail." },
+            { name: "variant", type: "`object`", optional: true, description: "The product variant's details." },
+            { name: "variant_id", type: "`string`", optional: false, description: "The ID of the associated variant." },
+            { name: "product", type: "`object`", optional: true, description: "The product's details." },
+            { name: "product_id", type: "`string`", optional: false, description: "The ID of the associated product." },
+            { name: "product_title", type: "`string`", optional: false, description: "The item's product title." },
+            { name: "product_description", type: "`string`", optional: false, description: "The item's product description." },
+            { name: "product_subtitle", type: "`string`", optional: false, description: "The item's product subtitle." },
+            { name: "product_type", type: "`string`", optional: false, description: "The item's product type." },
+            { name: "product_collection", type: "`string`", optional: false, description: "The ID of the collection the item's product belongs to." },
+            { name: "product_handle", type: "`string`", optional: false, description: "The item's product handle." },
+            { name: "variant_sku", type: "`string`", optional: false, description: "The item's variant SKU." },
+            { name: "variant_barcode", type: "`string`", optional: false, description: "The item's variant barcode." },
+            { name: "variant_title", type: "`string`", optional: false, description: "The item's variant title." },
+            { name: "variant_option_values", type: "`object`", optional: false, description: "The values of the item variant's options." },
+            { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the item requires shipping." },
+            { name: "is_discountable", type: "`boolean`", optional: false, description: "Whether the item is discountable." },
+            { name: "is_tax_inclusive", type: "`boolean`", optional: false, description: "Whether the item is tax inclusive." },
+            { name: "compare_at_unit_price", type: "`number`", optional: true, description: "The original price of the item before a promotion or sale." },
+            { name: "unit_price", type: "`number`", optional: false, description: "The item's unit price." },
+            { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+            { name: "tax_lines", type: "`object[]`", optional: true, description: "The item's tax lines." },
+            { name: "adjustments", type: "`object[]`", optional: true, description: "The item's adjustments." },
+            { name: "detail", type: "`object`", optional: false },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the item was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the item was updated." },
+            { name: "metadata", type: "`object`", optional: false, description: "The item's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "original_total", type: "`number`", optional: false, description: "The item's total including taxes, excluding promotions." },
+            { name: "original_subtotal", type: "`number`", optional: false, description: "The item's total excluding taxes, including promotions." },
+            { name: "original_tax_total", type: "`number`", optional: false, description: "The total taxes of the item, excluding promotions." },
+            { name: "item_total", type: "`number`", optional: false, description: "The total taxes of the item, including promotions." },
+            { name: "item_subtotal", type: "`number`", optional: false, description: "The item's total excluding taxes, including promotions." },
+            { name: "item_tax_total", type: "`number`", optional: false, description: "The total taxes of the item, including promotions." },
+            { name: "total", type: "`number`", optional: false, description: "The item's total, including taxes and promotions." },
+            { name: "subtotal", type: "`number`", optional: false, description: "The item's subtotal excluding taxes, including promotions." },
+            { name: "tax_total", type: "`number`", optional: false, description: "The tax total of the item including promotions." },
+            { name: "discount_total", type: "`number`", optional: false, description: "The total discount amount of the item." },
+            { name: "discount_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the discounted amount." },
+            { name: "refundable_total", type: "`number`", optional: false, description: "The total refundable amount of the item's total." },
+            { name: "refundable_total_per_unit", type: "`number`", optional: false, description: "The total refundable amount of the item's total for a single quantity." },
+            { name: "product_type_id", type: "`string`", optional: false, description: "The ID of the associated product's type." }
+          ] },
+        { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+            { name: "has_account", type: "`boolean`", optional: false, description: "Whether the customer is registered." },
+            { name: "groups", type: "`object[]`", optional: true, description: "The customer's groups." },
+            { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+            { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default billing address." },
+            { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default shipping address." },
+            { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+            { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+            { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses." },
+            { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+            { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created this customer, if available." },
+            { name: "created_at", type: "`string`", optional: true, description: "The customer's creation date." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The customer's update date." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The customer's deletion date." }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The gift card's ID." },
+        { name: "code", type: "`string`", optional: false, description: "The gift card's code." },
+        { name: "status", type: "`\"pending\"` \\| `\"redeemed\"`", optional: false, description: "The gift card's status." },
+        { name: "value", type: "`number`", optional: false, description: "The gift card's amount." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The gift card's currency code.", example: "usd" },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer associated with the gift card." },
+        { name: "reference_id", type: "`string`", optional: false, description: "The gift card's reference ID." },
+        { name: "note", type: "`string`", optional: false, description: "The gift card's note." },
+        { name: "reference", type: "`string`", optional: false, description: "The gift card's reference." },
+        { name: "expires_at", type: "`string`", optional: false, description: "The date the gift card expires at." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the gift card was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the gift card was updated at." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The gift card's estimate count.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/gift-cards
+
+**Create Gift Card**
+
+Create a gift card.
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "code", type: "`string`", optional: false, description: "The gift card's code." },
+    { name: "value", type: "`number`", optional: false, description: "The gift card's amount.", example: "20" },
+    { name: "currency_code", type: "`string`", optional: false, description: "The gift card's currency code.", example: "usd" },
+    { name: "expires_at", type: "`string`", optional: false, description: "The date the gift card expires at." },
+    { name: "reference_id", type: "`string`", optional: false, description: "The gift card's reference ID." },
+    { name: "reference", type: "`string`", optional: false, description: "The gift card's reference." },
+    { name: "line_item_id", type: "`string`", optional: false, description: "The ID of the line item associated with the gift card." },
+    { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer associated with the gift card." },
+    { name: "metadata", type: "`object`", optional: false, description: "The gift card's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/gift-cards' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "code": "{value}",
+  "value": 19,
+  "currency_code": "bwp",
+  "expires_at": "2025-07-20T15:47:23.951Z",
+  "reference_id": "{value}",
+  "reference": "{value}",
+  "line_item_id": "{value}",
+  "customer_id": "{value}",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "gift_card", type: "`object`", optional: false, description: "The gift card's details.", children: [
+        { name: "line_item", type: "`object`", optional: false, description: "The item's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The item's title." },
+            { name: "subtitle", type: "`string`", optional: false, description: "The item's subtitle." },
+            { name: "thumbnail", type: "`string`", optional: false, description: "The URL of the item's thumbnail." },
+            { name: "variant", type: "`object`", optional: true, description: "The product variant's details." },
+            { name: "variant_id", type: "`string`", optional: false, description: "The ID of the associated variant." },
+            { name: "product", type: "`object`", optional: true, description: "The product's details." },
+            { name: "product_id", type: "`string`", optional: false, description: "The ID of the associated product." },
+            { name: "product_title", type: "`string`", optional: false, description: "The item's product title." },
+            { name: "product_description", type: "`string`", optional: false, description: "The item's product description." },
+            { name: "product_subtitle", type: "`string`", optional: false, description: "The item's product subtitle." },
+            { name: "product_type", type: "`string`", optional: false, description: "The item's product type." },
+            { name: "product_collection", type: "`string`", optional: false, description: "The ID of the collection the item's product belongs to." },
+            { name: "product_handle", type: "`string`", optional: false, description: "The item's product handle." },
+            { name: "variant_sku", type: "`string`", optional: false, description: "The item's variant SKU." },
+            { name: "variant_barcode", type: "`string`", optional: false, description: "The item's variant barcode." },
+            { name: "variant_title", type: "`string`", optional: false, description: "The item's variant title." },
+            { name: "variant_option_values", type: "`object`", optional: false, description: "The values of the item variant's options." },
+            { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the item requires shipping." },
+            { name: "is_discountable", type: "`boolean`", optional: false, description: "Whether the item is discountable." },
+            { name: "is_tax_inclusive", type: "`boolean`", optional: false, description: "Whether the item is tax inclusive." },
+            { name: "compare_at_unit_price", type: "`number`", optional: true, description: "The original price of the item before a promotion or sale." },
+            { name: "unit_price", type: "`number`", optional: false, description: "The item's unit price." },
+            { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+            { name: "tax_lines", type: "`object[]`", optional: true, description: "The item's tax lines." },
+            { name: "adjustments", type: "`object[]`", optional: true, description: "The item's adjustments." },
+            { name: "detail", type: "`object`", optional: false },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the item was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the item was updated." },
+            { name: "metadata", type: "`object`", optional: false, description: "The item's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "original_total", type: "`number`", optional: false, description: "The item's total including taxes, excluding promotions." },
+            { name: "original_subtotal", type: "`number`", optional: false, description: "The item's total excluding taxes, including promotions." },
+            { name: "original_tax_total", type: "`number`", optional: false, description: "The total taxes of the item, excluding promotions." },
+            { name: "item_total", type: "`number`", optional: false, description: "The total taxes of the item, including promotions." },
+            { name: "item_subtotal", type: "`number`", optional: false, description: "The item's total excluding taxes, including promotions." },
+            { name: "item_tax_total", type: "`number`", optional: false, description: "The total taxes of the item, including promotions." },
+            { name: "total", type: "`number`", optional: false, description: "The item's total, including taxes and promotions." },
+            { name: "subtotal", type: "`number`", optional: false, description: "The item's subtotal excluding taxes, including promotions." },
+            { name: "tax_total", type: "`number`", optional: false, description: "The tax total of the item including promotions." },
+            { name: "discount_total", type: "`number`", optional: false, description: "The total discount amount of the item." },
+            { name: "discount_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the discounted amount." },
+            { name: "refundable_total", type: "`number`", optional: false, description: "The total refundable amount of the item's total." },
+            { name: "refundable_total_per_unit", type: "`number`", optional: false, description: "The total refundable amount of the item's total for a single quantity." },
+            { name: "product_type_id", type: "`string`", optional: false, description: "The ID of the associated product's type." }
+          ] },
+        { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+            { name: "has_account", type: "`boolean`", optional: false, description: "Whether the customer is registered." },
+            { name: "groups", type: "`object[]`", optional: true, description: "The customer's groups." },
+            { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+            { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default billing address." },
+            { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default shipping address." },
+            { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+            { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+            { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses." },
+            { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+            { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created this customer, if available." },
+            { name: "created_at", type: "`string`", optional: true, description: "The customer's creation date." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The customer's update date." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The customer's deletion date." }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The gift card's ID." },
+        { name: "code", type: "`string`", optional: false, description: "The gift card's code." },
+        { name: "status", type: "`\"pending\"` \\| `\"redeemed\"`", optional: false, description: "The gift card's status." },
+        { name: "value", type: "`number`", optional: false, description: "The gift card's amount." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The gift card's currency code.", example: "usd" },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer associated with the gift card." },
+        { name: "reference_id", type: "`string`", optional: false, description: "The gift card's reference ID." },
+        { name: "note", type: "`string`", optional: false, description: "The gift card's note." },
+        { name: "reference", type: "`string`", optional: false, description: "The gift card's reference." },
+        { name: "expires_at", type: "`string`", optional: false, description: "The date the gift card expires at." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the gift card was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the gift card was updated at." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/gift-cards/\{id\}
+
+**Get a Gift Card**
+
+Retrieve a gift card by its ID. You can expand the gift card's relations or select the fields that should be returned.
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The gift card's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/gift-cards/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "gift_card", type: "`object`", optional: false, description: "The gift card's details.", children: [
+        { name: "line_item", type: "`object`", optional: false, description: "The item's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The item's title." },
+            { name: "subtitle", type: "`string`", optional: false, description: "The item's subtitle." },
+            { name: "thumbnail", type: "`string`", optional: false, description: "The URL of the item's thumbnail." },
+            { name: "variant", type: "`object`", optional: true, description: "The product variant's details." },
+            { name: "variant_id", type: "`string`", optional: false, description: "The ID of the associated variant." },
+            { name: "product", type: "`object`", optional: true, description: "The product's details." },
+            { name: "product_id", type: "`string`", optional: false, description: "The ID of the associated product." },
+            { name: "product_title", type: "`string`", optional: false, description: "The item's product title." },
+            { name: "product_description", type: "`string`", optional: false, description: "The item's product description." },
+            { name: "product_subtitle", type: "`string`", optional: false, description: "The item's product subtitle." },
+            { name: "product_type", type: "`string`", optional: false, description: "The item's product type." },
+            { name: "product_collection", type: "`string`", optional: false, description: "The ID of the collection the item's product belongs to." },
+            { name: "product_handle", type: "`string`", optional: false, description: "The item's product handle." },
+            { name: "variant_sku", type: "`string`", optional: false, description: "The item's variant SKU." },
+            { name: "variant_barcode", type: "`string`", optional: false, description: "The item's variant barcode." },
+            { name: "variant_title", type: "`string`", optional: false, description: "The item's variant title." },
+            { name: "variant_option_values", type: "`object`", optional: false, description: "The values of the item variant's options." },
+            { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the item requires shipping." },
+            { name: "is_discountable", type: "`boolean`", optional: false, description: "Whether the item is discountable." },
+            { name: "is_tax_inclusive", type: "`boolean`", optional: false, description: "Whether the item is tax inclusive." },
+            { name: "compare_at_unit_price", type: "`number`", optional: true, description: "The original price of the item before a promotion or sale." },
+            { name: "unit_price", type: "`number`", optional: false, description: "The item's unit price." },
+            { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+            { name: "tax_lines", type: "`object[]`", optional: true, description: "The item's tax lines." },
+            { name: "adjustments", type: "`object[]`", optional: true, description: "The item's adjustments." },
+            { name: "detail", type: "`object`", optional: false },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the item was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the item was updated." },
+            { name: "metadata", type: "`object`", optional: false, description: "The item's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "original_total", type: "`number`", optional: false, description: "The item's total including taxes, excluding promotions." },
+            { name: "original_subtotal", type: "`number`", optional: false, description: "The item's total excluding taxes, including promotions." },
+            { name: "original_tax_total", type: "`number`", optional: false, description: "The total taxes of the item, excluding promotions." },
+            { name: "item_total", type: "`number`", optional: false, description: "The total taxes of the item, including promotions." },
+            { name: "item_subtotal", type: "`number`", optional: false, description: "The item's total excluding taxes, including promotions." },
+            { name: "item_tax_total", type: "`number`", optional: false, description: "The total taxes of the item, including promotions." },
+            { name: "total", type: "`number`", optional: false, description: "The item's total, including taxes and promotions." },
+            { name: "subtotal", type: "`number`", optional: false, description: "The item's subtotal excluding taxes, including promotions." },
+            { name: "tax_total", type: "`number`", optional: false, description: "The tax total of the item including promotions." },
+            { name: "discount_total", type: "`number`", optional: false, description: "The total discount amount of the item." },
+            { name: "discount_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the discounted amount." },
+            { name: "refundable_total", type: "`number`", optional: false, description: "The total refundable amount of the item's total." },
+            { name: "refundable_total_per_unit", type: "`number`", optional: false, description: "The total refundable amount of the item's total for a single quantity." },
+            { name: "product_type_id", type: "`string`", optional: false, description: "The ID of the associated product's type." }
+          ] },
+        { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+            { name: "has_account", type: "`boolean`", optional: false, description: "Whether the customer is registered." },
+            { name: "groups", type: "`object[]`", optional: true, description: "The customer's groups." },
+            { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+            { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default billing address." },
+            { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default shipping address." },
+            { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+            { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+            { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses." },
+            { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+            { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created this customer, if available." },
+            { name: "created_at", type: "`string`", optional: true, description: "The customer's creation date." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The customer's update date." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The customer's deletion date." }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The gift card's ID." },
+        { name: "code", type: "`string`", optional: false, description: "The gift card's code." },
+        { name: "status", type: "`\"pending\"` \\| `\"redeemed\"`", optional: false, description: "The gift card's status." },
+        { name: "value", type: "`number`", optional: false, description: "The gift card's amount." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The gift card's currency code.", example: "usd" },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer associated with the gift card." },
+        { name: "reference_id", type: "`string`", optional: false, description: "The gift card's reference ID." },
+        { name: "note", type: "`string`", optional: false, description: "The gift card's note." },
+        { name: "reference", type: "`string`", optional: false, description: "The gift card's reference." },
+        { name: "expires_at", type: "`string`", optional: false, description: "The date the gift card expires at." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the gift card was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the gift card was updated at." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/gift-cards/\{id\}
+
+**Update a Gift Card**
+
+Update a gift card's details.
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The gift card's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "status", type: "`\"pending\"` \\| `\"redeemed\"`", optional: true, description: "The gift card's status." },
+    { name: "value", type: "`number`", optional: true, description: "The gift card's amount." },
+    { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer that the gift card belongs to." },
+    { name: "currency_code", type: "`string`", optional: true, description: "The gift card's currency code.", example: "usd" },
+    { name: "note", type: "`string`", optional: true, description: "The gift card's note." },
+    { name: "expires_at", type: "`string`", optional: true, description: "The date the gift card expires at." },
+    { name: "metadata", type: "`object`", optional: true, description: "The gift card's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/gift-cards/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "gift_card", type: "`object`", optional: false, description: "The gift card's details.", children: [
+        { name: "line_item", type: "`object`", optional: false, description: "The item's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The item's title." },
+            { name: "subtitle", type: "`string`", optional: false, description: "The item's subtitle." },
+            { name: "thumbnail", type: "`string`", optional: false, description: "The URL of the item's thumbnail." },
+            { name: "variant", type: "`object`", optional: true, description: "The product variant's details." },
+            { name: "variant_id", type: "`string`", optional: false, description: "The ID of the associated variant." },
+            { name: "product", type: "`object`", optional: true, description: "The product's details." },
+            { name: "product_id", type: "`string`", optional: false, description: "The ID of the associated product." },
+            { name: "product_title", type: "`string`", optional: false, description: "The item's product title." },
+            { name: "product_description", type: "`string`", optional: false, description: "The item's product description." },
+            { name: "product_subtitle", type: "`string`", optional: false, description: "The item's product subtitle." },
+            { name: "product_type", type: "`string`", optional: false, description: "The item's product type." },
+            { name: "product_collection", type: "`string`", optional: false, description: "The ID of the collection the item's product belongs to." },
+            { name: "product_handle", type: "`string`", optional: false, description: "The item's product handle." },
+            { name: "variant_sku", type: "`string`", optional: false, description: "The item's variant SKU." },
+            { name: "variant_barcode", type: "`string`", optional: false, description: "The item's variant barcode." },
+            { name: "variant_title", type: "`string`", optional: false, description: "The item's variant title." },
+            { name: "variant_option_values", type: "`object`", optional: false, description: "The values of the item variant's options." },
+            { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the item requires shipping." },
+            { name: "is_discountable", type: "`boolean`", optional: false, description: "Whether the item is discountable." },
+            { name: "is_tax_inclusive", type: "`boolean`", optional: false, description: "Whether the item is tax inclusive." },
+            { name: "compare_at_unit_price", type: "`number`", optional: true, description: "The original price of the item before a promotion or sale." },
+            { name: "unit_price", type: "`number`", optional: false, description: "The item's unit price." },
+            { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+            { name: "tax_lines", type: "`object[]`", optional: true, description: "The item's tax lines." },
+            { name: "adjustments", type: "`object[]`", optional: true, description: "The item's adjustments." },
+            { name: "detail", type: "`object`", optional: false },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the item was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the item was updated." },
+            { name: "metadata", type: "`object`", optional: false, description: "The item's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "original_total", type: "`number`", optional: false, description: "The item's total including taxes, excluding promotions." },
+            { name: "original_subtotal", type: "`number`", optional: false, description: "The item's total excluding taxes, including promotions." },
+            { name: "original_tax_total", type: "`number`", optional: false, description: "The total taxes of the item, excluding promotions." },
+            { name: "item_total", type: "`number`", optional: false, description: "The total taxes of the item, including promotions." },
+            { name: "item_subtotal", type: "`number`", optional: false, description: "The item's total excluding taxes, including promotions." },
+            { name: "item_tax_total", type: "`number`", optional: false, description: "The total taxes of the item, including promotions." },
+            { name: "total", type: "`number`", optional: false, description: "The item's total, including taxes and promotions." },
+            { name: "subtotal", type: "`number`", optional: false, description: "The item's subtotal excluding taxes, including promotions." },
+            { name: "tax_total", type: "`number`", optional: false, description: "The tax total of the item including promotions." },
+            { name: "discount_total", type: "`number`", optional: false, description: "The total discount amount of the item." },
+            { name: "discount_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the discounted amount." },
+            { name: "refundable_total", type: "`number`", optional: false, description: "The total refundable amount of the item's total." },
+            { name: "refundable_total_per_unit", type: "`number`", optional: false, description: "The total refundable amount of the item's total for a single quantity." },
+            { name: "product_type_id", type: "`string`", optional: false, description: "The ID of the associated product's type." }
+          ] },
+        { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+            { name: "has_account", type: "`boolean`", optional: false, description: "Whether the customer is registered." },
+            { name: "groups", type: "`object[]`", optional: true, description: "The customer's groups." },
+            { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+            { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default billing address." },
+            { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used as the default shipping address." },
+            { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+            { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+            { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses." },
+            { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+            { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_by", type: "`string`", optional: true, description: "The ID of the user that created this customer, if available." },
+            { name: "created_at", type: "`string`", optional: true, description: "The customer's creation date." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The customer's update date." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The customer's deletion date." }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The gift card's ID." },
+        { name: "code", type: "`string`", optional: false, description: "The gift card's code." },
+        { name: "status", type: "`\"pending\"` \\| `\"redeemed\"`", optional: false, description: "The gift card's status." },
+        { name: "value", type: "`number`", optional: false, description: "The gift card's amount." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The gift card's currency code.", example: "usd" },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer associated with the gift card." },
+        { name: "reference_id", type: "`string`", optional: false, description: "The gift card's reference ID." },
+        { name: "note", type: "`string`", optional: false, description: "The gift card's note." },
+        { name: "reference", type: "`string`", optional: false, description: "The gift card's reference." },
+        { name: "expires_at", type: "`string`", optional: false, description: "The date the gift card expires at." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the gift card was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the gift card was updated at." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/gift-cards/\{id\}/orders
+
+**List Gift Card's Orders**
+
+Retrieve the list of orders that a gift card was used in.
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The gift card's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/gift-cards/{id}/orders' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

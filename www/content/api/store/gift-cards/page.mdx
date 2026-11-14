@@ -1,0 +1,77 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Gift Cards API Routes`,
+}
+
+# {metadata.title}
+
+A gift card is a prepaid card that customers can use to purchase products in the store.
+Customers can purchase gift cards for themselves or others, and then use them to pay for their orders.
+These API routes allow logged-in customers to create and manage their gift cards.
+
+Gift Cards are available through the Loyalty Plugin.
+
+## GET /store/gift-cards/\{idOrCode\}
+
+**Get a Gift Card**
+
+Retrieve a gift card by its ID or code. You can expand the gift card's relations or select the fields that should be returned.
+
+<Note title="Plugin">
+
+This API route is only available when the loyalty plugin is installed in the MedusaGo application.
+
+</Note>
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "idOrCode", type: "`string`", optional: false, description: "The gift card's ID or code." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\n if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\n without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/gift-cards/{idOrCode}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.

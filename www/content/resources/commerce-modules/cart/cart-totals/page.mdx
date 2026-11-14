@@ -1,0 +1,91 @@
+---
+tags:
+  - cart
+  - name: how to
+    label: Retrieve Cart Totals
+  - server
+---
+
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Retrieve Cart Totals using Query`,
+}
+
+# {metadata.title}
+
+In this guide, you'll learn how to retrieve cart totals in your MedusaGo application using [Query](!docs!/learn/fundamentals/query).
+
+You may need to retrieve cart totals in your Medusa customizations, such as workflows or custom API routes, to perform custom actions with them. The ideal way to retrieve totals is with Query.
+
+<Note title="Looking for a storefront guide?">
+
+Refer to the [Retrieve Cart Totals in Storefront](../../../storefront-development/cart/totals/page.mdx) guide for a storefront-specific approach.
+
+</Note>
+
+### Cart Totals
+
+The cart will include the following total fields:
+
+- `total`: The cart's final total after discounts and credit lines, including taxes.
+- `subtotal`: The cart's subtotal before discounts, excluding taxes. Calculated as the sum of `item_subtotal` and `shipping_subtotal`.
+- `tax_total`: The cart's tax total after discounts. Calculated as the sum of `item_tax_total` and `shipping_tax_total`.
+- `discount_total`: The total amount of discounts applied to the cart, including the tax portion of discounts.
+- `discount_subtotal`: The total amount of discounts applied to the cart's subtotal (excluding tax portion). Used in the final total calculation.
+- `discount_tax_total`: The total amount of discounts applied to the cart's tax. Represents the tax portion of discounts.
+- `original_total`: The cart's total before discounts, including taxes. Calculated as the sum of `original_item_total` and `original_shipping_total`.
+- `original_tax_total`: The cart's tax total before discounts. Calculated as the sum of `original_item_tax_total` and `original_shipping_tax_total`.
+- `item_total`: The sum of all line items' totals after discounts, including taxes.
+- `item_subtotal`: The sum of all line items' subtotals before discounts, excluding taxes.
+- `item_tax_total`: The sum of all line items' tax totals after discounts.
+- `original_item_total`: The sum of all line items' original totals before discounts, including taxes.
+- `original_item_subtotal`: The sum of all line items' original subtotals before discounts, excluding taxes.
+- `original_item_tax_total`: The sum of all line items' original tax totals before discounts.
+- `shipping_total`: The sum of all shipping methods' totals after discounts, including taxes.
+- `shipping_subtotal`: The sum of all shipping methods' subtotals before discounts, excluding taxes.
+- `shipping_tax_total`: The sum of all shipping methods' tax totals after discounts.
+- `original_shipping_tax_total`: The sum of all shipping methods' original tax totals before discounts.
+- `original_shipping_subtotal`: The sum of all shipping methods' original subtotals before discounts, excluding taxes.
+- `original_shipping_total`: The sum of all shipping methods' original totals before discounts, including taxes.
+- `gift_card_total`: The total amount of gift cards applied to the cart.
+- `gift_card_tax_total`: The tax total of gift cards applied to the cart.
+- `credit_line_subtotal`: The subtotal of credit lines applied to the cart, excluding taxes.
+- `credit_line_tax_total`: The tax total of credit lines applied to the cart.
+- `credit_line_total`: The total amount of credit lines applied to the cart, including taxes. Subtracted from the final total.
+
+### Cart Line Item Totals
+
+The `items` array in the `cart` object contains total fields for each line item:
+
+- `unit_price`: The price of a single unit of the line item. This field is not calculated and is stored in the database.
+- `subtotal`: The line item's subtotal before discounts, excluding taxes.
+- `total`: The line item's total after discounts, including taxes.
+- `original_total`: The line item's original total before discounts, including taxes.
+- `discount_total`: The total amount of discounts applied to the line item, including the tax portion of discounts.
+- `discount_subtotal`: The total amount of discounts applied to the line item's subtotal (excluding tax portion).
+- `discount_tax_total`: The total amount of discounts applied to the line item's tax. Represents the tax portion of discounts.
+- `tax_total`: The line item's tax total after discounts.
+- `original_tax_total`: The line item's original tax total before discounts.
+
+### Cart Shipping Method Totals
+
+The `shipping_methods` array in the `cart` object contains total fields for each shipping method:
+
+- `amount`: The amount charged for the shipping method. This field is not calculated and is stored in the database.
+- `subtotal`: The shipping method's subtotal before discounts, excluding taxes.
+- `total`: The shipping method's total after discounts, including taxes.
+- `original_total`: The shipping method's original total before discounts, including taxes.
+- `discount_total`: The total amount of discounts applied to the shipping method, including the tax portion of discounts.
+- `discount_subtotal`: The total amount of discounts applied to the shipping method's subtotal (excluding tax portion).
+- `discount_tax_total`: The total amount of discounts applied to the shipping method's tax. Represents the tax portion of discounts.
+- `tax_total`: The shipping method's tax total after discounts.
+- `original_tax_total`: The shipping method's original tax total before discounts.
+
+---
+
+## Caveats of Retrieving Cart Totals
+
+### Applying Filters on Cart Totals
+
+You can't apply filters directly on the cart totals, as they are not stored in the `Cart` data model. You can still filter the cart based on its properties, such as `id`, `email`, or `currency_code`, but not on the calculated totals.

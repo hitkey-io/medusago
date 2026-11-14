@@ -1,0 +1,35 @@
+---
+tags:
+  - order
+  - auth
+  - name: how to
+    label: Restrict Order Retrieval
+  - server
+products:
+  - order
+  - auth
+---
+
+export const metadata = {
+  title: `Restrict Order Retrieval`,
+}
+
+# {metadata.title}
+
+In this guide, you'll learn how Medusa handles access to the [Get an Order API route](!api!/store/orders/get-an-order), and how to restrict access to it in your MedusaGo application.
+
+## How Medusa Handles Order Retrieval
+
+The `GET /store/orders/:id` API route doesn't require customer authentication. Any request that includes a valid [publishable API key](../../../storefront-development/publishable-api-keys/page.mdx) and a correct order ID receives the order's details.
+
+Medusa applies this behavior intentionally. Guest customers place orders without an account, so they have no session or token to authenticate with. After they complete the cart, the storefront redirects them to an order confirmation page that retrieves the order by its ID. Requiring authentication would break that page.
+
+The order's ID acts as the credential in this flow. Medusa generates order IDs randomly, so guessing an ID requires brute forcing a value from an address space large enough to make the attempt impractical.
+
+<Note>
+
+The [List Orders API route](!api!/store/orders/list-orders), which lists a customer's orders, does require customer authentication. Only the retrieval route accepts unauthenticated requests.
+
+</Note>
+
+---

@@ -1,0 +1,525 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Invites API Routes`,
+}
+
+# {metadata.title}
+
+An admin can invite new users to manage their team. This allows new users to authenticate as admins and perform admin functionalities.
+
+These API routes allow admin users to manage invites.
+
+## GET /admin/invites
+
+**List Invites**
+
+Retrieve a list of invites. The invites can be filtered by fields such as `id`. The invites can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to apply on an invite's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by an invite's ID." },
+    { name: "email", type: "`string` \\| `string[]`", optional: true, description: "Filter by an invite's email." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the invite's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the invite's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by the invite's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.invite.list()
+.then(({ invites, count, limit, offset }) => {
+  console.log(invites)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/invites'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items retrieved." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "invites", type: "`object[]`", optional: false, description: "The list of invites.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The invite's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The invite's email." },
+        { name: "accepted", type: "`boolean`", optional: false, description: "Whether the invite has been accepted." },
+        { name: "token", type: "`string`", optional: true, description: "The invite's token." },
+        { name: "expires_at", type: "`string`", optional: false, description: "The invite's expiry date." },
+        { name: "metadata", type: "`object`", optional: true, description: "The invite's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the invite was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the invite was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/invites
+
+**Create Invite**
+
+Create a invite.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "email", type: "`string`", optional: false, description: "The email of the user to invite." },
+    { name: "metadata", type: "`object`", optional: true, description: "The invite's metadata. Can be custom data in key-value pairs." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.invite.create({
+  email: "user@gmail.com",
+})
+.then(({ invite }) => {
+  console.log(invite)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/invites' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "email": "Whitney_Schultz@gmail.com"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "invite", type: "`object`", optional: false, description: "The invite's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The invite's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The invite's email." },
+        { name: "accepted", type: "`boolean`", optional: false, description: "Whether the invite has been accepted." },
+        { name: "token", type: "`string`", optional: true, description: "The invite's token." },
+        { name: "expires_at", type: "`string`", optional: false, description: "The invite's expiry date." },
+        { name: "metadata", type: "`object`", optional: true, description: "The invite's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the invite was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the invite was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `invite.created`: Emitted when invites are created. You can listen to this event to send an email to the invited users, for example.
+
+---
+
+## POST /admin/invites/accept
+
+**Accept Invite**
+
+Accept an invite and create a new user.
+Since the user isn't created yet, the JWT token used in the authorization header is retrieved from the `/auth/user/emailpass/register` API route (or a provider other than `emailpass`). The user can then authenticate using the `/auth/user/emailpass` API route.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "token", type: "`string`", optional: false, description: "The invite's token." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "email", type: "`string`", optional: true, description: "The invite's email." },
+    { name: "first_name", type: "`string`", optional: true, description: "The invited user's first name." },
+    { name: "last_name", type: "`string`", optional: true, description: "The invited user's last name." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+await sdk.auth.register("user", "emailpass", {
+  email: "user@gmail.com",
+  password: "supersecret"
+})
+
+// all subsequent requests will use the token in the header
+const { user } = await sdk.admin.invite.accept(
+  {
+    email: "user@gmail.com",
+    first_name: "John",
+    last_name: "Smith",
+    invite_token: "12345..."
+  },
+)
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/invites/accept?token={invite_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "email": "Lila_Zemlak@hotmail.com",
+  "first_name": "{value}",
+  "last_name": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "user", type: "`object`", optional: true, description: "The user's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The user's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The user's email." },
+        { name: "first_name", type: "`string`", optional: false, description: "The user's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The user's last name." },
+        { name: "avatar_url", type: "`string`", optional: false, description: "The URL of the user's avatar." },
+        { name: "metadata", type: "`object`", optional: false, description: "The user's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the user was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the user was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the user was deleted." }
+      ] },
+    { name: "message", type: "`string`", optional: true, description: "The error message." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `user.created`: Emitted when users are created.
+- `invite.accepted`: Emitted when an invite is accepted.
+
+---
+
+## GET /admin/invites/\{id\}
+
+**Get an Invite**
+
+Retrieve an invite by its ID. You can expand the invite's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The invite's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.invite.retrieve("invite_123")
+.then(({ invite }) => {
+  console.log(invite)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/invites/{id}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "invite", type: "`object`", optional: false, description: "The invite's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The invite's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The invite's email." },
+        { name: "accepted", type: "`boolean`", optional: false, description: "Whether the invite has been accepted." },
+        { name: "token", type: "`string`", optional: true, description: "The invite's token." },
+        { name: "expires_at", type: "`string`", optional: false, description: "The invite's expiry date." },
+        { name: "metadata", type: "`object`", optional: true, description: "The invite's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the invite was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the invite was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/invites/\{id\}
+
+**Delete Invite**
+
+Delete an invite.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The invite's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.invite.delete("invite_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/invites/{id}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The invite's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"invite\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the invite was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `invite.deleted`: Emitted when invites are deleted.
+
+---
+
+## POST /admin/invites/\{id\}/resend
+
+**Refresh Invite Token**
+
+Refresh the token of an invite.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The invite's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.invite.resend("invite_123")
+.then(({ invite }) => {
+  console.log(invite)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/invites/{id}/resend'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "invite", type: "`object`", optional: false, description: "The invite's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The invite's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The invite's email." },
+        { name: "accepted", type: "`boolean`", optional: false, description: "Whether the invite has been accepted." },
+        { name: "token", type: "`string`", optional: true, description: "The invite's token." },
+        { name: "expires_at", type: "`string`", optional: false, description: "The invite's expiry date." },
+        { name: "metadata", type: "`object`", optional: true, description: "The invite's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the invite was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the invite was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `invite.resent`: Emitted when invites should be resent because their token was refreshed. You can listen to this event to send an email to the invited users, for example.

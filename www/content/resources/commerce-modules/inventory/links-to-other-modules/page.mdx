@@ -1,0 +1,87 @@
+import { CodeTabs, CodeTab, Table } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Inventory Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Inventory Module and other Commerce Modules.
+
+## Summary
+
+The Inventory Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        First Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Second Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        [ProductVariant](/references/product/models/ProductVariant) in [Product Module](../../product/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [InventoryItem](/references/inventory-next/models/InventoryItem)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#product-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [InventoryLevel](/references/inventory-next/models/InventoryLevel)
+      </Table.Cell>
+      <Table.Cell>
+        [StockLocation](/references/stock-location-next/models/StockLocation) in [Stock Location Module](../../stock-location/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#stock-location-module)
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## Product Module
+
+Each product variant has different inventory details. Medusa defines a link between the `ProductVariant` and `InventoryItem` data models.
+
+
+A product variant whose `manage_inventory` property is enabled has an associated inventory item. Through that inventory's items relations in the Inventory Module, you can manage and check the variant's inventory quantity.
+
+<Note title="Tip">
+
+Learn more about product variant's inventory management in [this guide](../../product/variant-inventory/page.mdx).
+
+</Note>
+
+## Stock Location Module
+
+Medusa defines a read-only link between the `InventoryLevel` data model and the [Stock Location Module](../../stock-location/page.mdx)'s `StockLocation` data model. This means you can retrieve the details of an inventory level's stock locations, but you don't manage the links in a pivot table in the database. The stock location of an inventory level is determined by the `location_id` property of the `InventoryLevel` data model.

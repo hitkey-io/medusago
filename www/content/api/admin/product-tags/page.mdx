@@ -1,0 +1,482 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Product Tags API Routes`,
+}
+
+# {metadata.title}
+
+A tag is another way of organizing a product. Each tag has a name and a value.
+
+Products are organized into the same tag if they have the same value.
+
+These API routes allow admin users to manage product tags.
+
+## GET /admin/product-tags
+
+**List Product Tags**
+
+Retrieve a list of product tags. The product tags can be filtered by fields such as `id`. The product tags can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the product tag's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a product tag's ID." },
+    { name: "value", type: "`string` \\| `string[]`", optional: true, description: "Filter by a product tag's value." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the tag's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the tag's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by the tag's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "external_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by an external ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productTag.list()
+.then(({ product_tags, count, limit, offset }) => {
+  console.log(product_tags)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/product-tags' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "product_tags", type: "`object[]`", optional: false, description: "The list of product tags.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The tag's ID." },
+        { name: "value", type: "`string`", optional: false, description: "The tag's value." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the tag was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the tag was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the tag was deleted." },
+        { name: "metadata", type: "`object`", optional: true, description: "The tag's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "translations", type: "`object[]`", optional: true, description: "The tag's translations.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The translation's ID." },
+            { name: "reference_id", type: "`string`", optional: false, description: "The ID of the resource that the translation belongs to. For example, the ID of a product.", example: "prod_123" },
+            { name: "reference", type: "`string`", optional: false, description: "The resource that the translation belongs to.", example: "product" },
+            { name: "locale_code", type: "`string`", optional: false, description: "The translation's locale code in BCP 47 format.", example: "fr-FR" },
+            { name: "translations", type: "`object`", optional: false, description: "The translation key-value pairs. Each key is a field in the resource, and the value is the translated text." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date that the translation was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date that the translation was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date that the translation was deleted." }
+          ] },
+        { name: "external_id", type: "`string`", optional: true, description: "The tag's external ID used for integration with third-party systems." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/product-tags
+
+**Create Product Tag**
+
+Create a product tag.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "value", type: "`string`", optional: false, description: "The product tag's value." },
+    { name: "metadata", type: "`object`", optional: true, description: "The product tag's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+    { name: "external_id", type: "`string`", optional: true, description: "The ID of the product tag in an external or third-party system." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productTag.create({
+  value: "shirt"
+})
+.then(({ product_tag }) => {
+  console.log(product_tag)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/product-tags' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "value": "{value}",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_tag", type: "`object`", optional: false, description: "The product tag's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The tag's ID." },
+        { name: "value", type: "`string`", optional: false, description: "The tag's value." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the tag was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the tag was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the tag was deleted." },
+        { name: "metadata", type: "`object`", optional: true, description: "The tag's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "translations", type: "`object[]`", optional: true, description: "The tag's translations.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The translation's ID." },
+            { name: "reference_id", type: "`string`", optional: false, description: "The ID of the resource that the translation belongs to. For example, the ID of a product.", example: "prod_123" },
+            { name: "reference", type: "`string`", optional: false, description: "The resource that the translation belongs to.", example: "product" },
+            { name: "locale_code", type: "`string`", optional: false, description: "The translation's locale code in BCP 47 format.", example: "fr-FR" },
+            { name: "translations", type: "`object`", optional: false, description: "The translation key-value pairs. Each key is a field in the resource, and the value is the translated text." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date that the translation was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date that the translation was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date that the translation was deleted." }
+          ] },
+        { name: "external_id", type: "`string`", optional: true, description: "The tag's external ID used for integration with third-party systems." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product-tag.created`: Emitted when product tags are created.
+
+---
+
+## GET /admin/product-tags/\{id\}
+
+**Get a Product Tag**
+
+Retrieve a product tag by its ID. You can expand the product tag's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product tag's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productTag.retrieve("ptag_123")
+.then(({ product_tag }) => {
+  console.log(product_tag)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/product-tags/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_tag", type: "`object`", optional: false, description: "The product tag's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The tag's ID." },
+        { name: "value", type: "`string`", optional: false, description: "The tag's value." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the tag was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the tag was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the tag was deleted." },
+        { name: "metadata", type: "`object`", optional: true, description: "The tag's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "translations", type: "`object[]`", optional: true, description: "The tag's translations.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The translation's ID." },
+            { name: "reference_id", type: "`string`", optional: false, description: "The ID of the resource that the translation belongs to. For example, the ID of a product.", example: "prod_123" },
+            { name: "reference", type: "`string`", optional: false, description: "The resource that the translation belongs to.", example: "product" },
+            { name: "locale_code", type: "`string`", optional: false, description: "The translation's locale code in BCP 47 format.", example: "fr-FR" },
+            { name: "translations", type: "`object`", optional: false, description: "The translation key-value pairs. Each key is a field in the resource, and the value is the translated text." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date that the translation was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date that the translation was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date that the translation was deleted." }
+          ] },
+        { name: "external_id", type: "`string`", optional: true, description: "The tag's external ID used for integration with third-party systems." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/product-tags/\{id\}
+
+**Update a Product Tag**
+
+Update a product tag's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product tag's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "value", type: "`string`", optional: true, description: "The product tag's value." },
+    { name: "metadata", type: "`object`", optional: true, description: "The product tag's metadata. Can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+    { name: "external_id", type: "`string`", optional: true, description: "The product tag's external ID used to link it with external systems." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productTag.update("ptag_123", {
+  value: "shirt"
+})
+.then(({ product_tag }) => {
+  console.log(product_tag)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/product-tags/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_tag", type: "`object`", optional: false, description: "The product tag's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The tag's ID." },
+        { name: "value", type: "`string`", optional: false, description: "The tag's value." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the tag was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the tag was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the tag was deleted." },
+        { name: "metadata", type: "`object`", optional: true, description: "The tag's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "translations", type: "`object[]`", optional: true, description: "The tag's translations.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The translation's ID." },
+            { name: "reference_id", type: "`string`", optional: false, description: "The ID of the resource that the translation belongs to. For example, the ID of a product.", example: "prod_123" },
+            { name: "reference", type: "`string`", optional: false, description: "The resource that the translation belongs to.", example: "product" },
+            { name: "locale_code", type: "`string`", optional: false, description: "The translation's locale code in BCP 47 format.", example: "fr-FR" },
+            { name: "translations", type: "`object`", optional: false, description: "The translation key-value pairs. Each key is a field in the resource, and the value is the translated text." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date that the translation was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date that the translation was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date that the translation was deleted." }
+          ] },
+        { name: "external_id", type: "`string`", optional: true, description: "The tag's external ID used for integration with third-party systems." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product-tag.updated`: Emitted when product tags are updated.
+
+---
+
+## DELETE /admin/product-tags/\{id\}
+
+**Delete a Product Tag**
+
+Delete a product tag. This doesn't delete products using the tag.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product tag's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productTag.delete("ptag_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/product-tags/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product tag's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"product_tag\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the product tag was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product-tag.deleted`: Emitted when product tags are deleted.

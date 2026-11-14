@@ -82,11 +82,6 @@ export const MainNav = ({ className, itemsClassName }: MainNavProps) => {
                     children: [
                       {
                         type: "link",
-                        title: "Troubleshooting",
-                        link: "/resources/troubleshooting",
-                      },
-                      {
-                        type: "link",
                         title: "Report Issue",
                         link: GITHUB_ISSUES_LINK,
                       },

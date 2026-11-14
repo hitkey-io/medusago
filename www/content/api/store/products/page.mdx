@@ -1,0 +1,454 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Products API Routes`,
+}
+
+# {metadata.title}
+
+Customers browse products for their purchase.
+
+A product has variants for different option values. The customer chooses from these variants before adding it to the cart.
+
+These API routes allow customers to browse products.
+
+## GET /store/products
+
+**List Products**
+
+Retrieve a list of products. The products can be filtered by fields such as `id`. The products can also be sorted or paginated.
+
+You can retrieve the content of the products translated to a specific locale either by passing the `locale` query parameter or by setting the `x-medusa-locale` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
+
+With localization, the products' content like title and description will be in the specified locale if a translation is available,  and fallback to the original content otherwise. Learn more in the Localization section.
+
+**Authentication:** none.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the product's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a product ID." },
+    { name: "title", type: "`string` \\| `string[]`", optional: true, description: "Filter by product titles." },
+    { name: "handle", type: "`string` \\| `string[]`", optional: true, description: "Filter by product handles." },
+    { name: "is_giftcard", type: "`boolean`", optional: true, description: "Whether the product is a gift card." },
+    { name: "collection_id", type: "`any`", optional: true, description: "Filter by a collection's ID to retrieve the products in it." },
+    { name: "tag_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a tag's ID to retrieve the products in it." },
+    { name: "type_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a type's ID to retrieve the products in it." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the product's creation date. Accepts the [filter operators](/api/store#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the product's update date. Accepts the [filter operators](/api/store#filter-operators)." },
+    { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the products are being viewed from. This is required if you're retrieving product variant prices with taxes." },
+    { name: "province", type: "`string`", optional: true, description: "The lower-case ISO 3166-2 province code the products are being viewed from. This is useful to narrow down the tax context when calculating product variant prices with taxes.", example: "us-ca" },
+    { name: "sales_channel_id", type: "`string` \\| `string[]`", optional: true, description: "The ID of a sales channel to retrieve products in it." },
+    { name: "category_id", type: "`string` \\| `string[]`", optional: true, description: "The ID of a product category to retrieve products in it." },
+    { name: "variants", type: "`object`", optional: true, description: "Filter the products' variants.", children: [
+        { name: "sku", type: "`string` \\| `string[]`", optional: true, description: "The variant's SKU." },
+        { name: "manage_inventory", type: "`boolean`", optional: true, description: "Filter by whether Medusa manages the variant's inventory." },
+        { name: "allow_backorder", type: "`boolean`", optional: true, description: "Filter by whether backorders are allowed for the variant." },
+        { name: "product_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by the variant's product ID." },
+        { name: "q", type: "`string`", optional: true, description: "Search term to filter the variant's searchable properties." },
+        { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by the variant's ID." },
+        { name: "options", type: "`object`", optional: true, description: "Filter by the variant's options.", children: [
+            { name: "value", type: "`string`", optional: true, description: "Filter by the option's value." },
+            { name: "option_id", type: "`string`", optional: true, description: "Filter by the option's option ID." }
+          ] },
+        { name: "created_at", type: "`object`", optional: true, description: "The variant's created at. Accepts the [filter operators](/api/store#filter-operators)." },
+        { name: "updated_at", type: "`object`", optional: true, description: "The variant's updated at. Accepts the [filter operators](/api/store#filter-operators)." },
+        { name: "deleted_at", type: "`object`", optional: true, description: "The variant's deleted at. Accepts the [filter operators](/api/store#filter-operators)." },
+        { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+        { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+        { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+        { name: "with_deleted", type: "`boolean`", optional: true, description: "The variant's with deleted." },
+        { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." },
+        { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+        { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+        { name: "ean", type: "`string` \\| `string[]`", optional: true, description: "Filter by the variant's ean." },
+        { name: "upc", type: "`string` \\| `string[]`", optional: true, description: "Filter by the variant's upc." },
+        { name: "barcode", type: "`string` \\| `string[]`", optional: true, description: "Filter by the variant's barcode." }
+      ] },
+    { name: "country_code", type: "`string`", optional: true, description: "The product's country code." },
+    { name: "cart_id", type: "`string`", optional: true, description: "The product's cart id." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" },
+    { name: "external_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a product's external ID." },
+    { name: "option_value_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a product option value ID to retrieve products that have variants with that option value." },
+    { name: "option_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a product option ID to retrieve products that have variants with that option." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.product.list()
+.then(({ products, count, offset, limit }) => {
+  console.log(products)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/products' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total count of items." },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" },
+    { name: "products", type: "`object[]`", optional: false, description: "The list of products.", children: [
+        { name: "categories", type: "`object[]`", optional: true, description: "The product's categories." },
+        { name: "type", type: "`object`", optional: true, description: "The product type's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The product type's ID." },
+            { name: "metadata", type: "`object`", optional: true, description: "The product type's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the product type was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the product type was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the product type was deleted." },
+            { name: "value", type: "`string`", optional: false, description: "The type's value." },
+            { name: "external_id", type: "`string`", optional: true, description: "The type's external ID used to link it with external systems." }
+          ] },
+        { name: "length", type: "`number`", optional: false, description: "The product's length." },
+        { name: "title", type: "`string`", optional: false, description: "The product's title." },
+        { name: "status", type: "`\"draft\"` \\| `\"proposed\"` \\| `\"published\"` \\| `\"rejected\"`", optional: false, description: "The product's status." },
+        { name: "options", type: "`object[]`", optional: false, description: "The product's options.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The option's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The option's title." },
+            { name: "product", type: "`object`", optional: true },
+            { name: "values", type: "`object[]`", optional: true, description: "The option's values." },
+            { name: "metadata", type: "`object`", optional: true, description: "The option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the product option was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the product option was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the product option was deleted." },
+            { name: "products", type: "`object[]`", optional: true, description: "The products that use the option." },
+            { name: "is_exclusive", type: "`boolean`", optional: false, description: "Whether the option is exclusive to a product." }
+          ] },
+        { name: "description", type: "`string`", optional: false, description: "The product's description." },
+        { name: "id", type: "`string`", optional: false, description: "The product's ID." },
+        { name: "metadata", type: "`object`", optional: true, description: "The product's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the product was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the product was updated." },
+        { name: "variants", type: "`object[]`", optional: false, description: "The product's variants.", children: [
+            { name: "options", type: "`object[]`", optional: false, description: "The variant's options." },
+            { name: "product", type: "`object`", optional: true },
+            { name: "length", type: "`number`", optional: false, description: "The variant's length." },
+            { name: "title", type: "`string`", optional: false, description: "The variant's title." },
+            { name: "metadata", type: "`object`", optional: true, description: "The variant's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "id", type: "`string`", optional: false, description: "The variant's ID." },
+            { name: "width", type: "`number`", optional: false, description: "The variant's width." },
+            { name: "weight", type: "`number`", optional: false, description: "The variant's weight." },
+            { name: "height", type: "`number`", optional: false, description: "The variant's height." },
+            { name: "origin_country", type: "`string`", optional: false, description: "The variant's origin country." },
+            { name: "hs_code", type: "`string`", optional: false, description: "The variant's HS code." },
+            { name: "mid_code", type: "`string`", optional: false, description: "The variant's MID code." },
+            { name: "material", type: "`string`", optional: false, description: "The variant's material." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the variant was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the variant was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the variant was deleted." },
+            { name: "product_id", type: "`string`", optional: true, description: "The ID of the product this variant belongs to." },
+            { name: "sku", type: "`string`", optional: false, description: "The variant's SKU." },
+            { name: "barcode", type: "`string`", optional: false, description: "The variant's barcode." },
+            { name: "ean", type: "`string`", optional: false, description: "The variant's EAN." },
+            { name: "upc", type: "`string`", optional: false, description: "The variant's UPC." },
+            { name: "allow_backorder", type: "`boolean`", optional: false, description: "Whether the variant can be ordered even if it's not in stock." },
+            { name: "manage_inventory", type: "`boolean`", optional: false, description: "Whether Medusa manages the variant's inventory. If disabled, the variant is always considered in stock." },
+            { name: "inventory_quantity", type: "`number`", optional: true, description: "The variant's inventory quantity. This property is only available if you pass `+variants.inventory_quantity` in the `fields` query parameter." },
+            { name: "variant_rank", type: "`number`", optional: true, description: "The variant's rank among its siblings." },
+            { name: "calculated_price", type: "`object`", optional: true, description: "The calculated price's details." },
+            { name: "thumbnail", type: "`string`", optional: false, description: "The variant's thumbnail." },
+            { name: "images", type: "`object[]`", optional: true, description: "The variant's images." }
+          ] },
+        { name: "handle", type: "`string`", optional: false, description: "The product's handle." },
+        { name: "subtitle", type: "`string`", optional: false, description: "The product's subtitle." },
+        { name: "is_giftcard", type: "`boolean`", optional: false, description: "Whether the product is a gift card." },
+        { name: "thumbnail", type: "`string`", optional: false, description: "The product's thumbnail URL." },
+        { name: "width", type: "`number`", optional: false, description: "The product's width." },
+        { name: "weight", type: "`number`", optional: false, description: "The product's weight." },
+        { name: "height", type: "`number`", optional: false, description: "The product's height." },
+        { name: "origin_country", type: "`string`", optional: false, description: "The product's origin country." },
+        { name: "hs_code", type: "`string`", optional: false, description: "The product's HS code." },
+        { name: "mid_code", type: "`string`", optional: false, description: "The product's MID code." },
+        { name: "material", type: "`string`", optional: false, description: "The product's material." },
+        { name: "collection", type: "`object`", optional: true, description: "The collection's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The collection's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The collection's title." },
+            { name: "handle", type: "`string`", optional: false, description: "The collection's handle." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the collection was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the collection was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the collection was deleted." },
+            { name: "products", type: "`object[]`", optional: true, description: "The collection's products." },
+            { name: "metadata", type: "`object`", optional: false, description: "The collection's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "external_id", type: "`string`", optional: true, description: "The collection's external ID used to link it with external systems." }
+          ] },
+        { name: "collection_id", type: "`string`", optional: false, description: "The ID of the collection that the product belongs to." },
+        { name: "type_id", type: "`string`", optional: false, description: "The ID of the product's type." },
+        { name: "tags", type: "`object[]`", optional: true, description: "The product's tags.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The tag's ID." },
+            { name: "value", type: "`string`", optional: false, description: "The tag's value." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the tag was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the tag was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the tag was deleted." },
+            { name: "metadata", type: "`object`", optional: true, description: "The tag's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "external_id", type: "`string`", optional: true, description: "The tag's external ID used to link it with external systems." }
+          ] },
+        { name: "images", type: "`object[]`", optional: false, description: "The product's images.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The image's ID." },
+            { name: "url", type: "`string`", optional: false, description: "The image's URL." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the image was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the image was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the image was deleted." },
+            { name: "metadata", type: "`object`", optional: true, description: "The image's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "rank", type: "`number`", optional: false, description: "The image's rank among its sibling images" }
+          ] },
+        { name: "discountable", type: "`boolean`", optional: false, description: "Whether the product can be discounted." },
+        { name: "external_id", type: "`string`", optional: false, description: "The ID of the product in an external service or system." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the product was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## GET /store/products/\{id\}
+
+**Get a Product**
+
+Retrieve a product by its ID. You can expand the product's relations or select the fields that should be returned.
+
+You can retrieve the content of the product translated to a specific locale either by passing the `locale` query parameter or by setting the `x-medusa-locale` header to the desired locale code in BCP 47 format. If you don't pass a locale, and your store has a default locale, the default locale will be used.
+
+With localization, the product's content like title and description will be in the specified locale if a translation is available,  and fallback to the original content otherwise. Learn more in the Localization section.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "region_id", type: "`string`", optional: true, description: "The ID of the region the product is being viewed from. This is required if you're retrieving product variant prices with taxes." },
+    { name: "country_code", type: "`string`", optional: true, description: "The country code the product is being viewed from. This is required if you're retrieving product variant prices with taxes." },
+    { name: "province", type: "`string`", optional: true, description: "The lower-case ISO 3166-2 province code the product is being viewed from. This is useful to narrow down the tax context when calculating product variant prices with taxes.", example: "us-ca" },
+    { name: "cart_id", type: "`string`", optional: true, description: "The ID of the customer's cart. If set, the cart's region and shipping address's country code and province are used instead of the `region_id`, `country_code`, and `province` properties." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.product.retrieve("prod_123")
+.then(({ product }) => {
+  console.log(product)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/products/{id}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product", type: "`object`", optional: false, description: "The product's details.", children: [
+        { name: "categories", type: "`object[]`", optional: true, description: "The product's categories." },
+        { name: "type", type: "`object`", optional: true, description: "The product type's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The product type's ID." },
+            { name: "metadata", type: "`object`", optional: true, description: "The product type's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the product type was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the product type was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the product type was deleted." },
+            { name: "value", type: "`string`", optional: false, description: "The type's value." },
+            { name: "external_id", type: "`string`", optional: true, description: "The type's external ID used to link it with external systems." }
+          ] },
+        { name: "length", type: "`number`", optional: false, description: "The product's length." },
+        { name: "title", type: "`string`", optional: false, description: "The product's title." },
+        { name: "status", type: "`\"draft\"` \\| `\"proposed\"` \\| `\"published\"` \\| `\"rejected\"`", optional: false, description: "The product's status." },
+        { name: "options", type: "`object[]`", optional: false, description: "The product's options.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The option's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The option's title." },
+            { name: "product", type: "`object`", optional: true },
+            { name: "values", type: "`object[]`", optional: true, description: "The option's values." },
+            { name: "metadata", type: "`object`", optional: true, description: "The option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the product option was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the product option was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the product option was deleted." },
+            { name: "products", type: "`object[]`", optional: true, description: "The products that use the option." },
+            { name: "is_exclusive", type: "`boolean`", optional: false, description: "Whether the option is exclusive to a product." }
+          ] },
+        { name: "description", type: "`string`", optional: false, description: "The product's description." },
+        { name: "id", type: "`string`", optional: false, description: "The product's ID." },
+        { name: "metadata", type: "`object`", optional: true, description: "The product's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the product was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the product was updated." },
+        { name: "variants", type: "`object[]`", optional: false, description: "The product's variants.", children: [
+            { name: "options", type: "`object[]`", optional: false, description: "The variant's options." },
+            { name: "product", type: "`object`", optional: true },
+            { name: "length", type: "`number`", optional: false, description: "The variant's length." },
+            { name: "title", type: "`string`", optional: false, description: "The variant's title." },
+            { name: "metadata", type: "`object`", optional: true, description: "The variant's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "id", type: "`string`", optional: false, description: "The variant's ID." },
+            { name: "width", type: "`number`", optional: false, description: "The variant's width." },
+            { name: "weight", type: "`number`", optional: false, description: "The variant's weight." },
+            { name: "height", type: "`number`", optional: false, description: "The variant's height." },
+            { name: "origin_country", type: "`string`", optional: false, description: "The variant's origin country." },
+            { name: "hs_code", type: "`string`", optional: false, description: "The variant's HS code." },
+            { name: "mid_code", type: "`string`", optional: false, description: "The variant's MID code." },
+            { name: "material", type: "`string`", optional: false, description: "The variant's material." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the variant was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the variant was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the variant was deleted." },
+            { name: "product_id", type: "`string`", optional: true, description: "The ID of the product this variant belongs to." },
+            { name: "sku", type: "`string`", optional: false, description: "The variant's SKU." },
+            { name: "barcode", type: "`string`", optional: false, description: "The variant's barcode." },
+            { name: "ean", type: "`string`", optional: false, description: "The variant's EAN." },
+            { name: "upc", type: "`string`", optional: false, description: "The variant's UPC." },
+            { name: "allow_backorder", type: "`boolean`", optional: false, description: "Whether the variant can be ordered even if it's not in stock." },
+            { name: "manage_inventory", type: "`boolean`", optional: false, description: "Whether Medusa manages the variant's inventory. If disabled, the variant is always considered in stock." },
+            { name: "inventory_quantity", type: "`number`", optional: true, description: "The variant's inventory quantity. This property is only available if you pass `+variants.inventory_quantity` in the `fields` query parameter." },
+            { name: "variant_rank", type: "`number`", optional: true, description: "The variant's rank among its siblings." },
+            { name: "calculated_price", type: "`object`", optional: true, description: "The calculated price's details." },
+            { name: "thumbnail", type: "`string`", optional: false, description: "The variant's thumbnail." },
+            { name: "images", type: "`object[]`", optional: true, description: "The variant's images." }
+          ] },
+        { name: "handle", type: "`string`", optional: false, description: "The product's handle." },
+        { name: "subtitle", type: "`string`", optional: false, description: "The product's subtitle." },
+        { name: "is_giftcard", type: "`boolean`", optional: false, description: "Whether the product is a gift card." },
+        { name: "thumbnail", type: "`string`", optional: false, description: "The product's thumbnail URL." },
+        { name: "width", type: "`number`", optional: false, description: "The product's width." },
+        { name: "weight", type: "`number`", optional: false, description: "The product's weight." },
+        { name: "height", type: "`number`", optional: false, description: "The product's height." },
+        { name: "origin_country", type: "`string`", optional: false, description: "The product's origin country." },
+        { name: "hs_code", type: "`string`", optional: false, description: "The product's HS code." },
+        { name: "mid_code", type: "`string`", optional: false, description: "The product's MID code." },
+        { name: "material", type: "`string`", optional: false, description: "The product's material." },
+        { name: "collection", type: "`object`", optional: true, description: "The collection's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The collection's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The collection's title." },
+            { name: "handle", type: "`string`", optional: false, description: "The collection's handle." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the collection was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the collection was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the collection was deleted." },
+            { name: "products", type: "`object[]`", optional: true, description: "The collection's products." },
+            { name: "metadata", type: "`object`", optional: false, description: "The collection's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "external_id", type: "`string`", optional: true, description: "The collection's external ID used to link it with external systems." }
+          ] },
+        { name: "collection_id", type: "`string`", optional: false, description: "The ID of the collection that the product belongs to." },
+        { name: "type_id", type: "`string`", optional: false, description: "The ID of the product's type." },
+        { name: "tags", type: "`object[]`", optional: true, description: "The product's tags.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The tag's ID." },
+            { name: "value", type: "`string`", optional: false, description: "The tag's value." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the tag was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the tag was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the tag was deleted." },
+            { name: "metadata", type: "`object`", optional: true, description: "The tag's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "external_id", type: "`string`", optional: true, description: "The tag's external ID used to link it with external systems." }
+          ] },
+        { name: "images", type: "`object[]`", optional: false, description: "The product's images.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The image's ID." },
+            { name: "url", type: "`string`", optional: false, description: "The image's URL." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the image was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the image was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the image was deleted." },
+            { name: "metadata", type: "`object`", optional: true, description: "The image's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "rank", type: "`number`", optional: false, description: "The image's rank among its sibling images" }
+          ] },
+        { name: "discountable", type: "`boolean`", optional: false, description: "Whether the product can be discounted." },
+        { name: "external_id", type: "`string`", optional: false, description: "The ID of the product in an external service or system." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the product was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.

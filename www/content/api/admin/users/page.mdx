@@ -1,0 +1,640 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Users API Routes`,
+}
+
+# {metadata.title}
+
+A user is an admin user that can authenticate and perform functionalities as an admin user.
+
+An admin user can invite other users to join their team. Once they accept the invite, they'll become admin users as well.
+
+These API routes allow admin users to manage their team.
+
+## GET /admin/users
+
+**List Users**
+
+Retrieve a list of users. The users can be filtered by fields such as `id`. The users can also be sorted or paginated.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "The search term to filter the user's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a user's ID." },
+    { name: "email", type: "`string`", optional: true, description: "Filter by an email." },
+    { name: "first_name", type: "`string`", optional: true, description: "Filter by a first name." },
+    { name: "last_name", type: "`string`", optional: true, description: "Filter by a last name." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by a user's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by a user's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by a user's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.user.list()
+.then(({ users, count, limit, offset }) => {
+  console.log(users)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/users'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "users", type: "`object[]`", optional: false, description: "The list of users.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The user's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The user's email." },
+        { name: "first_name", type: "`string`", optional: false, description: "The user's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The user's last name." },
+        { name: "avatar_url", type: "`string`", optional: false, description: "The URL of the user's avatar." },
+        { name: "metadata", type: "`object`", optional: false, description: "The user's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the user was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the user was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the user was deleted." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/users/me
+
+**Get Logged-In User**
+
+Retrieve the logged-in user's details.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.user.me()
+.then(({ user }) => {
+  console.log(user)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/users/me'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "user", type: "`object`", optional: false, description: "The user's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The user's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The user's email." },
+        { name: "first_name", type: "`string`", optional: false, description: "The user's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The user's last name." },
+        { name: "avatar_url", type: "`string`", optional: false, description: "The URL of the user's avatar." },
+        { name: "metadata", type: "`object`", optional: false, description: "The user's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the user was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the user was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the user was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/users/me
+
+**Update Logged-In User**
+
+Update the logged-in user's details. Unlike the Update a User API route, this API route doesn't require the `user:update` permission, so any user can update their own details.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "first_name", type: "`string`", optional: true, description: "The user's first name." },
+    { name: "last_name", type: "`string`", optional: true, description: "The user's last name." },
+    { name: "avatar_url", type: "`string`", optional: true, description: "The URL of the user's avatar." },
+    { name: "metadata", type: "`object`", optional: true, description: "The user's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.user.updateMe({
+  first_name: "John",
+  last_name: "Doe",
+})
+.then(({ user }) => {
+  console.log(user)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/users/me' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "user", type: "`object`", optional: false, description: "The user's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The user's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The user's email." },
+        { name: "first_name", type: "`string`", optional: false, description: "The user's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The user's last name." },
+        { name: "avatar_url", type: "`string`", optional: false, description: "The URL of the user's avatar." },
+        { name: "metadata", type: "`object`", optional: false, description: "The user's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the user was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the user was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the user was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `user.updated`: Emitted when users are updated.
+
+---
+
+## GET /admin/users/\{id\}
+
+**Get a User**
+
+Retrieve a user by its ID. You can expand the user's relations or select the fields that should be returned.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The user's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.user.retrieve("user_123")
+.then(({ user }) => {
+  console.log(user)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/users/{id}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "user", type: "`object`", optional: false, description: "The user's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The user's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The user's email." },
+        { name: "first_name", type: "`string`", optional: false, description: "The user's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The user's last name." },
+        { name: "avatar_url", type: "`string`", optional: false, description: "The URL of the user's avatar." },
+        { name: "metadata", type: "`object`", optional: false, description: "The user's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the user was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the user was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the user was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/users/\{id\}
+
+**Update a User**
+
+Update a user's details.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The user's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "first_name", type: "`string`", optional: true, description: "The user's first name." },
+    { name: "last_name", type: "`string`", optional: true, description: "The user's last name." },
+    { name: "avatar_url", type: "`string`", optional: true, description: "The URL of the user's avatar." },
+    { name: "metadata", type: "`object`", optional: true, description: "The user's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.user.update("user_123", {
+  first_name: "John",
+  last_name: "Doe",
+})
+.then(({ user }) => {
+  console.log(user)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/users/{id}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "first_name": "{value}",
+  "last_name": "{value}",
+  "avatar_url": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "user", type: "`object`", optional: false, description: "The user's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The user's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The user's email." },
+        { name: "first_name", type: "`string`", optional: false, description: "The user's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The user's last name." },
+        { name: "avatar_url", type: "`string`", optional: false, description: "The URL of the user's avatar." },
+        { name: "metadata", type: "`object`", optional: false, description: "The user's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the user was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the user was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the user was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `user.updated`: Emitted when users are updated.
+
+---
+
+## DELETE /admin/users/\{id\}
+
+**Delete a User**
+
+Delete a user.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The user's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.user.delete("user_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/users/{id}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The user's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"user\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the user was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `user.deleted`: Emitted when users are deleted.
+
+---
+
+## GET /admin/users/\{id\}/auth-providers
+
+**List Auth Providers of a User**
+
+Retrieve a list of auth providers that a user can authenticate with. These represent the auth providers that the user has previously used to log in or register with the system.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The user's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.user.listAuthProviders("user_123")
+.then(({ providers }) => {
+  console.log(providers)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/users/{id}/auth-providers' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "providers", type: "`string[]`", optional: false, description: "The IDs of the auth providers the user can authenticate with, such as\n`emailpass`." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/users/\{id\}/reset-password
+
+**Generate Reset Password Token for a User**
+
+Generate a reset password token for a user. This is useful if another user wants to reset the password of a user. The reset password token can be used to reset the user's password. This route only emits the `auth.password_reset` event. You can listen to this event to send a reset password email to the user, for example.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The user's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.user.generateResetPasswordToken("user_123")
+.then(({ token }) => {
+  console.log(token)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/users/{id}/reset-password' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "token", type: "`string`", optional: false, description: "The generated reset password token. Append it to the admin's\n`/reset-password` page as a `token` query parameter to build a link the\nuser can open to set a new password.\n\nThe token is short-lived, can only be used once, and generating it\ninvalidates any reset password token previously issued for the user." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `auth.password_reset`: Emitted when a reset password token is generated. You can listen to this event to send a reset password email to the user or customer, for example.

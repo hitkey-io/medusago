@@ -1,0 +1,2699 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Orders API Routes`,
+}
+
+# {metadata.title}
+
+An order is a purchase made by a customer through a storefront.
+
+Orders can also originally be created as draft orders.
+
+These API routes allow admin users to view and manage orders.
+
+## GET /admin/orders
+
+**List Orders**
+
+Retrieve a list of orders. The orders can be filtered by fields such as `id`. The orders can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by an order ID." },
+    { name: "status", type: "`string` \\| `string[]`", optional: true, description: "Filter by the order's status." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "sales_channel_id", type: "`string[]`", optional: true, description: "Filter by sales channel IDs to retrieve the orders associated with them." },
+    { name: "region_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by region IDs to retrieve their associated orders." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the order's searchable properties." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the order's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the order's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "customer_id", type: "`string` \\| `string[]`", optional: true, description: "The order's customer id." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.list()
+.then(({ orders, count, limit, offset }) => {
+  console.log(orders)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/orders' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total count of items." },
+    { name: "orders", type: "`object[]`", optional: false, description: "The list of orders.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/orders/export
+
+**Export Orders**
+
+Start an order export process to retrieve a CSV of exported orders.
+
+You'll receive in the response the transaction ID of the workflow generating the CSV file. To check the status of the execution, send a GET request to `/admin/workflows-executions/export-orders/:transaction-id`.
+
+Once the execution finishes successfully, a notification is created for the export. You can retrieve the notifications using the `/admin/notification` API route to retrieve the file's download URL.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "The ID of the order to export." },
+    { name: "sales_channel_id", type: "`string[]`", optional: true, description: "The IDs of the sales channels to export their orders." },
+    { name: "region_id", type: "`string` \\| `string[]`", optional: true, description: "The ID of a region to export orders in it." },
+    { name: "customer_id", type: "`string` \\| `string[]`", optional: true, description: "The ID of a customer to export their orders." },
+    { name: "q", type: "`string`", optional: true, description: "A search query to filter exported orders by." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by an order's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by an order's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted orders in the export." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." },
+    { name: "status", type: "`\"canceled\"` \\| `\"completed\"` \\| `\"pending\"` \\| `\"draft\"` \\| `\"archived\"` \\| `\"requires_action\"` \\| `(\"canceled\")[]` \\| `(\"completed\")[]` \\| `(\"pending\")[]` \\| `(\"draft\")[]` \\| `(\"archived\")[]` \\| `(\"requires_action\")[]` \\| `object`", optional: true, description: "The status of the orders to export.", children: [
+        { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+        { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." }
+      ] },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.export()
+.then(({ transaction_id }) => {
+  console.log(transaction_id)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/export' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`202` OK
+
+<TypeList
+  types={[
+    { name: "transaction_id", type: "`string`", optional: false, description: "The ID of the workflow execution's transaction. Use it to check the status of the export by sending a GET request to `/admin/workflows-executions/export-orders/:transaction-id`" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/orders/\{id\}
+
+**Get an Order**
+
+Retrieve an order by its ID. You can expand the order's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "version", type: "`number`", optional: true, description: "The order's version." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.retrieve("order_123")
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/orders/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/orders/\{id\}
+
+**Update Order**
+
+Update an order's details.
+
+Updating the order's shipping or billing address doesn't recalculate the order's taxes or totals; the existing tax lines are preserved as-is. You also can't change the address's `country_code`.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "version", type: "`number`", optional: true, description: "Retrieve a specific version of the order. If no version is provided, the latest version will be retrieved." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "email", type: "`string`", optional: true, description: "The order's email." },
+    { name: "shipping_address", type: "`object`", optional: true, description: "The address's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the address belongs to." },
+        { name: "first_name", type: "`string`", optional: true, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The address's last name." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The address's country code.", example: "us" },
+        { name: "province", type: "`string`", optional: true, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+      ] },
+    { name: "billing_address", type: "`object`", optional: true, description: "The address's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+        { name: "customer_id", type: "`string`", optional: true, description: "The ID of the customer the address belongs to." },
+        { name: "first_name", type: "`string`", optional: true, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The address's last name." },
+        { name: "phone", type: "`string`", optional: true, description: "The address's phone." },
+        { name: "company", type: "`string`", optional: true, description: "The address's company." },
+        { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The address's country code.", example: "us" },
+        { name: "province", type: "`string`", optional: true, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+        { name: "metadata", type: "`object`", optional: true, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+      ] },
+    { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+    { name: "locale", type: "`string`", optional: true, description: "The order's locale in [BCP 47](https://gist.github.com/typpo/b2b828a35e683b9bf8db91b5404f1bd1) format.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.update(
+  "order_123",
+  {
+    email: "new_email@example.com",
+    shipping_address: {
+      first_name: "John",
+      last_name: "Doe",
+      address_1: "123 Main St",
+    }
+  }
+)
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `order.updated`: Emitted when the details of an order or draft order is updated. This doesn't include updates made by an edit.
+
+---
+
+## POST /admin/orders/\{id\}/archive
+
+**Archive an Order**
+
+Change the status of an order to archived.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "version", type: "`number`", optional: true, description: "The order's version." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.archive("order_123")
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/archive' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "order_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `order.archived`: Emitted when an order is archived.
+
+---
+
+## POST /admin/orders/\{id\}/cancel
+
+**Cancel Order**
+
+Cancel an order. The cancelation fails if:
+- The order has captured payments.
+
+- The order has refund payments.
+
+- The order has fulfillments that aren't canceled.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "version", type: "`number`", optional: true, description: "The order's version." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.cancel("order_123")
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/cancel' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `order.canceled`: Emitted when an order is canceld.
+- `reservation-item.deleted`: Emitted when reservations are deleted.
+
+---
+
+## GET /admin/orders/\{id\}/changes
+
+**List Changes on an Order**
+
+Retrieve a list of changes made on an order, including returns, exchanges, etc...
+
+The changes can be filtered by fields like `created_at`. The changes can also be paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the order change's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the order change's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by the order change's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "id", type: "`string` \\| `string[]` \\| `object`", optional: true, description: "Filter by an order change ID.", children: [
+        { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+        { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." }
+      ] },
+    { name: "status", type: "`string` \\| `string[]` \\| `object`", optional: true, description: "Filter by the order change's status.", children: [
+        { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+        { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." }
+      ] },
+    { name: "change_type", type: "`string` \\| `string[]` \\| `object`", optional: true, description: "Filter by the order change's type.", children: [
+        { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+        { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." }
+      ] },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.listChanges("order_123")
+.then(({ order_changes }) => {
+  console.log(order_changes)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/orders/{id}/changes' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order_changes", type: "`object[]`", optional: false, description: "An order's changes.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The order change's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order change's version. This will be the order's version when the change is applied." },
+        { name: "change_type", type: "`\"return\"` \\| `\"exchange\"` \\| `\"claim\"` \\| `\"edit\"`", optional: true, description: "The order change's type." },
+        { name: "order_id", type: "`string`", optional: false, description: "The ID of the order this change applies on." },
+        { name: "return_id", type: "`string`", optional: false, description: "The ID of the associated return." },
+        { name: "exchange_id", type: "`string`", optional: false, description: "The ID of the associated exchange." },
+        { name: "claim_id", type: "`string`", optional: false, description: "The ID of the associated claim." },
+        { name: "order", type: "`object`", optional: false, description: "The order's details." },
+        { name: "return_order", type: "`object`", optional: false, description: "The return's details." },
+        { name: "exchange", type: "`object`", optional: false, description: "The exchange's details." },
+        { name: "claim", type: "`object`", optional: false, description: "The claim's details." },
+        { name: "actions", type: "`object[]`", optional: false, description: "The order change's actions." },
+        { name: "status", type: "`\"canceled\"` \\| `\"requested\"` \\| `\"pending\"` \\| `\"confirmed\"` \\| `\"declined\"`", optional: false, description: "The order change's status." },
+        { name: "requested_by", type: "`string`", optional: false, description: "The ID of the user that requested the change." },
+        { name: "requested_at", type: "`string`", optional: false, description: "The date the order change was requested." },
+        { name: "confirmed_by", type: "`string`", optional: false, description: "The ID of the user that confirmed the order change." },
+        { name: "confirmed_at", type: "`string`", optional: false, description: "The date the order change was confirmed." },
+        { name: "declined_by", type: "`string`", optional: false, description: "The ID of the user that declined the order change." },
+        { name: "declined_reason", type: "`string`", optional: false, description: "The reason the order change was declined." },
+        { name: "metadata", type: "`object`", optional: false, description: "The order change's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "declined_at", type: "`string`", optional: false, description: "The date the order change was declined." },
+        { name: "canceled_by", type: "`string`", optional: false, description: "The ID of the user that canceled the order change." },
+        { name: "canceled_at", type: "`string`", optional: false, description: "The date the order change was canceled." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order change was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order change was updated." },
+        { name: "carry_over_promotions", type: "`boolean`", optional: true, description: "Whether promotions from the original order should be carried over to the order change (specifically, exchanges)." },
+        { name: "created_by", type: "`string`", optional: false, description: "The ID of the user that created the order change." },
+        { name: "internal_note", type: "`string`", optional: false, description: "The order change's internal note." },
+        { name: "no_notification", type: "`boolean`", optional: true, description: "Whether to send notifications to the customer regarding the order change's updates." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/orders/\{id\}/complete
+
+**Complete Order**
+
+Mark an order as completed.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "version", type: "`number`", optional: true, description: "The order's version." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.complete("order_123")
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/complete' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "order_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `order.completed`: Emitted when orders are completed.
+
+---
+
+## POST /admin/orders/\{id\}/credit-lines
+
+**Create Credit Line for Order**
+
+Create a credit line for an order.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." },
+    { name: "version", type: "`number`", optional: true, description: "The order's version." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "amount", type: "`number`", optional: false, description: "The amount of the credit line.", example: "100" },
+    { name: "reference", type: "`string`", optional: false, description: "The name of the table that the credit line is referencing.", example: "order" },
+    { name: "reference_id", type: "`string`", optional: false, description: "The ID of a record in the table that the credit line is referencing.", example: "order_123" },
+    { name: "metadata", type: "`object`", optional: true, description: "The credit line's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.createCreditLine(
+  "order_123",
+  {
+    amount: 100,
+    reference: "order",
+    reference_id: "order_123",
+  }
+)
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/credit-lines' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "amount": 32,
+  "reference": "{value}",
+  "reference_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/orders/\{id\}/fulfillments
+
+**Create an Order Fulfillment**
+
+Create a fulfillment for an order. The creation fails if the order is canceled.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "version", type: "`number`", optional: true, description: "The order's version." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "items", type: "`object[]`", optional: false, description: "The items to fulfill.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+        { name: "quantity", type: "`number`", optional: false, description: "The item's quantity to fulfill." }
+      ] },
+    { name: "location_id", type: "`string`", optional: false, description: "The ID of the location to fulfill the items from. If not provided, the location associated with the shipping option of the order's shipping method is used." },
+    { name: "no_notification", type: "`boolean`", optional: true, description: "Whether to send the customer a notification about the created fulfillment." },
+    { name: "delivery_address", type: "`object`", optional: true, description: "The address to deliver the items to.", children: [
+        { name: "first_name", type: "`string`", optional: true, description: "The customer's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The customer's last name." },
+        { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+        { name: "company", type: "`string`", optional: true, description: "The delivery address's company." },
+        { name: "address_1", type: "`string`", optional: true, description: "The delivery address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The delivery address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The delivery address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The delivery address's country code." },
+        { name: "province", type: "`string`", optional: true, description: "The delivery address's ISO 3166-2 province code. Must be lower-case.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The delivery address's postal code." },
+        { name: "metadata", type: "`object`", optional: true, description: "The delivery address's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+      ] },
+    { name: "metadata", type: "`object`", optional: false, description: "The order's metadata. Can hold custom key-value pairs." },
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.createFulfillment("order_123", {
+  items: [
+    {
+      id: "orli_123",
+      quantity: 1
+    }
+  ]
+})
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/fulfillments' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "items": [
+    {
+      "id": "id_YePfQ6PBCBKvmYyreUt2",
+      "quantity": 6623610359775232
+    }
+  ],
+  "location_id": "{value}",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `order.fulfillment_created`: Emitted when a fulfillment is created for an order.
+- `inventory-level.updated`: Emitted when inventory levels are updated. This includes adjustments to the stocked or reserved quantity, such as during order fulfillment.
+- `reservation-item.updated`: Emitted when reservations are updated.
+- `reservation-item.deleted`: Emitted when reservations are deleted.
+
+---
+
+## POST /admin/orders/\{id\}/fulfillments/\{fulfillment_id\}/cancel
+
+**Cancel Fulfillment**
+
+Cancel an order's fulfillment. The fulfillment can't be canceled if it's shipped.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+    { name: "fulfillment_id", type: "`string`", optional: false, description: "The order's fulfillment id." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "no_notification", type: "`boolean`", optional: true, description: "Whether the customer should receive a notification about this change." },
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.cancelFulfillment(
+  "order_123",
+  "ful_123",
+  {
+    no_notification: false
+  }
+)
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/fulfillments/{fulfillment_id}/cancel' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `order.fulfillment_canceled`: Emitted when an order's fulfillment is canceled.
+- `inventory-level.updated`: Emitted when inventory levels are updated. This includes adjustments to the stocked or reserved quantity, such as during order fulfillment.
+- `reservation-item.created`: Emitted when reservations are created.
+- `reservation-item.updated`: Emitted when reservations are updated.
+
+---
+
+## POST /admin/orders/\{id\}/fulfillments/\{fulfillment_id\}/mark-as-delivered
+
+**Mark a Fulfillment as Delivered.**
+
+Mark an order's fulfillment as delivered.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+    { name: "fulfillment_id", type: "`string`", optional: false, description: "The fulfillment's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nIf a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nWithout prefix it will replace the entire default fields." },
+    { name: "version", type: "`number`", optional: true, description: "The order's version." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "no_notification", type: "`boolean`", optional: true, description: "Whether to send a notification to the customer about the fulfillment being marked as delivered." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.markAsDelivered(
+  "order_123",
+  "ful_123",
+)
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/fulfillments/{fulfillment_id}/mark-as-delivered' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `delivery.created`: Emitted when a fulfillment is marked as delivered.
+
+---
+
+## POST /admin/orders/\{id\}/fulfillments/\{fulfillment_id\}/shipments
+
+**Create Shipment for an Order's Fulfillment**
+
+Create a shipment for an order's fulfillment.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+    { name: "fulfillment_id", type: "`string`", optional: false, description: "The fulfillment's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "version", type: "`number`", optional: true, description: "The order's version." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "items", type: "`object[]`", optional: false, description: "The items to create shipment for.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+        { name: "quantity", type: "`number`", optional: false, description: "The item's quantity to ship." }
+      ] },
+    { name: "labels", type: "`object[]`", optional: true, description: "The labels to create for the shipment.", children: [
+        { name: "tracking_number", type: "`string`", optional: false, description: "The label's tracking number." },
+        { name: "tracking_url", type: "`string`", optional: false, description: "The label's tracking url." },
+        { name: "label_url", type: "`string`", optional: false, description: "The label's url." }
+      ] },
+    { name: "no_notification", type: "`boolean`", optional: true, description: "Whether to send the customer a notification about the created shipment." },
+    { name: "metadata", type: "`object`", optional: false, description: "The shipment's metadata. Can hold custom key-value pairs." },
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.createShipment(
+  "order_123",
+  "ful_123",
+  {
+    items: [
+      {
+        id: "fulit_123",
+        quantity: 1
+      }
+    ]
+  }
+)
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/fulfillments/{fulfillment_id}/shipments' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "items": [
+    {
+      "id": "id_3QQtl2VvE73c",
+      "quantity": 6772917941567488
+    }
+  ],
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `shipment.created`: Emitted when a shipment is created for an order.
+
+---
+
+## GET /admin/orders/\{id\}/line-items
+
+**List Line Items**
+
+Retrieve a list of line items in a order. The line items can be filtered by fields like FILTER FIELDS. The line items can also be paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "The order's ID." },
+    { name: "item_id", type: "`string` \\| `string[]`", optional: true, description: "The order's item id." },
+    { name: "version", type: "`number` \\| `number[]`", optional: true, description: "The order's version." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.listLineItems("order_123")
+.then(({ order_items }) => {
+  console.log(order_items)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/orders/{id}/line-items' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order_items", type: "`object[]`", optional: false, description: "The order's order items.", children: [
+        { name: "order_id", type: "`string`", optional: false, description: "The ID of the order this item belongs to." },
+        { name: "item_id", type: "`string`", optional: false, description: "The ID of the associated line item." },
+        { name: "version", type: "`number`", optional: false, description: "The order item's version." },
+        { name: "history", type: "`object`", optional: false, description: "The order item's history.", children: [
+            { name: "version", type: "`object`", optional: false, description: "The version changes of the item." }
+          ] },
+        { name: "item", type: "`object`", optional: false, description: "The item's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The item's title." },
+            { name: "subtitle", type: "`string`", optional: false, description: "The item's subtitle." },
+            { name: "thumbnail", type: "`string`", optional: false, description: "The URL of the item's thumbnail." },
+            { name: "variant", type: "`object`", optional: true, description: "The product variant's details." },
+            { name: "variant_id", type: "`string`", optional: false, description: "The ID of the associated variant." },
+            { name: "product", type: "`object`", optional: true, description: "The product's details." },
+            { name: "product_id", type: "`string`", optional: false, description: "The ID of the associated product." },
+            { name: "product_title", type: "`string`", optional: false, description: "The item's product title." },
+            { name: "product_description", type: "`string`", optional: false, description: "The item's product description." },
+            { name: "product_subtitle", type: "`string`", optional: false, description: "The item's product subtitle." },
+            { name: "product_type", type: "`string`", optional: false, description: "The item's product type." },
+            { name: "product_collection", type: "`string`", optional: false, description: "The ID of the collection the item's product belongs to." },
+            { name: "product_handle", type: "`string`", optional: false, description: "The item's product handle." },
+            { name: "variant_sku", type: "`string`", optional: false, description: "The item's variant SKU." },
+            { name: "variant_barcode", type: "`string`", optional: false, description: "The item's variant barcode." },
+            { name: "variant_title", type: "`string`", optional: false, description: "The item's variant title." },
+            { name: "variant_option_values", type: "`object`", optional: false, description: "The values of the item variant's options." },
+            { name: "requires_shipping", type: "`boolean`", optional: false, description: "Whether the item requires shipping." },
+            { name: "is_discountable", type: "`boolean`", optional: false, description: "Whether the item is discountable." },
+            { name: "is_tax_inclusive", type: "`boolean`", optional: false, description: "Whether the item is tax inclusive." },
+            { name: "compare_at_unit_price", type: "`number`", optional: true, description: "The original price of the item before a promotion or sale." },
+            { name: "unit_price", type: "`number`", optional: false, description: "The item's unit price." },
+            { name: "quantity", type: "`number`", optional: false, description: "The item's quantity." },
+            { name: "tax_lines", type: "`object[]`", optional: true, description: "The item's tax lines." },
+            { name: "adjustments", type: "`object[]`", optional: true, description: "The item's adjustments." },
+            { name: "detail", type: "`object`", optional: false },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the item was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the item was updated." },
+            { name: "metadata", type: "`object`", optional: false, description: "The item's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "original_total", type: "`number`", optional: false, description: "The item's total including taxes, excluding promotions." },
+            { name: "original_subtotal", type: "`number`", optional: false, description: "The item's total excluding taxes, including promotions." },
+            { name: "original_tax_total", type: "`number`", optional: false, description: "The total taxes of the item, excluding promotions." },
+            { name: "item_total", type: "`number`", optional: false, description: "The total taxes of the item, including promotions." },
+            { name: "item_subtotal", type: "`number`", optional: false, description: "The item's total excluding taxes, including promotions." },
+            { name: "item_tax_total", type: "`number`", optional: false, description: "The total taxes of the item, including promotions." },
+            { name: "total", type: "`number`", optional: false, description: "The item's total, including taxes and promotions." },
+            { name: "subtotal", type: "`number`", optional: false, description: "The item's subtotal excluding taxes, including promotions." },
+            { name: "tax_total", type: "`number`", optional: false, description: "The tax total of the item including promotions." },
+            { name: "discount_total", type: "`number`", optional: false, description: "The total discount amount of the item." },
+            { name: "discount_tax_total", type: "`number`", optional: false, description: "The total taxes applied on the discounted amount." },
+            { name: "refundable_total", type: "`number`", optional: false, description: "The total refundable amount of the item's total." },
+            { name: "refundable_total_per_unit", type: "`number`", optional: false, description: "The total refundable amount of the item's total for a single quantity." },
+            { name: "product_type_id", type: "`string`", optional: false, description: "The ID of the associated product's type." }
+          ] }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/orders/\{id\}/payment-sessions/authorize
+
+**Authorize Payment Session**
+
+Authorize a payment session for an order. This is useful for orders created from draft orders.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "payment_session_id", type: "`string`", optional: false, description: "The payment session's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.authorizePaymentSession("order_123", "payses_123")
+.then(({ order, is_authorized }) => {
+  console.log(order, is_authorized)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/payment-sessions/authorize' \
+-H 'Authorization: Bearer {access_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "payment_session_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] },
+    { name: "is_authorized", type: "`boolean`", optional: false, description: "Whether the payment session was successfully authorized." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/orders/\{id\}/preview
+
+**Get Preview**
+
+Retrieve a preview of an order using its associated change, such as an edit.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.retrievePreview("order_123")
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/orders/{id}/preview' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "A preview of an order if a change, such as exchange, return, edit, or claim is applied on it.", children: [
+        { name: "return_requested_total", type: "`number`", optional: false, description: "The total of the requested return." },
+        { name: "order_change", type: "`object`", optional: false, description: "The order change's details." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: true, description: "The order's shipping methods." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version when this preview is applied." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the order's associated region." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel that the order was placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order preview's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order preview's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/orders/\{id\}/shipping-options
+
+**List Shipping Options for Order**
+
+Retrieve a list of shipping options that can be used for outbound shipping in an order. This is especially useful when adding outbound shipping to order exchanges or claims.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.listShippingOptions("order_123")
+.then(({ shipping_options }) => {
+  console.log(shipping_options)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/orders/{id}/shipping-options' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "shipping_options", type: "`object[]`", optional: false, description: "The list of shipping options." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/orders/\{id\}/transfer
+
+**Request Order Transfer**
+
+Request an order to be transfered to another customer. The transfer is confirmed by sending a request to the Accept Order Transfer Store API route.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." },
+    { name: "version", type: "`number`", optional: true, description: "The order's version." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer to transfer the order to." },
+    { name: "description", type: "`string`", optional: true, description: "The description of the order transfer, which can be shown to the customer receiving the order transfer request." },
+    { name: "internal_note", type: "`string`", optional: true, description: "An internal note viewable only by admin users." },
+    { name: "update_order_email", type: "`boolean`", optional: true, description: "Whether to update the order's email to the email of the customer the order is being transferred to. By default, the order's email will not be updated.", defaultValue: "false" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.requestTransfer("order_123", {
+  customer_id: "cus_123",
+  internal_note: "Internal note",
+})
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/transfer' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "customer_id": "cus_123"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `order.transfer_requested`: Emitted when an order is requested to be transferred to another customer.
+
+---
+
+## POST /admin/orders/\{id\}/transfer/cancel
+
+**Cancel Transfer Request**
+
+Cancel a request to transfer an order to another customer.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data.\nif a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields.\nwithout prefix it will replace the entire default fields." },
+    { name: "version", type: "`number`", optional: true, description: "The order's version." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.cancelTransfer("order_123")
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/transfer/cancel' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/orders/\{id\}/transfer/guest
+
+**Transfer Order to Guest Customer**
+
+Transfer an order to a guest customer. This is useful when the order email was incorrectly entered and you want to set it to a guest customer. The order will be transferred to a new guest customer with the provided email. For transferring orders to registered customer, check out the Request Order Transfer API route instead.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The order's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "version", type: "`number`", optional: true, description: "Retrieve a specific version of the order. If no version is provided, the latest version will be retrieved." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "email", type: "`string`", optional: false, description: "The email to which the order will be transferred." },
+    { name: "internal_note", type: "`string`", optional: true, description: "The internal note for the order transfer." },
+    { name: "description", type: "`string`", optional: true, description: "Details of the order transfer to a guest." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.order.transferToGuest("order_123", {
+  email: "customer@example.com",
+  internal_note: "Internal note",
+})
+.then(({ order }) => {
+  console.log(order)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/orders/{id}/transfer/guest' \
+-H 'Authorization: Bearer {access_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "email": "Eda_Kuhic78@gmail.com"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "order", type: "`object`", optional: false, description: "The order's details.", children: [
+        { name: "payment_collections", type: "`object[]`", optional: false, description: "The order's payment collections." },
+        { name: "fulfillments", type: "`object[]`", optional: true, description: "The order's fulfillments." },
+        { name: "sales_channel", type: "`object`", optional: true, description: "The sales channel's details." },
+        { name: "customer", type: "`object`", optional: true, description: "The customer's details." },
+        { name: "shipping_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "billing_address", type: "`object`", optional: true, description: "An order address." },
+        { name: "id", type: "`string`", optional: false, description: "The order's ID." },
+        { name: "version", type: "`number`", optional: false, description: "The order's version." },
+        { name: "region_id", type: "`string`", optional: false, description: "The ID of the region associated with the order." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer that placed the order." },
+        { name: "sales_channel_id", type: "`string`", optional: false, description: "The ID of the sales channel the order is placed in." },
+        { name: "email", type: "`string`", optional: false, description: "The email of the customer that placed the order." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The order's currency code." },
+        { name: "display_id", type: "`number`", optional: true, description: "The order's display ID." },
+        { name: "items", type: "`object[]`", optional: false, description: "The order's items." },
+        { name: "shipping_methods", type: "`object[]`", optional: false, description: "The order's shipping methods." },
+        { name: "payment_status", type: "`string`", optional: false, description: "The order's payment status. Possible values: `canceled`, `not_paid`, `awaiting`, `authorized`, `partially_authorized`, `captured`, `partially_captured`, `partially_refunded`, `refunded`, `requires_action`." },
+        { name: "fulfillment_status", type: "`\"canceled\"` \\| `\"not_fulfilled\"` \\| `\"partially_fulfilled\"` \\| `\"fulfilled\"` \\| `\"partially_shipped\"` \\| `\"shipped\"` \\| `\"partially_delivered\"` \\| `\"delivered\"`", optional: false, description: "The order's fulfillment status." },
+        { name: "transactions", type: "`object[]`", optional: true, description: "The order's transactions." },
+        { name: "summary", type: "`object`", optional: false, description: "The order's summary details." },
+        { name: "metadata", type: "`object`", optional: true, description: "The order's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the order was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the order was updated." },
+        { name: "original_item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes, excluding promotions." },
+        { name: "original_item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "original_item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items excluding promotions." },
+        { name: "item_total", type: "`number`", optional: false, description: "The total of the order's items including taxes and promotions." },
+        { name: "item_subtotal", type: "`number`", optional: false, description: "The total of the order's items excluding taxes, including promotions." },
+        { name: "item_tax_total", type: "`number`", optional: false, description: "The tax total of the order's items including promotions." },
+        { name: "original_total", type: "`number`", optional: false, description: "The order's total excluding promotions, including taxes." },
+        { name: "original_subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "original_tax_total", type: "`number`", optional: false, description: "The order's tax total, excluding promotions." },
+        { name: "total", type: "`number`", optional: false, description: "The order's total including taxes and promotions." },
+        { name: "subtotal", type: "`number`", optional: false, description: "The order's total excluding taxes, including promotions." },
+        { name: "tax_total", type: "`number`", optional: false, description: "The order's tax total including promotions." },
+        { name: "discount_total", type: "`number`", optional: false, description: "The order's discount or promotions total." },
+        { name: "discount_tax_total", type: "`number`", optional: false, description: "The tax total of order's discount or promotion." },
+        { name: "gift_card_total", type: "`number`", optional: false, description: "The order's gift card total." },
+        { name: "gift_card_tax_total", type: "`number`", optional: false, description: "The tax total of the order's gift card." },
+        { name: "shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes and promotions." },
+        { name: "shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping." },
+        { name: "original_shipping_total", type: "`number`", optional: false, description: "The order's shipping total including taxes, excluding promotions." },
+        { name: "original_shipping_subtotal", type: "`number`", optional: false, description: "The order's shipping total excluding taxes, including promotions." },
+        { name: "original_shipping_tax_total", type: "`number`", optional: false, description: "The tax total of the order's shipping excluding promotions." },
+        { name: "status", type: "`string`", optional: false, description: "The order's status." },
+        { name: "region", type: "`object`", optional: true, description: "The region's details." },
+        { name: "credit_lines", type: "`object[]`", optional: true, description: "The order's credit lines." },
+        { name: "credit_line_total", type: "`number`", optional: false, description: "The order's credit line total." },
+        { name: "item_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's items." },
+        { name: "shipping_discount_total", type: "`number`", optional: false, description: "The total discount amount applied on the order's shipping." },
+        { name: "custom_display_id", type: "`string`", optional: true, description: "The custom display ID of the order." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

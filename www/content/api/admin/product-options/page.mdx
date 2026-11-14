@@ -1,0 +1,850 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Product Options API Routes`,
+}
+
+# {metadata.title}
+
+A product option is a way to define different options for a product, such as "Size" or "Color". Product options can be created globally and used by multiple products, or they can be exclusive to a specific product.
+These API routes allow admin users to manage product options.
+
+## GET /admin/product-options
+
+**List Product Options**
+
+Retrieve a list of product options. The product options can be filtered by fields such as `id`. The product options can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "title", type: "`string` \\| `string[]`", optional: true, description: "Filter by a product option title." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the product option's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the product option's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by the product option's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "Search query for product options." },
+    { name: "is_exclusive", type: "`boolean`", optional: true, description: "Filter by whether the product option is global or exclusive to a product." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "The product option's with deleted." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a product option ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productOption.list()
+.then(({ product_options, count, limit, offset }) => {
+  console.log(product_options)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/product-options' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" },
+    { name: "product_options", type: "`object[]`", optional: false, description: "The list of product options.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The product option's title." },
+        { name: "values", type: "`object[]`", optional: true, description: "The product option's values." },
+        { name: "metadata", type: "`object`", optional: true, description: "The product option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the product option was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the product option was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the product option was deleted." },
+        { name: "products", type: "`object[]`", optional: true, description: "The products that use the option." },
+        { name: "is_exclusive", type: "`boolean`", optional: false, description: "Whether the option is exclusive to a product." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/product-options
+
+**Create Product Option**
+
+Create a product option.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "title", type: "`string`", optional: false, description: "The product option's title." },
+    { name: "values", type: "`string[]`", optional: false, description: "The product option's values." },
+    { name: "ranks", type: "`object`", optional: true, description: "The ranking of the option's values. The keys are the value names and the values are their respective ranks." },
+    { name: "is_exclusive", type: "`boolean`", optional: true, description: "Whether the option is exclusive to the product." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productOption.create({
+  title: "Size",
+  values: ["S", "M"]
+})
+.then(({ product_option }) => {
+  console.log(product_option)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/product-options' \
+-H 'Authorization: Bearer {access_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "title": "cuppedia",
+  "values": [
+    "{value}"
+  ]
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_option", type: "`object`", optional: false, description: "The product option's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The product option's title." },
+        { name: "values", type: "`object[]`", optional: true, description: "The product option's values." },
+        { name: "metadata", type: "`object`", optional: true, description: "The product option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the product option was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the product option was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the product option was deleted." },
+        { name: "products", type: "`object[]`", optional: true, description: "The products that use the option." },
+        { name: "is_exclusive", type: "`boolean`", optional: false, description: "Whether the option is exclusive to a product." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product-option.created`: Emitted when product options are created.
+
+---
+
+## GET /admin/product-options/\{id\}
+
+**Get a Product Option**
+
+Retrieve a product option by its ID. You can expand the product option's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product option's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productOption.retrieve("opt_123")
+.then(({ product_option }) => {
+  console.log(product_option)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/product-options/{id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_option", type: "`object`", optional: false, description: "The product option's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The product option's title." },
+        { name: "values", type: "`object[]`", optional: true, description: "The product option's values." },
+        { name: "metadata", type: "`object`", optional: true, description: "The product option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the product option was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the product option was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the product option was deleted." },
+        { name: "products", type: "`object[]`", optional: true, description: "The products that use the option." },
+        { name: "is_exclusive", type: "`boolean`", optional: false, description: "Whether the option is exclusive to a product." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/product-options/\{id\}
+
+**Update a Product Option**
+
+Update a product option's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product option's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "title", type: "`string`", optional: true, description: "The option's title." },
+    { name: "values", type: "`string[]`", optional: true, description: "The option's values." },
+    { name: "id", type: "`string`", optional: true, description: "The option's ID." },
+    { name: "ranks", type: "`object`", optional: true, description: "The product option's ranks." },
+    { name: "is_exclusive", type: "`boolean`", optional: true, description: "Whether the product option is exclusive to the product. If disabled, the product option can be used by other products." },
+    { name: "metadata", type: "`object`", optional: true, description: "Key-value pairs that hold additional information about the product option." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productOption.update("opt_123", {
+  title: "Size"
+})
+.then(({ product_option }) => {
+  console.log(product_option)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/product-options/{id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_option", type: "`object`", optional: false, description: "The product option's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The product option's title." },
+        { name: "values", type: "`object[]`", optional: true, description: "The product option's values." },
+        { name: "metadata", type: "`object`", optional: true, description: "The product option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the product option was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the product option was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the product option was deleted." },
+        { name: "products", type: "`object[]`", optional: true, description: "The products that use the option." },
+        { name: "is_exclusive", type: "`boolean`", optional: false, description: "Whether the option is exclusive to a product." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product-option.updated`: Emitted when product options are updated.
+
+---
+
+## DELETE /admin/product-options/\{id\}
+
+**Delete a Product Option**
+
+Delete a product option.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product option's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productOption.delete("opt_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/product-options/{id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"product_option\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the product option was deleted." },
+    { name: "parent", type: "`object`", optional: true, description: "The product's details.", children: [
+        { name: "collection", type: "`object`", optional: true, description: "The product collection's details." },
+        { name: "categories", type: "`object[]`", optional: true, description: "The product's categories." },
+        { name: "sales_channels", type: "`object[]`", optional: true, description: "The sales channels that the product is available in." },
+        { name: "variants", type: "`object[]`", optional: false, description: "The product's variants." },
+        { name: "type", type: "`object`", optional: false, description: "The product type's details." },
+        { name: "tags", type: "`object[]`", optional: true, description: "The product's tags." },
+        { name: "length", type: "`number`", optional: false, description: "The product's length." },
+        { name: "title", type: "`string`", optional: false, description: "The product's title." },
+        { name: "status", type: "`\"draft\"` \\| `\"proposed\"` \\| `\"published\"` \\| `\"rejected\"`", optional: false, description: "The product's status." },
+        { name: "options", type: "`object[]`", optional: false, description: "The product's options." },
+        { name: "description", type: "`string`", optional: false, description: "The product's description." },
+        { name: "id", type: "`string`", optional: false, description: "The product's ID." },
+        { name: "metadata", type: "`object`", optional: true, description: "The product's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the product was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the product was updated." },
+        { name: "handle", type: "`string`", optional: false, description: "The product's unique handle." },
+        { name: "subtitle", type: "`string`", optional: false, description: "The product's subtitle." },
+        { name: "is_giftcard", type: "`boolean`", optional: false, description: "Whether the product is a gift card." },
+        { name: "thumbnail", type: "`string`", optional: false, description: "The product's thumbnail." },
+        { name: "width", type: "`number`", optional: false, description: "The product's width." },
+        { name: "weight", type: "`number`", optional: false, description: "The product's weight." },
+        { name: "height", type: "`number`", optional: false, description: "The product's height." },
+        { name: "origin_country", type: "`string`", optional: false, description: "The product's origin country." },
+        { name: "hs_code", type: "`string`", optional: false, description: "The product's HS code." },
+        { name: "mid_code", type: "`string`", optional: false, description: "The product's MID code." },
+        { name: "material", type: "`string`", optional: false, description: "The product's material." },
+        { name: "collection_id", type: "`string`", optional: false, description: "The ID of the collection that the product belongs to." },
+        { name: "type_id", type: "`string`", optional: false, description: "The ID of the product's type." },
+        { name: "images", type: "`object[]`", optional: false, description: "The product's images." },
+        { name: "discountable", type: "`boolean`", optional: false, description: "Whether discounts can be applied on the product." },
+        { name: "external_id", type: "`string`", optional: false, description: "The ID of a product in an external system, such as an ERP or CMS." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the product was deleted." },
+        { name: "shipping_profile", type: "`object`", optional: true, description: "The shipping profile's details.." },
+        { name: "translations", type: "`object[]`", optional: true, description: "The product's translations." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product-option.deleted`: Emitted when product options are deleted.
+
+---
+
+## GET /admin/product-options/\{id\}/values
+
+**List Product Option Values**
+
+Retrieve a list of values in a product option. The values can be filtered by fields like `id`. The values can also be paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product option's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "q", type: "`string`", optional: true, description: "Query to apply on the product option value's searchable fields." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a product option value ID." },
+    { name: "value", type: "`string` \\| `string[]`", optional: true, description: "Filter by a product option value." },
+    { name: "option_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by the value's product option ID." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the product option value's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the product option value's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by the product option value's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "The product option's with deleted." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productOption.listValues("opt_123", { q: "red" })
+.then(({ product_option_values, count, limit, offset }) => {
+  console.log(product_option_values)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/product-options/{id}/values' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the list." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items in the list." },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" },
+    { name: "product_option_values", type: "`object[]`", optional: false, description: "The list of product option values.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+        { name: "value", type: "`string`", optional: false, description: "The value." },
+        { name: "option", type: "`object`", optional: true, description: "The product option's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The product option's title." },
+            { name: "values", type: "`object[]`", optional: true, description: "The product option's values." },
+            { name: "metadata", type: "`object`", optional: true, description: "The product option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the product option was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the product option was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the product option was deleted." },
+            { name: "products", type: "`object[]`", optional: true, description: "The products that use the option." },
+            { name: "is_exclusive", type: "`boolean`", optional: false, description: "Whether the option is exclusive to a product." }
+          ] },
+        { name: "option_id", type: "`string`", optional: true, description: "The ID of the option this value belongs to." },
+        { name: "metadata", type: "`object`", optional: true, description: "The value's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the value was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the value was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the value was deleted." },
+        { name: "rank", type: "`number`", optional: true, description: "The rank of the value among other option values." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/product-options/\{id\}/values/\{value_id\}
+
+**Get Product Option Value**
+
+Get a product option value by its ID.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+    { name: "value_id", type: "`string`", optional: false, description: "The product option value's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productOption.retrieveValue("opt_123", "optval_123")
+.then(({ product_option_value }) => {
+  console.log(product_option_value)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/product-options/{id}/values/{value_id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_option_value", type: "`object`", optional: false, description: "The product option value's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+        { name: "value", type: "`string`", optional: false, description: "The value." },
+        { name: "option", type: "`object`", optional: true, description: "The product option's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The product option's title." },
+            { name: "values", type: "`object[]`", optional: true, description: "The product option's values." },
+            { name: "metadata", type: "`object`", optional: true, description: "The product option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the product option was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the product option was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the product option was deleted." },
+            { name: "products", type: "`object[]`", optional: true, description: "The products that use the option." },
+            { name: "is_exclusive", type: "`boolean`", optional: false, description: "Whether the option is exclusive to a product." }
+          ] },
+        { name: "option_id", type: "`string`", optional: true, description: "The ID of the option this value belongs to." },
+        { name: "metadata", type: "`object`", optional: true, description: "The value's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the value was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the value was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the value was deleted." },
+        { name: "rank", type: "`number`", optional: true, description: "The rank of the value among other option values." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/product-options/\{id\}/values/\{value_id\}
+
+**Update Product Option Value**
+
+Update a product option value's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+    { name: "value_id", type: "`string`", optional: false, description: "The product option value's ID." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "value", type: "`string`", optional: true, description: "The product option's value." },
+    { name: "metadata", type: "`object`", optional: true, description: "Key-value pairs that hold additional information about the product option value." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productOption.updateValue("opt_123", "optval_123", {
+  metadata: { is_default: true }
+})
+.then(({ product_option_value }) => {
+  console.log(product_option_value)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/product-options/{id}/values/{value_id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_option_value", type: "`object`", optional: false, description: "The product option value's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+        { name: "value", type: "`string`", optional: false, description: "The value." },
+        { name: "option", type: "`object`", optional: true, description: "The product option's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The product option's title." },
+            { name: "values", type: "`object[]`", optional: true, description: "The product option's values." },
+            { name: "metadata", type: "`object`", optional: true, description: "The product option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: true, description: "The date the product option was created." },
+            { name: "updated_at", type: "`string`", optional: true, description: "The date the product option was updated." },
+            { name: "deleted_at", type: "`string`", optional: true, description: "The date the product option was deleted." },
+            { name: "products", type: "`object[]`", optional: true, description: "The products that use the option." },
+            { name: "is_exclusive", type: "`boolean`", optional: false, description: "Whether the option is exclusive to a product." }
+          ] },
+        { name: "option_id", type: "`string`", optional: true, description: "The ID of the option this value belongs to." },
+        { name: "metadata", type: "`object`", optional: true, description: "The value's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the value was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the value was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the value was deleted." },
+        { name: "rank", type: "`number`", optional: true, description: "The rank of the value among other option values." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product-option-value.updated`: Emitted when product option values are updated.
+
+---
+
+## DELETE /admin/product-options/\{id\}/values/\{value_id\}
+
+**Remove Value from Product Option**
+
+Remove a Value from a product option.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+    { name: "value_id", type: "`string`", optional: false, description: "The value's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productOption.deleteValue("opt_123", "optval_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/product-options/{id}/values/{value_id}' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The ID of the deleted product option value." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"product_option_value\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the Product Option Value was deleted." },
+    { name: "parent", type: "`object`", optional: true, description: "The product option's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The product option's ID." },
+        { name: "title", type: "`string`", optional: false, description: "The product option's title." },
+        { name: "values", type: "`object[]`", optional: true, description: "The product option's values." },
+        { name: "metadata", type: "`object`", optional: true, description: "The product option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the product option was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the product option was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the product option was deleted." },
+        { name: "products", type: "`object[]`", optional: true, description: "The products that use the option." },
+        { name: "is_exclusive", type: "`boolean`", optional: false, description: "Whether the option is exclusive to a product." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product-option-value.deleted`: Emitted when product option values are deleted.

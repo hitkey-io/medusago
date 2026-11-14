@@ -1,0 +1,531 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Fulfillments API Routes`,
+}
+
+# {metadata.title}
+
+A fulfillment is created for items in an order, return, exchanges, or claims to deliver items to/from the customer.
+
+These API routes allow admin users to manage fulfillments.
+
+## POST /admin/fulfillments
+
+**Create Fulfillment**
+
+Create a fulfillment for an order, return, exchange, and more.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "location_id", type: "`string`", optional: false, description: "The ID of the location the items are fulfilled from." },
+    { name: "provider_id", type: "`string`", optional: false, description: "The ID of the provider handling this fulfillment." },
+    { name: "delivery_address", type: "`object`", optional: false, description: "The address to deliver the items to.", children: [
+        { name: "first_name", type: "`string`", optional: true, description: "The customer's first name." },
+        { name: "last_name", type: "`string`", optional: true, description: "The customer's last name." },
+        { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+        { name: "company", type: "`string`", optional: true, description: "The delivery address's company." },
+        { name: "address_1", type: "`string`", optional: true, description: "The delivery address's first line." },
+        { name: "address_2", type: "`string`", optional: true, description: "The delivery address's second line." },
+        { name: "city", type: "`string`", optional: true, description: "The delivery address's city." },
+        { name: "country_code", type: "`string`", optional: true, description: "The delivery address's country code." },
+        { name: "province", type: "`string`", optional: true, description: "The delivery address's ISO 3166-2 province code. Must be lower-case.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: true, description: "The delivery address's postal code." },
+        { name: "metadata", type: "`object`", optional: true, description: "The delivery address's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+      ] },
+    { name: "items", type: "`object[]`", optional: false, description: "The items to fulfill.", children: [
+        { name: "title", type: "`string`", optional: false, description: "The item's title." },
+        { name: "sku", type: "`string`", optional: false, description: "The item's SKU." },
+        { name: "quantity", type: "`number`", optional: false, description: "The quantity to fulfill of the item." },
+        { name: "barcode", type: "`string`", optional: false, description: "The item's barcode." },
+        { name: "line_item_id", type: "`string`", optional: true, description: "The ID of the associated line item." },
+        { name: "inventory_item_id", type: "`string`", optional: true, description: "The ID of the inventory item associated with the underlying variant." }
+      ] },
+    { name: "labels", type: "`object[]`", optional: false, description: "The labels for the fulfillment's shipments.", children: [
+        { name: "tracking_number", type: "`string`", optional: false, description: "The label's tracking number." },
+        { name: "tracking_url", type: "`string`", optional: false, description: "The label's tracking URL." },
+        { name: "label_url", type: "`string`", optional: false, description: "The label's URL." }
+      ] },
+    { name: "order_id", type: "`string`", optional: false, description: "The ID of the order this fulfillment is created for." },
+    { name: "shipping_option_id", type: "`string`", optional: true, description: "The ID of the shipping option used in the order." },
+    { name: "data", type: "`object`", optional: true, description: "Any data useful for the fulfillment provider to handle the fulfillment." },
+    { name: "packed_at", type: "`string`", optional: true, description: "The date and time the fulfillment was packed." },
+    { name: "shipped_at", type: "`string`", optional: true, description: "The date and time the fulfillment was shipped." },
+    { name: "delivered_at", type: "`string`", optional: true, description: "The date and time the fulfillment was delivered." },
+    { name: "canceled_at", type: "`string`", optional: true, description: "The date and time the fulfillment was canceled." },
+    { name: "metadata", type: "`object`", optional: true, description: "The fulfillment's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.fulfillment.create({
+  location_id: "sloc_123",
+  provider_id: "my_fulfillment",
+  delivery_address: {
+    country_code: "us"
+  },
+  items: [
+    {
+      title: "Shirt",
+      sku: "SHIRT",
+      quantity: 1,
+      barcode: "123"
+    }
+  ],
+  labels: [],
+  order: {},
+  order_id: "order_123"
+})
+.then(({ fulfillment }) => {
+  console.log(fulfillment)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/fulfillments' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "location_id": "{value}",
+  "provider_id": "{value}",
+  "delivery_address": {
+    "first_name": "{value}",
+    "last_name": "{value}",
+    "phone": "{value}",
+    "company": "{value}",
+    "address_1": "{value}",
+    "address_2": "{value}",
+    "city": "{value}",
+    "country_code": "{value}",
+    "province": "us-ca",
+    "postal_code": "{value}",
+    "metadata": {}
+  },
+  "items": [
+    {
+      "title": "{value}",
+      "sku": "{value}",
+      "quantity": 1667318922870784,
+      "barcode": "{value}",
+      "line_item_id": "{value}",
+      "inventory_item_id": "{value}"
+    }
+  ],
+  "labels": [
+    {
+      "tracking_number": "{value}",
+      "tracking_url": "{value}",
+      "label_url": "{value}"
+    }
+  ],
+  "order": {},
+  "order_id": "{value}",
+  "shipping_option_id": "{value}",
+  "data": {},
+  "packed_at": "2024-11-12T18:37:37.122Z",
+  "shipped_at": "2025-04-13T12:39:42.432Z",
+  "delivered_at": "2025-01-29T19:05:57.056Z",
+  "canceled_at": "2025-02-16T02:12:11.763Z",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "fulfillment", type: "`object`", optional: false, description: "The fulfillment's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The fulfillment's ID." },
+        { name: "location_id", type: "`string`", optional: false, description: "The ID of the location the fulfillment's items are shipped from." },
+        { name: "provider_id", type: "`string`", optional: false, description: "The ID of the fulfillment provider handling this fulfillment." },
+        { name: "shipping_option_id", type: "`string`", optional: false, description: "The ID of the shipping option this fulfillment is created for." },
+        { name: "provider", type: "`object`", optional: false, description: "The fulfillment provider's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "delivery_address", type: "`object`", optional: false, description: "An address's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "fulfillment_id", type: "`string`", optional: false, description: "The ID of the fulfillment that the address belongs to." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code." },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the address was deleted." }
+          ] },
+        { name: "items", type: "`object[]`", optional: false, description: "The fulfillment's items.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The item's title." },
+            { name: "quantity", type: "`number`", optional: false, description: "The item's quantity to be fulfilled." },
+            { name: "sku", type: "`string`", optional: false, description: "The item's SKU." },
+            { name: "barcode", type: "`string`", optional: false, description: "The item's barcode." },
+            { name: "line_item_id", type: "`string`", optional: false, description: "The ID of the order's line item to be fulfilled." },
+            { name: "inventory_item_id", type: "`string`", optional: false, description: "The ID of the inventory item of the underlying product variant." },
+            { name: "fulfillment_id", type: "`string`", optional: false, description: "The ID of the fulfillment the item belongs to." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the item was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the item was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the item was deleted." }
+          ] },
+        { name: "labels", type: "`object[]`", optional: false, description: "The fulfillment's shipment labels.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The label's ID." },
+            { name: "tracking_number", type: "`string`", optional: false, description: "The label's tracking number." },
+            { name: "tracking_url", type: "`string`", optional: false, description: "The label's tracking URL." },
+            { name: "label_url", type: "`string`", optional: false, description: "The label's URL." },
+            { name: "fulfillment_id", type: "`string`", optional: false, description: "The ID of the fulfillment the label is associated with." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the label was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the label was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the label was deleted." }
+          ] },
+        { name: "packed_at", type: "`string`", optional: false, description: "The date the fulfillment was packed at." },
+        { name: "shipped_at", type: "`string`", optional: false, description: "The date the fulfillment was shipped at." },
+        { name: "delivered_at", type: "`string`", optional: false, description: "The date the fulfillment was delivered at." },
+        { name: "canceled_at", type: "`string`", optional: false, description: "The date the fulfillment was canceled at." },
+        { name: "data", type: "`object`", optional: false, description: "The fulfillment's data, useful for the third-party provider handling the fulfillment." },
+        { name: "metadata", type: "`object`", optional: false, description: "The fulfillment's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the fulfillment was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the fulfillment was updated at." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the fulfillment was deleted at." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/fulfillments/\{id\}/cancel
+
+**Cancel a Fulfillment**
+
+Cancel a fulfillment. The fulfillment can't be shipped or delivered.
+
+To cancel the fulfillment, the `cancelFulfillment` method of the associated fulfillment provider is used.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The fulfillment's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.fulfillment.cancel("ful_123")
+.then(({ fulfillment }) => {
+  console.log(fulfillment)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/fulfillments/{id}/cancel' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "fulfillment", type: "`object`", optional: false, description: "The fulfillment's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The fulfillment's ID." },
+        { name: "location_id", type: "`string`", optional: false, description: "The ID of the location the fulfillment's items are shipped from." },
+        { name: "provider_id", type: "`string`", optional: false, description: "The ID of the fulfillment provider handling this fulfillment." },
+        { name: "shipping_option_id", type: "`string`", optional: false, description: "The ID of the shipping option this fulfillment is created for." },
+        { name: "provider", type: "`object`", optional: false, description: "The fulfillment provider's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "delivery_address", type: "`object`", optional: false, description: "An address's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "fulfillment_id", type: "`string`", optional: false, description: "The ID of the fulfillment that the address belongs to." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code." },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the address was deleted." }
+          ] },
+        { name: "items", type: "`object[]`", optional: false, description: "The fulfillment's items.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The item's title." },
+            { name: "quantity", type: "`number`", optional: false, description: "The item's quantity to be fulfilled." },
+            { name: "sku", type: "`string`", optional: false, description: "The item's SKU." },
+            { name: "barcode", type: "`string`", optional: false, description: "The item's barcode." },
+            { name: "line_item_id", type: "`string`", optional: false, description: "The ID of the order's line item to be fulfilled." },
+            { name: "inventory_item_id", type: "`string`", optional: false, description: "The ID of the inventory item of the underlying product variant." },
+            { name: "fulfillment_id", type: "`string`", optional: false, description: "The ID of the fulfillment the item belongs to." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the item was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the item was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the item was deleted." }
+          ] },
+        { name: "labels", type: "`object[]`", optional: false, description: "The fulfillment's shipment labels.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The label's ID." },
+            { name: "tracking_number", type: "`string`", optional: false, description: "The label's tracking number." },
+            { name: "tracking_url", type: "`string`", optional: false, description: "The label's tracking URL." },
+            { name: "label_url", type: "`string`", optional: false, description: "The label's URL." },
+            { name: "fulfillment_id", type: "`string`", optional: false, description: "The ID of the fulfillment the label is associated with." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the label was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the label was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the label was deleted." }
+          ] },
+        { name: "packed_at", type: "`string`", optional: false, description: "The date the fulfillment was packed at." },
+        { name: "shipped_at", type: "`string`", optional: false, description: "The date the fulfillment was shipped at." },
+        { name: "delivered_at", type: "`string`", optional: false, description: "The date the fulfillment was delivered at." },
+        { name: "canceled_at", type: "`string`", optional: false, description: "The date the fulfillment was canceled at." },
+        { name: "data", type: "`object`", optional: false, description: "The fulfillment's data, useful for the third-party provider handling the fulfillment." },
+        { name: "metadata", type: "`object`", optional: false, description: "The fulfillment's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the fulfillment was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the fulfillment was updated at." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the fulfillment was deleted at." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/fulfillments/\{id\}/shipment
+
+**Create a Shipment for a Fulfillment**
+
+Create a shipment for a fulfillment. The fulfillment must not be shipped or canceled.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The fulfillment's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "labels", type: "`object[]`", optional: false, description: "The shipment's labels.", children: [
+        { name: "tracking_number", type: "`string`", optional: false, description: "The label's tracking number." },
+        { name: "tracking_url", type: "`string`", optional: false, description: "The label's tracking URL." },
+        { name: "label_url", type: "`string`", optional: false, description: "The label's URL." }
+      ] }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.fulfillment.createShipment("ful_123", {
+  labels: [
+    {
+      tracking_number: "123",
+      tracking_url: "example.com",
+      label_url: "example.com"
+    }
+  ]
+})
+.then(({ fulfillment }) => {
+  console.log(fulfillment)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/fulfillments/{id}/shipment' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "labels": [
+    {
+      "tracking_number": "{value}",
+      "tracking_url": "{value}",
+      "label_url": "{value}"
+    }
+  ]
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "fulfillment", type: "`object`", optional: false, description: "The fulfillment's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The fulfillment's ID." },
+        { name: "location_id", type: "`string`", optional: false, description: "The ID of the location the fulfillment's items are shipped from." },
+        { name: "provider_id", type: "`string`", optional: false, description: "The ID of the fulfillment provider handling this fulfillment." },
+        { name: "shipping_option_id", type: "`string`", optional: false, description: "The ID of the shipping option this fulfillment is created for." },
+        { name: "provider", type: "`object`", optional: false, description: "The fulfillment provider's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+          ] },
+        { name: "delivery_address", type: "`object`", optional: false, description: "An address's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "fulfillment_id", type: "`string`", optional: false, description: "The ID of the fulfillment that the address belongs to." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code." },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the address was deleted." }
+          ] },
+        { name: "items", type: "`object[]`", optional: false, description: "The fulfillment's items.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The item's ID." },
+            { name: "title", type: "`string`", optional: false, description: "The item's title." },
+            { name: "quantity", type: "`number`", optional: false, description: "The item's quantity to be fulfilled." },
+            { name: "sku", type: "`string`", optional: false, description: "The item's SKU." },
+            { name: "barcode", type: "`string`", optional: false, description: "The item's barcode." },
+            { name: "line_item_id", type: "`string`", optional: false, description: "The ID of the order's line item to be fulfilled." },
+            { name: "inventory_item_id", type: "`string`", optional: false, description: "The ID of the inventory item of the underlying product variant." },
+            { name: "fulfillment_id", type: "`string`", optional: false, description: "The ID of the fulfillment the item belongs to." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the item was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the item was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the item was deleted." }
+          ] },
+        { name: "labels", type: "`object[]`", optional: false, description: "The fulfillment's shipment labels.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The label's ID." },
+            { name: "tracking_number", type: "`string`", optional: false, description: "The label's tracking number." },
+            { name: "tracking_url", type: "`string`", optional: false, description: "The label's tracking URL." },
+            { name: "label_url", type: "`string`", optional: false, description: "The label's URL." },
+            { name: "fulfillment_id", type: "`string`", optional: false, description: "The ID of the fulfillment the label is associated with." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the label was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the label was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the label was deleted." }
+          ] },
+        { name: "packed_at", type: "`string`", optional: false, description: "The date the fulfillment was packed at." },
+        { name: "shipped_at", type: "`string`", optional: false, description: "The date the fulfillment was shipped at." },
+        { name: "delivered_at", type: "`string`", optional: false, description: "The date the fulfillment was delivered at." },
+        { name: "canceled_at", type: "`string`", optional: false, description: "The date the fulfillment was canceled at." },
+        { name: "data", type: "`object`", optional: false, description: "The fulfillment's data, useful for the third-party provider handling the fulfillment." },
+        { name: "metadata", type: "`object`", optional: false, description: "The fulfillment's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the fulfillment was created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the fulfillment was updated at." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the fulfillment was deleted at." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

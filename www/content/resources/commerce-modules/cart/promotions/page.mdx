@@ -1,0 +1,33 @@
+---
+sidebar_label: "Promotions Adjustments"
+products:
+  - promotion
+---
+
+export const metadata = {
+  title: `Promotions Adjustments in Carts`,
+}
+
+# {metadata.title}
+
+In this document, you’ll learn how a promotion is applied to a cart’s line items and shipping methods using adjustment lines.
+
+## What are Adjustment Lines?
+
+An adjustment line indicates a change to an item or a shipping method’s amount. It’s used to apply promotions or discounts on a cart.
+
+The [LineItemAdjustment](/references/cart/models/LineItemAdjustment) data model represents changes on a line item, and the [ShippingMethodAdjustment](/references/cart/models/ShippingMethodAdjustment) data model represents changes on a shipping method.
+
+
+The `amount` property of the adjustment line indicates the amount to be discounted from the original amount. Also, the ID of the applied promotion is stored in the `promotion_id` property of the adjustment line.
+
+---
+
+## Discountable Option
+
+The [LineItem](/references/cart/models/LineItem) data model has an `is_discountable` property that indicates whether promotions can be applied to the line item. It’s enabled by default.
+
+When disabled, a promotion can’t be applied to a line item. In the context of the Promotion Module, the promotion isn’t applied to the line item even if it matches its rules.
+
+
+---

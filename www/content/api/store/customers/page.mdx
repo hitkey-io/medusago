@@ -1,0 +1,1056 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Customers API Routes`,
+}
+
+# {metadata.title}
+
+Customers can place orders as guest customers or register.
+
+When a customer registers, they can manage their profile, save addresses for later usage, and more.
+
+These API routes allow customers to create and manage their accounts.
+
+## POST /store/customers
+
+**Register Customer**
+
+Register a customer. Use the `/auth/customer/emailpass/register` API route first to retrieve the registration token and pass it in the header of the request.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "email", type: "`string`", optional: true, description: "The customer's email." },
+    { name: "company_name", type: "`string`", optional: true, description: "The customer's company name." },
+    { name: "first_name", type: "`string`", optional: true, description: "The customer's first name." },
+    { name: "last_name", type: "`string`", optional: true, description: "The customer's last name." },
+    { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+    { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+const token = await sdk.auth.register("customer", "emailpass", {
+  "email": "customer@gmail.com",
+  "password": "supersecret"
+})
+
+sdk.store.customer.create(
+  {
+    "email": "customer@gmail.com"
+  },
+  {},
+  {
+    Authorization: `Bearer ${token}`
+  }
+)
+.then(({ customer }) => {
+  console.log(customer)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/customers' \
+-H 'Authorization: Bearer {token}' \
+-H 'Content-Type: application/json' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+--data-raw '{
+  "email": "Monserrate.Leannon88@yahoo.com",
+  "company_name": "{value}",
+  "first_name": "{value}",
+  "last_name": "{value}",
+  "phone": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+        { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used for billing by default." },
+        { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used for shipping by default." },
+        { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+        { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+        { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+            { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is used for shipping by default." },
+            { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is used for billing by default." },
+            { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer the address belongs to." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "usd" },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+          ] },
+        { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+        { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the customer was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the customer was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the customer was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `customer.created`: Emitted when a customer is created.
+
+---
+
+## GET /store/customers/me
+
+**Get Logged-in Customer**
+
+Retrieve the logged-in customer. You can expand the customer's relations or select the fields that should be returned.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the Retrieve Custom Links documentation." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+// TODO must be authenticated as the customer to retrieve their details
+sdk.store.customer.retrieve()
+.then(({ customer }) => {
+  console.log(customer)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/customers/me' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+        { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used for billing by default." },
+        { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used for shipping by default." },
+        { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+        { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+        { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+            { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is used for shipping by default." },
+            { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is used for billing by default." },
+            { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer the address belongs to." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "usd" },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+          ] },
+        { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+        { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the customer was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the customer was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the customer was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /store/customers/me
+
+**Update Customer**
+
+Update the logged-in customer's details.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "company_name", type: "`string`", optional: true, description: "The customer's company name." },
+    { name: "first_name", type: "`string`", optional: true, description: "The customer's first name." },
+    { name: "last_name", type: "`string`", optional: true, description: "The customer's last name." },
+    { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+    { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+// TODO must be authenticated as the customer to update their details
+sdk.store.customer.update({
+  first_name: "John"
+})
+.then(({ customer }) => {
+  console.log(customer)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/customers/me' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+--data-raw '{
+  "company_name": "{value}",
+  "first_name": "{value}",
+  "last_name": "{value}",
+  "phone": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+        { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used for billing by default." },
+        { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used for shipping by default." },
+        { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+        { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+        { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+            { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is used for shipping by default." },
+            { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is used for billing by default." },
+            { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer the address belongs to." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "usd" },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+          ] },
+        { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+        { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the customer was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the customer was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the customer was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+**Emitted events**
+
+- `customer.updated`: Emitted when a customer is updated.
+
+---
+
+## GET /store/customers/me/addresses
+
+**List Customer's Addresses**
+
+Retrieve the addresses of the logged-in customer. The addresses can be filtered by fields such as `country_code`. The addresses can also be sorted or paginated.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "city", type: "`string` \\| `string[]`", optional: true, description: "Filter by the address's city." },
+    { name: "postal_code", type: "`string` \\| `string[]`", optional: true, description: "Filter by the address's postal code." },
+    { name: "country_code", type: "`string` \\| `string[]`", optional: true, description: "Filter by the address's country code." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the address's searchable properties." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "The customer's with deleted." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+// TODO must be authenticated as the customer to list their addresses
+sdk.store.customer.listAddress()
+.then(({ addresses, count, offset, limit }) => {
+  console.log(addresses)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/customers/me/addresses' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "addresses", type: "`object[]`", optional: false, description: "The list of addresses.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+        { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+        { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is used for shipping by default." },
+        { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is used for billing by default." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer the address belongs to." },
+        { name: "company", type: "`string`", optional: false, description: "The address's company." },
+        { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+        { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: false, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "usd" },
+        { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+        { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+        { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /store/customers/me/addresses
+
+**Create Address for Logged-In Customer**
+
+Create an address for the logged-in customer.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the Retrieve Custom Links documentation." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "first_name", type: "`string`", optional: true, description: "The customer's first name." },
+    { name: "last_name", type: "`string`", optional: true, description: "The customer's last name." },
+    { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+    { name: "company", type: "`string`", optional: true, description: "The address's company." },
+    { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+    { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+    { name: "city", type: "`string`", optional: true, description: "The address's city." },
+    { name: "country_code", type: "`string`", optional: true, description: "The address's country code." },
+    { name: "province", type: "`string`", optional: true, description: "The address's ISO 3166-2 province code. Must be lower-case.", example: "us-ca" },
+    { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+    { name: "address_name", type: "`string`", optional: true, description: "The address's name." },
+    { name: "is_default_shipping", type: "`boolean`", optional: true, description: "Whether the address is used by default for shipping during checkout." },
+    { name: "is_default_billing", type: "`boolean`", optional: true, description: "Whether the address is used by default for billing during checkout." },
+    { name: "metadata", type: "`object`", optional: true, description: "Holds custom key-value pairs." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+// TODO must be authenticated as the customer to create an address
+sdk.store.customer.createAddress({
+  country_code: "us"
+})
+.then(({ customer }) => {
+  console.log(customer)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/customers/me/addresses' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+--data-raw '{
+  "metadata": {},
+  "first_name": "{value}",
+  "last_name": "{value}",
+  "phone": "{value}",
+  "company": "{value}",
+  "address_1": "{value}",
+  "address_2": "{value}",
+  "city": "{value}",
+  "country_code": "{value}",
+  "province": "us-ca",
+  "postal_code": "{value}",
+  "address_name": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+        { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used for billing by default." },
+        { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used for shipping by default." },
+        { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+        { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+        { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+            { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is used for shipping by default." },
+            { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is used for billing by default." },
+            { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer the address belongs to." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "usd" },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+          ] },
+        { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+        { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the customer was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the customer was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the customer was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## GET /store/customers/me/addresses/\{address_id\}
+
+**Get Customer's Address**
+
+Retrieve an address of the logged-in customer. You can expand the address's relations or select the fields that should be returned.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "address_id", type: "`string`", optional: false, description: "The address's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the Retrieve Custom Links documentation." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+// TODO must be authenticated as the customer to retrieve their address
+sdk.store.customer.retrieveAddress(
+  "caddr_123"
+)
+.then(({ address }) => {
+  console.log(address)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/customers/me/addresses/{address_id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "address", type: "`object`", optional: false, description: "The customer address's details", children: [
+        { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+        { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+        { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is used for shipping by default." },
+        { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is used for billing by default." },
+        { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer the address belongs to." },
+        { name: "company", type: "`string`", optional: false, description: "The address's company." },
+        { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+        { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+        { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+        { name: "city", type: "`string`", optional: false, description: "The address's city." },
+        { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "usd" },
+        { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+        { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+        { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+        { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## POST /store/customers/me/addresses/\{address_id\}
+
+**Update Customer's Address**
+
+Update the logged-in customer's address.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "address_id", type: "`string`", optional: false, description: "The address's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the Retrieve Custom Links documentation." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "first_name", type: "`string`", optional: true, description: "The customer's first name." },
+    { name: "last_name", type: "`string`", optional: true, description: "The customer's last name." },
+    { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+    { name: "company", type: "`string`", optional: true, description: "The address's company." },
+    { name: "address_1", type: "`string`", optional: true, description: "The address's first line." },
+    { name: "address_2", type: "`string`", optional: true, description: "The address's second line." },
+    { name: "city", type: "`string`", optional: true, description: "The address's city." },
+    { name: "country_code", type: "`string`", optional: true, description: "The address's country code." },
+    { name: "province", type: "`string`", optional: true, description: "The address's ISO 3166-2 province code. Must be lower-case.", example: "us-ca" },
+    { name: "postal_code", type: "`string`", optional: true, description: "The address's postal code." },
+    { name: "address_name", type: "`string`", optional: true, description: "The address's name." },
+    { name: "is_default_shipping", type: "`boolean`", optional: true, description: "Whether the address is used by default for shipping during checkout." },
+    { name: "is_default_billing", type: "`boolean`", optional: true, description: "Whether the address is used by default for billing during checkout." },
+    { name: "metadata", type: "`object`", optional: true, description: "Holds custom key-value pairs." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+// TODO must be authenticated as the customer to update their address
+sdk.store.customer.updateAddress(
+  "caddr_123",
+  {
+    country_code: "us"
+  }
+)
+.then(({ customer }) => {
+  console.log(customer)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/store/customers/me/addresses/{address_id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+-H 'x-publishable-api-key: {your_publishable_api_key}' \
+--data-raw '{
+  "first_name": "{value}",
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "customer", type: "`object`", optional: false, description: "The customer's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+        { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used for billing by default." },
+        { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used for shipping by default." },
+        { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+        { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+        { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+            { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is used for shipping by default." },
+            { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is used for billing by default." },
+            { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer the address belongs to." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "usd" },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+          ] },
+        { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+        { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the customer was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the customer was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the customer was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## DELETE /store/customers/me/addresses/\{address_id\}
+
+**Remove Customer's Address**
+
+Remove an address of the logged-in customer.
+
+**Authentication:** cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "address_id", type: "`string`", optional: false, description: "The address's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the Retrieve Custom Links documentation." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+// TODO must be authenticated as the customer to delete their address
+sdk.store.customer.deleteAddress("caddr_123")
+.then(({ deleted, parent: customer }) => {
+  console.log(customer)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/store/customers/me/addresses/{address_id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"address\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the address was deleted." },
+    { name: "parent", type: "`object`", optional: true, description: "The customer's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The customer's ID." },
+        { name: "email", type: "`string`", optional: false, description: "The customer's email." },
+        { name: "default_billing_address_id", type: "`string`", optional: false, description: "The ID of the address used for billing by default." },
+        { name: "default_shipping_address_id", type: "`string`", optional: false, description: "The ID of the address used for shipping by default." },
+        { name: "company_name", type: "`string`", optional: false, description: "The customer's company name." },
+        { name: "first_name", type: "`string`", optional: false, description: "The customer's first name." },
+        { name: "last_name", type: "`string`", optional: false, description: "The customer's last name." },
+        { name: "addresses", type: "`object[]`", optional: false, description: "The customer's addresses.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+            { name: "address_name", type: "`string`", optional: false, description: "The address's name." },
+            { name: "is_default_shipping", type: "`boolean`", optional: false, description: "Whether the address is used for shipping by default." },
+            { name: "is_default_billing", type: "`boolean`", optional: false, description: "Whether the address is used for billing by default." },
+            { name: "customer_id", type: "`string`", optional: false, description: "The ID of the customer the address belongs to." },
+            { name: "company", type: "`string`", optional: false, description: "The address's company." },
+            { name: "first_name", type: "`string`", optional: false, description: "The address's first name." },
+            { name: "last_name", type: "`string`", optional: false, description: "The address's last name." },
+            { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+            { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+            { name: "city", type: "`string`", optional: false, description: "The address's city." },
+            { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "usd" },
+            { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+            { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+            { name: "metadata", type: "`object`", optional: false, description: "The address's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the address was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the address was updated." }
+          ] },
+        { name: "phone", type: "`string`", optional: true, description: "The customer's phone." },
+        { name: "metadata", type: "`object`", optional: true, description: "The customer's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the customer was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the customer was updated." },
+        { name: "deleted_at", type: "`string`", optional: true, description: "The date the customer was deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.

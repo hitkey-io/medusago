@@ -1,0 +1,46 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Feature Flags API Routes`,
+}
+
+# {metadata.title}
+
+Feature flags are used to enable or disable certain features in your MedusaGo application.
+These API routes allow admin users to view feature flags.
+
+## GET /admin/feature-flags
+
+**List Feature Flags**
+
+Retrieve a list of feature flags. The feature flags can be filtered by fields such as `id`. The feature flags can also be sorted or paginated.
+
+**Authentication:** none.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/feature-flags'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "feature_flags", type: "`object`", optional: false, description: "The list of feature flags." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

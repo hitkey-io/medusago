@@ -7,7 +7,52 @@ export const generatedSidebars = [
   {
     "sidebar_id": "integrations",
     "title": "Integrations",
-    "items": []
+    "items": [
+      {
+        "loaded": true,
+        "type": "category",
+        "title": "Auth",
+        "initialOpen": true,
+        "children": [
+          {
+            "loaded": true,
+            "type": "ref",
+            "path": "/resources/commerce-modules/auth/auth-providers/google",
+            "title": "Google",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "type": "ref",
+            "path": "/resources/commerce-modules/auth/auth-providers/github",
+            "title": "GitHub",
+            "children": []
+          }
+        ]
+      },
+      {
+        "loaded": true,
+        "type": "category",
+        "title": "Payment",
+        "initialOpen": true,
+        "children": [
+          {
+            "loaded": true,
+            "type": "ref",
+            "path": "/resources/commerce-modules/payment/payment-provider/stripe",
+            "title": "Stripe",
+            "children": []
+          },
+          {
+            "loaded": true,
+            "type": "ref",
+            "path": "/resources/commerce-modules/payment/payment-provider/adyen",
+            "title": "Adyen",
+            "children": []
+          }
+        ]
+      }
+    ]
   },
   {
     "sidebar_id": "storefront-development",
@@ -552,7 +597,460 @@ export const generatedSidebars = [
             "sidebar_id": "admin-components",
             "title": "Medusa Admin Components",
             "childSidebarTitle": "Admin Components Reference",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/admin-components",
+                "title": "Overview",
+                "children": []
+              },
+              {
+                "type": "separator"
+              },
+              {
+                "loaded": true,
+                "type": "category",
+                "title": "Components",
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components",
+                    "title": "Overview",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/action-menu",
+                    "title": "Action Menu",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/combobox",
+                    "title": "Combobox",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/conditional-tooltip",
+                    "title": "Conditional Tooltip",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/configurable-data-table",
+                    "title": "Configurable Data Table",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/country-select",
+                    "title": "Country Select",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/data-grid",
+                    "title": "Data Grid",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/display-id",
+                    "title": "Display ID",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/empty-states",
+                    "title": "Empty States",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/handle-input",
+                    "title": "Handle Input",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/icon-avatar",
+                    "title": "Icon Avatar",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/json-view-section",
+                    "title": "JSON View Section",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/keybound-form",
+                    "title": "Keybound Form",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/listicle",
+                    "title": "Listicle",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/product-table-cells",
+                    "title": "Product Table Cells",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/route-drawer",
+                    "title": "Route Drawer",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/route-focus-modal",
+                    "title": "Route Focus Modal",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/section-row",
+                    "title": "Section Row",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/stacked-drawer",
+                    "title": "Stacked Drawer",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/stacked-focus-modal",
+                    "title": "Stacked Focus Modal",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/components/thumbnail",
+                    "title": "Thumbnail",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "category",
+                "title": "Layouts",
+                "autogenerate_path": "/admin-components/layouts",
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/layouts/layout-composer",
+                    "title": "LayoutComposer",
+                    "description": "",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "category",
+                "title": "Hooks",
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks",
+                    "title": "Overview",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/customers",
+                    "title": "Customers",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/data-table-helpers",
+                    "title": "Data Table Hooks",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/orders",
+                    "title": "Orders",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/price-preferences",
+                    "title": "Price Preferences",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/product-variants",
+                    "title": "Product Variants",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/products",
+                    "title": "Products",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/promotions",
+                    "title": "Promotions",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/regions",
+                    "title": "Regions",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/sales-channels",
+                    "title": "Sales Channels",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/shipping-options",
+                    "title": "Shipping Options",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/store",
+                    "title": "Store",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/use-combobox-data",
+                    "title": "useComboboxData",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/use-date",
+                    "title": "useDate",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/use-debounced-search",
+                    "title": "useDebouncedSearch",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/use-query-params",
+                    "title": "useQueryParams",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/hooks/users",
+                    "title": "Users",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "category",
+                "title": "Utilities",
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/utilities",
+                    "title": "Overview",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/utilities/addresses",
+                    "title": "Addresses",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/utilities/form-validation",
+                    "title": "Form Validation",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/utilities/money-and-currency",
+                    "title": "Money & Currency",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/utilities/search",
+                    "title": "Search Entities",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/utilities/table",
+                    "title": "Table Utilities",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "category",
+                "title": "Guides",
+                "autogenerate_path": "/admin-components/guides",
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/guides/forms",
+                    "title": "Forms",
+                    "description": "",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/guides/container",
+                    "title": "Container",
+                    "description": "",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/guides/table",
+                    "title": "Table",
+                    "description": "",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/guides/header",
+                    "title": "Header",
+                    "description": "",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/guides/data-table",
+                    "title": "Data Table",
+                    "description": "",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "category",
+                "title": "Archive",
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/archive",
+                    "title": "Overview",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/archive/action-menu",
+                    "title": "Action Menu",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/archive/json-view-section",
+                    "title": "JSON View",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/archive/section-row",
+                    "title": "Section Row",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/archive/single-column-layout",
+                    "title": "Single Column Layout",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/admin-components/archive/two-column-layout",
+                    "title": "Two Column Layout",
+                    "children": []
+                  }
+                ]
+              }
+            ]
           }
         ]
       },
@@ -569,6 +1067,35 @@ export const generatedSidebars = [
             "sidebar_id": "nextjs-starter",
             "title": "Next.js Starter Storefront",
             "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/nextjs-starter",
+                "title": "Overview",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "category",
+                "title": "How-to Guides",
+                "initialOpen": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/nextjs-starter/guides/revalidate-cache",
+                    "title": "Revalidate Cache",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "link",
+                    "path": "/resources/nextjs-starter/guides/remove-country-code",
+                    "title": "Remove Country Code from URLs",
+                    "children": []
+                  }
+                ]
+              },
               {
                 "loaded": true,
                 "type": "category",
@@ -588,6 +1115,14 @@ export const generatedSidebars = [
     "sidebar_id": "references",
     "title": "References",
     "items": [
+      {
+        "loaded": true,
+        "type": "link",
+        "path": "/resources/admin-widget-injection-zones",
+        "title": "Admin Widget Injection Zones",
+        "description": "List of injection zones you can add widgets in.",
+        "children": []
+      },
       {
         "loaded": true,
         "type": "sidebar",
@@ -646,10 +1181,51 @@ export const generatedSidebars = [
     "items": [
       {
         "loaded": true,
+        "type": "link",
+        "title": "Overview",
+        "path": "/resources/commerce-modules",
+        "children": []
+      },
+      {
+        "type": "separator"
+      },
+      {
+        "loaded": true,
         "type": "sidebar",
         "sidebar_id": "api-key",
         "title": "API Key Module",
         "children": [
+          {
+            "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/api-key",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/api-key/concepts",
+                "title": "API Key Concepts",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/api-key/links-to-other-modules",
+                "title": "Link to Modules",
+                "children": []
+              }
+            ]
+          },
           {
             "loaded": true,
             "type": "category",
@@ -719,12 +1295,28 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+apiKey",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the API Key Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/api-key/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+apiKey",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the API Key Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/api-key/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -755,13 +1347,101 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/auth",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/auth-identity-and-actor-types",
+                "title": "Identity and Actor Types",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/auth-flows",
+                "title": "Auth Flow with Module",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/authentication-route",
+                "title": "Auth Flow with Routes",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/mfa",
+                "title": "Multi-Factor Authentication",
+                "children": []
+              }
+            ]
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Server Guides",
             "autogenerate_tags": "server+auth",
             "autogenerate_as_ref": true,
             "sort_sidebar": "alphabetize",
             "description": "Learn how to use the Auth Module in your customizations on the Medusa application server.",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/create-actor-type",
+                "title": "Create Actor Type",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/reset-password",
+                "title": "Handle Password Reset Event",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/link-provider-identity",
+                "title": "Link Provider to Existing Actor",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Restrict Order Retrieval",
+                "path": "/resources/commerce-modules/order/secure-order-retrieval",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Restrict Return Creation",
+                "path": "/resources/commerce-modules/order/secure-return-creation",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/email-verification",
+                "title": "Send Email Verification",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -851,6 +1531,27 @@ export const generatedSidebars = [
           {
             "loaded": true,
             "type": "category",
+            "title": "Providers",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/auth-providers/google",
+                "title": "Google Provider",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/auth-providers/github",
+                "title": "GitHub Provider",
+                "children": []
+              }
+            ]
+          },
+          {
+            "loaded": true,
+            "type": "category",
             "title": "References",
             "description": "Find references for tools and resources related to the Auth Module, such as data models, methods, and more. These are useful for your customizations.",
             "children": [
@@ -870,6 +1571,24 @@ export const generatedSidebars = [
                 "autogenerate_tags": "step+auth",
                 "autogenerate_as_ref": true,
                 "sort_sidebar": "alphabetize",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "autogenerate_tags": "jsSdk+auth",
+                "autogenerate_as_ref": true,
+                "sort_sidebar": "alphabetize",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/auth/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -900,13 +1619,73 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/cart",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/cart/concepts",
+                "title": "Cart Concepts",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/cart/promotions",
+                "title": "Promotion Adjustments",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/cart/tax-lines",
+                "title": "Tax Lines",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/cart/links-to-other-modules",
+                "title": "Links to Other Modules",
+                "children": []
+              }
+            ]
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Server Guides",
             "autogenerate_tags": "cart+server",
             "autogenerate_as_ref": true,
             "sort_sidebar": "alphabetize",
             "description": "Learn how to use the Cart Module in your customizations on the Medusa application server.",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/cart/sales-channel-availability",
+                "title": "Enforce Sales Channel Availability",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/cart/cart-totals",
+                "title": "Retrieve Cart Totals",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -1050,13 +1829,22 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Store",
-                "autogenerate_tags": "jsSdk+storefront+cart",
-                "description": "The following methods or properties are used to send requests to Store API Routes related to the Cart Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
-                "children": []
+                "type": "link",
+                "path": "/resources/commerce-modules/cart/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Store",
+                    "autogenerate_tags": "jsSdk+storefront+cart",
+                    "description": "The following methods or properties are used to send requests to Store API Routes related to the Cart Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
               },
               {
                 "loaded": true,
@@ -1086,6 +1874,30 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/currency",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "sub-category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/currency/links-to-other-modules",
+                "title": "Link to Modules",
+                "children": []
+              }
+            ]
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Admin User Guides",
             "autogenerate_tags": "userGuide+currency",
@@ -1110,13 +1922,22 @@ export const generatedSidebars = [
             "children": [
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+currency",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Currency Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
-                "children": []
+                "type": "link",
+                "path": "/resources/commerce-modules/currency/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+currency",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Currency Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
               },
               {
                 "loaded": true,
@@ -1144,6 +1965,37 @@ export const generatedSidebars = [
         "sidebar_id": "customer",
         "title": "Customer Module",
         "children": [
+          {
+            "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/customer",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/customer/customer-accounts",
+                "title": "Customer Accounts",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/customer/links-to-other-modules",
+                "title": "Link to Modules",
+                "children": []
+              }
+            ]
+          },
           {
             "loaded": true,
             "type": "category",
@@ -1293,22 +2145,38 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Store",
-                "autogenerate_tags": "jsSdk+storefront+customer",
-                "description": "The following methods or properties are used to send requests to Store API Routes related to the Customer Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
-                "children": []
+                "type": "link",
+                "path": "/resources/commerce-modules/customer/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Store",
+                    "autogenerate_tags": "jsSdk+storefront+customer",
+                    "description": "The following methods or properties are used to send requests to Store API Routes related to the Customer Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+customer",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Customer Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+customer",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Customer Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/customer/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -1339,11 +2207,85 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/fulfillment",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Concepts",
             "autogenerate_tags": "fulfillment+concept",
             "autogenerate_as_ref": true,
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/fulfillment/concepts",
+                "title": "General Concepts",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/fulfillment/item-fulfillment",
+                "title": "Item Fulfillment",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/fulfillment/fulfillment-provider",
+                "title": "Fulfillment Module Provider",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/fulfillment/shipping-option",
+                "title": "Shipping Option",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/fulfillment/links-to-other-modules",
+                "title": "Links to Other Modules",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Reservations Lifecycle",
+                "path": "/resources/commerce-modules/inventory/reservations-lifecycle",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Shipping Option Price Rules",
+                "path": "/resources/commerce-modules/pricing/price-rules",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Physical and Customs Attributes",
+                "path": "/resources/commerce-modules/product/physical-customs-attributes",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Product Shipping Requirement",
+                "path": "/resources/commerce-modules/product/selling-products",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -1459,22 +2401,38 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Store",
-                "autogenerate_tags": "jsSdk+storefront+fulfillment",
-                "description": "The following methods or properties are used to send requests to Store API Routes related to the Fulfillment Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
-                "children": []
+                "type": "link",
+                "path": "/resources/commerce-modules/fulfillment/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Store",
+                    "autogenerate_tags": "jsSdk+storefront+fulfillment",
+                    "description": "The following methods or properties are used to send requests to Store API Routes related to the Fulfillment Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+fulfillment",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Fulfillment Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+fulfillment",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Fulfillment Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/fulfillment/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -1505,11 +2463,71 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/inventory",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Concepts",
             "autogenerate_tags": "concept+inventory",
             "autogenerate_as_ref": true,
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/inventory/concepts",
+                "title": "Inventory Concepts",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/inventory/inventory-in-flows",
+                "title": "Inventory in Flows",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/inventory/reservations-lifecycle",
+                "title": "Reservations Lifecycle",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/inventory/inventory-kit",
+                "title": "Inventory Kit",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/inventory/links-to-other-modules",
+                "title": "Links to Modules",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Physical and Customs Attributes",
+                "path": "/resources/commerce-modules/product/physical-customs-attributes",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Product Variant Inventory",
+                "path": "/resources/commerce-modules/product/variant-inventory",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -1604,12 +2622,28 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+inventory",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Inventory Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/inventory/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+inventory",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Inventory Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/inventory/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -1638,6 +2672,37 @@ export const generatedSidebars = [
         "sidebar_id": "loyalty",
         "title": "Loyalty Module",
         "children": [
+          {
+            "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/loyalty",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/loyalty/gift-cards",
+                "title": "Gift Cards",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/loyalty/links-to-other-modules",
+                "title": "Link to Modules",
+                "children": []
+              }
+            ]
+          },
           {
             "loaded": true,
             "type": "category",
@@ -1710,6 +2775,13 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/loyalty/admin-widget-zones",
+                "title": "Admin Widget Zones",
+                "children": []
+              },
+              {
+                "loaded": true,
                 "type": "sidebar",
                 "sidebar_id": "loyalty-service-reference",
                 "title": "Main Service Reference",
@@ -1736,13 +2808,150 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/order",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/concepts",
+                "title": "Order Concepts",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/custom-display-id",
+                "title": "Custom Order Display ID",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/promotion-adjustments",
+                "title": "Promotions Adjustments",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/tax-lines",
+                "title": "Tax Lines",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/transactions",
+                "title": "Transactions",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/order-versioning",
+                "title": "Order Versioning",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/draft-orders",
+                "title": "Draft Orders",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/return",
+                "title": "Return",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/exchange",
+                "title": "Exchange",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/claim",
+                "title": "Claim",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/edit",
+                "title": "Order Edit",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/order-change",
+                "title": "Order Change",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/transfer-to-guest",
+                "title": "Transfer Order to Guest",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/links-to-other-modules",
+                "title": "Links to Other Modules",
+                "children": []
+              }
+            ]
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Server Guides",
             "autogenerate_tags": "order+server",
             "autogenerate_as_ref": true,
             "sort_sidebar": "alphabetize",
             "description": "Learn how to use the Order Module in your customizations on the Medusa application server.",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Restrict Order Retrieval",
+                "path": "/resources/commerce-modules/order/secure-order-retrieval",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Restrict Return Creation",
+                "path": "/resources/commerce-modules/order/secure-return-creation",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/order/order-totals",
+                "title": "Retrieve Order Totals",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -1918,22 +3127,38 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Store",
-                "autogenerate_tags": "jsSdk+storefront+order",
-                "description": "The following methods or properties are used to send requests to Store API Routes related to the Order Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
-                "children": []
+                "type": "link",
+                "path": "/resources/commerce-modules/order/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Store",
+                    "autogenerate_tags": "jsSdk+storefront+order",
+                    "description": "The following methods or properties are used to send requests to Store API Routes related to the Order Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+order",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Order Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+order",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Order Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/order/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -1964,13 +3189,94 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/payment",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/payment-collection",
+                "title": "Payment Collections",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/payment-session",
+                "title": "Payment Session",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/payment",
+                "title": "Payment",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/payment-provider",
+                "title": "Payment Module Provider",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/payment-checkout-flow",
+                "title": "Payment in Checkout",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/account-holder",
+                "title": "Account Holder",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/webhook-events",
+                "title": "Webhook Events",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/links-to-other-modules",
+                "title": "Links to Other Modules",
+                "children": []
+              }
+            ]
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Server Guides",
             "autogenerate_tags": "server+payment",
             "autogenerate_as_ref": true,
             "sort_sidebar": "alphabetize",
             "description": "Learn how to use the Payment Module in your customizations on the Medusa application server.",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/payment-flow",
+                "title": "Accept Payment Flow",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -2039,6 +3345,27 @@ export const generatedSidebars = [
           {
             "loaded": true,
             "type": "category",
+            "title": "Providers",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/payment-provider/stripe",
+                "title": "Stripe",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/payment-provider/adyen",
+                "title": "Adyen",
+                "children": []
+              }
+            ]
+          },
+          {
+            "loaded": true,
+            "type": "category",
             "title": "References",
             "description": "Find references for tools and resources related to the Payment Module, such as data models, methods, and more. These are useful for your customizations.",
             "children": [
@@ -2062,23 +3389,32 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Store",
-                "autogenerate_tags": "jsSdk+storefront+payment",
-                "description": "The following methods or properties are used to send requests to Store API Routes related to the Payment Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
-                "children": []
-              },
-              {
-                "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+payment",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Payment Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
-                "children": []
+                "type": "link",
+                "path": "/resources/commerce-modules/payment/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Store",
+                    "autogenerate_tags": "jsSdk+storefront+payment",
+                    "description": "The following methods or properties are used to send requests to Store API Routes related to the Payment Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+payment",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Payment Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
               },
               {
                 "loaded": true,
@@ -2106,6 +3442,58 @@ export const generatedSidebars = [
         "sidebar_id": "pricing",
         "title": "Pricing Module",
         "children": [
+          {
+            "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/pricing",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/pricing/concepts",
+                "title": "Pricing Concepts",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/pricing/price-rules",
+                "title": "Price Tiers and Rules",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/pricing/price-calculation",
+                "title": "Prices Calculation",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/pricing/tax-inclusive-pricing",
+                "title": "Tax-Inclusive Pricing",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/pricing/links-to-other-modules",
+                "title": "Links to Other Modules",
+                "children": []
+              }
+            ]
+          },
           {
             "loaded": true,
             "type": "category",
@@ -2213,12 +3601,28 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+pricing",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Pricing Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/pricing/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+pricing",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Pricing Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/pricing/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -2249,11 +3653,64 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/product",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Concepts",
             "autogenerate_tags": "product+concept",
             "autogenerate_as_ref": true,
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/product/variant-inventory",
+                "title": "Variant Inventory",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/product/physical-customs-attributes",
+                "title": "Physical and Customs Attributes",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/product/selling-products",
+                "title": "Selling Use Cases",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/product/links-to-other-modules",
+                "title": "Links to Other Modules",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Inventory Kits",
+                "path": "/resources/commerce-modules/inventory/inventory-kit",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Variant Price Rules",
+                "path": "/resources/commerce-modules/pricing/price-rules",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -2540,22 +3997,38 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Store",
-                "autogenerate_tags": "jsSdk+storefront+product",
-                "description": "The following methods or properties are used to send requests to Store API Routes related to the Product Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
-                "children": []
+                "type": "link",
+                "path": "/resources/commerce-modules/product/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Store",
+                    "autogenerate_tags": "jsSdk+storefront+product",
+                    "description": "The following methods or properties are used to send requests to Store API Routes related to the Product Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+product",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Product Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+product",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Product Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/product/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -2584,6 +4057,65 @@ export const generatedSidebars = [
         "sidebar_id": "promotion",
         "title": "Promotion Module",
         "children": [
+          {
+            "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/promotion",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/promotion/concepts",
+                "title": "Promotion",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/promotion/promotion-taxes",
+                "title": "Tax-Inclusive Promotions",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/promotion/application-method",
+                "title": "Application Method",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/promotion/campaign",
+                "title": "Campaign",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/promotion/actions",
+                "title": "Promotion Actions",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/promotion/links-to-other-modules",
+                "title": "Links to Modules",
+                "children": []
+              }
+            ]
+          },
           {
             "loaded": true,
             "type": "category",
@@ -2677,12 +4209,28 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+promotion",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Promotion Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/promotion/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+promotion",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Promotion Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/promotion/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -2711,6 +4259,30 @@ export const generatedSidebars = [
         "sidebar_id": "region",
         "title": "Region Module",
         "children": [
+          {
+            "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/region",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/region/links-to-other-modules",
+                "title": "Links to Modules",
+                "children": []
+              }
+            ]
+          },
           {
             "loaded": true,
             "type": "category",
@@ -2801,22 +4373,38 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Store",
-                "autogenerate_tags": "jsSdk+storefront+region",
-                "description": "The following methods or properties are used to send requests to Store API Routes related to the Region Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
-                "children": []
+                "type": "link",
+                "path": "/resources/commerce-modules/region/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Store",
+                    "autogenerate_tags": "jsSdk+storefront+region",
+                    "description": "The following methods or properties are used to send requests to Store API Routes related to the Region Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  },
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+region",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Region Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+region",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Region Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/region/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -2847,11 +4435,43 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/sales-channel",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Concepts",
             "autogenerate_tags": "concept+salesChannel",
             "autogenerate_as_ref": true,
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/sales-channel/publishable-api-keys",
+                "title": "Publishable API Keys",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/sales-channel/links-to-other-modules",
+                "title": "Links to Modules",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Product Variant Inventory",
+                "path": "/resources/commerce-modules/product/variant-inventory",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -2861,7 +4481,15 @@ export const generatedSidebars = [
             "autogenerate_as_ref": true,
             "sort_sidebar": "alphabetize",
             "description": "Learn how to use the Sales Channel Module in your customizations on the Medusa application server.",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Enforce Sales Channel Availability",
+                "path": "/resources/commerce-modules/cart/sales-channel-availability",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -2925,12 +4553,28 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+salesChannel",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Sales Channel Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/sales-channel/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+salesChannel",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Sales Channel Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/sales-channel/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -2961,13 +4605,73 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/settings",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/settings/concepts",
+                "title": "Concepts",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/settings/view-configurations",
+                "title": "View Configurations",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/settings/layout-configurations",
+                "title": "Layout Configurations",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/settings/property-labels",
+                "title": "Property Labels",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/settings/user-preferences",
+                "title": "User Preferences",
+                "children": []
+              }
+            ]
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Server Guides",
             "autogenerate_tags": "server+settings",
             "autogenerate_as_ref": true,
             "sort_sidebar": "alphabetize",
             "description": "Learn how to use the Settings Module in your customizations on the Medusa application server.",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Configure View Configurations",
+                "path": "/resources/commerce-modules/settings/configure-view-configurations",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -2977,7 +4681,15 @@ export const generatedSidebars = [
             "autogenerate_as_ref": true,
             "sort_sidebar": "alphabetize",
             "description": "Learn how to utilize administrative features of the Settings Module.",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/settings/configure-view-configurations",
+                "title": "Configure View Configurations",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -3037,12 +4749,28 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+settings,jsSdk+admin+views",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Settings Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/settings/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+settings,jsSdk+admin+views",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Settings Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/settings/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -3073,11 +4801,50 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/stock-location",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Concepts",
             "autogenerate_tags": "concept+stockLocation",
             "autogenerate_as_ref": true,
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/stock-location/concepts",
+                "title": "Stock Location Concepts",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/stock-location/links-to-other-modules",
+                "title": "Links to Modules",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Inventory Kits",
+                "path": "/resources/commerce-modules/inventory/inventory-kit",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Product Variant Inventory",
+                "path": "/resources/commerce-modules/product/variant-inventory",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -3130,12 +4897,28 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+stockLocation",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Stock Location Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/stock-location/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+stockLocation",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Stock Location Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/stock-location/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -3164,6 +4947,37 @@ export const generatedSidebars = [
         "sidebar_id": "store",
         "title": "Store Module",
         "children": [
+          {
+            "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/store",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/store/locales",
+                "title": "Locales",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/store/links-to-other-modules",
+                "title": "Link to Modules",
+                "children": []
+              }
+            ]
+          },
           {
             "loaded": true,
             "type": "category",
@@ -3208,12 +5022,28 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+store",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Store Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/store/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+store",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Store Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/store/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -3242,6 +5072,37 @@ export const generatedSidebars = [
         "sidebar_id": "store-credit",
         "title": "Store Credit Module",
         "children": [
+          {
+            "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/store-credit",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/store-credit/concepts",
+                "title": "Concepts",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/store-credit/links-to-other-modules",
+                "title": "Link to Modules",
+                "children": []
+              }
+            ]
+          },
           {
             "loaded": true,
             "type": "category",
@@ -3293,6 +5154,13 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/store-credit/admin-widget-zones",
+                "title": "Admin Widget Zones",
+                "children": []
+              },
+              {
+                "loaded": true,
                 "type": "sidebar",
                 "sidebar_id": "store-credit-service-reference",
                 "title": "Main Service Reference",
@@ -3317,6 +5185,44 @@ export const generatedSidebars = [
         "sidebar_id": "tax",
         "title": "Tax Module",
         "children": [
+          {
+            "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/tax",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/tax/tax-region",
+                "title": "Tax Region",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/tax/tax-rates-and-rules",
+                "title": "Tax Rates and Rules",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/tax/tax-provider",
+                "title": "Tax Module Providers",
+                "children": []
+              }
+            ]
+          },
           {
             "loaded": true,
             "type": "category",
@@ -3389,12 +5295,28 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+tax",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the Tax Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/tax/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+tax",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the Tax Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/tax/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -3423,6 +5345,51 @@ export const generatedSidebars = [
         "sidebar_id": "translation",
         "title": "Translation Module",
         "children": [
+          {
+            "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/translation",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/translation/concepts",
+                "title": "Concepts",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/translation/custom-data-models",
+                "title": "Translate Custom Models",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/translation/storefront",
+                "title": "Translation in Storefront",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/translation/links-to-other-modules",
+                "title": "Link to Modules",
+                "children": []
+              }
+            ]
+          },
           {
             "loaded": true,
             "type": "category",
@@ -3492,6 +5459,14 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/translation/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": []
+              },
+              {
+                "loaded": true,
                 "type": "sidebar",
                 "sidebar_id": "translation-service-reference",
                 "title": "Main Service Reference",
@@ -3518,13 +5493,45 @@ export const generatedSidebars = [
         "children": [
           {
             "loaded": true,
+            "type": "link",
+            "path": "/resources/commerce-modules/user",
+            "title": "Overview",
+            "children": []
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "loaded": true,
+            "type": "category",
+            "title": "Concepts",
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/user/links-to-other-modules",
+                "title": "Link to Modules",
+                "children": []
+              }
+            ]
+          },
+          {
+            "loaded": true,
             "type": "category",
             "title": "Server Guides",
             "autogenerate_tags": "server+user",
             "autogenerate_as_ref": true,
             "sort_sidebar": "alphabetize",
             "description": "Learn how to use the User Module in your customizations on the Medusa application server.",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/user/invite-user-subscriber",
+                "title": "Invite User Email",
+                "children": []
+              }
+            ]
           },
           {
             "loaded": true,
@@ -3598,12 +5605,28 @@ export const generatedSidebars = [
               },
               {
                 "loaded": true,
-                "type": "sub-category",
-                "title": "Admin",
-                "autogenerate_tags": "jsSdk+admin+user",
-                "description": "The following methods or properties are used to send requests to Admin API Routes related to the User Module.",
-                "autogenerate_as_ref": true,
-                "sort_sidebar": "alphabetize",
+                "type": "link",
+                "path": "/resources/commerce-modules/user/js-sdk",
+                "title": "JS SDK",
+                "hideChildren": true,
+                "children": [
+                  {
+                    "loaded": true,
+                    "type": "sub-category",
+                    "title": "Admin",
+                    "autogenerate_tags": "jsSdk+admin+user",
+                    "description": "The following methods or properties are used to send requests to Admin API Routes related to the User Module.",
+                    "autogenerate_as_ref": true,
+                    "sort_sidebar": "alphabetize",
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "loaded": true,
+                "type": "link",
+                "path": "/resources/commerce-modules/user/admin-widget-zones",
+                "title": "Admin Widget Zones",
                 "children": []
               },
               {
@@ -3645,7 +5668,29 @@ export const generatedSidebars = [
             "autogenerate_tags": "notification+server",
             "autogenerate_as_ref": true,
             "sort_sidebar": "alphabetize",
-            "children": []
+            "children": [
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Invite User Email",
+                "path": "/resources/commerce-modules/user/invite-user-subscriber",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Reset Password Email",
+                "path": "/resources/commerce-modules/auth/reset-password",
+                "children": []
+              },
+              {
+                "loaded": true,
+                "type": "ref",
+                "title": "Send Email Verification",
+                "path": "/resources/commerce-modules/auth/email-verification",
+                "children": []
+              }
+            ]
           }
         ]
       }

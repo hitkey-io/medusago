@@ -15,7 +15,6 @@ const HomepageLinksSection = () => {
       tag: "Customize MedusaGo Application",
       links: [
         { link: "/learn/installation", text: "Install MedusaGo" },
-        { link: "/resources/integrations", text: "Browse integrations" },
         { link: "/resources/commerce-modules", text: "Explore commerce modules" },
       ],
     },
@@ -24,7 +23,7 @@ const HomepageLinksSection = () => {
       links: [
         { link: "/learn/fundamentals/admin/widgets", text: "Build a UI widget" },
         { link: "/learn/fundamentals/admin/ui-routes", text: "Add a UI route" },
-        { link: "/ui", text: "Browse the UI library" },
+        { link: "/resources/admin-components", text: "Admin components" },
       ],
     },
     {

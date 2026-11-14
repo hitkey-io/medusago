@@ -1,0 +1,742 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Fulfillment Sets API Routes`,
+}
+
+# {metadata.title}
+
+A fulfillment set is a general form or way of fulfillment, such as "shipping" or "pick up".
+
+All fulfillment-related configurations in a store are related to a fulfillment set.
+
+These API routes allow admin users to manage fulfillment sets.
+
+## DELETE /admin/fulfillment-sets/\{id\}
+
+**Delete Fulfillment Set**
+
+Delete a fulfillment set.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The fulfillment set's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.fulfillmentSet.delete("fset_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/fulfillment-sets/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The fulfillment set's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"fulfillment_set\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the fulfillment set was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/fulfillment-sets/\{id\}/service-zones
+
+**Add a Service Zone to a Fulfillment Set**
+
+Add a service zone to a fulfillment set.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The fulfillment set's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: false, description: "The service zone's name." },
+    { name: "geo_zones", type: "`object[]`", optional: false, description: "The service zone's geo zones.", children: [
+        { name: "metadata", type: "`object`", optional: false, description: "The geo zone's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "country_code", type: "`string`", optional: false, description: "The geo zone's country code." },
+        { name: "type", type: "`string`", optional: false, description: "The geo zone's type.", defaultValue: "\"country\"" },
+        { name: "province_code", type: "`string`", optional: true, description: "The geo zone's ISO 3166-2 province code. Must be lower-case.", example: "us-ca" },
+        { name: "city", type: "`string`", optional: true, description: "The geo zone's city." },
+        { name: "postal_expression", type: "`object`", optional: true, description: "The geo zone's postal expression or ZIP code." }
+      ] }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.fulfillmentSet.createServiceZone("fset_123", {
+  name: "Europe Service Zone",
+  geo_zones: [{
+    type: "country",
+    country_code: "us"
+  }]
+})
+.then(({ fulfillment_set }) => {
+  console.log(fulfillment_set)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/fulfillment-sets/{id}/service-zones' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "name": "Layla"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "fulfillment_set", type: "`object`", optional: false, description: "The service zone's fulfillment set.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The fulfillment set's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The fulfillment set's name." },
+        { name: "type", type: "`string`", optional: false, description: "The fulfillment set's type." },
+        { name: "location", type: "`object`", optional: false, description: "The stock location's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The location's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The location's name." },
+            { name: "address_id", type: "`string`", optional: false, description: "The ID of the associated address." },
+            { name: "address", type: "`object`", optional: true, description: "The details of the stock location address.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+                { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+                { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+                { name: "company", type: "`string`", optional: false, description: "The address's company." },
+                { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+                { name: "city", type: "`string`", optional: false, description: "The address's city." },
+                { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+                { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+                { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+                { name: "metadata", type: "`object`", optional: false, description: "The address's metadata." }
+              ] },
+            { name: "sales_channels", type: "`object[]`", optional: true, description: "The sales channels associated with the location.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The sales channel's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The sales channel's name." },
+                { name: "description", type: "`string`", optional: false, description: "The sales channel's description." },
+                { name: "is_disabled", type: "`boolean`", optional: false, description: "Whether the sales channel is disabled." },
+                { name: "metadata", type: "`object`", optional: false, description: "The sales channel's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the sales channel was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the sales channel was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the sales channel was deleted." }
+              ] },
+            { name: "fulfillment_providers", type: "`object[]`", optional: true, description: "The fulfillment providers associated with the location.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+                { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+              ] },
+            { name: "fulfillment_sets", type: "`object[]`", optional: true, description: "The fulfillment sets associated with the location." },
+            { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+          ] },
+        { name: "service_zones", type: "`object[]`", optional: false, description: "The fulfillment set's service zones.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The service zone's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The service zone's name." },
+            { name: "fulfillment_set_id", type: "`string`", optional: false, description: "The service zone's fulfillment set id." },
+            { name: "fulfillment_set", type: "`object`", optional: false },
+            { name: "geo_zones", type: "`object[]`", optional: false, description: "The service zone's geo zones.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The geo zone's ID." },
+                { name: "type", type: "`\"country\"` \\| `\"province\"` \\| `\"city\"` \\| `\"zip\"`", optional: false, description: "The geo zone's type." },
+                { name: "country_code", type: "`string`", optional: false, description: "The geo zone's country code." },
+                { name: "province_code", type: "`string`", optional: false, description: "The geo zone's lower-case ISO 3166-2 province code.", example: "us-ca" },
+                { name: "city", type: "`string`", optional: false, description: "The geo zone's city." },
+                { name: "postal_expression", type: "`object`", optional: false, description: "The geo zone's postal expression." },
+                { name: "created_at", type: "`string`", optional: false, description: "The geo zone's created at." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The geo zone's updated at." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The geo zone's deleted at." }
+              ] },
+            { name: "shipping_options", type: "`object[]`", optional: false, description: "The service zone's shipping options.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The shipping option's name." },
+                { name: "price_type", type: "`\"calculated\"` \\| `\"flat\"`", optional: false, description: "The shipping option's price type. If it's `flat`, the price is fixed and is set in the `prices` property. If it's `calculated`, the price is calculated on checkout by the associated fulfillment provider." },
+                { name: "service_zone_id", type: "`string`", optional: false, description: "The ID of the service zone this option belongs to." },
+                { name: "service_zone", type: "`object`", optional: false },
+                { name: "provider_id", type: "`string`", optional: false, description: "The ID of the provider handling fulfillments created from this shipping option." },
+                { name: "provider", type: "`object`", optional: false, description: "The fulfillment provider's details." },
+                { name: "shipping_option_type_id", type: "`string`", optional: false, description: "The ID of the associated shipping option type." },
+                { name: "type", type: "`object`", optional: false, description: "The shipping option's details." },
+                { name: "shipping_profile_id", type: "`string`", optional: false, description: "The ID of the associated shipping profile." },
+                { name: "shipping_profile", type: "`object`", optional: false, description: "The shipping profile's details.." },
+                { name: "rules", type: "`object[]`", optional: false, description: "The shipping option's rules." },
+                { name: "prices", type: "`object[]`", optional: false, description: "The shipping option's prices. If the `price_type` is `calculated`, this array will be empty since the price is calculated by the fulfillment provider during checkout." },
+                { name: "data", type: "`object`", optional: false, description: "The shipping option's data, useful for the fulfillment provider handling fulfillments created from this option." },
+                { name: "metadata", type: "`object`", optional: false, description: "The shipping option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The service zone's created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The service zone's updated at." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The service zone's deleted at." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The fulfillment set's created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The fulfillment set's updated at." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The fulfillment set's deleted at." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/fulfillment-sets/\{id\}/service-zones/\{zone_id\}
+
+**Get a Service Zone in a Fulfillment Set**
+
+Retrieve a service zone that belongs to a fulfillment set. be paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The fulfillment set's ID." },
+    { name: "zone_id", type: "`string`", optional: false, description: "The service zone's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.fulfillmentSet.retrieveServiceZone(
+  "fset_123",
+  "serzo_123"
+)
+.then(({ service_zone }) => {
+  console.log(service_zone)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/fulfillment-sets/{id}/service-zones/{zone_id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "service_zone", type: "`object`", optional: false, description: "The shipping option's service zone.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The service zone's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The service zone's name." },
+        { name: "fulfillment_set_id", type: "`string`", optional: false, description: "The service zone's fulfillment set id." },
+        { name: "fulfillment_set", type: "`object`", optional: false },
+        { name: "geo_zones", type: "`object[]`", optional: false, description: "The service zone's geo zones.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The geo zone's ID." },
+            { name: "type", type: "`\"country\"` \\| `\"province\"` \\| `\"city\"` \\| `\"zip\"`", optional: false, description: "The geo zone's type." },
+            { name: "country_code", type: "`string`", optional: false, description: "The geo zone's country code." },
+            { name: "province_code", type: "`string`", optional: false, description: "The geo zone's lower-case ISO 3166-2 province code.", example: "us-ca" },
+            { name: "city", type: "`string`", optional: false, description: "The geo zone's city." },
+            { name: "postal_expression", type: "`object`", optional: false, description: "The geo zone's postal expression." },
+            { name: "created_at", type: "`string`", optional: false, description: "The geo zone's created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The geo zone's updated at." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The geo zone's deleted at." }
+          ] },
+        { name: "shipping_options", type: "`object[]`", optional: false, description: "The service zone's shipping options.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The shipping option's name." },
+            { name: "price_type", type: "`\"calculated\"` \\| `\"flat\"`", optional: false, description: "The shipping option's price type. If it's `flat`, the price is fixed and is set in the `prices` property. If it's `calculated`, the price is calculated on checkout by the associated fulfillment provider." },
+            { name: "service_zone_id", type: "`string`", optional: false, description: "The ID of the service zone this option belongs to." },
+            { name: "service_zone", type: "`object`", optional: false },
+            { name: "provider_id", type: "`string`", optional: false, description: "The ID of the provider handling fulfillments created from this shipping option." },
+            { name: "provider", type: "`object`", optional: false, description: "The fulfillment provider's details.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+                { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+              ] },
+            { name: "shipping_option_type_id", type: "`string`", optional: false, description: "The ID of the associated shipping option type." },
+            { name: "type", type: "`object`", optional: false, description: "The shipping option's details.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." },
+                { name: "label", type: "`string`", optional: false, description: "The type's label." },
+                { name: "description", type: "`string`", optional: false, description: "The type's description." },
+                { name: "code", type: "`string`", optional: false, description: "The type's code." },
+                { name: "shipping_option_id", type: "`string`", optional: false, description: "The type's shipping option id." }
+              ] },
+            { name: "shipping_profile_id", type: "`string`", optional: false, description: "The ID of the associated shipping profile." },
+            { name: "shipping_profile", type: "`object`", optional: false, description: "The shipping profile's details..", children: [
+                { name: "id", type: "`string`", optional: false, description: "The shipping profile's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The shipping profile's name." },
+                { name: "type", type: "`string`", optional: false, description: "The shipping profile's type." },
+                { name: "metadata", type: "`object`", optional: false, description: "The shipping profile's metadata, holds custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the shipping profile was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping profile was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping profile was deleted." }
+              ] },
+            { name: "rules", type: "`object[]`", optional: false, description: "The shipping option's rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The shipping option rule's ID." },
+                { name: "attribute", type: "`string`", optional: false, description: "The shipping option rule's attribute.", example: "is_return" },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"` \\| `\"nin\"`", optional: false, description: "The rule's operator." },
+                { name: "value", type: "`string` \\| `string[]`", optional: false, description: "The shipping option rule's value." },
+                { name: "shipping_option_id", type: "`string`", optional: false, description: "The ID of the shipping option this rule is for." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option rule was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option rule was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option rule was deleted." }
+              ] },
+            { name: "prices", type: "`object[]`", optional: false, description: "The shipping option's prices. If the `price_type` is `calculated`, this array will be empty since the price is calculated by the fulfillment provider during checkout.", children: [
+                { name: "price_rules", type: "`object[]`", optional: false, description: "The price's rules." },
+                { name: "rules_count", type: "`number`", optional: false, description: "The number of rules the price has." },
+                { name: "id", type: "`string`", optional: false, description: "The price's ID." },
+                { name: "title", type: "`string`", optional: false, description: "The price's title." },
+                { name: "currency_code", type: "`string`", optional: false, description: "The price's currency code.", example: "usd" },
+                { name: "amount", type: "`number`", optional: false, description: "The price's amount." },
+                { name: "raw_amount", type: "`object`", optional: false, description: "The price's raw amount." },
+                { name: "min_quantity", type: "`number`", optional: false, description: "The minimum quantity required in the cart for this price to apply." },
+                { name: "max_quantity", type: "`number`", optional: false, description: "The maximum quantity that the cart's items must not surpass for this price to apply." },
+                { name: "price_set_id", type: "`string`", optional: false, description: "The ID of the price set this price belongs to." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the price was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the price was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the price was deleted." }
+              ] },
+            { name: "data", type: "`object`", optional: false, description: "The shipping option's data, useful for the fulfillment provider handling fulfillments created from this option." },
+            { name: "metadata", type: "`object`", optional: false, description: "The shipping option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The service zone's created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The service zone's updated at." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The service zone's deleted at." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/fulfillment-sets/\{id\}/service-zones/\{zone_id\}
+
+**Update the Service Zone of a Fulfillment Set**
+
+Update the details of a service zone in a fulfillment set.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The fulfillment set's ID." },
+    { name: "zone_id", type: "`string`", optional: false, description: "The service zone's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: true, description: "The service zone's name." },
+    { name: "geo_zones", type: "`object[]`", optional: true, description: "The service zone's associated geo zones.", children: [
+        { name: "type", type: "`string`", optional: false, description: "The geo zone's type.", defaultValue: "\"country\"" },
+        { name: "metadata", type: "`object`", optional: false, description: "The geo zone's metadata. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "country_code", type: "`string`", optional: false, description: "The geo zone's country code." },
+        { name: "id", type: "`string`", optional: true, description: "The ID of an existing geo zone." },
+        { name: "province_code", type: "`string`", optional: true, description: "The geo zone's ISO 3166-2 province code. Must be lower-case.", example: "us-ca" },
+        { name: "city", type: "`string`", optional: true, description: "The geo zone's city." },
+        { name: "postal_expression", type: "`object`", optional: true, description: "The geo zone's postal expression or ZIP code." }
+      ] }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.fulfillmentSet.updateServiceZone(
+  "fset_123", 
+  "serzo_123",
+  {
+    name: "Europe Service Zone",
+  }
+)
+.then(({ fulfillment_set }) => {
+  console.log(fulfillment_set)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/fulfillment-sets/{id}/service-zones/{zone_id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "name": "Elvis"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "fulfillment_set", type: "`object`", optional: false, description: "The service zone's fulfillment set.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The fulfillment set's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The fulfillment set's name." },
+        { name: "type", type: "`string`", optional: false, description: "The fulfillment set's type." },
+        { name: "location", type: "`object`", optional: false, description: "The stock location's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The location's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The location's name." },
+            { name: "address_id", type: "`string`", optional: false, description: "The ID of the associated address." },
+            { name: "address", type: "`object`", optional: true, description: "The details of the stock location address.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+                { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+                { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+                { name: "company", type: "`string`", optional: false, description: "The address's company." },
+                { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+                { name: "city", type: "`string`", optional: false, description: "The address's city." },
+                { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+                { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+                { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+                { name: "metadata", type: "`object`", optional: false, description: "The address's metadata." }
+              ] },
+            { name: "sales_channels", type: "`object[]`", optional: true, description: "The sales channels associated with the location.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The sales channel's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The sales channel's name." },
+                { name: "description", type: "`string`", optional: false, description: "The sales channel's description." },
+                { name: "is_disabled", type: "`boolean`", optional: false, description: "Whether the sales channel is disabled." },
+                { name: "metadata", type: "`object`", optional: false, description: "The sales channel's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the sales channel was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the sales channel was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the sales channel was deleted." }
+              ] },
+            { name: "fulfillment_providers", type: "`object[]`", optional: true, description: "The fulfillment providers associated with the location.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+                { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+              ] },
+            { name: "fulfillment_sets", type: "`object[]`", optional: true, description: "The fulfillment sets associated with the location." },
+            { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+          ] },
+        { name: "service_zones", type: "`object[]`", optional: false, description: "The fulfillment set's service zones.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The service zone's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The service zone's name." },
+            { name: "fulfillment_set_id", type: "`string`", optional: false, description: "The service zone's fulfillment set id." },
+            { name: "fulfillment_set", type: "`object`", optional: false },
+            { name: "geo_zones", type: "`object[]`", optional: false, description: "The service zone's geo zones.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The geo zone's ID." },
+                { name: "type", type: "`\"country\"` \\| `\"province\"` \\| `\"city\"` \\| `\"zip\"`", optional: false, description: "The geo zone's type." },
+                { name: "country_code", type: "`string`", optional: false, description: "The geo zone's country code." },
+                { name: "province_code", type: "`string`", optional: false, description: "The geo zone's lower-case ISO 3166-2 province code.", example: "us-ca" },
+                { name: "city", type: "`string`", optional: false, description: "The geo zone's city." },
+                { name: "postal_expression", type: "`object`", optional: false, description: "The geo zone's postal expression." },
+                { name: "created_at", type: "`string`", optional: false, description: "The geo zone's created at." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The geo zone's updated at." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The geo zone's deleted at." }
+              ] },
+            { name: "shipping_options", type: "`object[]`", optional: false, description: "The service zone's shipping options.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The shipping option's name." },
+                { name: "price_type", type: "`\"calculated\"` \\| `\"flat\"`", optional: false, description: "The shipping option's price type. If it's `flat`, the price is fixed and is set in the `prices` property. If it's `calculated`, the price is calculated on checkout by the associated fulfillment provider." },
+                { name: "service_zone_id", type: "`string`", optional: false, description: "The ID of the service zone this option belongs to." },
+                { name: "service_zone", type: "`object`", optional: false },
+                { name: "provider_id", type: "`string`", optional: false, description: "The ID of the provider handling fulfillments created from this shipping option." },
+                { name: "provider", type: "`object`", optional: false, description: "The fulfillment provider's details." },
+                { name: "shipping_option_type_id", type: "`string`", optional: false, description: "The ID of the associated shipping option type." },
+                { name: "type", type: "`object`", optional: false, description: "The shipping option's details." },
+                { name: "shipping_profile_id", type: "`string`", optional: false, description: "The ID of the associated shipping profile." },
+                { name: "shipping_profile", type: "`object`", optional: false, description: "The shipping profile's details.." },
+                { name: "rules", type: "`object[]`", optional: false, description: "The shipping option's rules." },
+                { name: "prices", type: "`object[]`", optional: false, description: "The shipping option's prices. If the `price_type` is `calculated`, this array will be empty since the price is calculated by the fulfillment provider during checkout." },
+                { name: "data", type: "`object`", optional: false, description: "The shipping option's data, useful for the fulfillment provider handling fulfillments created from this option." },
+                { name: "metadata", type: "`object`", optional: false, description: "The shipping option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The service zone's created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The service zone's updated at." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The service zone's deleted at." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The fulfillment set's created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The fulfillment set's updated at." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The fulfillment set's deleted at." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/fulfillment-sets/\{id\}/service-zones/\{zone_id\}
+
+**Remove a Service Zone from Fulfillment Set**
+
+Remove a service zone that belongs to a fulfillment set.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The fulfillment set's ID." },
+    { name: "zone_id", type: "`string`", optional: false, description: "The service zone's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.fulfillmentSet.deleteServiceZone(
+  "fset_123", 
+  "serzo_123",
+)
+.then(({ deleted, parent: fulfillmentSet }) => {
+  console.log(deleted, fulfillmentSet)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/fulfillment-sets/{id}/service-zones/{zone_id}' \ -H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The service zone's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"service_zone\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the service zone was deleted." },
+    { name: "parent", type: "`object`", optional: true, description: "The service zone's fulfillment set.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The fulfillment set's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The fulfillment set's name." },
+        { name: "type", type: "`string`", optional: false, description: "The fulfillment set's type." },
+        { name: "location", type: "`object`", optional: false, description: "The stock location's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The location's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The location's name." },
+            { name: "address_id", type: "`string`", optional: false, description: "The ID of the associated address." },
+            { name: "address", type: "`object`", optional: true, description: "The details of the stock location address.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The address's ID." },
+                { name: "address_1", type: "`string`", optional: false, description: "The address's first line." },
+                { name: "address_2", type: "`string`", optional: false, description: "The address's second line." },
+                { name: "company", type: "`string`", optional: false, description: "The address's company." },
+                { name: "country_code", type: "`string`", optional: false, description: "The address's country code.", example: "us" },
+                { name: "city", type: "`string`", optional: false, description: "The address's city." },
+                { name: "phone", type: "`string`", optional: false, description: "The address's phone." },
+                { name: "postal_code", type: "`string`", optional: false, description: "The address's postal code." },
+                { name: "province", type: "`string`", optional: false, description: "The address's lower-case ISO 3166-2 province code.", example: "us-ca" },
+                { name: "metadata", type: "`object`", optional: false, description: "The address's metadata." }
+              ] },
+            { name: "sales_channels", type: "`object[]`", optional: true, description: "The sales channels associated with the location.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The sales channel's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The sales channel's name." },
+                { name: "description", type: "`string`", optional: false, description: "The sales channel's description." },
+                { name: "is_disabled", type: "`boolean`", optional: false, description: "Whether the sales channel is disabled." },
+                { name: "metadata", type: "`object`", optional: false, description: "The sales channel's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the sales channel was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the sales channel was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the sales channel was deleted." }
+              ] },
+            { name: "fulfillment_providers", type: "`object[]`", optional: true, description: "The fulfillment providers associated with the location.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The provider's ID." },
+                { name: "is_enabled", type: "`boolean`", optional: false, description: "The provider's is enabled." }
+              ] },
+            { name: "fulfillment_sets", type: "`object[]`", optional: true, description: "The fulfillment sets associated with the location." },
+            { name: "metadata", type: "`object`", optional: false, description: "Key-value pairs of custom data." }
+          ] },
+        { name: "service_zones", type: "`object[]`", optional: false, description: "The fulfillment set's service zones.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The service zone's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The service zone's name." },
+            { name: "fulfillment_set_id", type: "`string`", optional: false, description: "The service zone's fulfillment set id." },
+            { name: "fulfillment_set", type: "`object`", optional: false },
+            { name: "geo_zones", type: "`object[]`", optional: false, description: "The service zone's geo zones.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The geo zone's ID." },
+                { name: "type", type: "`\"country\"` \\| `\"province\"` \\| `\"city\"` \\| `\"zip\"`", optional: false, description: "The geo zone's type." },
+                { name: "country_code", type: "`string`", optional: false, description: "The geo zone's country code." },
+                { name: "province_code", type: "`string`", optional: false, description: "The geo zone's lower-case ISO 3166-2 province code.", example: "us-ca" },
+                { name: "city", type: "`string`", optional: false, description: "The geo zone's city." },
+                { name: "postal_expression", type: "`object`", optional: false, description: "The geo zone's postal expression." },
+                { name: "created_at", type: "`string`", optional: false, description: "The geo zone's created at." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The geo zone's updated at." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The geo zone's deleted at." }
+              ] },
+            { name: "shipping_options", type: "`object[]`", optional: false, description: "The service zone's shipping options.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The shipping option's ID." },
+                { name: "name", type: "`string`", optional: false, description: "The shipping option's name." },
+                { name: "price_type", type: "`\"calculated\"` \\| `\"flat\"`", optional: false, description: "The shipping option's price type. If it's `flat`, the price is fixed and is set in the `prices` property. If it's `calculated`, the price is calculated on checkout by the associated fulfillment provider." },
+                { name: "service_zone_id", type: "`string`", optional: false, description: "The ID of the service zone this option belongs to." },
+                { name: "service_zone", type: "`object`", optional: false },
+                { name: "provider_id", type: "`string`", optional: false, description: "The ID of the provider handling fulfillments created from this shipping option." },
+                { name: "provider", type: "`object`", optional: false, description: "The fulfillment provider's details." },
+                { name: "shipping_option_type_id", type: "`string`", optional: false, description: "The ID of the associated shipping option type." },
+                { name: "type", type: "`object`", optional: false, description: "The shipping option's details." },
+                { name: "shipping_profile_id", type: "`string`", optional: false, description: "The ID of the associated shipping profile." },
+                { name: "shipping_profile", type: "`object`", optional: false, description: "The shipping profile's details.." },
+                { name: "rules", type: "`object[]`", optional: false, description: "The shipping option's rules." },
+                { name: "prices", type: "`object[]`", optional: false, description: "The shipping option's prices. If the `price_type` is `calculated`, this array will be empty since the price is calculated by the fulfillment provider during checkout." },
+                { name: "data", type: "`object`", optional: false, description: "The shipping option's data, useful for the fulfillment provider handling fulfillments created from this option." },
+                { name: "metadata", type: "`object`", optional: false, description: "The shipping option's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+                { name: "created_at", type: "`string`", optional: false, description: "The date the shipping option was created." },
+                { name: "updated_at", type: "`string`", optional: false, description: "The date the shipping option was updated." },
+                { name: "deleted_at", type: "`string`", optional: false, description: "The date the shipping option was deleted." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The service zone's created at." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The service zone's updated at." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The service zone's deleted at." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The fulfillment set's created at." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The fulfillment set's updated at." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The fulfillment set's deleted at." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

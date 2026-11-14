@@ -1,0 +1,64 @@
+---
+products:
+  - sales channel
+---
+
+import { CodeTabs, CodeTab, Table } from "docs-ui"
+
+export const metadata = {
+  title: `Links between API Key Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the API Key Module and other Commerce Modules.
+
+## Summary
+
+The API Key Module has the following links to other modules:
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        First Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Second Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        [ApiKey](/references/api-key/models/ApiKey)
+      </Table.Cell>
+      <Table.Cell>
+        [SalesChannel](/references/sales-channel/models/SalesChannel) in [Sales Channel Module](../../sales-channel/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#sales-channel-module)
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## Sales Channel Module
+
+You can create a publishable API key and associate it with a sales channel. Medusa defines a link between the `ApiKey` and the `SalesChannel` data models.
+
+
+This is useful to avoid passing the sales channel's ID as a parameter of every request, and instead pass the publishable API key in the header of any request to the Store API route.
+
+Learn more about this in the [Sales Channel Module's documentation](../../sales-channel/publishable-api-keys/page.mdx).

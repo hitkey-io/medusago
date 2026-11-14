@@ -1,0 +1,64 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab } from "docs-ui"
+
+export const metadata = {
+  title: `Store Credit Module`,
+}
+
+# {metadata.title}
+
+In this section of the documentation, you will find resources to learn more about the Store Credit Module and how to use it in your application.
+
+<Note>
+
+The Store Credit Module is part of the Loyalty Plugin. It's compatible with Medusa v2.14.0+.
+
+</Note>
+
+<Note title="Looking for no-code docs?">
+
+Refer to the [Medusa Admin User Guide](!user-guide!/loyalty/store-credits) to learn how to manage store credit using the dashboard.
+
+</Note>
+
+Medusa has store-credit related features available through the Store Credit Module. A [module](!docs!/learn/fundamentals/modules) is a standalone package that provides features for a single domain. Each of Medusa's commerce features are placed in Commerce Modules, such as this Store Credit Module.
+
+<Note>
+
+Learn more about why modules are isolated in [this documentation](!docs!/learn/fundamentals/modules/isolation).
+
+</Note>
+
+## Features
+
+- [Store Credit Accounts](./concepts/page.mdx#store-credit-account): Create and manage customer store credit accounts
+- [Credit Transactions](./concepts/page.mdx#store-credit-account): Credit and debit operations with full transaction history
+- [Balance Tracking](./concepts/page.mdx#store-credit-balance-calculation): Real-time balance calculation and reporting
+- [Cart Integration](./concepts/page.mdx#during-checkout): Apply store credits as payment during checkout
+
+---
+
+## How to Use the Store Credit Module
+
+### 1. Enable the Plugin
+
+The plugin is part of the MedusaGo repository. Import its package in the `main.go` file of your project to register it with the framework:
+
+```go title="main.go" file="loyalty/loyalty.go" region="import"
+```
+
+Then add it to the `Plugins` of your configuration in `medusa-config.go`:
+
+```go title="medusa-config.go" file="loyalty/loyalty.go" region="plugin"
+```
+
+### 2. Run Migrations
+
+Run the migrations to create the plugin's tables in the database:
+
+```bash
+go run . db:migrate
+```

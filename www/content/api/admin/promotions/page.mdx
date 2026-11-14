@@ -1,0 +1,1318 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Promotions API Routes`,
+}
+
+# {metadata.title}
+
+A promotion discounts an amount or percentage off a cart's items, shipping methods, or the entire order.
+
+Promotions have different types, such as a `standard` promotion that just discounts an amount, or a `buyget` promotion to enforce a "buy X get Y" promotion.
+
+A promotion has rules to restrict how and when they're applied.
+
+Promotions belong to a campaign, which sets conditions on the promotion such as when it starts and ends.
+
+These API routes allow admin users to manage promotions.
+
+## GET /admin/promotions
+
+**List Promotions**
+
+Retrieve a list of promotions. The promotions can be filtered by fields such as `id`. The promotions can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the promotion's searchable attributes." },
+    { name: "code", type: "`string` \\| `string[]`", optional: true, description: "Filter by a promotion code." },
+    { name: "campaign_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a campaign's ID to retrieve its associated promotions." },
+    { name: "application_method", type: "`object`", optional: true, description: "Apply filters on the application methods to retrieve the promotions of the matching application methods.", children: [
+        { name: "currency_code", type: "`string` \\| `string[]`", optional: true, description: "Filter by a currency code." }
+      ] },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by a promotion's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by a promotion's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by a promotion's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "id", type: "`string` \\| `string[]` \\| `object`", optional: true, description: "Filter by a promotion's ID. Accepts the [filter operators](/api/admin#filter-operators)." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.promotion.list()
+.then(({ promotions, count, limit, offset }) => {
+  console.log(promotions)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/promotions' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "promotions", type: "`object[]`", optional: false, description: "The list of promotions.", children: [
+        { name: "application_method", type: "`object`", optional: true, description: "The application method's details.", children: [
+            { name: "promotion", type: "`object`", optional: true },
+            { name: "target_rules", type: "`object[]`", optional: true, description: "The application method's target rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+                { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+                { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+                { name: "values", type: "`object[]`", optional: false, description: "The rule's values." }
+              ] },
+            { name: "buy_rules", type: "`object[]`", optional: true, description: "The application method's buy rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+                { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+                { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+                { name: "values", type: "`object[]`", optional: false, description: "The rule's values." }
+              ] },
+            { name: "id", type: "`string`", optional: false, description: "The application method's ID." },
+            { name: "type", type: "`\"fixed\"` \\| `\"percentage\"`", optional: true, description: "The application method's type. If it's `fixed`, the promotion discounts a fixed amount. If it's `percentage`, the promotion discounts a percentage." },
+            { name: "target_type", type: "`\"items\"` \\| `\"shipping_methods\"` \\| `\"order\"`", optional: true, description: "Which item does the promotion apply to. `items` mean the promotion applies to the cart's items; `shipping_methods` means the promotion applies to the cart's shipping methods; `order` means the promotion applies on the entire order." },
+            { name: "allocation", type: "`\"each\"` \\| `\"across\"`", optional: true, description: "How is the promotion amount discounted. `each` means the discounted amount is applied on each applicable item; `across` means the discounted amount is split accross the applicable items." },
+            { name: "value", type: "`number`", optional: true, description: "The amount to be discounted." },
+            { name: "currency_code", type: "`string`", optional: true, description: "The application method's currency code.", example: "usd" },
+            { name: "max_quantity", type: "`number`", optional: true, description: "The max quantity allowed in the cart for the associated promotion to be applied." },
+            { name: "buy_rules_min_quantity", type: "`number`", optional: true, description: "The minimum quantity required for a `buyget` promotion to be applied. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `2`." },
+            { name: "apply_to_quantity", type: "`number`", optional: true, description: "The quantity that results from matching the `buyget` promotion's condition. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `1`." },
+            { name: "target_selection_strategy", type: "`\"most_expensive_first\"` \\| `\"cheapest_first\"`", optional: true, description: "The application method's target selection strategy." }
+          ] },
+        { name: "rules", type: "`object[]`", optional: true, description: "The promotion's rules.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+            { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+            { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+            { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+            { name: "values", type: "`object[]`", optional: false, description: "The rule's values.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+                { name: "value", type: "`string`", optional: true, description: "The value." }
+              ] }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The promotion's ID." },
+        { name: "code", type: "`string`", optional: true, description: "The promotion's code.", example: "OFF50" },
+        { name: "type", type: "`\"standard\"` \\| `\"buyget\"`", optional: true, description: "The promotion's type." },
+        { name: "is_automatic", type: "`boolean`", optional: true, description: "Whether the promotion is applied on a cart automatically if it matches the promotion's rules." },
+        { name: "campaign_id", type: "`string`", optional: true, description: "The ID of the campaign this promotion belongs to." },
+        { name: "campaign", type: "`object`", optional: true, description: "The campaign's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The campaign's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The campaign's name." },
+            { name: "description", type: "`string`", optional: false, description: "The campaign's description." },
+            { name: "currency", type: "`string`", optional: false, description: "The campaign's currency." },
+            { name: "campaign_identifier", type: "`string`", optional: false, description: "The campaign's identifier." },
+            { name: "starts_at", type: "`string`", optional: false, description: "The date and time that the campaign starts." },
+            { name: "ends_at", type: "`string`", optional: false, description: "The date and time that the campaign ends." },
+            { name: "budget", type: "`object`", optional: false, description: "The campaign's budget.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The budget's ID." },
+                { name: "type", type: "`\"spend\"` \\| `\"usage\"`", optional: false, description: "The budget's type. `spend` means the limit is set on the total amount discounted by the campaign's promotions; `usage` means the limit is set on the total number of times the campaign's promotions can be used." },
+                { name: "currency_code", type: "`string`", optional: false, description: "The budget's currency code." },
+                { name: "limit", type: "`number`", optional: false, description: "The budget's limit." },
+                { name: "used", type: "`number`", optional: false, description: "How much of the budget has been used. If the limit is `spend`, this property holds the total amount discounted so far. If the limit is `usage`, it holds the number of times the campaign's promotions have been used so far." },
+                { name: "attribute", type: "`string`", optional: false, description: "The cart attribute to limit the budget by." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the campaign was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the campaign was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the campaign was deleted." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the promotion was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the promotion was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the promotion was deleted." },
+        { name: "status", type: "`\"draft\"` \\| `\"active\"` \\| `\"inactive\"`", optional: true, description: "The promotion's status." },
+        { name: "is_tax_inclusive", type: "`boolean`", optional: true, description: "Whether the promotion is tax inclusive. If enabled, the promotion is applied after tax is calculated." },
+        { name: "limit", type: "`number`", optional: true, description: "The limit of times the promotion can be used." },
+        { name: "used", type: "`number`", optional: true, description: "The number of times the promotion has been used." },
+        { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs for the promotion." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/promotions
+
+**Create Promotion**
+
+Create a promotion.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "code", type: "`string`", optional: false, description: "The promotion's code." },
+    { name: "is_automatic", type: "`boolean`", optional: true, description: "Whether the promotion is applied automatically." },
+    { name: "type", type: "`\"standard\"` \\| `\"buyget\"`", optional: false, description: "The promotion's type." },
+    { name: "campaign_id", type: "`string`", optional: false, description: "The ID of the campaign that the promotion belongs to." },
+    { name: "campaign", type: "`object`", optional: true, description: "The details of a campaign to create and add the promotion to it.", children: [
+        { name: "name", type: "`string`", optional: false, description: "The campaign's name." },
+        { name: "campaign_identifier", type: "`string`", optional: false, description: "The campaign's identifier." },
+        { name: "description", type: "`string`", optional: false, description: "The campaign's description." },
+        { name: "budget", type: "`object`", optional: false, description: "The campaign's budget which, when crossed, ends the campaign.", children: [
+            { name: "type", type: "`\"spend\"` \\| `\"usage\"`", optional: false, description: "The budget's type. This can't be edited later. Use `spend` to set a limit on the total amount discounted by the campaign's promotions. Use `usage` to set a limit on the total number of times the campaign's promotions can be used." },
+            { name: "limit", type: "`number`", optional: false, description: "The budget's limit." },
+            { name: "currency_code", type: "`string`", optional: false, description: "The campaign budget's currency code. This can't be edited later." }
+          ] },
+        { name: "starts_at", type: "`string`", optional: false, description: "The campaign's start date." },
+        { name: "ends_at", type: "`string`", optional: false, description: "The campaign's end date." }
+      ] },
+    { name: "application_method", type: "`object`", optional: false, description: "The promotion's application method.", children: [
+        { name: "description", type: "`string`", optional: false, description: "The application method's description." },
+        { name: "value", type: "`number`", optional: false, description: "The discounted amount applied by the associated promotion based on the `type`." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The application method's currency code." },
+        { name: "max_quantity", type: "`number`", optional: false, description: "The max quantity allowed in the cart for the associated promotion to be applied." },
+        { name: "type", type: "`\"fixed\"` \\| `\"percentage\"`", optional: false, description: "The type of the application method indicating how the associated promotion is applied." },
+        { name: "target_type", type: "`\"order\"` \\| `\"shipping_methods\"` \\| `\"items\"`", optional: false, description: "The target type of the application method indicating whether the associated promotion is applied to the cart's items, shipping methods, or the whole order." },
+        { name: "allocation", type: "`\"each\"` \\| `\"across\"`", optional: true, description: "The allocation value that indicates whether the associated promotion is applied on each item in a cart or split between the items in the cart." },
+        { name: "target_rules", type: "`object[]`", optional: true, description: "The application method's target rules.", children: [
+            { name: "operator", type: "`\"gte\"` \\| `\"lte\"` \\| `\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"`", optional: false, description: "The operator used to check whether the target rule applies on a cart. For example, `eq` means that the cart's value for the specified attribute must match the specified value." },
+            { name: "description", type: "`string`", optional: false, description: "The target rule's description." },
+            { name: "attribute", type: "`string`", optional: false, description: "The attribute to compare against when checking whether a promotion can be applied on a cart.", example: "items.product.id" },
+            { name: "values", type: "`string` \\| `string[]`", optional: false, description: "The attribute's value." }
+          ] },
+        { name: "buy_rules", type: "`object[]`", optional: true, description: "The application method's buy rules.", children: [
+            { name: "operator", type: "`\"gte\"` \\| `\"lte\"` \\| `\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"`", optional: false, description: "The operator used to check whether the buy rule applies on a cart. For example, `eq` means that the cart's value for the specified attribute must match the specified value." },
+            { name: "description", type: "`string`", optional: false, description: "The buy rule's description." },
+            { name: "attribute", type: "`string`", optional: false, description: "The attribute to compare against when checking whether a promotion can be applied on a cart.", example: "items.product.id" },
+            { name: "values", type: "`string` \\| `string[]`", optional: false, description: "The attribute's value." }
+          ] },
+        { name: "apply_to_quantity", type: "`number`", optional: false, description: "The quantity that results from matching the `buyget` promotion's condition. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value f this attribute is `1`." },
+        { name: "buy_rules_min_quantity", type: "`number`", optional: false, description: "The minimum quantity required for a `buyget` promotion to be applied. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `2`." }
+      ] },
+    { name: "rules", type: "`object[]`", optional: true, description: "The promotion's rules.", children: [
+        { name: "operator", type: "`\"gte\"` \\| `\"lte\"` \\| `\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"`", optional: false, description: "The operator used to check whether the buy rule applies on a cart. For example, `eq` means that the cart's value for the specified attribute must match the specified value." },
+        { name: "description", type: "`string`", optional: false, description: "The rule's description." },
+        { name: "attribute", type: "`string`", optional: false, description: "The attribute to compare against when checking whether a promotion can be applied on a cart.", example: "items.product.id" },
+        { name: "values", type: "`string` \\| `string[]`", optional: false, description: "The attribute's value." }
+      ] },
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.promotion.create({
+  name: "My Promotion",
+  description: "This is a test promotion",
+  code: "PROMO123",
+  starts_at: "2021-01-01",
+  ends_at: "2021-01-01",
+})
+.then(({ promotion }) => {
+  console.log(promotion)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/promotions' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "code": "{value}",
+  "type": "{value}",
+  "campaign_id": "{value}",
+  "application_method": {
+    "description": "{value}",
+    "value": 1841223411171328,
+    "currency_code": "{value}",
+    "max_quantity": 2960098049654784,
+    "type": "{value}",
+    "target_type": "{value}",
+    "allocation": "{value}",
+    "target_rules": [],
+    "buy_rules": [],
+    "apply_to_quantity": 708643867590656,
+    "buy_rules_min_quantity": 3167972149428224
+  }
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "promotion", type: "`object`", optional: false, description: "The promotion's details.", children: [
+        { name: "application_method", type: "`object`", optional: true, description: "The application method's details.", children: [
+            { name: "promotion", type: "`object`", optional: true },
+            { name: "target_rules", type: "`object[]`", optional: true, description: "The application method's target rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+                { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+                { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+                { name: "values", type: "`object[]`", optional: false, description: "The rule's values." }
+              ] },
+            { name: "buy_rules", type: "`object[]`", optional: true, description: "The application method's buy rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+                { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+                { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+                { name: "values", type: "`object[]`", optional: false, description: "The rule's values." }
+              ] },
+            { name: "id", type: "`string`", optional: false, description: "The application method's ID." },
+            { name: "type", type: "`\"fixed\"` \\| `\"percentage\"`", optional: true, description: "The application method's type. If it's `fixed`, the promotion discounts a fixed amount. If it's `percentage`, the promotion discounts a percentage." },
+            { name: "target_type", type: "`\"items\"` \\| `\"shipping_methods\"` \\| `\"order\"`", optional: true, description: "Which item does the promotion apply to. `items` mean the promotion applies to the cart's items; `shipping_methods` means the promotion applies to the cart's shipping methods; `order` means the promotion applies on the entire order." },
+            { name: "allocation", type: "`\"each\"` \\| `\"across\"`", optional: true, description: "How is the promotion amount discounted. `each` means the discounted amount is applied on each applicable item; `across` means the discounted amount is split accross the applicable items." },
+            { name: "value", type: "`number`", optional: true, description: "The amount to be discounted." },
+            { name: "currency_code", type: "`string`", optional: true, description: "The application method's currency code.", example: "usd" },
+            { name: "max_quantity", type: "`number`", optional: true, description: "The max quantity allowed in the cart for the associated promotion to be applied." },
+            { name: "buy_rules_min_quantity", type: "`number`", optional: true, description: "The minimum quantity required for a `buyget` promotion to be applied. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `2`." },
+            { name: "apply_to_quantity", type: "`number`", optional: true, description: "The quantity that results from matching the `buyget` promotion's condition. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `1`." },
+            { name: "target_selection_strategy", type: "`\"most_expensive_first\"` \\| `\"cheapest_first\"`", optional: true, description: "The application method's target selection strategy." }
+          ] },
+        { name: "rules", type: "`object[]`", optional: true, description: "The promotion's rules.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+            { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+            { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+            { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+            { name: "values", type: "`object[]`", optional: false, description: "The rule's values.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+                { name: "value", type: "`string`", optional: true, description: "The value." }
+              ] }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The promotion's ID." },
+        { name: "code", type: "`string`", optional: true, description: "The promotion's code.", example: "OFF50" },
+        { name: "type", type: "`\"standard\"` \\| `\"buyget\"`", optional: true, description: "The promotion's type." },
+        { name: "is_automatic", type: "`boolean`", optional: true, description: "Whether the promotion is applied on a cart automatically if it matches the promotion's rules." },
+        { name: "campaign_id", type: "`string`", optional: true, description: "The ID of the campaign this promotion belongs to." },
+        { name: "campaign", type: "`object`", optional: true, description: "The campaign's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The campaign's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The campaign's name." },
+            { name: "description", type: "`string`", optional: false, description: "The campaign's description." },
+            { name: "currency", type: "`string`", optional: false, description: "The campaign's currency." },
+            { name: "campaign_identifier", type: "`string`", optional: false, description: "The campaign's identifier." },
+            { name: "starts_at", type: "`string`", optional: false, description: "The date and time that the campaign starts." },
+            { name: "ends_at", type: "`string`", optional: false, description: "The date and time that the campaign ends." },
+            { name: "budget", type: "`object`", optional: false, description: "The campaign's budget.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The budget's ID." },
+                { name: "type", type: "`\"spend\"` \\| `\"usage\"`", optional: false, description: "The budget's type. `spend` means the limit is set on the total amount discounted by the campaign's promotions; `usage` means the limit is set on the total number of times the campaign's promotions can be used." },
+                { name: "currency_code", type: "`string`", optional: false, description: "The budget's currency code." },
+                { name: "limit", type: "`number`", optional: false, description: "The budget's limit." },
+                { name: "used", type: "`number`", optional: false, description: "How much of the budget has been used. If the limit is `spend`, this property holds the total amount discounted so far. If the limit is `usage`, it holds the number of times the campaign's promotions have been used so far." },
+                { name: "attribute", type: "`string`", optional: false, description: "The cart attribute to limit the budget by." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the campaign was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the campaign was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the campaign was deleted." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the promotion was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the promotion was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the promotion was deleted." },
+        { name: "status", type: "`\"draft\"` \\| `\"active\"` \\| `\"inactive\"`", optional: true, description: "The promotion's status." },
+        { name: "is_tax_inclusive", type: "`boolean`", optional: true, description: "Whether the promotion is tax inclusive. If enabled, the promotion is applied after tax is calculated." },
+        { name: "limit", type: "`number`", optional: true, description: "The limit of times the promotion can be used." },
+        { name: "used", type: "`number`", optional: true, description: "The number of times the promotion has been used." },
+        { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs for the promotion." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/promotions/rule-attribute-options/\{rule_type\}
+
+**List Rule Attribute Options of a Rule Type**
+
+Retrieve a list of potential rule attributes for the promotion and application method types specified in the query parameters.
+Only the attributes of the rule type specified in the path parameter are retrieved:
+- If `rule_type` is `rules`, the attributes of the promotion's type are retrieved.
+
+- If `rule_type` is `target-rules`, the target rules' attributes of the application method's type are retrieved.
+
+- If `rule_type` is `buy-rules`, the buy rules' attributes of the application method's type are retrieved.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "rule_type", type: "`\"rules\"` \\| `\"target-rules\"` \\| `\"buy-rules\"`", optional: false, description: "The rule type." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "promotion_type", type: "`\"standard\"` \\| `\"buyget\"`", optional: true, description: "The promotion type to retrieve rules for." },
+    { name: "application_method_type", type: "`\"fixed\"` \\| `\"percentage\"`", optional: true, description: "The application method type to retrieve rules for." },
+    { name: "application_method_target_type", type: "`\"items\"` \\| `\"shipping_methods\"` \\| `\"order\"`", optional: true, description: "The application method target type to retrieve rules for." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.promotion.listRuleAttributes("rules", "standard")
+.then(({ attributes }) => {
+  console.log(attributes)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/promotions/rule-attribute-options/{rule_type}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "attributes", type: "`object[]`", optional: false, description: "The list of attributes.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The rule attribute's ID, which is a rule's `attribute` it refers to.", example: "customer_group" },
+        { name: "value", type: "`string`", optional: false, description: "The rule attribute's value.", example: "customer.groups.id" },
+        { name: "label", type: "`string`", optional: false, description: "The rule attribute option's label.", example: "Customer Group" },
+        { name: "operators", type: "`object[]`", optional: false, description: "The attribute's operators.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The operator's ID.", example: "in" },
+            { name: "value", type: "`string`", optional: false, description: "The operator's value.", example: "in" },
+            { name: "label", type: "`string`", optional: false, description: "The operator's label.", example: "In" }
+          ] }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/promotions/rule-value-options/\{rule_type\}/\{rule_attribute_id\}
+
+**List Rule Values Given a Rule Attribute**
+
+Retrieve all potential values for promotion rules and target and buy rules based on the specified rule attribute and type.
+For example, if you provide the ID of the `currency_code` rule attribute, and set `rule_type` to `rules`, a list of currencies are retrieved in label-value pairs.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "rule_type", type: "`\"rules\"` \\| `\"target-rules\"` \\| `\"buy-rules\"`", optional: false, description: "The rule type." },
+    { name: "rule_attribute_id", type: "`string`", optional: false, description: "The rule attribute's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "application_method_target_type", type: "`string`", optional: true, description: "The application method target type to retrieve rules for." },
+    { name: "q", type: "`string`", optional: true, description: "Apply a search query on the rule values' searchable properties." },
+    { name: "value", type: "`string` \\| `string[]`", optional: true, description: "Filter by a specific rule value." },
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.promotion.listRuleValues("rules", "attr_123")
+.then(({ values }) => {
+  console.log(values)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/promotions/rule-value-options/{rule_type}/{rule_attribute_id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "values", type: "`object[]`", optional: false, description: "The list of rule values.", children: [
+        { name: "value", type: "`string`", optional: false, description: "The rule value's value.", example: "reg_123" },
+        { name: "label", type: "`string`", optional: false, description: "The rule value's label.", example: "Europe Region" }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/promotions/\{id\}
+
+**Get a Promotion**
+
+Retrieve a promotion by its ID. You can expand the promotion's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The promotion's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.promotion.retrieve("promo_123")
+.then(({ promotion }) => {
+  console.log(promotion)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/promotions/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "promotion", type: "`object`", optional: false, description: "The promotion's details.", children: [
+        { name: "application_method", type: "`object`", optional: true, description: "The application method's details.", children: [
+            { name: "promotion", type: "`object`", optional: true },
+            { name: "target_rules", type: "`object[]`", optional: true, description: "The application method's target rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+                { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+                { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+                { name: "values", type: "`object[]`", optional: false, description: "The rule's values." }
+              ] },
+            { name: "buy_rules", type: "`object[]`", optional: true, description: "The application method's buy rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+                { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+                { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+                { name: "values", type: "`object[]`", optional: false, description: "The rule's values." }
+              ] },
+            { name: "id", type: "`string`", optional: false, description: "The application method's ID." },
+            { name: "type", type: "`\"fixed\"` \\| `\"percentage\"`", optional: true, description: "The application method's type. If it's `fixed`, the promotion discounts a fixed amount. If it's `percentage`, the promotion discounts a percentage." },
+            { name: "target_type", type: "`\"items\"` \\| `\"shipping_methods\"` \\| `\"order\"`", optional: true, description: "Which item does the promotion apply to. `items` mean the promotion applies to the cart's items; `shipping_methods` means the promotion applies to the cart's shipping methods; `order` means the promotion applies on the entire order." },
+            { name: "allocation", type: "`\"each\"` \\| `\"across\"`", optional: true, description: "How is the promotion amount discounted. `each` means the discounted amount is applied on each applicable item; `across` means the discounted amount is split accross the applicable items." },
+            { name: "value", type: "`number`", optional: true, description: "The amount to be discounted." },
+            { name: "currency_code", type: "`string`", optional: true, description: "The application method's currency code.", example: "usd" },
+            { name: "max_quantity", type: "`number`", optional: true, description: "The max quantity allowed in the cart for the associated promotion to be applied." },
+            { name: "buy_rules_min_quantity", type: "`number`", optional: true, description: "The minimum quantity required for a `buyget` promotion to be applied. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `2`." },
+            { name: "apply_to_quantity", type: "`number`", optional: true, description: "The quantity that results from matching the `buyget` promotion's condition. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `1`." },
+            { name: "target_selection_strategy", type: "`\"most_expensive_first\"` \\| `\"cheapest_first\"`", optional: true, description: "The application method's target selection strategy." }
+          ] },
+        { name: "rules", type: "`object[]`", optional: true, description: "The promotion's rules.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+            { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+            { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+            { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+            { name: "values", type: "`object[]`", optional: false, description: "The rule's values.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+                { name: "value", type: "`string`", optional: true, description: "The value." }
+              ] }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The promotion's ID." },
+        { name: "code", type: "`string`", optional: true, description: "The promotion's code.", example: "OFF50" },
+        { name: "type", type: "`\"standard\"` \\| `\"buyget\"`", optional: true, description: "The promotion's type." },
+        { name: "is_automatic", type: "`boolean`", optional: true, description: "Whether the promotion is applied on a cart automatically if it matches the promotion's rules." },
+        { name: "campaign_id", type: "`string`", optional: true, description: "The ID of the campaign this promotion belongs to." },
+        { name: "campaign", type: "`object`", optional: true, description: "The campaign's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The campaign's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The campaign's name." },
+            { name: "description", type: "`string`", optional: false, description: "The campaign's description." },
+            { name: "currency", type: "`string`", optional: false, description: "The campaign's currency." },
+            { name: "campaign_identifier", type: "`string`", optional: false, description: "The campaign's identifier." },
+            { name: "starts_at", type: "`string`", optional: false, description: "The date and time that the campaign starts." },
+            { name: "ends_at", type: "`string`", optional: false, description: "The date and time that the campaign ends." },
+            { name: "budget", type: "`object`", optional: false, description: "The campaign's budget.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The budget's ID." },
+                { name: "type", type: "`\"spend\"` \\| `\"usage\"`", optional: false, description: "The budget's type. `spend` means the limit is set on the total amount discounted by the campaign's promotions; `usage` means the limit is set on the total number of times the campaign's promotions can be used." },
+                { name: "currency_code", type: "`string`", optional: false, description: "The budget's currency code." },
+                { name: "limit", type: "`number`", optional: false, description: "The budget's limit." },
+                { name: "used", type: "`number`", optional: false, description: "How much of the budget has been used. If the limit is `spend`, this property holds the total amount discounted so far. If the limit is `usage`, it holds the number of times the campaign's promotions have been used so far." },
+                { name: "attribute", type: "`string`", optional: false, description: "The cart attribute to limit the budget by." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the campaign was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the campaign was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the campaign was deleted." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the promotion was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the promotion was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the promotion was deleted." },
+        { name: "status", type: "`\"draft\"` \\| `\"active\"` \\| `\"inactive\"`", optional: true, description: "The promotion's status." },
+        { name: "is_tax_inclusive", type: "`boolean`", optional: true, description: "Whether the promotion is tax inclusive. If enabled, the promotion is applied after tax is calculated." },
+        { name: "limit", type: "`number`", optional: true, description: "The limit of times the promotion can be used." },
+        { name: "used", type: "`number`", optional: true, description: "The number of times the promotion has been used." },
+        { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs for the promotion." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/promotions/\{id\}
+
+**Update a Promotion**
+
+Update a promotion's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The promotion's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "code", type: "`string`", optional: true, description: "The promotion's code." },
+    { name: "is_automatic", type: "`boolean`", optional: true, description: "Whether the promotion is applied automatically." },
+    { name: "type", type: "`\"standard\"` \\| `\"buyget\"`", optional: true, description: "The promotion's type." },
+    { name: "campaign_id", type: "`string`", optional: false, description: "The ID of the campaign that the promotion belongs to." },
+    { name: "application_method", type: "`object`", optional: true, description: "The properties to update in the application method.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The application method's ID." },
+        { name: "description", type: "`string`", optional: false, description: "The application method's description." },
+        { name: "value", type: "`number`", optional: true, description: "The discounted amount applied by the associated promotion based on the `type`." },
+        { name: "max_quantity", type: "`number`", optional: false, description: "The max quantity allowed in the cart for the associated promotion to be applied." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The application method's currency code." },
+        { name: "type", type: "`\"fixed\"` \\| `\"percentage\"`", optional: true, description: "The type of the application method indicating how the associated promotion is applied." },
+        { name: "target_type", type: "`\"order\"` \\| `\"shipping_methods\"` \\| `\"items\"`", optional: true, description: "The target type of the application method indicating whether the associated promotion is applied to the cart's items, shipping methods, or the whole order." },
+        { name: "allocation", type: "`\"each\"` \\| `\"across\"`", optional: true, description: "The allocation value that indicates whether the associated promotion is applied on each item in a cart or split between the items in the cart." },
+        { name: "apply_to_quantity", type: "`number`", optional: false, description: "The quantity that results from matching the `buyget` promotion's condition. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value f this attribute is `1`." },
+        { name: "buy_rules_min_quantity", type: "`number`", optional: false, description: "The minimum quantity required for a `buyget` promotion to be applied. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `2`." }
+      ] },
+    { name: "additional_data", type: "`object`", optional: true, description: "Pass additional custom data to the API route. This data is passed to the underlying workflow under the `additional_data` parameter." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.promotion.update("promo_123", {
+  code: "PROMO123",
+})
+.then(({ promotion }) => {
+  console.log(promotion)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/promotions/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "campaign_id": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "promotion", type: "`object`", optional: false, description: "The promotion's details.", children: [
+        { name: "application_method", type: "`object`", optional: true, description: "The application method's details.", children: [
+            { name: "promotion", type: "`object`", optional: true },
+            { name: "target_rules", type: "`object[]`", optional: true, description: "The application method's target rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+                { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+                { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+                { name: "values", type: "`object[]`", optional: false, description: "The rule's values." }
+              ] },
+            { name: "buy_rules", type: "`object[]`", optional: true, description: "The application method's buy rules.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+                { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+                { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+                { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+                { name: "values", type: "`object[]`", optional: false, description: "The rule's values." }
+              ] },
+            { name: "id", type: "`string`", optional: false, description: "The application method's ID." },
+            { name: "type", type: "`\"fixed\"` \\| `\"percentage\"`", optional: true, description: "The application method's type. If it's `fixed`, the promotion discounts a fixed amount. If it's `percentage`, the promotion discounts a percentage." },
+            { name: "target_type", type: "`\"items\"` \\| `\"shipping_methods\"` \\| `\"order\"`", optional: true, description: "Which item does the promotion apply to. `items` mean the promotion applies to the cart's items; `shipping_methods` means the promotion applies to the cart's shipping methods; `order` means the promotion applies on the entire order." },
+            { name: "allocation", type: "`\"each\"` \\| `\"across\"`", optional: true, description: "How is the promotion amount discounted. `each` means the discounted amount is applied on each applicable item; `across` means the discounted amount is split accross the applicable items." },
+            { name: "value", type: "`number`", optional: true, description: "The amount to be discounted." },
+            { name: "currency_code", type: "`string`", optional: true, description: "The application method's currency code.", example: "usd" },
+            { name: "max_quantity", type: "`number`", optional: true, description: "The max quantity allowed in the cart for the associated promotion to be applied." },
+            { name: "buy_rules_min_quantity", type: "`number`", optional: true, description: "The minimum quantity required for a `buyget` promotion to be applied. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `2`." },
+            { name: "apply_to_quantity", type: "`number`", optional: true, description: "The quantity that results from matching the `buyget` promotion's condition. For example, if the promotion is a \"Buy 2 shirts get 1 free\", the value of this attribute is `1`." },
+            { name: "target_selection_strategy", type: "`\"most_expensive_first\"` \\| `\"cheapest_first\"`", optional: true, description: "The application method's target selection strategy." }
+          ] },
+        { name: "rules", type: "`object[]`", optional: true, description: "The promotion's rules.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+            { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+            { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+            { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+            { name: "values", type: "`object[]`", optional: false, description: "The rule's values.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+                { name: "value", type: "`string`", optional: true, description: "The value." }
+              ] }
+          ] },
+        { name: "id", type: "`string`", optional: false, description: "The promotion's ID." },
+        { name: "code", type: "`string`", optional: true, description: "The promotion's code.", example: "OFF50" },
+        { name: "type", type: "`\"standard\"` \\| `\"buyget\"`", optional: true, description: "The promotion's type." },
+        { name: "is_automatic", type: "`boolean`", optional: true, description: "Whether the promotion is applied on a cart automatically if it matches the promotion's rules." },
+        { name: "campaign_id", type: "`string`", optional: true, description: "The ID of the campaign this promotion belongs to." },
+        { name: "campaign", type: "`object`", optional: true, description: "The campaign's details.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The campaign's ID." },
+            { name: "name", type: "`string`", optional: false, description: "The campaign's name." },
+            { name: "description", type: "`string`", optional: false, description: "The campaign's description." },
+            { name: "currency", type: "`string`", optional: false, description: "The campaign's currency." },
+            { name: "campaign_identifier", type: "`string`", optional: false, description: "The campaign's identifier." },
+            { name: "starts_at", type: "`string`", optional: false, description: "The date and time that the campaign starts." },
+            { name: "ends_at", type: "`string`", optional: false, description: "The date and time that the campaign ends." },
+            { name: "budget", type: "`object`", optional: false, description: "The campaign's budget.", children: [
+                { name: "id", type: "`string`", optional: false, description: "The budget's ID." },
+                { name: "type", type: "`\"spend\"` \\| `\"usage\"`", optional: false, description: "The budget's type. `spend` means the limit is set on the total amount discounted by the campaign's promotions; `usage` means the limit is set on the total number of times the campaign's promotions can be used." },
+                { name: "currency_code", type: "`string`", optional: false, description: "The budget's currency code." },
+                { name: "limit", type: "`number`", optional: false, description: "The budget's limit." },
+                { name: "used", type: "`number`", optional: false, description: "How much of the budget has been used. If the limit is `spend`, this property holds the total amount discounted so far. If the limit is `usage`, it holds the number of times the campaign's promotions have been used so far." },
+                { name: "attribute", type: "`string`", optional: false, description: "The cart attribute to limit the budget by." }
+              ] },
+            { name: "created_at", type: "`string`", optional: false, description: "The date the campaign was created." },
+            { name: "updated_at", type: "`string`", optional: false, description: "The date the campaign was updated." },
+            { name: "deleted_at", type: "`string`", optional: false, description: "The date the campaign was deleted." }
+          ] },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the promotion was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the promotion was updated." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the promotion was deleted." },
+        { name: "status", type: "`\"draft\"` \\| `\"active\"` \\| `\"inactive\"`", optional: true, description: "The promotion's status." },
+        { name: "is_tax_inclusive", type: "`boolean`", optional: true, description: "Whether the promotion is tax inclusive. If enabled, the promotion is applied after tax is calculated." },
+        { name: "limit", type: "`number`", optional: true, description: "The limit of times the promotion can be used." },
+        { name: "used", type: "`number`", optional: true, description: "The number of times the promotion has been used." },
+        { name: "metadata", type: "`object`", optional: true, description: "Custom key-value pairs for the promotion." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/promotions/\{id\}
+
+**Delete a Promotion**
+
+Delete a promotion.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The promotion's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.promotion.delete("promo_123")
+.then(({ promotion }) => {
+  console.log(promotion)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/promotions/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The promotion's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"promotion\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the promotion was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/promotions/\{id\}/buy-rules/batch
+
+**Manage the Buy Rules of a Promotion**
+
+Manage the buy rules of a `buyget` promotion to create, update, or delete them.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The promotion's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "promotion_type", type: "`\"standard\"` \\| `\"buyget\"`", optional: true, description: "The promotion's type." },
+    { name: "application_method_type", type: "`\"fixed\"` \\| `\"percentage\"`", optional: true, description: "The promotion's application method type." },
+    { name: "application_method_target_type", type: "`\"items\"` \\| `\"shipping_methods\"` \\| `\"order\"`", optional: true, description: "The promotion's application method target type." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "create", type: "`object[]`", optional: true, description: "The buy rules to create.", children: [
+        { name: "operator", type: "`\"gte\"` \\| `\"lte\"` \\| `\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"`", optional: false, description: "The operator used to check whether the buy rule applies on a cart. For example, `eq` means that the cart's value for the specified attribute must match the specified value." },
+        { name: "description", type: "`string`", optional: true, description: "The rule's description." },
+        { name: "attribute", type: "`string`", optional: false, description: "The attribute to compare against when checking whether a promotion can be applied on a cart.", example: "items.product.id" },
+        { name: "values", type: "`string` \\| `string[]`", optional: false, description: "The attribute's value." }
+      ] },
+    { name: "update", type: "`object[]`", optional: true, description: "The buy rules to update.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The buy rule's ID." },
+        { name: "operator", type: "`\"gte\"` \\| `\"lte\"` \\| `\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"`", optional: true, description: "The operator used to check whether the buy rule applies on a cart. For example, `eq` means that the cart's value for the specified attribute must match the specified value." },
+        { name: "description", type: "`string`", optional: true, description: "The buy rule's description." },
+        { name: "attribute", type: "`string`", optional: true, description: "The attribute to compare against when checking whether a promotion can be applied on a cart.", example: "items.product.id" },
+        { name: "values", type: "`string` \\| `string[]`", optional: false, description: "The attribute's value." }
+      ] },
+    { name: "delete", type: "`string[]`", optional: true, description: "The buy rules to delete." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/promotions/{id}/buy-rules/batch' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "created", type: "`object[]`", optional: false, description: "The created buy rules.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+        { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+        { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+        { name: "values", type: "`object[]`", optional: false, description: "The rule's values.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+            { name: "value", type: "`string`", optional: true, description: "The value." }
+          ] }
+      ] },
+    { name: "updated", type: "`object[]`", optional: false, description: "The updated buy rules.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+        { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+        { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+        { name: "values", type: "`object[]`", optional: false, description: "The rule's values.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+            { name: "value", type: "`string`", optional: true, description: "The value." }
+          ] }
+      ] },
+    { name: "deleted", type: "`object`", optional: false, description: "The details of the deleted buy rules.", children: [
+        { name: "ids", type: "`string[]`", optional: false, description: "The IDs of the buy rules that were deleted." },
+        { name: "object", type: "`string`", optional: false, description: "The name of the object that was deleted.", defaultValue: "\"promotion-rule\"" },
+        { name: "deleted", type: "`boolean`", optional: false, description: "Whether the buy rules were deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/promotions/\{id\}/rules/batch
+
+**Manage a Promotion's Rules**
+
+Manage the rules of a promotion to create, update, or delete them.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The promotion's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "promotion_type", type: "`\"standard\"` \\| `\"buyget\"`", optional: true, description: "The promotion's type." },
+    { name: "application_method_type", type: "`\"fixed\"` \\| `\"percentage\"`", optional: true, description: "The promotion's application method type." },
+    { name: "application_method_target_type", type: "`\"items\"` \\| `\"shipping_methods\"` \\| `\"order\"`", optional: true, description: "The promotion's application method target type." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "create", type: "`object[]`", optional: true, description: "The rules to create.", children: [
+        { name: "operator", type: "`\"gte\"` \\| `\"lte\"` \\| `\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"`", optional: false, description: "The operator used to check whether the buy rule applies on a cart. For example, `eq` means that the cart's value for the specified attribute must match the specified value." },
+        { name: "description", type: "`string`", optional: true, description: "The rule's description." },
+        { name: "attribute", type: "`string`", optional: false, description: "The attribute to compare against when checking whether a promotion can be applied on a cart.", example: "items.product.id" },
+        { name: "values", type: "`string` \\| `string[]`", optional: false, description: "The attribute's value." }
+      ] },
+    { name: "update", type: "`object[]`", optional: true, description: "The rules to update.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The buy rule's ID." },
+        { name: "operator", type: "`\"gte\"` \\| `\"lte\"` \\| `\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"`", optional: true, description: "The operator used to check whether the buy rule applies on a cart. For example, `eq` means that the cart's value for the specified attribute must match the specified value." },
+        { name: "description", type: "`string`", optional: true, description: "The buy rule's description." },
+        { name: "attribute", type: "`string`", optional: true, description: "The attribute to compare against when checking whether a promotion can be applied on a cart.", example: "items.product.id" },
+        { name: "values", type: "`string` \\| `string[]`", optional: false, description: "The attribute's value." }
+      ] },
+    { name: "delete", type: "`string[]`", optional: true, description: "The rules to delete." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/promotions/{id}/rules/batch' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "created", type: "`object[]`", optional: false, description: "The created rules.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+        { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+        { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+        { name: "values", type: "`object[]`", optional: false, description: "The rule's values.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+            { name: "value", type: "`string`", optional: true, description: "The value." }
+          ] }
+      ] },
+    { name: "updated", type: "`object[]`", optional: false, description: "The updated rules.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+        { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+        { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+        { name: "values", type: "`object[]`", optional: false, description: "The rule's values.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+            { name: "value", type: "`string`", optional: true, description: "The value." }
+          ] }
+      ] },
+    { name: "deleted", type: "`object`", optional: false, description: "The details of the deleted buy rules.", children: [
+        { name: "ids", type: "`string[]`", optional: false, description: "The IDs of the deleted rules." },
+        { name: "object", type: "`string`", optional: false, description: "The name of the object that was deleted.", defaultValue: "\"promotion-rule\"" },
+        { name: "deleted", type: "`boolean`", optional: false, description: "Whether the rules were deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/promotions/\{id\}/target-rules/batch
+
+**Manage Target Rules of a Promotion**
+
+Manage the target rules of a promotion to create, update, or delete them.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The promotion's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "promotion_type", type: "`\"standard\"` \\| `\"buyget\"`", optional: true, description: "The promotion's type." },
+    { name: "application_method_type", type: "`\"fixed\"` \\| `\"percentage\"`", optional: true, description: "The promotion's application method type." },
+    { name: "application_method_target_type", type: "`\"items\"` \\| `\"shipping_methods\"` \\| `\"order\"`", optional: true, description: "The promotion's application method target type." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "create", type: "`object[]`", optional: true, description: "The target rules to create.", children: [
+        { name: "operator", type: "`\"gte\"` \\| `\"lte\"` \\| `\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"`", optional: false, description: "The operator used to check whether the buy rule applies on a cart. For example, `eq` means that the cart's value for the specified attribute must match the specified value." },
+        { name: "description", type: "`string`", optional: true, description: "The rule's description." },
+        { name: "attribute", type: "`string`", optional: false, description: "The attribute to compare against when checking whether a promotion can be applied on a cart.", example: "items.product.id" },
+        { name: "values", type: "`string` \\| `string[]`", optional: false, description: "The attribute's value." }
+      ] },
+    { name: "update", type: "`object[]`", optional: true, description: "The target rules to update.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The buy rule's ID." },
+        { name: "operator", type: "`\"gte\"` \\| `\"lte\"` \\| `\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"`", optional: true, description: "The operator used to check whether the buy rule applies on a cart. For example, `eq` means that the cart's value for the specified attribute must match the specified value." },
+        { name: "description", type: "`string`", optional: true, description: "The buy rule's description." },
+        { name: "attribute", type: "`string`", optional: true, description: "The attribute to compare against when checking whether a promotion can be applied on a cart.", example: "items.product.id" },
+        { name: "values", type: "`string` \\| `string[]`", optional: false, description: "The attribute's value." }
+      ] },
+    { name: "delete", type: "`string[]`", optional: true, description: "The target rules to delete." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/promotions/{id}/target-rules/batch' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "created", type: "`object[]`", optional: false, description: "The created target rules.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+        { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+        { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+        { name: "values", type: "`object[]`", optional: false, description: "The rule's values.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+            { name: "value", type: "`string`", optional: true, description: "The value." }
+          ] }
+      ] },
+    { name: "updated", type: "`object[]`", optional: false, description: "The updated target rules.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+        { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+        { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+        { name: "values", type: "`object[]`", optional: false, description: "The rule's values.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+            { name: "value", type: "`string`", optional: true, description: "The value." }
+          ] }
+      ] },
+    { name: "deleted", type: "`object`", optional: false, description: "The details of the deleted target rules.", children: [
+        { name: "ids", type: "`string[]`", optional: false, description: "The IDs of deleted target rules." },
+        { name: "object", type: "`string`", optional: false, description: "The name of the object that was deleted.", defaultValue: "\"promotion-rule\"" },
+        { name: "deleted", type: "`boolean`", optional: false, description: "Whether the target rules were deleted." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/promotions/\{id\}/\{rule_type\}
+
+**List Rules of a Promotion**
+
+Retrieve a list of rules in a promotion. The type of rules retrieved depend on the value of the `rule_type` path parameter:
+- If `rule_type` is `rules`, the promotion's rules are retrivied. - If `rule_type` is `target-rules`, the target rules of the promotion's application method are retrieved.
+
+- If `rule_type` is `buy-rules`, the buy rules of the promotion's application method are retrieved.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The promotion's ID." },
+    { name: "rule_type", type: "`\"rules\"` \\| `\"target-rules\"` \\| `\"buy-rules\"`", optional: false, description: "The type of rules to retrieve." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "promotion_type", type: "`\"standard\"` \\| `\"buyget\"`", optional: true, description: "The type" },
+    { name: "application_method_type", type: "`\"fixed\"` \\| `\"percentage\"`", optional: true, description: "The promotion's application method type." },
+    { name: "application_method_target_type", type: "`\"items\"` \\| `\"shipping_methods\"` \\| `\"order\"`", optional: true, description: "The promotion's application method target type." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.promotion.listRules("promo_123", "rules")
+.then(({ rules }) => {
+  console.log(rules)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/promotions/{id}/{rule_type}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "rules", type: "`object[]`", optional: false, description: "The list of promotion rules.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The promotion rule's ID." },
+        { name: "description", type: "`string`", optional: true, description: "The promotion rule's description." },
+        { name: "attribute", type: "`string`", optional: true, description: "The promotion rule's attribute.", example: "customer_group_id" },
+        { name: "operator", type: "`\"gt\"` \\| `\"lt\"` \\| `\"eq\"` \\| `\"ne\"` \\| `\"in\"` \\| `\"lte\"` \\| `\"gte\"`", optional: true, description: "The rule's operator." },
+        { name: "values", type: "`object[]`", optional: false, description: "The rule's values.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The value's ID." },
+            { name: "value", type: "`string`", optional: true, description: "The value." }
+          ] }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

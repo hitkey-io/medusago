@@ -1,0 +1,107 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Index API Routes`,
+}
+
+# {metadata.title}
+
+The Index Module is a tool to perform high-performance queries across modules, for example, to filter linked modules.
+The Index Module is currently experimental and is hidden behind a feature flag. Learn more about it and how to enable it in the Index Module guide.
+
+## GET /admin/index/details
+
+**Get Index Details**
+
+Retrieve index metadata, including entity type, status, last synced key, and last updated timestamp.
+
+<Note title="Feature flag">
+
+This API route is only available when the `index_engine` feature flag is enabled. Set the `MEDUSA_FF_INDEX_ENGINE` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/index/details' \
+-H 'Authorization: Bearer {access_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "metadata", type: "`object[]`", optional: false, description: "The index's metadata.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The index's ID." },
+        { name: "entity", type: "`string`", optional: false, description: "The index's entity." },
+        { name: "status", type: "`\"pending\"` \\| `\"error\"` \\| `\"done\"` \\| `\"processing\"`", optional: false, description: "The index's syncing or ingesting status." },
+        { name: "fields", type: "`string[]`", optional: false, description: "The index's fields." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the index was last updated." },
+        { name: "last_synced_key", type: "`string`", optional: false, description: "The key of the last index sync." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/index/sync
+
+**Trigger Index Sync**
+
+Trigger reindexing or re-ingestion of the Index Module.
+
+<Note title="Feature flag">
+
+This API route is only available when the `index_engine` feature flag is enabled. Set the `MEDUSA_FF_INDEX_ENGINE` environment variable to `true` to enable it.
+
+</Note>
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "strategy", type: "`\"full\"` \\| `\"reset\"`", optional: false, description: "The syncing strategy. `full` indicates a full reindex, while `reset` truncates tables and performs a fresh sync." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/index/sync' \
+-H 'Authorization: Bearer {access_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "strategy": "full"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK. The response body has the content type `text/plain`.
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

@@ -1,0 +1,313 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Uploads API Routes`,
+}
+
+# {metadata.title}
+
+Use these API routes to upload files to your MedusaGo application using the installed file module provider.
+
+You can upload public files, such as product images, or private files, such as CSV files used to import products.
+
+## POST /admin/uploads
+
+**Upload Files**
+
+Upload files to the configured File Module Provider.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "(body)", type: "`object` \\| `object[]`", optional: false, description: "The files to upload.", children: [
+        { name: "files", type: "`object[]`", optional: false, description: "The upload's files.", children: [
+            { name: "name", type: "`string`", optional: false, description: "The file's name." },
+            { name: "content", type: "`string`", optional: false, description: "The file's content." }
+          ] }
+      ] }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.upload.create(
+  {
+    files: [
+       // file uploaded as a binary string
+      {
+        name: "test.txt",
+        content: "test", // Should be the binary string of the file
+      },
+      // file uploaded as a File object
+      new File(["test"], "test.txt", { type: "text/plain" })
+    ],
+  }
+)
+.then(({ files }) => {
+  console.log(files)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/uploads' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "files", type: "`object[]`", optional: false, description: "The list of uploaded files.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The file's ID." },
+        { name: "url", type: "`string`", optional: false, description: "The file's URL." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/uploads/presigned-urls
+
+**Get Presigned Upload URL**
+
+Get a presigned URL for uploading a file to the configured File Module Provider. The presigned URL can be used to upload files directly to the third-party provider. This only works if your configured provider supports presigned URLs, such as the S3 provider.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "originalname", type: "`string`", optional: false, description: "The file's original name." },
+    { name: "size", type: "`number`", optional: false, description: "The file's size in bytes." },
+    { name: "mime_type", type: "`string`", optional: false, description: "The file's mime type.", example: "text/csv" },
+    { name: "access", type: "`\"public\"` \\| `\"private\"`", optional: true, description: "The access level of the file. If `private`, the file will not be publicly accessible. The default value depends on the configured File Module Provider." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.upload.presignedUrl({
+  name: "test.txt",
+  size: 1000,
+  type: "text/plain",
+}))
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/uploads/presigned-urls' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "originalname": "{value}",
+  "size": 43,
+  "mime_type": "{value}"
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "url", type: "`string`", optional: false, description: "The file's pre-signed upload URL." },
+    { name: "filename", type: "`string`", optional: false, description: "The file's filename." },
+    { name: "originalname", type: "`string`", optional: false, description: "The file's orignal name." },
+    { name: "mime_type", type: "`string`", optional: false, description: "The file's mime type.", example: "text/csv" },
+    { name: "extension", type: "`string`", optional: false, description: "The file's extension.", example: "csv" },
+    { name: "size", type: "`number`", optional: false, description: "The file's size in bytes." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## GET /admin/uploads/\{id\}
+
+**Get a File**
+
+Retrieve an uploaded file by its ID. You can expand the file's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The upload's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.upload.retrieve("test.txt")
+.then(({ file }) => {
+  console.log(file)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/uploads/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "file", type: "`object`", optional: false, description: "A file's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The file's ID." },
+        { name: "url", type: "`string`", optional: false, description: "The file's URL." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## DELETE /admin/uploads/\{id\}
+
+**Delete a File**
+
+Delete a file. Uses the installed file module provider to delete the file.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The file's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.upload.delete("test.txt")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/uploads/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The file's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"file\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the file was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.

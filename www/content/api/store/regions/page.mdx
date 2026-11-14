@@ -1,0 +1,229 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Regions API Routes`,
+}
+
+# {metadata.title}
+
+Regions are different countries or geographical regions that the commerce store serves customers in.
+
+Customers can choose what region they're in to view prices of that region's currency.
+
+Use these API routes to retrieve available regions in the store.
+
+## GET /store/regions
+
+**List Regions**
+
+Retrieve a list of regions. The regions can be filtered by fields such as `id`. The regions can also be sorted or paginated.
+
+**Authentication:** none.
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter the region's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a region's ID." },
+    { name: "name", type: "`string` \\| `string[]`", optional: true, description: "Filter by a region name." },
+    { name: "currency_code", type: "`string` \\| `string[]`", optional: true, description: "Filter by a currency code to retrieve regions that use that code." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.region.list()
+.then(({ regions, count, limit, offset }) => {
+  console.log(regions)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/regions' \
+-H 'x-publishable-api-key: {your_publishable_api_key}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "regions", type: "`object[]`", optional: false, description: "The list of regions.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The region's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The region's name." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The region's currency code.", example: "usd" },
+        { name: "automatic_taxes", type: "`boolean`", optional: true, description: "Whether taxes are calculated automatically during checkout for carts that belong to this region." },
+        { name: "countries", type: "`object[]`", optional: true, description: "The region's countries.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The country's ID." },
+            { name: "iso_2", type: "`string`", optional: true, description: "The country's iso 2.", example: "us" },
+            { name: "iso_3", type: "`string`", optional: true, description: "The country's iso 3.", example: "usa" },
+            { name: "num_code", type: "`string`", optional: true, description: "The country's num code.", example: "840" },
+            { name: "name", type: "`string`", optional: true, description: "The country's name." },
+            { name: "display_name", type: "`string`", optional: true, description: "The country's display name." }
+          ] },
+        { name: "payment_providers", type: "`object[]`", optional: true, description: "The region's payment providers.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "Whether the payment provider is enabled." }
+          ] },
+        { name: "metadata", type: "`object`", optional: true, description: "The region's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the region was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the region was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.
+
+---
+
+## GET /store/regions/\{id\}
+
+**Get a Region**
+
+Retrieve a region by its ID. You can expand the region's relations or select the fields that should be returned.
+
+**Authentication:** none.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The region's ID." }
+  ]}
+/>
+
+**Header parameters**
+
+<TypeList
+  types={[
+    { name: "x-publishable-api-key", type: "`string`", optional: false, description: "Publishable API Key created in the Medusa Admin." },
+    { name: "x-medusa-locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields." },
+    { name: "locale", type: "`string`", optional: true, description: "The locale in BCP 47 format to retrieve localized content.", example: "en-US" }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+let MEDUSA_BACKEND_URL = "http://localhost:9000"
+
+if (process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL) {
+  MEDUSA_BACKEND_URL = process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+}
+
+export const sdk = new Medusa({
+  baseUrl: MEDUSA_BACKEND_URL,
+  debug: process.env.NODE_ENV === "development",
+  publishableKey: process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY,
+})
+
+sdk.store.region.retrieve("reg_123")
+.then(({ region }) => {
+  console.log(region)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/store/regions/{id}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "region", type: "`object`", optional: false, description: "The region's details.", children: [
+        { name: "id", type: "`string`", optional: false, description: "The region's ID." },
+        { name: "name", type: "`string`", optional: false, description: "The region's name." },
+        { name: "currency_code", type: "`string`", optional: false, description: "The region's currency code.", example: "usd" },
+        { name: "automatic_taxes", type: "`boolean`", optional: true, description: "Whether taxes are calculated automatically during checkout for carts that belong to this region." },
+        { name: "countries", type: "`object[]`", optional: true, description: "The region's countries.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The country's ID." },
+            { name: "iso_2", type: "`string`", optional: true, description: "The country's iso 2.", example: "us" },
+            { name: "iso_3", type: "`string`", optional: true, description: "The country's iso 3.", example: "usa" },
+            { name: "num_code", type: "`string`", optional: true, description: "The country's num code.", example: "840" },
+            { name: "name", type: "`string`", optional: true, description: "The country's name." },
+            { name: "display_name", type: "`string`", optional: true, description: "The country's display name." }
+          ] },
+        { name: "payment_providers", type: "`object[]`", optional: true, description: "The region's payment providers.", children: [
+            { name: "id", type: "`string`", optional: false, description: "The payment provider's ID." },
+            { name: "is_enabled", type: "`boolean`", optional: false, description: "Whether the payment provider is enabled." }
+          ] },
+        { name: "metadata", type: "`object`", optional: true, description: "The region's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/store#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: true, description: "The date the region was created." },
+        { name: "updated_at", type: "`string`", optional: true, description: "The date the region was updated." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/store#errors) is returned.

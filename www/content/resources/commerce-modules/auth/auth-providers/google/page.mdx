@@ -1,0 +1,108 @@
+import { Table, Prerequisites } from "docs-ui"
+
+export const metadata = {
+  title: `Google Auth Module Provider`,
+}
+
+# {metadata.title}
+
+In this guide, you’ll learn about the Google Auth Module Provider and how to install and use it in the Auth Module.
+
+The Google Auth Module Provider allows you to authenticate users with their Google account.
+
+### Environment Variables
+
+Make sure to add the necessary environment variables for the above options in `.env`:
+
+```plain
+GOOGLE_CLIENT_ID=<YOUR_GOOGLE_CLIENT_ID>
+GOOGLE_CLIENT_SECRET=<YOUR_GOOGLE_CLIENT_SECRET>
+GOOGLE_CALLBACK_URL=<YOUR_GOOGLE_CALLBACK_URL>
+```
+
+### Module Options
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        Configuration
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+      <Table.HeaderCell className="w-1/5">
+        Required
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+      
+      `clientId`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      A string indicating the [Google API Client ID](https://developers.google.com/identity/oauth2/web/guides/get-google-api-clientid).
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      Yes
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `clientSecret`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      A string indicating the [Google Client Secret](https://support.google.com/cloud/answer/6158849?hl=en#zippy=%2Cstep-create-a-new-client-secret).
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      Yes
+      
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+      
+      `callbackUrl`
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      A string indicating the URL to redirect to in your frontend after the user completes their authentication in Google.
+
+      At this URL, the frontend will receive a `code` query parameter. It then sends that  `code` query parameter to the MedusaGo application's `/auth/{actor_type}/google/callback` route.
+      
+      </Table.Cell>
+      <Table.Cell>
+      
+      Yes
+      
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## Override Callback URL During Authentication
+
+In many cases, you may have different callback URLs for actor types. For example, you may redirect admin users to a different URL than customers after authentication.
+
+The [Authenticate or Login API Route](../../authentication-route/page.mdx#login-route) can accept a `callback_url` body parameter to override the provider's `callbackUrl` option. Learn more in [this documentation](../../authentication-route/page.mdx#login-route).
+
+---
+
+## Examples
+
+- [How to implement Google social login in the storefront](../../../../storefront-development/customers/third-party-login/page.mdx)

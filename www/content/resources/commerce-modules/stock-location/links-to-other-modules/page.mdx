@@ -1,0 +1,126 @@
+---
+products:
+  - fulfillment
+  - inventory
+  - sales channel
+---
+
+import { CodeTabs, CodeTab, Table } from "docs-ui"
+
+export const metadata = {
+  title: `Links between Stock Location Module and Other Modules`,
+}
+
+# {metadata.title}
+
+This document showcases the module links defined between the Stock Location Module and other Commerce Modules.
+
+## Summary
+
+The Stock Location Module has the following links to other modules:
+
+<Note title="Tip">
+
+Read-only links are used to query data across modules, but the relations aren't stored in a pivot table in the database.
+
+</Note>
+
+<Table>
+  <Table.Header>
+    <Table.Row>
+      <Table.HeaderCell>
+        First Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Second Data Model
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Type
+      </Table.HeaderCell>
+      <Table.HeaderCell>
+        Description
+      </Table.HeaderCell>
+    </Table.Row>
+  </Table.Header>
+  <Table.Body>
+    <Table.Row>
+      <Table.Cell>
+        [FulfillmentSet](/references/fulfillment/models/FulfillmentSet) in [Fulfillment Module](../../fulfillment/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [StockLocation](/references/stock-location-next/models/StockLocation)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-one
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#fulfillment-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [FulfillmentProvider](/references/fulfillment/models/FulfillmentProvider) in [Fulfillment Module](../../fulfillment/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [StockLocation](/references/stock-location-next/models/StockLocation)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#fulfillment-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [InventoryLevel](/references/inventory-next/models/InventoryLevel) in [Inventory Module](../../inventory/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [StockLocation](/references/stock-location-next/models/StockLocation)
+      </Table.Cell>
+      <Table.Cell>
+        Read-only - has many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#inventory-module)
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        [SalesChannel](/references/sales-channel/models/SalesChannel) in [Sales Channel Module](../../sales-channel/page.mdx)
+      </Table.Cell>
+      <Table.Cell>
+        [StockLocation](/references/stock-location-next/models/StockLocation)
+      </Table.Cell>
+      <Table.Cell>
+        Stored - many-to-many
+      </Table.Cell>
+      <Table.Cell>
+        [Learn more](#sales-channel-module)
+      </Table.Cell>
+    </Table.Row>
+  </Table.Body>
+</Table>
+
+---
+
+## Fulfillment Module
+
+A fulfillment set can be conditioned to a specific stock location.
+
+Medusa defines a link between the `FulfillmentSet` and `StockLocation` data models.
+
+
+Medusa also defines a link between the `FulfillmentProvider` and `StockLocation` data models to indicate the providers that can be used in a location.
+
+
+## Inventory Module
+
+Medusa defines a read-only link between the [Inventory Module](../../inventory/page.mdx)'s `InventoryLevel` data model and the `StockLocation` data model. Because the link is read-only from the `InventoryLevel`'s side, you can only retrieve the stock location of an inventory level, and not the other way around.
+
+## Sales Channel Module
+
+A stock location is associated with a sales channel. This scopes inventory quantities in a stock location by the associated sales channel.
+
+Medusa defines a link between the `SalesChannel` and `StockLocation` data models.
+

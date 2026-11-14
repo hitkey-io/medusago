@@ -1,0 +1,622 @@
+---
+generate_toc: true
+---
+
+import { CodeTabs, CodeTab, TypeList } from "docs-ui"
+
+export const metadata = {
+  title: `Product Categories API Routes`,
+}
+
+# {metadata.title}
+
+Products can be categorized into categories.
+
+Categories are nested and their heirarchy can be managed, giving admin users flexibility in how they categorize their products.
+
+These API routes allow admin users to manage categories and the products in them.
+
+## GET /admin/product-categories
+
+**List Product Categories**
+
+Retrieve a list of product categories. The product categories can be filtered by fields such as `id`. The product categories can also be sorted or paginated.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the Retrieve Custom Links documentation." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "q", type: "`string`", optional: true, description: "Search term to filter on the product category's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a product category's ID." },
+    { name: "description", type: "`string` \\| `string[]`", optional: true, description: "Filter by the category's description. This performs a full-text search. To do keyword search, use the `q` parameter instead." },
+    { name: "handle", type: "`string` \\| `string[]`", optional: true, description: "Filter by a category's handle." },
+    { name: "parent_category_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by a parent category's ID to retrieve its child categories." },
+    { name: "include_ancestors_tree", type: "`boolean`", optional: true, description: "Whether to include the parent category of each category. If you enable this, add to the `fields` query parameter `parent_category` to set the parent of a category in this field. You can either pass `*parent_category` to retreieve the fields of all parent categories, or select specific fields to make the response size smaller. For example, `fields=parent_category.id,parent_category.name`." },
+    { name: "include_descendants_tree", type: "`boolean`", optional: true, description: "Whether to include the child categories of each category. If you enable this, add to the `fields` query parameter `category_children` to set the children of a category in this field. You can either pass `*category_children` to retreieve the fields of all child categories, or select specific fields to make the response size smaller. For example, `fields=category_children.id,category_children.name`." },
+    { name: "is_internal", type: "`boolean`", optional: true, description: "Filter by whether the category is internal." },
+    { name: "is_active", type: "`boolean`", optional: true, description: "Filter by whether the category is active." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the category's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the category's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by the category's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "Whether to include deleted records in the result." },
+    { name: "external_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by an external ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productCategory.list()
+.then(({ product_categories, count, limit, offset }) => {
+  console.log(product_categories)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/product-categories' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "limit", type: "`number`", optional: false, description: "The maximum number of items returned." },
+    { name: "offset", type: "`number`", optional: false, description: "The number of items skipped before retrieving the returned items." },
+    { name: "count", type: "`number`", optional: false, description: "The total number of items." },
+    { name: "product_categories", type: "`object[]`", optional: false, description: "The list of product categories.", children: [
+        { name: "category_children", type: "`object[]`", optional: false, description: "The category's children." },
+        { name: "parent_category", type: "`object`", optional: false },
+        { name: "products", type: "`object[]`", optional: true, description: "The category's products." },
+        { name: "name", type: "`string`", optional: false, description: "The category's name." },
+        { name: "description", type: "`string`", optional: false, description: "The category's description." },
+        { name: "id", type: "`string`", optional: false, description: "The category's ID." },
+        { name: "metadata", type: "`object`", optional: true, description: "The category's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the category was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the category was updated." },
+        { name: "handle", type: "`string`", optional: false, description: "The category's unique handle." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the category was deleted." },
+        { name: "is_active", type: "`boolean`", optional: false, description: "Whether the category is active. If disabled, the category isn't shown in the storefront." },
+        { name: "is_internal", type: "`boolean`", optional: false, description: "Whether the category is internal. If enabled, the category is only seen by admin users." },
+        { name: "rank", type: "`number`", optional: false, description: "The category's rank among sibling categories." },
+        { name: "parent_category_id", type: "`string`", optional: false, description: "The ID of the category's parent." }
+      ] },
+    { name: "estimate_count", type: "`number`", optional: true, description: "The estimated count retrieved from the PostgreSQL query planner, which may be inaccurate.", featureFlag: "index_engine" }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/product-categories
+
+**Create Product Category**
+
+Create a product category.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the Retrieve Custom Links documentation." },
+    { name: "include_ancestors_tree", type: "`boolean`", optional: true, description: "Whether to retrieve the category's parent. If you enable this, add to the `fields` query parameter `parent_category` to set the parent of a category in this field. You can either pass `*parent_category` to retreieve the fields of all parent categories, or select specific fields to make the response size smaller. For example, `fields=parent_category.id,parent_category.name`." },
+    { name: "include_descendants_tree", type: "`boolean`", optional: true, description: "Whether to retrieve a list of child categories. If you enable this, add to the `fields` query parameter `category_children` to set the child of a category in this field. You can either pass `*category_children` to retreieve the fields of all child categories, or select specific fields to make the response size smaller. For example, `fields=category_children.id,category_children.name`." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: false, description: "The product category's name." },
+    { name: "description", type: "`string`", optional: true, description: "The product category's description." },
+    { name: "handle", type: "`string`", optional: true, description: "The product category's handle." },
+    { name: "is_internal", type: "`boolean`", optional: true, description: "Whether the product category is only used and seen by admin users." },
+    { name: "is_active", type: "`boolean`", optional: true, description: "Whether the product category is active." },
+    { name: "parent_category_id", type: "`string`", optional: true, description: "The ID of a category that's the parent of this one." },
+    { name: "rank", type: "`number`", optional: true, description: "The sorting order of the product category among sibling categories." },
+    { name: "metadata", type: "`object`", optional: true, description: "The product category's metadata, used to store custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+    { name: "external_id", type: "`string`", optional: true, description: "The ID of the product category in an external or third-party system." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productCategory.create({
+  name: "Shirts"
+})
+.then(({ product_category }) => {
+  console.log(product_category)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/product-categories' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "name": "Vesta",
+  "parent_category_id": "{value}",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_category", type: "`object`", optional: false, description: "The product category's details.", children: [
+        { name: "category_children", type: "`object[]`", optional: false, description: "The category's children." },
+        { name: "parent_category", type: "`object`", optional: false },
+        { name: "products", type: "`object[]`", optional: true, description: "The category's products." },
+        { name: "name", type: "`string`", optional: false, description: "The category's name." },
+        { name: "description", type: "`string`", optional: false, description: "The category's description." },
+        { name: "id", type: "`string`", optional: false, description: "The category's ID." },
+        { name: "metadata", type: "`object`", optional: true, description: "The category's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the category was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the category was updated." },
+        { name: "handle", type: "`string`", optional: false, description: "The category's unique handle." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the category was deleted." },
+        { name: "is_active", type: "`boolean`", optional: false, description: "Whether the category is active. If disabled, the category isn't shown in the storefront." },
+        { name: "is_internal", type: "`boolean`", optional: false, description: "Whether the category is internal. If enabled, the category is only seen by admin users." },
+        { name: "rank", type: "`number`", optional: false, description: "The category's rank among sibling categories." },
+        { name: "parent_category_id", type: "`string`", optional: false, description: "The ID of the category's parent." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product-category.created`: Emitted when product categories are created.
+
+---
+
+## GET /admin/product-categories/\{id\}
+
+**Get a Product Category**
+
+Retrieve a product category by its ID. You can expand the product category's relations or select the fields that should be returned.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product category's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the Retrieve Custom Links documentation." },
+    { name: "include_ancestors_tree", type: "`boolean`", optional: true, description: "Whether to retrieve the category's parent. If you enable this, add to the `fields` query parameter `parent_category` to set the parent of a category in this field. You can either pass `*parent_category` to retreieve the fields of all parent categories, or select specific fields to make the response size smaller. For example, `fields=parent_category.id,parent_category.name`." },
+    { name: "include_descendants_tree", type: "`boolean`", optional: true, description: "Whether to retrieve a list of child categories. If you enable this, add to the `fields` query parameter `category_children` to set the children of a category in this field. You can either pass `*category_children` to retreieve the fields of all child categories, or select specific fields to make the response size smaller. For example, `fields=category_children.id,category_children.name`." },
+    { name: "is_internal", type: "`boolean`", optional: true, description: "Filter by whether the product category is internal." },
+    { name: "is_active", type: "`boolean`", optional: true, description: "Filter by whether the product category is active." },
+    { name: "q", type: "`string`", optional: true, description: "Apply a search query to the product category's searchable properties." },
+    { name: "id", type: "`string` \\| `string[]`", optional: true, description: "Filter by the product category's ID." },
+    { name: "description", type: "`string` \\| `string[]`", optional: true, description: "Filter by the product category's description." },
+    { name: "parent_category_id", type: "`string` \\| `string[]`", optional: true, description: "Retrieve the categories of a given parent category's ID." },
+    { name: "handle", type: "`string` \\| `string[]`", optional: true, description: "Filter by the product category's handle." },
+    { name: "created_at", type: "`object`", optional: true, description: "Filter by the category's creation date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "updated_at", type: "`object`", optional: true, description: "Filter by the category's update date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "deleted_at", type: "`object`", optional: true, description: "Filter by the category's deletion date. Accepts the [filter operators](/api/admin#filter-operators)." },
+    { name: "limit", type: "`number`", optional: true, description: "Limit the number of items returned in the list." },
+    { name: "offset", type: "`number`", optional: true, description: "The number of items to skip when retrieving a list." },
+    { name: "order", type: "`string`", optional: true, description: "The field to sort the data by. By default, the sort order is ascending. To change the order to descending, prefix the field name with `-`." },
+    { name: "with_deleted", type: "`boolean`", optional: true, description: "The product category's with deleted." },
+    { name: "$and", type: "`object[]`", optional: true, description: "Join query parameters with an AND condition. Each object's content is the same type as the expected query parameters." },
+    { name: "$or", type: "`object[]`", optional: true, description: "Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters." },
+    { name: "external_id", type: "`string` \\| `string[]`", optional: true, description: "Filter by an external ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productCategory.retrieve("pcat_123")
+.then(({ product_category }) => {
+  console.log(product_category)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl 'http://localhost:9000/admin/product-categories/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_category", type: "`object`", optional: false, description: "The product category's details.", children: [
+        { name: "category_children", type: "`object[]`", optional: false, description: "The category's children." },
+        { name: "parent_category", type: "`object`", optional: false },
+        { name: "products", type: "`object[]`", optional: true, description: "The category's products." },
+        { name: "name", type: "`string`", optional: false, description: "The category's name." },
+        { name: "description", type: "`string`", optional: false, description: "The category's description." },
+        { name: "id", type: "`string`", optional: false, description: "The category's ID." },
+        { name: "metadata", type: "`object`", optional: true, description: "The category's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the category was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the category was updated." },
+        { name: "handle", type: "`string`", optional: false, description: "The category's unique handle." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the category was deleted." },
+        { name: "is_active", type: "`boolean`", optional: false, description: "Whether the category is active. If disabled, the category isn't shown in the storefront." },
+        { name: "is_internal", type: "`boolean`", optional: false, description: "Whether the category is internal. If enabled, the category is only seen by admin users." },
+        { name: "rank", type: "`number`", optional: false, description: "The category's rank among sibling categories." },
+        { name: "parent_category_id", type: "`string`", optional: false, description: "The ID of the category's parent." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+---
+
+## POST /admin/product-categories/\{id\}
+
+**Update a Product Category**
+
+Update a product category's details.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product category's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the Retrieve Custom Links documentation." },
+    { name: "include_ancestors_tree", type: "`boolean`", optional: true, description: "Whether to retrieve the category's parent. If you enable this, add to the `fields` query parameter `parent_category` to set the parent of a category in this field. You can either pass `*parent_category` to retreieve the fields of all parent categories, or select specific fields to make the response size smaller. For example, `fields=parent_category.id,parent_category.name`." },
+    { name: "include_descendants_tree", type: "`boolean`", optional: true, description: "Whether to retrieve a list of child categories. If you enable this, add to the `fields` query parameter `category_children` to set the child of a category in this field. You can either pass `*category_children` to retreieve the fields of all child categories, or select specific fields to make the response size smaller. For example, `fields=category_children.id,category_children.name`." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "name", type: "`string`", optional: true, description: "The product category's name." },
+    { name: "description", type: "`string`", optional: true, description: "The product category's description." },
+    { name: "handle", type: "`string`", optional: true, description: "The product category's handle. Must be a unique value." },
+    { name: "is_internal", type: "`boolean`", optional: true, description: "Whether the product category is only used for internal purposes and shouldn't be shown the customer." },
+    { name: "is_active", type: "`boolean`", optional: true, description: "Whether the product category is active." },
+    { name: "parent_category_id", type: "`string`", optional: true, description: "The ID of a parent category." },
+    { name: "metadata", type: "`object`", optional: true, description: "The product category's metadata. Can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+    { name: "rank", type: "`number`", optional: true, description: "The product category's rank among other categories." },
+    { name: "external_id", type: "`string`", optional: true, description: "The product category's external ID used to link it with external systems." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productCategory.update("pcat_123", {
+  name: "Shirts"
+})
+.then(({ product_category }) => {
+  console.log(product_category)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/product-categories/{id}' \
+-H 'Authorization: Bearer {jwt_token}' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+  "parent_category_id": "{value}",
+  "metadata": {}
+}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_category", type: "`object`", optional: false, description: "The product category's details.", children: [
+        { name: "category_children", type: "`object[]`", optional: false, description: "The category's children." },
+        { name: "parent_category", type: "`object`", optional: false },
+        { name: "products", type: "`object[]`", optional: true, description: "The category's products." },
+        { name: "name", type: "`string`", optional: false, description: "The category's name." },
+        { name: "description", type: "`string`", optional: false, description: "The category's description." },
+        { name: "id", type: "`string`", optional: false, description: "The category's ID." },
+        { name: "metadata", type: "`object`", optional: true, description: "The category's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the category was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the category was updated." },
+        { name: "handle", type: "`string`", optional: false, description: "The category's unique handle." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the category was deleted." },
+        { name: "is_active", type: "`boolean`", optional: false, description: "Whether the category is active. If disabled, the category isn't shown in the storefront." },
+        { name: "is_internal", type: "`boolean`", optional: false, description: "Whether the category is internal. If enabled, the category is only seen by admin users." },
+        { name: "rank", type: "`number`", optional: false, description: "The category's rank among sibling categories." },
+        { name: "parent_category_id", type: "`string`", optional: false, description: "The ID of the category's parent." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product-category.updated`: Emitted when product categories are updated.
+
+---
+
+## DELETE /admin/product-categories/\{id\}
+
+**Delete a Product Category**
+
+Delete a product category. This doesn't delete the products in that category. A product category that has child categories can't be deleted, so you must delete its child categories first.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product category's ID." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productCategory.delete("pcat_123")
+.then(({ deleted }) => {
+  console.log(deleted)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X DELETE 'http://localhost:9000/admin/product-categories/{id}' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product category's ID." },
+    { name: "object", type: "`string`", optional: false, description: "The name of the deleted object.", defaultValue: "\"product_category\"" },
+    { name: "deleted", type: "`boolean`", optional: false, description: "Whether the product category was deleted." }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product-category.deleted`: Emitted when product categories are deleted.
+
+---
+
+## POST /admin/product-categories/\{id\}/products
+
+**Manage Products in Product Category**
+
+Manage products of a category to add or remove them.
+
+**Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
+
+**Path parameters**
+
+<TypeList
+  types={[
+    { name: "id", type: "`string`", optional: false, description: "The product category's ID." }
+  ]}
+/>
+
+**Query parameters**
+
+<TypeList
+  types={[
+    { name: "fields", type: "`string`", optional: true, description: "Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the Retrieve Custom Links documentation." },
+    { name: "include_ancestors_tree", type: "`boolean`", optional: true, description: "Whether to retrieve the category's parent. If you enable this, add to the `fields` query parameter `parent_category` to set the parent of a category in this field. You can either pass `*parent_category` to retreieve the fields of all parent categories, or select specific fields to make the response size smaller. For example, `fields=parent_category.id,parent_category.name`." },
+    { name: "include_descendants_tree", type: "`boolean`", optional: true, description: "Whether to retrieve a list of child categories. If you enable this, add to the `fields` query parameter `category_children` to set the child of a category in this field. You can either pass `*category_children` to retreieve the fields of all child categories, or select specific fields to make the response size smaller. For example, `fields=category_children.id,category_children.name`." }
+  ]}
+/>
+
+**Request body** (`application/json`)
+
+<TypeList
+  types={[
+    { name: "add", type: "`string[]`", optional: true, description: "The IDs of an entity to add to the other." },
+    { name: "remove", type: "`string[]`", optional: true, description: "The IDs of an entity to remove from the other." }
+  ]}
+/>
+
+**Request examples**
+
+<CodeTabs group="api-sample">
+  <CodeTab label="JS SDK" value="js-sdk">
+
+```ts
+import Medusa from "@medusajs/js-sdk"
+
+export const sdk = new Medusa({
+  baseUrl: import.meta.env.VITE_BACKEND_URL || "/",
+  debug: import.meta.env.DEV,
+  auth: {
+    type: "session",
+  },
+})
+
+sdk.admin.productCategory.updateProducts("pcat_123", {
+  add: ["prod_123"],
+  remove: ["prod_321"]
+})
+.then(({ product_category }) => {
+  console.log(product_category)
+})
+```
+
+  </CodeTab>
+  <CodeTab label="cURL" value="curl">
+
+```bash
+curl -X POST 'http://localhost:9000/admin/product-categories/{id}/products' \
+-H 'Authorization: Bearer {jwt_token}'
+```
+
+  </CodeTab>
+</CodeTabs>
+
+**Responses**
+
+`200` OK
+
+<TypeList
+  types={[
+    { name: "product_category", type: "`object`", optional: false, description: "The product category's details.", children: [
+        { name: "category_children", type: "`object[]`", optional: false, description: "The category's children." },
+        { name: "parent_category", type: "`object`", optional: false },
+        { name: "products", type: "`object[]`", optional: true, description: "The category's products." },
+        { name: "name", type: "`string`", optional: false, description: "The category's name." },
+        { name: "description", type: "`string`", optional: false, description: "The category's description." },
+        { name: "id", type: "`string`", optional: false, description: "The category's ID." },
+        { name: "metadata", type: "`object`", optional: true, description: "The category's metadata, can hold custom key-value pairs. Learn more in the [Manage Metadata](/api/admin#manage-metadata) section." },
+        { name: "created_at", type: "`string`", optional: false, description: "The date the category was created." },
+        { name: "updated_at", type: "`string`", optional: false, description: "The date the category was updated." },
+        { name: "handle", type: "`string`", optional: false, description: "The category's unique handle." },
+        { name: "deleted_at", type: "`string`", optional: false, description: "The date the category was deleted." },
+        { name: "is_active", type: "`boolean`", optional: false, description: "Whether the category is active. If disabled, the category isn't shown in the storefront." },
+        { name: "is_internal", type: "`boolean`", optional: false, description: "Whether the category is internal. If enabled, the category is only seen by admin users." },
+        { name: "rank", type: "`number`", optional: false, description: "The category's rank among sibling categories." },
+        { name: "parent_category_id", type: "`string`", optional: false, description: "The ID of the category's parent." }
+      ] }
+  ]}
+/>
+
+`400`, `401`, `404`, `409`, `422`, `500`: an [error response](/api/admin#errors) is returned.
+
+**Emitted events**
+
+- `product.updated`: Emitted when products are updated.

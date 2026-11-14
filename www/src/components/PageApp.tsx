@@ -1,4 +1,5 @@
 import React, { Suspense } from "react"
+import { MDXProvider } from "@mdx-js/react"
 import { Frame } from "./Frame"
 import { mdxComponents } from "./MDXComponents"
 import { sections, type SectionKey } from "~/config/sections"
@@ -34,9 +35,11 @@ export default function PageApp({ file, section, path }: Props) {
   const Content = pageComponent(file)
   return (
     <Frame config={sections[section]}>
-      <Suspense fallback={null}>
-        <Content components={mdxComponents} />
-      </Suspense>
+      <MDXProvider components={mdxComponents}>
+        <Suspense fallback={null}>
+          <Content />
+        </Suspense>
+      </MDXProvider>
     </Frame>
   )
 }
