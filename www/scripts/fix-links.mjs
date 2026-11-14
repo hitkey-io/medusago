@@ -49,7 +49,22 @@ let changed = 0
 const dropped = new Map()
 for (const file of files) {
   if (path.relative(content, file).startsWith("api" + path.sep)) continue
-  const text = fs.readFileSync(file, "utf8")
+  const section = path.relative(content, file).split(path.sep)[0]
+  let text = fs.readFileSync(file, "utf8")
+  // JSX props (href: "/x", href="/x") written for an app served under /<section>: add the prefix
+  text = text.replace(/(href(?::\s*|=))"(\/[^"#?]*)([^"]*)"/g, (whole, lead, p, rest) => {
+    const clean = p.replace(/\/+$/, "") || "/"
+    if (pages.has(clean) || !pages.has(`/${section}${clean}`)) return whole
+    return `${lead}"/${section}${p}${rest}"`
+  })
+  // object props of card/prerequisite lists (link: "/x"): same prefix rule; a prop whose page is missing is removed
+  text = text.replace(/^([ \t]*)(link|href):\s*"(\/[^"#?]*)([^"]*)"(,?)[ \t]*\n/gm, (whole, ind, key, p, rest, comma) => {
+    const clean = p.replace(/\/+$/, "") || "/"
+    if (pages.has(clean)) return whole
+    if (pages.has(`/${section}${clean}`)) return `${ind}${key}: "/${section}${p}${rest}"${comma}\n`
+    dropped.set(clean, (dropped.get(clean) || 0) + 1)
+    return ""
+  })
   const out = text.replace(/\[([^\]\n]*)\]\(([^)\s]+)\)/g, (whole, label, link) => {
     const p = sitePath(link, file)
     if (p === null || (p !== "!missing" && pages.has(p))) return whole
@@ -59,7 +74,7 @@ for (const file of files) {
     if (to) return `[${label}](${link.startsWith("!api!") ? "!api!" + to.replace(/^\/api/, "") : to})`
     return label
   })
-  if (out !== text) {
+  if (out !== fs.readFileSync(file, "utf8")) {
     changed++
     if (!dry) fs.writeFileSync(file, out)
   }
