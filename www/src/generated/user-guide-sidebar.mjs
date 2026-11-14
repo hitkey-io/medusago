@@ -476,28 +476,6 @@ export const generatedSidebars = [
           {
             "loaded": true,
             "type": "link",
-            "title": "Roles",
-            "path": "/settings/roles",
-            "children": [
-              {
-                "loaded": true,
-                "type": "link",
-                "title": "Common Roles",
-                "path": "/settings/roles/common-roles",
-                "children": []
-              }
-            ]
-          },
-          {
-            "loaded": true,
-            "type": "link",
-            "title": "Policies",
-            "path": "/settings/policies",
-            "children": []
-          },
-          {
-            "loaded": true,
-            "type": "link",
             "title": "Regions",
             "path": "/settings/regions",
             "children": []

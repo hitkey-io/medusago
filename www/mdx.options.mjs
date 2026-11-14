@@ -15,6 +15,15 @@ import {
   mdContentOverrideRehypePlugin,
 } from "./vendor/remark-rehype-plugins/index.ts"
 
+// localLinksRehypePlugin resolves "./x/page.mdx" links against <cwd>/app; the
+// pages of this site live in content/<section>.
+function localLinksBySection() {
+  return async (tree, file) => {
+    const m = /^(.*\/content\/[^/]+)\//.exec(file.history?.[0] || "")
+    return localLinksRehypePlugin({ basePath: m?.[1] })(tree, file)
+  }
+}
+
 export const siteUrl = process.env.PUBLIC_BASE_URL || "https://medusago.hitkey.io"
 
 export const mdxOptions = {
@@ -34,7 +43,7 @@ export const mdxOptions = {
         useBaseUrl: true,
       },
     ],
-    [localLinksRehypePlugin],
+    [localLinksBySection],
     [rehypeMdxCodeProps, { tagName: "code" }],
     [validateHighlightsPlugin, { verbose: false }],
     [rehypeSlug],

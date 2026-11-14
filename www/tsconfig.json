@@ -1,0 +1,53 @@
+{
+  "extends": "astro/tsconfigs/base",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "./src/*"
+      ],
+      "@/*": [
+        "./vendor/docs-ui/*"
+      ],
+      "docs-ui": [
+        "./vendor/docs-ui/index.ts"
+      ],
+      "docs-utils": [
+        "./vendor/docs-utils/index.ts"
+      ],
+      "docs-utils/global-config": [
+        "./vendor/docs-utils/global-config.ts"
+      ],
+      "types": [
+        "./vendor/types/index.ts"
+      ],
+      "tags": [
+        "./vendor/tags/index.ts"
+      ],
+      "next/link": [
+        "./shims/next/link.tsx"
+      ],
+      "next/image": [
+        "./shims/next/image.tsx"
+      ],
+      "next/dynamic": [
+        "./shims/next/dynamic.tsx"
+      ],
+      "next/navigation": [
+        "./shims/next/navigation.ts"
+      ],
+      "@kapaai/react-sdk": [
+        "./shims/kapa.ts"
+      ]
+    },
+    "verbatimModuleSyntax": false,
+    "importsNotUsedAsValues": "remove"
+  },
+  "include": [
+    "src",
+    "vendor",
+    "shims"
+  ]
+}

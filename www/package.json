@@ -4,8 +4,9 @@
   "type": "module",
   "version": "0.0.0",
   "scripts": {
-    "dev": "bunx --bun astro dev",
-    "build": "bunx --bun astro build",
+    "prep": "bun scripts/generate-sidebars.mjs",
+    "dev": "bun run prep && bunx --bun astro dev",
+    "build": "bun run prep && bunx --bun astro build && bun scripts/check-links.mjs",
     "preview": "bunx --bun astro preview"
   },
   "dependencies": {
@@ -24,11 +25,13 @@
     "astro": "^5.14.0",
     "autoprefixer": "^10.4.14",
     "clsx": "^2.1.0",
+    "fdir": "^6.5.0",
     "framer-motion": "^11.11.9",
     "mermaid": "^12.3.0",
     "minisearch": "^7.2.0",
     "motion": "^12.29.2",
     "npm-to-yarn": "^3.2.0",
+    "pluralize": "^8.0.0",
     "postcss": "^8.5.10",
     "prism-react-renderer": "2.4.0",
     "react": "19.2.5",
@@ -56,7 +59,8 @@
     "unist-builder": "^4.0.0",
     "unist-util-visit": "^5.2.0",
     "vfile": "^6.0.3",
-    "vfile-matter": "^5.0.1"
+    "vfile-matter": "^5.0.1",
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@types/react": "19.2.9",

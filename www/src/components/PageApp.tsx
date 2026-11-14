@@ -24,6 +24,7 @@ export default function PageApp({ file, section, path }: Props) {
   if (typeof window === "undefined") {
     ;(globalThis as { __ASTRO_PATH__?: string }).__ASTRO_PATH__ = path
   }
+  ;(globalThis as { __BASE_PATH__?: string }).__BASE_PATH__ = sections[section].basePath
   const Content = pageComponent(file)
   return (
     <Frame config={sections[section]}>
