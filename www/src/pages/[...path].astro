@@ -22,6 +22,9 @@ if (!cache.has(Astro.props.file)) cache.set(Astro.props.file, (await loaders[Ast
 const { file, section } = Astro.props as { file: string; section: SectionKey }
 const path = "/" + Astro.params.path
 const config = sections[section]
+const site = "https://medusago.hitkey.io"
+const canonical = site + path + "/"
+const ogImage = site + "/og.png"
 ---
 <html lang="en" class="h-full w-full">
   <head>
@@ -33,6 +36,20 @@ const config = sections[section]
     <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#101215" />
     <title>{config.titleSuffix}</title>
+    <meta name="description" content={config.description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MedusaGo" />
+    <meta property="og:title" content={config.titleSuffix} />
+    <meta property="og:description" content={config.description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={config.titleSuffix} />
+    <meta name="twitter:description" content={config.description} />
+    <meta name="twitter:image" content={ogImage} />
   </head>
   <body class="h-screen w-full overflow-hidden">
     <PageApp client:load file={file} section={section} path={path} />
