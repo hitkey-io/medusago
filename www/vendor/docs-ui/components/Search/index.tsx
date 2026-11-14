@@ -69,7 +69,7 @@ export const Search = ({
         future={{
           preserveSharedStateOnUnmount: true,
         }}
-        insights={true}
+        insights={false}
       >
         <div className={clsx("bg-medusa-bg-base flex z-[1]")}>
           {/* @ts-expect-error React v19 doesn't see this type as a React element */}

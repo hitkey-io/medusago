@@ -14,6 +14,7 @@ const common = {
     startItems: [{ title: "Documentation", link: baseUrl }],
   },
   version: { ...globalConfig.version, hide: true },
+  contentMenuSections: { products: true, whatsNew: false, cloudStatus: false },
 }
 
 export type SectionKey = "user-guide"

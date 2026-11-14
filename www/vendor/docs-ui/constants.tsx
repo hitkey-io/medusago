@@ -1,7 +1,7 @@
 import { NavigationItem, Product } from "types"
 
 export const GITHUB_ISSUES_LINK =
-  "https://github.com/medusajs/medusa/issues/new/choose"
+  "https://github.com/hitkey-io/medusago/issues/new/choose"
 
 export const CLOUD_STATUS_PAGE_URL = "https://status.medusajs.com"
 
@@ -248,24 +248,6 @@ export const navDropdownItems: NavigationItem[] = [
           },
         ],
       },
-      {
-        type: "sub-menu",
-        title: "Enterprise",
-        link: "/resources/enterprise",
-        sidebar_id: "enterprise",
-        items: [
-          {
-            type: "link",
-            title: "RBAC",
-            link: "/resources/enterprise/rbac",
-          },
-          {
-            type: "link",
-            title: "SSO",
-            link: "/resources/enterprise/sso",
-          },
-        ],
-      },
     ],
   },
   {
@@ -277,12 +259,6 @@ export const navDropdownItems: NavigationItem[] = [
         title: "Recipes",
         link: "/resources/recipes",
         sidebar_id: "recipes",
-      },
-      {
-        type: "link",
-        title: "How-to & Tutorials",
-        link: "/resources/how-to-tutorials",
-        sidebar_id: "how-to-tutorials",
       },
       {
         type: "link",
@@ -309,18 +285,13 @@ export const navDropdownItems: NavigationItem[] = [
         items: [
           {
             type: "link",
-            title: "create-medusa-app",
+            title: "create-medusago-app",
             link: "/resources/create-medusa-app",
           },
           {
             type: "link",
-            title: "Medusa CLI",
+            title: "MedusaGo CLI",
             link: "/resources/medusa-cli",
-          },
-          {
-            type: "link",
-            title: "Medusa Cloud CLI",
-            link: "/cloud/cli",
           },
         ],
       },
@@ -352,12 +323,6 @@ export const navDropdownItems: NavigationItem[] = [
         title: "Medusa UI",
         link: "/ui",
         sidebar_id: "ui",
-      },
-      {
-        type: "link",
-        title: "ESLint Plugin",
-        link: "/resources/lint",
-        sidebar_id: "lint",
       },
     ],
   },
@@ -393,50 +358,15 @@ export const navDropdownItems: NavigationItem[] = [
       },
       {
         type: "link",
-        title: "Core Workflows",
-        link: "/resources/medusa-workflows-reference",
-        sidebar_id: "core-flows",
-      },
-      {
-        type: "link",
-        title: "Data Model Language",
-        link: "/resources/references/data-model",
-        sidebar_id: "dml-reference",
-      },
-      {
-        type: "link",
         title: "Data Model Repository",
         link: "/resources/data-model-repository-reference",
         sidebar_id: "data-model-repository-reference",
       },
       {
         type: "link",
-        title: "Events Reference",
-        link: "/resources/references/events",
-      },
-      {
-        type: "link",
-        title: "Helper Steps",
-        link: "/resources/references/helper-steps",
-        sidebar_id: "helper-steps-reference",
-      },
-      {
-        type: "link",
         title: "Service Factory",
         link: "/resources/service-factory-reference",
         sidebar_id: "service-factory-reference",
-      },
-      {
-        type: "link",
-        title: "Testing Framework",
-        link: "/resources/test-tools-reference",
-        sidebar_id: "test-tools-reference",
-      },
-      {
-        type: "link",
-        title: "Workflows SDK",
-        link: "/resources/references/workflows",
-        sidebar_id: "workflows-sdk-reference",
       },
     ],
   },
@@ -445,12 +375,6 @@ export const navDropdownItems: NavigationItem[] = [
     title: "User Guide",
     link: "/user-guide",
     sidebar_id: "user-guide",
-  },
-  {
-    type: "link",
-    title: "Cloud",
-    link: "/cloud",
-    sidebar_id: "cloud",
   },
 ]
 
