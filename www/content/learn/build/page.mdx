@@ -149,13 +149,13 @@ The admin options of your configuration, such as `admin.path` and `admin.backend
 
 ### Build Admin Customizations
 
-If your project has a `src/admin` directory, the build compiles the dashboard together with your [widgets and UI routes](!docs!/learn/fundamentals/admin). This step uses the original admin bundler, so it needs Node.js and the `@medusajs/admin-bundler` and `@medusajs/dashboard` packages installed in your project. The output goes to `.medusa/server/public/admin`. {/* terms-ok */}
+If your project has admin customisations in the `src/admin` directory (at least one `.ts`, `.tsx`, `.js`, `.jsx` or `.json` file), the build compiles the dashboard together with your [widgets and UI routes](!docs!/learn/fundamentals/admin). This step uses the original admin bundler, so it needs Node.js and the `@medusajs/admin-bundler` and `@medusajs/dashboard` packages installed in your project. The output goes to `.medusa/server/public/admin`. {/* terms-ok */}
 
 The server serves `public/admin` from its working directory when it exists, and the embedded dashboard otherwise. So, to serve your customisations, start the server from `.medusa/server`, or deploy the `public` directory next to the executable.
 
-<Note type="warning">
+<Note>
 
-The build checks whether the `src/admin` directory exists, not whether it contains customisations. The directory in the starter project is empty, so remove it if you have no admin customisations. Otherwise, `build` fails at the frontend step asking for the admin bundler packages, even though the executable was built.
+An empty `src/admin` directory, such as the one in the starter project, or one with only placeholders like `.gitkeep`, is not treated as a customisation. The build then uses the dashboard embedded in the executable and doesn't need Node.js.
 
 </Note>
 

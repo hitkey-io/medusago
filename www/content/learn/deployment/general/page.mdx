@@ -156,7 +156,7 @@ REDIS_URL= # REDIS DATABASE URL
 
 Where:
 
-- The value of `COOKIE_SECRET` and `JWT_SECRET` must be a randomly generated secret. If they aren't set, MedusaGo falls back to `supersecret` without warning, which isn't secure.
+- The value of `COOKIE_SECRET` and `JWT_SECRET` must be a randomly generated secret. If they aren't set, the server doesn't start in production (the error is `[config] ⚠️ http.jwtSecret not found.`); outside production `supersecret` is used.
 - `STORE_CORS`'s value is the URL of your storefront. If you don’t have it yet, you can skip adding it for now.
 - `ADMIN_CORS`'s value is the URL of the admin dashboard, which is the same as the server application. You can add it later if you don't currently have it.
 - `AUTH_CORS`'s value is the URLs of any application authenticating users, customers, or other actor types, such as the storefront and admin URLs. The URLs are separated by commas. If you don’t have the URLs yet, you can set its value later.

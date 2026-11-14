@@ -196,10 +196,10 @@ func DefineConfig(input InputConfig) ConfigModule {
 		pc.RedisURL = os.Getenv("REDIS_URL")
 	}
 	if pc.HTTP.JwtSecret == "" {
-		pc.HTTP.JwtSecret = envOr("JWT_SECRET", "supersecret")
+		pc.HTTP.JwtSecret = resolveEnvSecret("JWT_SECRET")
 	}
 	if pc.HTTP.CookieSecret == "" {
-		pc.HTTP.CookieSecret = envOr("COOKIE_SECRET", "supersecret")
+		pc.HTTP.CookieSecret = resolveEnvSecret("COOKIE_SECRET")
 	}
 	if pc.HTTP.StoreCors == "" {
 		pc.HTTP.StoreCors = envOr("STORE_CORS", defaultStoreCors)
@@ -292,6 +292,23 @@ const (
 	defaultStoreCors = "http://localhost:8000"
 	defaultAdminCors = "http://localhost:7000,http://localhost:7001,http://localhost:5173"
 )
+
+// defaultSecret mirrors DEFAULT_SECRET of define-config.ts.
+const defaultSecret = "supersecret"
+
+// resolveEnvSecret mirrors resolveEnvSecret: the secret of an environment
+// variable. In production there is never a fallback to the publicly known
+// default (it would allow forging tokens): the value stays empty and
+// Validate reports it. Outside production the default is used.
+func resolveEnvSecret(key string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	if IsProduction() {
+		return ""
+	}
+	return defaultSecret
+}
 
 func envOr(key, fallback string) string {
 	if v := os.Getenv(key); v != "" {

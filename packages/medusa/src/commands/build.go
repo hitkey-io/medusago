@@ -238,6 +238,28 @@ func resolveNodePackageJSON(dir, request string) string {
 	}
 }
 
+// hasAdminSources reports whether dir holds admin extension sources (widgets,
+// routes, i18n files...): at least one .ts, .tsx, .js, .jsx or .json file. An
+// empty directory, or one with only placeholders such as .gitkeep, is not an
+// extension: the embedded dashboard is used and Node is not needed. (Upstream
+// always runs the Node bundler.)
+func hasAdminSources(dir string) bool {
+	found := false
+	_ = filepath.WalkDir(dir, func(p string, d os.DirEntry, err error) error {
+		if err != nil || found {
+			return filepath.SkipDir
+		}
+		if !d.IsDir() {
+			switch strings.ToLower(filepath.Ext(p)) {
+			case ".ts", ".tsx", ".js", ".jsx", ".json":
+				found = true
+			}
+		}
+		return nil
+	})
+	return found
+}
+
 // buildAppFrontend mirrors compiler.buildAppFrontend. Without admin
 // extensions the dashboard embedded in the binary is written to the output
 // directory (no Node needed); with src/admin the dashboard is compiled with
@@ -264,7 +286,7 @@ func buildAppFrontend(dir string, adminOnly bool, cfg config.ConfigModule, logge
 	logger.Info("Compiling frontend source...")
 	var err error
 	sourceDir := filepath.Join(dir, utils.ADMIN_SOURCE_DIR)
-	if info, statErr := os.Stat(sourceDir); statErr == nil && info.IsDir() {
+	if hasAdminSources(sourceDir) {
 		mode := "runtime"
 		if adminOnly {
 			mode = "static"

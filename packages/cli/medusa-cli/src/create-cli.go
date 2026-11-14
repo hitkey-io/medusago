@@ -96,14 +96,21 @@ func (r *runner) loadConfig() (config.ConfigModule, error) {
 		nodeEnv = "development"
 	}
 	common.LoadEnv(nodeEnv, r.directory)
+	var cfg config.ConfigModule
 	if r.opts.Config != nil {
-		return config.DefineConfig(r.opts.Config()), nil
+		cfg = config.DefineConfig(r.opts.Config())
+	} else {
+		input, path, err := config.GetConfigFile(r.directory, "medusa-config")
+		if err != nil {
+			return config.ConfigModule{}, fmt.Errorf("Failed to load %s: %w", path, err)
+		}
+		cfg = config.DefineConfig(input)
 	}
-	input, path, err := config.GetConfigFile(r.directory, "medusa-config")
-	if err != nil {
-		return config.ConfigModule{}, fmt.Errorf("Failed to load %s: %w", path, err)
+	// like upstream, a production run without http secrets stops here
+	if err := config.Validate(cfg, r.logger); err != nil {
+		return cfg, err
 	}
-	return config.DefineConfig(input), nil
+	return cfg, nil
 }
 
 func (r *runner) mustConfig() (config.ConfigModule, bool) {

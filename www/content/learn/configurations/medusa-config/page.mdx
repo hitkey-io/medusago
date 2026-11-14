@@ -118,11 +118,11 @@ The `HTTP` field of `ProjectConfig` holds the options of the HTTP layer.
 
 #### http.jwtSecret
 
-The `http.jwtSecret` configuration (Go field `HTTP.JwtSecret`) is a secret used to sign the authentication tokens of the HTTP layer. If you leave it empty, MedusaGo uses the `JWT_SECRET` environment variable, and `supersecret` if that isn't set either.
+The `http.jwtSecret` configuration (Go field `HTTP.JwtSecret`) is a secret used to sign the authentication tokens of the HTTP layer. If you leave it empty, MedusaGo uses the `JWT_SECRET` environment variable. If that isn't set either, `supersecret` is used outside production, and in production MedusaGo refuses to start with the error `[config] ⚠️ http.jwtSecret not found.`
 
 <Note type="warning">
 
-MedusaGo doesn't refuse to start with the `supersecret` default. Always set a random secret in production.
+In production (`NODE_ENV=production`, which `go run . start` sets) there is no default: the secret must be set, otherwise the server doesn't start. Use a random value, never `supersecret`.
 
 </Note>
 
@@ -132,7 +132,7 @@ The `http.jwtExpiresIn` configuration (Go field `HTTP.JwtExpiresIn`) is how long
 
 #### http.cookieSecret
 
-The `http.cookieSecret` configuration (Go field `HTTP.CookieSecret`) is a secret used to sign the session cookie. If you leave it empty, MedusaGo uses the `COOKIE_SECRET` environment variable, and `supersecret` if that isn't set either. Set a random value in production.
+The `http.cookieSecret` configuration (Go field `HTTP.CookieSecret`) is a secret used to sign the session cookie. If you leave it empty, MedusaGo uses the `COOKIE_SECRET` environment variable. If that isn't set either, `supersecret` is used outside production, and in production MedusaGo refuses to start with the error `[config] ⚠️ http.cookieSecret not found.` Set a random value.
 
 #### http.authCors
 
