@@ -74,6 +74,9 @@ const EDITS = [
   [/^settings\/users$/, /^If your store uses the role-based access control \(RBAC\) feature, the user's details page/],
   [/^settings\/users$/, /^If your store uses the role-based access control \(RBAC\) feature, you can't delete the last user/],
 ]
+// pictures we shot ourselves (scripts/screenshots) are kept at the place of the upstream one
+const { shots } = await import("./screenshots/shots.mjs")
+const ownShots = new Map(shots.filter((x) => fs.existsSync(path.join(root, "public/images/shots", `${x.id}.png`))).map((x) => [x.url, x.id]))
 const imagesFile = path.join(root, "images.json")
 const images = fs.existsSync(imagesFile) ? JSON.parse(fs.readFileSync(imagesFile, "utf8")) : []
 
@@ -187,8 +190,11 @@ for (const page of pages) {
   let text = fs.readFileSync(src, "utf8")
   const file = `${section}/${rel || "index"}`
   text = text.replace(/^[ \t]*!\[([^\]]*)\]\((https?:\/\/[^)]+)\)[ \t]*\n?/gm, (_, alt, url) => {
-    images.push({ page: file, alt, upstream: url, status: "todo" })
-    return ""
+    const own = ownShots.get(url)
+    const known = images.find((i) => i.page === file && i.upstream === url)
+    if (known) known.status = own ? "done" : "todo"
+    else images.push({ page: file, alt, upstream: url, status: own ? "done" : "todo" })
+    return own ? `![${alt}](/images/shots/${own}.png)\n` : ""
   })
   // Links to the upstream site become links to the same page of this site.
   text = text.replace(/\]\(https:\/\/docs\.medusajs\.com(\/(?:api|resources|ui|user-guide|learn)(?:[/#)][^)]*)?)\)/g, "]($1)")
