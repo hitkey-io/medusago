@@ -46,7 +46,7 @@ export const SiteConfigProvider = ({
         reportIssueLink: GITHUB_ISSUES_LINK,
         logo: "",
         features: {
-          aiAssistant: true,
+          aiAssistant: false, // MedusaGo has no AI assistant (Bloom / Kapa) behind the docs
         },
         contentMenuSections: {
           products: true,

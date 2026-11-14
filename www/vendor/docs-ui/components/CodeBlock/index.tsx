@@ -445,6 +445,8 @@ export const CodeBlock = ({
                   <code
                     className={clsx(
                       "text-code-body font-monospace table min-w-full print:whitespace-pre-wrap",
+                      // long commands (go run github.com/...) wrap instead of scrolling sideways
+                      isTerminalCode && "!w-full whitespace-pre-wrap break-all",
                       "py-docs_0.75"
                     )}
                     ref={codeRef}
