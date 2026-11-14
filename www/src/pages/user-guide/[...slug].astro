@@ -1,0 +1,33 @@
+---
+import "~/styles/globals.css"
+import PageApp from "~/components/PageApp"
+import { sections } from "~/config/sections"
+
+export function getStaticPaths() {
+  const files = import.meta.glob("/content/user-guide/**/page.mdx")
+  return Object.keys(files).map((file) => {
+    const slug = file.replace("/content/user-guide/", "").replace(/\/?page\.mdx$/, "")
+    return { params: { slug: slug || undefined }, props: { file } }
+  })
+}
+
+const { file } = Astro.props
+const slug = Astro.params.slug
+const path = "/user-guide" + (slug ? "/" + slug : "")
+const config = sections["user-guide"]
+---
+<html lang="en" class="h-full w-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#101215" />
+    <title>{config.titleSuffix}</title>
+  </head>
+  <body class="h-screen w-full overflow-hidden">
+    <PageApp client:load file={file} section="user-guide" path={path} />
+  </body>
+</html>

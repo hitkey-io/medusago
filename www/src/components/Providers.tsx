@@ -16,9 +16,9 @@ import {
   SiteConfigProvider,
   useScrollController,
 } from "docs-ui"
-import { config } from "~/config/site"
+import type { DocsConfig } from "types"
 
-const Sidebar = ({ children }: { children?: React.ReactNode }) => {
+const Sidebar = ({ children, config }: { children?: React.ReactNode; config: DocsConfig }) => {
   const { scrollableElement } = useScrollController()
   return (
     <SidebarProvider
@@ -30,15 +30,15 @@ const Sidebar = ({ children }: { children?: React.ReactNode }) => {
   )
 }
 
-const MainNav = ({ children }: { children?: React.ReactNode }) => {
+const MainNav = ({ children, config }: { children?: React.ReactNode; config: DocsConfig }) => {
   const items = useMemo(
     () => getNavDropdownItems({ basePath: config.baseUrl }),
-    []
+    [config.baseUrl]
   )
   return <MainNavProvider navItems={items}>{children}</MainNavProvider>
 }
 
-export const Providers = ({ children }: { children?: React.ReactNode }) => (
+export const Providers = ({ children, config }: { children?: React.ReactNode; config: DocsConfig }) => (
   <AnalyticsProvider>
     <SiteConfigProvider config={config}>
       <MobileProvider>
@@ -47,9 +47,9 @@ export const Providers = ({ children }: { children?: React.ReactNode }) => (
             <LearningPathProvider>
               <NotificationProvider>
                 <ScrollControllerProvider scrollableSelector="#main">
-                  <Sidebar>
+                  <Sidebar config={config}>
                     <PaginationProvider>
-                      <MainNav>
+                      <MainNav config={config}>
                         <SearchProvider
                           algolia={{ appId: "temp", apiKey: "temp", mainIndexName: "temp" }}
                           indices={[{ value: "temp", title: "Docs" }]}
@@ -57,7 +57,7 @@ export const Providers = ({ children }: { children?: React.ReactNode }) => (
                           searchProps={{
                             isLoading: false,
                             suggestions: [],
-                            checkInternalPattern: /^\/user-guide/,
+                            checkInternalPattern: new RegExp(`^${config.basePath || ""}`),
                           }}
                         >
                           <HooksLoader

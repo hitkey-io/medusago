@@ -3,8 +3,9 @@ import clsx from "clsx"
 import { Breadcrumbs, RootProviders, Sidebar, Footer } from "docs-ui"
 import { MainContentLayout } from "@/layouts/main-content"
 import { Providers } from "./Providers"
+import type { DocsConfig } from "types"
 
-export const Frame = ({ children }: { children?: React.ReactNode }) => (
+export const Frame = ({ children, config }: { children?: React.ReactNode; config: DocsConfig }) => (
   <div
     className={clsx(
       "bg-medusa-bg-subtle font-base text-medium w-full",
@@ -15,7 +16,7 @@ export const Frame = ({ children }: { children?: React.ReactNode }) => (
     id="root-layout"
   >
     <RootProviders>
-      <Providers>
+      <Providers config={config}>
         <Sidebar />
         <div className={clsx("relative", "h-screen", "flex")}>
           <MainContentLayout>

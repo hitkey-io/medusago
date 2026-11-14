@@ -1,6 +1,8 @@
 import { defineConfig } from "astro/config"
+import { transformWithEsbuild } from "vite"
 import react from "@astrojs/react"
-import mdx from "@astrojs/mdx"
+import mdx from "@mdx-js/rollup"
+import { mdxOptions } from "./mdx.options.mjs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -9,8 +11,21 @@ const r = (p) => path.join(root, p)
 
 export default defineConfig({
   site: "https://medusago.hitkey.io",
-  integrations: [react(), mdx()],
+  integrations: [react()],
   vite: {
+    plugins: [
+      { enforce: "pre", ...mdx({ ...mdxOptions, jsx: true }) },
+      {
+        // The recma plugins emit JSX: compile it after MDX.
+        name: "mdx-jsx",
+        enforce: "pre",
+        async transform(code, id) {
+          if (!id.endsWith(".mdx")) return
+          const out = await transformWithEsbuild(code, id + ".jsx", { loader: "jsx", jsx: "automatic" })
+          return { code: out.code, map: out.map }
+        },
+      },
+    ],
     resolve: {
       alias: [
         { find: /^next\/link$/, replacement: r("shims/next/link.tsx") },
