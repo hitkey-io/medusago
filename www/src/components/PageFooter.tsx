@@ -10,7 +10,7 @@ import editDates from "~/generated/edit-dates.json"
 export const PageFooter = ({ file, showPagination }: { file: string; showPagination: boolean }) => (
   <>
     <div className="my-docs_2">
-      <DottedSeparator wrapperClassName="!my-docs_1" />
+      <DottedSeparator wrapperClassName="!my-docs_1 !px-0" />
       <div className="flex flex-wrap items-center gap-docs_1 text-compact-small-plus text-medusa-fg-base">
         <span>Found a problem with this page?</span>
         <Link
@@ -21,7 +21,7 @@ export const PageFooter = ({ file, showPagination }: { file: string; showPaginat
           <span>Report Issue</span>
         </Link>
       </div>
-      <DottedSeparator wrapperClassName="!my-docs_1" />
+      <DottedSeparator wrapperClassName="!my-docs_1 !px-0" />
     </div>
     {showPagination && <Pagination />}
     <EditButton filePath={file} editDate={(editDates as Record<string, string>)[file]} />
