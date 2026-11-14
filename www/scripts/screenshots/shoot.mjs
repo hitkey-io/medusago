@@ -62,7 +62,7 @@ for (const shot of shots) {
     const file = path.join(OUT, `${shot.id}.png`)
     if (shot.clip) {
       // a computed crop in CSS px (a form: from its title to its last field)
-      await page.screenshot({ path: file, clip: await shot.clip(page, ctx) })
+      const clip = await shot.clip(page, ctx); if (process.env.DEBUG_CLIP) console.log(shot.id, JSON.stringify(clip)); await page.screenshot({ path: file, clip })
     } else if (shot.el) {
       // a section/form: the element only, like the cropped upstream pictures
       const loc = await shot.el(page, ctx)
@@ -73,6 +73,9 @@ for (const shot of shots) {
     console.log("ok  ", shot.id)
   } catch (e) {
     failed++
+    // what the page looked like, to see why (kept out of the site: .fail/ is ignored by git)
+    fs.mkdirSync(path.resolve(import.meta.dirname, ".fail"), { recursive: true })
+    await page.screenshot({ path: path.resolve(import.meta.dirname, `.fail/${shot.id}.png`) }).catch(() => {})
     console.log("FAIL", shot.id, String(e.message).split("\n")[0].slice(0, 160))
   }
 }

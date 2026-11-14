@@ -83,6 +83,12 @@ for (const [name, code, desc, eur, usd] of [
     rules,
   })
 }
+const returnOption = (await admin("POST", "/shipping-options", {
+  name: "Return Shipping", price_type: "flat", provider_id: "manual_manual", service_zone_id: zone.id, shipping_profile_id: profile.id,
+  type: { label: "Return", description: "Send the items back.", code: "return" },
+  prices: [{ currency_code: "eur", amount: 5 }, { currency_code: "usd", amount: 6 }],
+  rules: [{ attribute: "enabled_in_store", value: "false", operator: "eq" }, { attribute: "is_return", value: "true", operator: "eq" }],
+})).shipping_option
 log("fulfillment ready", zone.id)
 
 // --- publishable key ----------------------------------------------------------------------------
@@ -141,8 +147,9 @@ for (const [first_name, last_name, email] of people) {
 await admin("POST", `/customer-groups/${group.id}/customers`, { add: [customers[0].id, customers[1].id] })
 
 // --- return reasons, promotions ---------------------------------------------------------------
+const reasons = []
 for (const [value, label] of [["wrong_size", "Wrong size"], ["damaged", "Damaged"], ["not_as_described", "Not as described"]]) {
-  await admin("POST", "/return-reasons", { value, label }).catch((e) => log("return reason", e.message.slice(0, 100)))
+  reasons.push(await admin("POST", "/return-reasons", { value, label }).then((r) => r.return_reason).catch((e) => log("return reason", e.message.slice(0, 100))))
 }
 const campaign = (await admin("POST", "/campaigns", {
   name: "Summer Sale", campaign_identifier: "SUMMER26", description: "Seasonal discounts",
@@ -204,6 +211,36 @@ for (let i = 0; i < orders.length; i++) {
   if (refund && payment) await admin("POST", `/payments/${payment.id}/refund`, { amount: 10 })
 }
 log("lifecycle done")
+
+// --- returns, claim, exchange and order edit in progress -----------------------------------------
+const itemsOf = async (n) => (await admin("GET", `/orders/${orders[n - 1].id}?fields=*items`)).order.items
+const tryStep = async (label, fn) => { try { await fn() } catch (e) { log("!!", label, e.message.slice(0, 260)) } }
+await tryStep("return", async () => {
+  const [it] = await itemsOf(7)
+  const ret = (await admin("POST", "/returns", { order_id: orders[6].id, location_id: sl.id })).return
+  await admin("POST", `/returns/${ret.id}/request-items`, { items: [{ id: it.id, quantity: 1, reason_id: reasons[0].id }] })
+  await admin("POST", `/returns/${ret.id}/shipping-method`, { shipping_option_id: returnOption.id })
+  await admin("POST", `/returns/${ret.id}/request`, {})
+})
+await tryStep("claim", async () => {
+  const [it] = await itemsOf(12)
+  const claim = (await admin("POST", "/claims", { order_id: orders[11].id, type: "replace" })).claim
+  await admin("POST", `/claims/${claim.id}/inbound/items`, { items: [{ id: it.id, quantity: 1, reason_id: reasons[1].id }] })
+  await admin("POST", `/claims/${claim.id}/outbound/items`, { items: [{ variant_id: it.variant_id, quantity: 1 }] })
+  await admin("POST", `/claims/${claim.id}/request`, {})
+})
+await tryStep("exchange", async () => {
+  const [it] = await itemsOf(10)
+  const ex = (await admin("POST", "/exchanges", { order_id: orders[9].id })).exchange
+  await admin("POST", `/exchanges/${ex.id}/inbound/items`, { items: [{ id: it.id, quantity: 1, reason_id: reasons[0].id }] })
+  await admin("POST", `/exchanges/${ex.id}/outbound/items`, { items: [{ variant_id: pick(7).id, quantity: 1 }] })
+  await admin("POST", `/exchanges/${ex.id}/request`, {})
+})
+await tryStep("order edit", async () => {
+  const edit = (await admin("POST", "/order-edits", { order_id: orders[8].id })).order_change
+  await admin("POST", `/order-edits/${orders[8].id}/items`, { items: [{ variant_id: pick(9).id, quantity: 1 }] })
+  await admin("POST", `/order-edits/${orders[8].id}/request`, {})
+})
 
 // --- reservation, draft order, price lists, secret key --------------------------------------------
 await admin("POST", "/reservations", { inventory_item_id: items[0].id, location_id: sl.id, quantity: 5, description: "Reserved for the spring photo shoot" }).catch((e) => log("reservation", e.message.slice(0, 160)))
