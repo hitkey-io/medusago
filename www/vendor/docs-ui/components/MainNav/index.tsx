@@ -57,7 +57,7 @@ export const MainNav = ({ className, itemsClassName }: MainNavProps) => {
               <SidebarLeftIcon />
             </Button>
           )}
-          <Link href={`${logoUrl || config.baseUrl}`} data-testid="logo-link">
+          <Link href={`${logoUrl || config.baseUrl || "/"}`} data-testid="logo-link">
             {logo || <ColoredMedusaIcon variant="subtle" />}
           </Link>
         </div>
@@ -83,7 +83,7 @@ export const MainNav = ({ className, itemsClassName }: MainNavProps) => {
                       {
                         type: "link",
                         title: "Troubleshooting",
-                        link: "https://docs.medusajs.com/resources/troubleshooting",
+                        link: "/resources/troubleshooting",
                       },
                       {
                         type: "link",
@@ -92,16 +92,8 @@ export const MainNav = ({ className, itemsClassName }: MainNavProps) => {
                       },
                       {
                         type: "link",
-                        title: "Discord Community",
-                        link: "https://discord.gg/medusajs",
-                      },
-                      {
-                        type: "divider",
-                      },
-                      {
-                        type: "link",
-                        title: "Contact Sales",
-                        link: "https://medusajs.com/contact/",
+                        title: "Source Code",
+                        link: "https://github.com/hitkey-io/medusago",
                       },
                     ],
                   }

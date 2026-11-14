@@ -30,7 +30,9 @@ export const Frame = ({ children, config }: { children?: React.ReactNode; config
               )}
             >
               <Breadcrumbs />
-              {children}
+              <div data-pagefind-body data-pagefind-filter={`section:${config.project.title}`}>
+                {children}
+              </div>
               <Footer showPagination />
             </div>
           </MainContentLayout>

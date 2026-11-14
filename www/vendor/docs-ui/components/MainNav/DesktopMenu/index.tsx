@@ -1,6 +1,6 @@
 "use client"
 
-import { BarsThree, Book, SidebarLeft, TimelineVertical } from "@medusajs/icons"
+import { BarsThree, SidebarLeft, TimelineVertical } from "@medusajs/icons"
 import React, { useMemo, useRef, useState } from "react"
 import { Button } from "@/components/Button"
 import { Menu } from "@/components/Menu"
@@ -33,19 +33,13 @@ export const MainNavDesktopMenu = () => {
             type: "link",
             icon: <HouseIcon />,
             title: "Homepage",
-            link: "https://medusajs.com",
-          },
-          {
-            type: "link",
-            icon: <Book />,
-            title: "Medusa v1",
-            link: "https://docs.medusajs.com/v1",
+            link: "/",
           },
           {
             type: "link",
             icon: <TimelineVertical />,
-            title: "Changelog",
-            link: "https://medusajs.com/changelog",
+            title: "Releases",
+            link: "https://github.com/hitkey-io/medusago/tags",
           },
         ]
 

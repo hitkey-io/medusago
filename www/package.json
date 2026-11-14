@@ -4,9 +4,9 @@
   "type": "module",
   "version": "0.0.0",
   "scripts": {
-    "prep": "bun scripts/generate-sidebars.mjs && bun scripts/copy-assets.mjs",
+    "prep": "bun scripts/generate-sidebars.mjs",
     "dev": "bun run prep && bunx --bun astro dev",
-    "build": "bun run prep && bunx --bun astro build && bun scripts/check-links.mjs",
+    "build": "bun run prep && bunx --bun astro build && bun scripts/inline-suspense.mjs && bunx pagefind --site dist --quiet && bun scripts/check-links.mjs",
     "preview": "bunx --bun astro preview"
   },
   "dependencies": {
@@ -64,7 +64,8 @@
   },
   "devDependencies": {
     "@types/react": "19.2.9",
-    "@types/react-dom": "19.2.3"
+    "@types/react-dom": "19.2.3",
+    "pagefind": "^1.6.0"
   },
   "engines": {
     "bun": ">=1.4"

@@ -3,16 +3,16 @@ import { globalConfig } from "docs-ui"
 import { generatedSidebars as userGuideSidebars } from "~/generated/user-guide-sidebar.mjs"
 import { generatedSidebars as resourcesSidebars } from "~/generated/resources-sidebar.mjs"
 
-export const baseUrl =
-  (import.meta.env.PUBLIC_BASE_URL as string | undefined) ||
-  "https://medusago.hitkey.io"
+// Links are relative to the host that serves the site (local preview, staging or
+// production), so no absolute URL is configured anywhere.
+export const baseUrl = ""
 
 const common = {
   ...globalConfig,
   baseUrl,
   logo: "/brand/medusago-symbol-light.svg",
   breadcrumbOptions: {
-    startItems: [{ title: "Documentation", link: baseUrl }],
+    startItems: [{ title: "Documentation", link: "/" }],
   },
   version: { ...globalConfig.version, hide: true },
   contentMenuSections: { products: true, whatsNew: false, cloudStatus: false },
@@ -25,7 +25,7 @@ export const sections: Record<SectionKey, DocsConfig> = {
     ...common,
     titleSuffix: "MedusaGo Admin User Guide",
     description: "Learn how to manage a MedusaGo store with the admin dashboard.",
-    basePath: "/user-guide",
+    basePath: "",
     sidebars: userGuideSidebars as Sidebar.Sidebar[],
     project: { title: "User Guide", key: "user-guide" },
   },
@@ -33,7 +33,7 @@ export const sections: Record<SectionKey, DocsConfig> = {
     ...common,
     titleSuffix: "MedusaGo Resources",
     description: "Guides, references and integrations for building with MedusaGo.",
-    basePath: "/resources",
+    basePath: "",
     sidebars: resourcesSidebars as Sidebar.Sidebar[],
     project: { title: "Resources", key: "resources" },
   },

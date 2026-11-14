@@ -15,6 +15,10 @@ export function getStaticPaths() {
   })
 }
 
+const loaders = import.meta.glob("/content/**/page.mdx") as Record<string, () => Promise<{ default: unknown }>>
+const cache = ((globalThis as any).__PAGE_CACHE__ ||= new Map())
+if (!cache.has(Astro.props.file)) cache.set(Astro.props.file, (await loaders[Astro.props.file]()).default)
+
 const { file, section } = Astro.props as { file: string; section: SectionKey }
 const path = "/" + Astro.params.path
 const config = sections[section]

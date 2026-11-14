@@ -6,14 +6,14 @@ export const generatedSidebars = [
       {
         "loaded": true,
         "type": "link",
-        "path": "/",
+        "path": "/user-guide",
         "title": "Introduction",
         "children": []
       },
       {
         "loaded": true,
         "type": "link",
-        "path": "/reset-password",
+        "path": "/user-guide/reset-password",
         "title": "Reset Password",
         "children": []
       },
@@ -30,7 +30,7 @@ export const generatedSidebars = [
           {
             "loaded": true,
             "type": "link",
-            "path": "/tips/layout-configurations",
+            "path": "/user-guide/tips/layout-configurations",
             "title": "Configure Layouts",
             "description": "",
             "children": []
@@ -38,7 +38,7 @@ export const generatedSidebars = [
           {
             "loaded": true,
             "type": "link",
-            "path": "/tips/bulk-editor",
+            "path": "/user-guide/tips/bulk-editor",
             "title": "Bulk Editor in Medusa Admin",
             "description": "",
             "children": []
@@ -46,7 +46,7 @@ export const generatedSidebars = [
           {
             "loaded": true,
             "type": "link",
-            "path": "/tips/languages",
+            "path": "/user-guide/tips/languages",
             "title": "Languages in Medusa Admin",
             "description": "",
             "children": []
@@ -54,7 +54,7 @@ export const generatedSidebars = [
           {
             "loaded": true,
             "type": "link",
-            "path": "/tips/lists",
+            "path": "/user-guide/tips/lists",
             "title": "Lists",
             "description": "",
             "children": []
@@ -62,7 +62,7 @@ export const generatedSidebars = [
           {
             "loaded": true,
             "type": "link",
-            "path": "/tips/table-views",
+            "path": "/user-guide/tips/table-views",
             "title": "Configure Table Views",
             "description": "",
             "children": []
@@ -70,7 +70,7 @@ export const generatedSidebars = [
           {
             "loaded": true,
             "type": "link",
-            "path": "/tips/login-options",
+            "path": "/user-guide/tips/login-options",
             "title": "Login Options",
             "description": "",
             "children": []
@@ -86,76 +86,76 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Overview",
-            "path": "/orders",
+            "path": "/user-guide/orders",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Details",
-            "path": "/orders/manage",
+            "path": "/user-guide/orders/manage",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Payments",
-            "path": "/orders/payments",
+            "path": "/user-guide/orders/payments",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Fulfillments",
-            "path": "/orders/fulfillments",
+            "path": "/user-guide/orders/fulfillments",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Edit Order Items",
-            "path": "/orders/edit",
+            "path": "/user-guide/orders/edit",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Returns",
-            "path": "/orders/returns",
+            "path": "/user-guide/orders/returns",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Exchanges",
-            "path": "/orders/exchanges",
+            "path": "/user-guide/orders/exchanges",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Claims",
-            "path": "/orders/claims",
+            "path": "/user-guide/orders/claims",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Draft Orders",
-            "path": "/orders/draft-orders",
+            "path": "/user-guide/orders/draft-orders",
             "children": [
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Create Draft Order",
-                "path": "/orders/draft-orders/create",
+                "path": "/user-guide/orders/draft-orders/create",
                 "children": []
               },
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Manage Draft Order",
-                "path": "/orders/draft-orders/manage",
+                "path": "/user-guide/orders/draft-orders/manage",
                 "children": []
               }
             ]
@@ -164,7 +164,7 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Export Orders",
-            "path": "/orders/export",
+            "path": "/user-guide/orders/export",
             "children": []
           }
         ]
@@ -178,27 +178,27 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Overview",
-            "path": "/products",
+            "path": "/user-guide/products",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Create Product",
-            "path": "/products/create",
+            "path": "/user-guide/products/create",
             "children": [
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Multi-Part Product",
-                "path": "/products/create/multi-part",
+                "path": "/user-guide/products/create/multi-part",
                 "children": []
               },
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Bundle Product",
-                "path": "/products/create/bundle",
+                "path": "/user-guide/products/create/bundle",
                 "children": []
               }
             ]
@@ -207,49 +207,49 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Edit Product",
-            "path": "/products/edit",
+            "path": "/user-guide/products/edit",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Variants",
-            "path": "/products/variants",
+            "path": "/user-guide/products/variants",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Collections",
-            "path": "/products/collections",
+            "path": "/user-guide/products/collections",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Categories",
-            "path": "/products/categories",
+            "path": "/user-guide/products/categories",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Product Options",
-            "path": "/products/options",
+            "path": "/user-guide/products/options",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Import Products",
-            "path": "/products/import",
+            "path": "/user-guide/products/import",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Export Products",
-            "path": "/products/export",
+            "path": "/user-guide/products/export",
             "children": []
           }
         ]
@@ -263,28 +263,28 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Overview",
-            "path": "/inventory",
+            "path": "/user-guide/inventory",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Inventory",
-            "path": "/inventory/inventory",
+            "path": "/user-guide/inventory/inventory",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Reservations",
-            "path": "/inventory/reservations",
+            "path": "/user-guide/inventory/reservations",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Export Inventory Items",
-            "path": "/inventory/export",
+            "path": "/user-guide/inventory/export",
             "children": []
           }
         ]
@@ -298,21 +298,21 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Overview",
-            "path": "/customers",
+            "path": "/user-guide/customers",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Customers",
-            "path": "/customers/manage",
+            "path": "/user-guide/customers/manage",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Groups",
-            "path": "/customers/groups",
+            "path": "/user-guide/customers/groups",
             "children": []
           }
         ]
@@ -326,28 +326,28 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Overview",
-            "path": "/promotions",
+            "path": "/user-guide/promotions",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Create Promotion",
-            "path": "/promotions/create",
+            "path": "/user-guide/promotions/create",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Promotion",
-            "path": "/promotions/manage",
+            "path": "/user-guide/promotions/manage",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Campaigns",
-            "path": "/promotions/campaigns",
+            "path": "/user-guide/promotions/campaigns",
             "children": []
           }
         ]
@@ -361,21 +361,21 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Overview",
-            "path": "/price-lists",
+            "path": "/user-guide/price-lists",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Create Price List",
-            "path": "/price-lists/create",
+            "path": "/user-guide/price-lists/create",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Manage Price List",
-            "path": "/price-lists/manage",
+            "path": "/user-guide/price-lists/manage",
             "children": []
           }
         ]
@@ -389,20 +389,20 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Overview",
-            "path": "/loyalty",
+            "path": "/user-guide/loyalty",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Gift Cards",
-            "path": "/loyalty/gift-cards",
+            "path": "/user-guide/loyalty/gift-cards",
             "children": [
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Manage Gift Cards",
-                "path": "/loyalty/gift-cards/manage",
+                "path": "/user-guide/loyalty/gift-cards/manage",
                 "children": []
               }
             ]
@@ -411,13 +411,13 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Gift Card Products",
-            "path": "/loyalty/gift-card-products",
+            "path": "/user-guide/loyalty/gift-card-products",
             "children": [
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Manage Gift Card Products",
-                "path": "/loyalty/gift-card-products/manage",
+                "path": "/user-guide/loyalty/gift-card-products/manage",
                 "children": []
               }
             ]
@@ -426,13 +426,13 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Store Credits",
-            "path": "/loyalty/store-credits",
+            "path": "/user-guide/loyalty/store-credits",
             "children": [
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Manage Store Credits",
-                "path": "/loyalty/store-credits/manage",
+                "path": "/user-guide/loyalty/store-credits/manage",
                 "children": []
               }
             ]
@@ -448,27 +448,27 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Overview",
-            "path": "/settings",
+            "path": "/user-guide/settings",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Store",
-            "path": "/settings/store",
+            "path": "/user-guide/settings/store",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Users",
-            "path": "/settings/users",
+            "path": "/user-guide/settings/users",
             "children": [
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Manage Invites",
-                "path": "/settings/users/invites",
+                "path": "/user-guide/settings/users/invites",
                 "children": []
               }
             ]
@@ -477,83 +477,83 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Regions",
-            "path": "/settings/regions",
+            "path": "/user-guide/settings/regions",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Tax Regions",
-            "path": "/settings/tax-regions",
+            "path": "/user-guide/settings/tax-regions",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Return Reasons",
-            "path": "/settings/return-reasons",
+            "path": "/user-guide/settings/return-reasons",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Refund Reasons",
-            "path": "/settings/refund-reasons",
+            "path": "/user-guide/settings/refund-reasons",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Sales Channels",
-            "path": "/settings/sales-channels",
+            "path": "/user-guide/settings/sales-channels",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Product Types",
-            "path": "/settings/product-types",
+            "path": "/user-guide/settings/product-types",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Product Tags",
-            "path": "/settings/product-tags",
+            "path": "/user-guide/settings/product-tags",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Property Labels",
-            "path": "/settings/property-labels",
+            "path": "/user-guide/settings/property-labels",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Location & Shipping",
-            "path": "/settings/locations-and-shipping",
+            "path": "/user-guide/settings/locations-and-shipping",
             "children": [
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Manage Locations",
-                "path": "/settings/locations-and-shipping/locations",
+                "path": "/user-guide/settings/locations-and-shipping/locations",
                 "children": []
               },
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Shipping Profiles",
-                "path": "/settings/locations-and-shipping/shipping-profiles",
+                "path": "/user-guide/settings/locations-and-shipping/shipping-profiles",
                 "children": []
               },
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Shipping Option Types",
-                "path": "/settings/locations-and-shipping/shipping-option-types",
+                "path": "/user-guide/settings/locations-and-shipping/shipping-option-types",
                 "children": []
               }
             ]
@@ -562,34 +562,34 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Translations",
-            "path": "/settings/translations",
+            "path": "/user-guide/settings/translations",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Developer Settings",
-            "path": "/settings/developer",
+            "path": "/user-guide/settings/developer",
             "children": [
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Publishable API Keys",
-                "path": "/settings/developer/publishable-api-keys",
+                "path": "/user-guide/settings/developer/publishable-api-keys",
                 "children": []
               },
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Secret API Keys",
-                "path": "/settings/developer/secret-api-keys",
+                "path": "/user-guide/settings/developer/secret-api-keys",
                 "children": []
               },
               {
                 "loaded": true,
                 "type": "link",
                 "title": "Workflows",
-                "path": "/settings/developer/workflows",
+                "path": "/user-guide/settings/developer/workflows",
                 "children": []
               }
             ]
@@ -598,14 +598,14 @@ export const generatedSidebars = [
             "loaded": true,
             "type": "link",
             "title": "Profile",
-            "path": "/settings/profile",
+            "path": "/user-guide/settings/profile",
             "children": []
           },
           {
             "loaded": true,
             "type": "link",
             "title": "Search Indexes",
-            "path": "/settings/search",
+            "path": "/user-guide/settings/search",
             "children": []
           }
         ]

@@ -19,12 +19,24 @@ import {
 // pages of this site live in content/<section>.
 function localLinksBySection() {
   return async (tree, file) => {
-    const m = /^(.*\/content\/[^/]+)\//.exec(file.history?.[0] || "")
-    return localLinksRehypePlugin({ basePath: m?.[1] })(tree, file)
+    const m = /^(.*\/content\/([^/]+))\//.exec(file.history?.[0] || "")
+    const { visit } = await import("unist-util-visit")
+    const nodes = []
+    visit(tree, ["element", "link"], (node) => {
+      const href = node.tagName === "a" ? node.properties?.href : node.type === "link" ? node.url : null
+      if (href && /page\.mdx?/.test(href)) nodes.push(node)
+    })
+    await localLinksRehypePlugin({ basePath: m?.[1] })(tree, file)
+    // the plugin returns paths relative to the section: make them site paths
+    for (const node of nodes) {
+      const key = node.tagName === "a" ? "href" : "url"
+      const holder = node.tagName === "a" ? node.properties : node
+      const link = holder[key]
+      if (m && typeof link === "string" && link.startsWith("/")) holder[key] = `/${m[2]}${link === "/" ? "" : link}`
+    }
   }
 }
 
-export const siteUrl = process.env.PUBLIC_BASE_URL || "https://medusago.hitkey.io"
 
 export const mdxOptions = {
   jsxImportSource: "react",
@@ -38,8 +50,8 @@ export const mdxOptions = {
     [
       crossProjectLinksPlugin,
       {
-        baseUrl: siteUrl,
-        projectUrls: { docs: { url: siteUrl, path: "/learn" } },
+        baseUrl: "",
+        projectUrls: { docs: { url: "", path: "/learn" } },
         useBaseUrl: true,
       },
     ],

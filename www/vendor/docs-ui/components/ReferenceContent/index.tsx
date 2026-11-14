@@ -10,7 +10,6 @@ import { CodeBlock } from "@/components/CodeBlock"
 import { WorkflowDiagram } from "@/components/WorkflowDiagram"
 import { Note } from "@/components/Note"
 import { SourceCodeLink } from "@/components/SourceCodeLink"
-import { EnterpriseNotice } from "@/components/Notices/EnterpriseNotice"
 import { MarkdownContent } from "@/components/MarkdownContent"
 import { BadgesList } from "@/components/BadgesList"
 import type { BadgeVariant } from "@/components/Badge"
@@ -83,15 +82,6 @@ const Block = ({ block }: { block: DocBlock }) => {
       )
     case "sourceCodeLink":
       return <SourceCodeLink link={block.link} />
-    case "enterpriseNotice":
-      return (
-        <EnterpriseNotice
-          featureName={block.featureName}
-          featureFlag={block.featureFlag}
-          featureFlagHref={block.featureFlagHref}
-          beta={block.beta}
-        />
-      )
     case "linkList": {
       const { ul: Ul, li: Li, a: Anchor } = Mdx
       return (

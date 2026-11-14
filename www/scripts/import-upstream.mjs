@@ -82,6 +82,8 @@ for (const page of pages) {
     images.push({ page: file, alt, upstream: url, status: "todo" })
     return ""
   })
+  // Links to the upstream site become links to the same page of this site.
+  text = text.replace(/\]\(https:\/\/docs\.medusajs\.com(\/(?:api|resources|ui|user-guide|learn)(?:[/#)][^)]*)?)\)/g, "]($1)")
   text = dropSections(text, /permissions across guides|single sign-on|assign roles in invites|view a user's roles/i)
   for (const [pageRe, re, replacement] of EDITS) {
     if (!pageRe.test(rel)) continue

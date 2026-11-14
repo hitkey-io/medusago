@@ -24,6 +24,14 @@ const dirHasPages = (section, p) => {
   if (!fs.existsSync(dir)) return false
   return fs.readdirSync(dir, { recursive: true }).some((f) => String(f).endsWith("page.mdx"))
 }
+const UPSTREAM_DOCS = /^https:\/\/docs\.medusajs\.com/
+// Sections that exist in content/ (a link to another section is kept when that page exists).
+const siteSections = fs.readdirSync(path.join(root, "content"))
+function siteTarget(p) {
+  // "https://docs.medusajs.com/resources/x" -> { section: "resources", rel: "/x" }
+  const m = /^\/([^/]+)(\/.*)?$/.exec(p.replace(UPSTREAM_DOCS, "") || "/")
+  return m && siteSections.includes(m[1]) ? { section: m[1], rel: m[2] || "/" } : null
+}
 function prune(section, items, pruned) {
   const out = []
   for (const item of items || []) {
@@ -35,6 +43,17 @@ function prune(section, items, pruned) {
     if (copy.children) copy.children = prune(section, copy.children, pruned)
     if (copy.type === "separator") {
       if (out.length && out[out.length - 1].type !== "separator") out.push(copy)
+      continue
+    }
+    if (copy.path && UPSTREAM_DOCS.test(copy.path)) {
+      // an entry pointing at the upstream docs: internal when the page is ours, otherwise dropped
+      const t = siteTarget(copy.path)
+      if (!t || !pageExists(t.section, t.rel)) {
+        pruned.push(copy.path)
+        continue
+      }
+      copy.path = "@abs:" + (copy.path.replace(UPSTREAM_DOCS, "") || "/")
+      out.push(copy)
       continue
     }
     if ((copy.type === "link" || copy.type === "ref") && copy.path && !pageExists(section, copy.path)) {
@@ -67,9 +86,26 @@ for (const section of all) {
   const raw = sidebar.filter((sb) => !sb.custom_autogenerate).map((sb) => ({ ...sb, items: prune(section, sb.items, pruned) }))
   const generated = await generateSidebar(raw, { writeToFile: false, addNumbering: section === "learn" })
   if (pruned.length) console.log(`  ${pruned.length} sidebar entries without a page yet`)
+  // Items carry full site paths (/<section>/...), so links work on any host.
+  const fix = (items) =>
+    (items || []).flatMap((it) => {
+      const copy = { ...it }
+      if (typeof copy.path === "string") {
+        if (UPSTREAM_DOCS.test(copy.path)) {
+          // entries generated from the tags index point at the upstream docs: keep those whose page exists here
+          const t = siteTarget(copy.path)
+          if (!t || !pageExists(t.section, t.rel)) return []
+          copy.path = copy.path.replace(UPSTREAM_DOCS, "") || "/"
+        } else if (copy.path.startsWith("@abs:")) copy.path = copy.path.slice(5)
+        else if (!/^https?:\/\//.test(copy.path)) copy.path = `/${section}${copy.path === "/" ? "" : copy.path}`
+      }
+      if (copy.children) copy.children = fix(copy.children)
+      return [copy]
+    })
+  const withPaths = generated.map((sb) => ({ ...sb, items: fix(sb.items) }))
   fs.writeFileSync(
     path.join(root, "src/generated", `${section}-sidebar.mjs`),
-    `export const generatedSidebars = ${JSON.stringify(generated, null, 2)}\n`
+    `export const generatedSidebars = ${JSON.stringify(withPaths, null, 2)}\n`
   )
   fs.rmSync(tmp, { recursive: true, force: true })
   console.log("generated sidebar for", section)

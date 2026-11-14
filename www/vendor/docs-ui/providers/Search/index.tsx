@@ -12,6 +12,7 @@ import { BadgeProps } from "../../components/Badge"
 import { Modal } from "../../components/Modal"
 import { Search, SearchProps } from "../../components/Search"
 import type { LiteClient as SearchClient } from "algoliasearch/lite"
+import { pagefindClient } from "./pagefind-client"
 import clsx from "clsx"
 // @ts-expect-error can't install the types package because it doesn't support React v19
 import { CSSTransition, SwitchTransition } from "react-transition-group"
@@ -79,29 +80,9 @@ export const SearchProvider = ({
 
   const modalRef = useRef<HTMLDialogElement | null>(null)
 
-  // MedusaGo does not use Algolia. Until the static search index is wired in,
-  // the client answers every query with no hits and makes no network request.
-  const searchClient: SearchClient = useMemo(() => {
-    const empty = {
-      hits: [],
-      nbHits: 0,
-      nbPages: 0,
-      page: 0,
-      hitsPerPage: 0,
-      processingTimeMS: 0,
-      query: "",
-      params: "",
-    }
-    return {
-      search: async (requests: unknown[]) => ({
-        results: requests.map(() => empty),
-      }),
-      searchForFacetValues: async (requests: unknown[]) => ({
-        results: requests.map(() => ({ facetHits: [] })),
-      }),
-      addAlgoliaAgent: () => {},
-    } as unknown as SearchClient
-  }, [])
+  // MedusaGo does not use Algolia: queries are answered by the static
+  // Pagefind index built with the site.
+  const searchClient = pagefindClient as unknown as SearchClient
 
   useEffect(() => {
     if (initialDefaultIndex !== selectedIndex) {
