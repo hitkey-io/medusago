@@ -32,7 +32,7 @@ const storeRec = stores[0]
 const { sales_channels } = await admin("GET", "/sales-channels")
 const sc = sales_channels[0]
 await admin("POST", `/stores/${storeRec.id}`, {
-  name: "Medusa Store",
+  name: "MedusaGo Store",
   supported_currencies: [
     { currency_code: "eur", is_default: true },
     { currency_code: "usd" },
@@ -144,10 +144,19 @@ await admin("POST", `/customer-groups/${group.id}/customers`, { add: [customers[
 for (const [value, label] of [["wrong_size", "Wrong size"], ["damaged", "Damaged"], ["not_as_described", "Not as described"]]) {
   await admin("POST", "/return-reasons", { value, label }).catch((e) => log("return reason", e.message.slice(0, 100)))
 }
+const campaign = (await admin("POST", "/campaigns", {
+  name: "Summer Sale", campaign_identifier: "SUMMER26", description: "Seasonal discounts",
+  starts_at: new Date(Date.now() - 7 * 864e5).toISOString(), ends_at: new Date(Date.now() + 60 * 864e5).toISOString(),
+  budget: { type: "usage", limit: 1000 },
+})).campaign
 await admin("POST", "/promotions", {
-  code: "SUMMER10", type: "standard", status: "active", is_automatic: false,
+  code: "SUMMER10", type: "standard", status: "active", is_automatic: false, campaign_id: campaign.id,
   application_method: { type: "percentage", target_type: "items", allocation: "across", value: 10, currency_code: "eur" },
 }).catch((e) => log("promotion", e.message.slice(0, 200)))
+await admin("POST", "/promotions", {
+  code: "FREESHIP", type: "standard", status: "active", is_automatic: false,
+  application_method: { type: "fixed", target_type: "shipping_methods", allocation: "each", value: 10, max_quantity: 1, currency_code: "eur" },
+}).catch((e) => log("promotion 2", e.message.slice(0, 200)))
 
 // --- orders (real checkouts through the Store API) ------------------------------------------
 const variants = (await admin("GET", "/products?fields=+variants.id,+variants.title&limit=50")).products
@@ -195,4 +204,15 @@ for (let i = 0; i < orders.length; i++) {
   if (refund && payment) await admin("POST", `/payments/${payment.id}/refund`, { amount: 10 })
 }
 log("lifecycle done")
+
+// --- reservation, draft order, price lists, secret key --------------------------------------------
+await admin("POST", "/reservations", { inventory_item_id: items[0].id, location_id: sl.id, quantity: 5, description: "Reserved for the spring photo shoot" }).catch((e) => log("reservation", e.message.slice(0, 160)))
+await admin("POST", "/draft-orders", {
+  email: customers[2].email, region_id: eu.id, sales_channel_id: webshop.id, customer_id: customers[2].id,
+  items: [{ variant_id: pick(1).id, quantity: 2 }],
+}).catch((e) => log("draft order", e.message.slice(0, 200)))
+const sale = (variantIds, amount) => variantIds.map((variant_id) => ({ variant_id, amount, currency_code: "eur" }))
+await admin("POST", "/price-lists", { title: "Black Friday", description: "Black Friday prices", status: "active", type: "sale", prices: sale(allVariants.slice(0, 4).map((v) => v.id), 7) }).catch((e) => log("price list", e.message.slice(0, 200)))
+await admin("POST", "/price-lists", { title: "Wholesale", description: "Prices for B2B customers", status: "draft", type: "override", prices: sale(allVariants.slice(4, 8).map((v) => v.id), 6) }).catch((e) => log("price list 2", e.message.slice(0, 200)))
+await admin("POST", "/api-keys", { title: "Backend integration", type: "secret" })
 log("done. publishable key:", pk)

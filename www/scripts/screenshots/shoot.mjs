@@ -26,31 +26,54 @@ const context = await browser.newContext({
 const page = await context.newPage()
 await page.addInitScript(() => {
   localStorage.setItem("medusa_admin_theme", "light")
-  localStorage.setItem("medusa_admin_sidebar_open", "true")
 })
 
-// log in through the form, like a user (the stand runs with NODE_ENV=production, so the session
-// cookie is Secure; Chrome accepts it on localhost)
-await page.goto(BASE + "/app/login", { waitUntil: "networkidle" })
-await page.getByPlaceholder("Email").fill("admin@medusa-test.com")
-await page.getByPlaceholder("Password").fill("supersecret")
-await page.getByRole("button", { name: "Continue with Email" }).click()
-await page.waitForURL((u) => !u.pathname.endsWith("/login"), { timeout: 15000 })
+// the Admin API with the logged-in session, to find the records a shot needs
+const api = async (p) => (await context.request.get(`${BASE}/admin${p}`)).json()
+const ctx = { api, BASE }
+
+// log in through the form, like a user
+async function login() {
+  await page.goto(BASE + "/app/login", { waitUntil: "networkidle" })
+  await page.getByPlaceholder("Email").fill("admin@medusa-test.com")
+  await page.getByPlaceholder("Password").fill("supersecret")
+  await page.getByRole("button", { name: "Continue with Email" }).click()
+  await page.waitForURL((u) => !u.pathname.endsWith("/login"), { timeout: 15000 })
+}
 
 let failed = 0
+let loggedIn = false
 for (const shot of shots) {
   if (only.size && !only.has(shot.id)) continue
   try {
-    await page.goto(BASE + "/app" + shot.path, { waitUntil: "networkidle" })
-    await page.waitForTimeout(shot.wait ?? 800)
-    if (shot.run) await shot.run(page)
-    await page.waitForTimeout(300)
+    if (shot.anonymous) {
+      // pictures of the pages before login: a clean context without the session
+      await context.clearCookies()
+      loggedIn = false
+    } else if (!loggedIn) {
+      await login()
+      loggedIn = true
+    }
+    const route = typeof shot.route === "function" ? await shot.route(ctx) : shot.route
+    await page.goto(BASE + "/app" + route, { waitUntil: "networkidle" })
+    await page.waitForTimeout(shot.wait ?? 900)
+    if (shot.run) await shot.run(page, ctx)
+    await page.waitForTimeout(400)
     const file = path.join(OUT, `${shot.id}.png`)
-    await page.screenshot({ path: file, clip: shot.clip })
+    if (shot.clip) {
+      // a computed crop in CSS px (a form: from its title to its last field)
+      await page.screenshot({ path: file, clip: await shot.clip(page, ctx) })
+    } else if (shot.el) {
+      // a section/form: the element only, like the cropped upstream pictures
+      const loc = await shot.el(page, ctx)
+      await loc.first().screenshot({ path: file })
+    } else {
+      await page.screenshot({ path: file })
+    }
     console.log("ok  ", shot.id)
   } catch (e) {
     failed++
-    console.log("FAIL", shot.id, String(e.message).split("\n")[0])
+    console.log("FAIL", shot.id, String(e.message).split("\n")[0].slice(0, 160))
   }
 }
 await browser.close()

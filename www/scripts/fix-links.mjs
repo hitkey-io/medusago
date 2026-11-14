@@ -65,7 +65,7 @@ for (const file of files) {
     dropped.set(clean, (dropped.get(clean) || 0) + 1)
     return ""
   })
-  const out = text.replace(/\[([^\]\n]*)\]\(([^)\s]+)\)/g, (whole, label, link) => {
+  const out = text.replace(/(?<!!)\[([^\]\n]*)\]\(([^)\s]+)\)/g, (whole, label, link) => {
     const p = sitePath(link, file)
     if (p === null || (p !== "!missing" && pages.has(p))) return whole
     const to = p === "!missing" ? null : redirect(p)
