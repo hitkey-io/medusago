@@ -21,6 +21,11 @@ import YAML from "yaml"
 const root = path.resolve(import.meta.dirname, "..")
 const repo = path.resolve(root, "..")
 const specsDir = path.join(repo, "reference/medusa/www/apps/api-reference/specs")
+// The generated pages are committed; without the upstream clone (CI) they are used as they are.
+if (!fs.existsSync(path.join(specsDir, "admin", "openapi.full.yaml"))) {
+  console.log("upstream specs not found: keeping the committed API reference pages")
+  process.exit(0)
+}
 const outDir = path.join(root, "content/api")
 const snapshotFile = path.join(import.meta.dirname, "api-routes.snapshot.tsv")
 
