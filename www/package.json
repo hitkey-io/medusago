@@ -4,7 +4,7 @@
   "type": "module",
   "version": "0.0.0",
   "scripts": {
-    "prep": "bun scripts/generate-api-reference.mjs && bun scripts/generate-sidebars.mjs",
+    "prep": "bun scripts/generate-api-reference.mjs && bun scripts/generate-sidebars.mjs && bun scripts/generate-edit-dates.mjs",
     "dev": "bun run prep && bunx --bun astro dev",
     "build": "bun run prep && bun run lint && bunx --bun astro build && bun scripts/inline-suspense.mjs && bunx pagefind --site dist --quiet && bun scripts/check-links.mjs && bun scripts/check-nav.mjs",
     "preview": "bunx --bun astro preview",

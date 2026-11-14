@@ -34,7 +34,7 @@ export default function PageApp({ file, section, path }: Props) {
   }
   const Content = pageComponent(file)
   return (
-    <Frame config={sections[section]}>
+    <Frame config={sections[section]} file={file} showPagination={section !== "resources"}>
       <MDXProvider components={mdxComponents}>
         <Suspense fallback={null}>
           <Content />

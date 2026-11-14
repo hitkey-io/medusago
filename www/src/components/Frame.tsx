@@ -1,11 +1,22 @@
 import React from "react"
 import clsx from "clsx"
-import { Breadcrumbs, RootProviders, Sidebar, Footer } from "docs-ui"
+import { Breadcrumbs, RootProviders, Sidebar } from "docs-ui"
+import { PageFooter } from "./PageFooter"
 import { MainContentLayout } from "@/layouts/main-content"
 import { Providers } from "./Providers"
 import type { DocsConfig } from "types"
 
-export const Frame = ({ children, config }: { children?: React.ReactNode; config: DocsConfig }) => (
+export const Frame = ({
+  children,
+  config,
+  file,
+  showPagination,
+}: {
+  children?: React.ReactNode
+  config: DocsConfig
+  file: string
+  showPagination: boolean
+}) => (
   <div
     className={clsx(
       "bg-medusa-bg-subtle font-base text-medium w-full",
@@ -33,7 +44,7 @@ export const Frame = ({ children, config }: { children?: React.ReactNode; config
               <div data-pagefind-body data-pagefind-filter={`section:${config.project.title}`}>
                 {children}
               </div>
-              <Footer showPagination />
+              <PageFooter file={file} showPagination={showPagination} />
             </div>
           </MainContentLayout>
         </div>

@@ -25,6 +25,8 @@ jobs:
         working-directory: www
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the edit dates of the pages come from the git history
 
       - uses: oven-sh/setup-bun@v2
 
