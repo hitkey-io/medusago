@@ -124,3 +124,19 @@ await admin("POST", "/users/me", { first_name: "Alex", last_name: "Nielsen" }).c
 
 // --- a notification in the admin feed: a finished product export ---------------------------------------------------------
 if (!(await admin("GET", "/notifications?limit=1")).notifications?.length) await admin("POST", "/products/export", {}).catch((e) => console.log("export", e.message.slice(0, 160)))
+
+// --- translations (only when the stand runs with MEDUSA_FF_TRANSLATION=true): supported locales and some product translations ---
+if ((await call("GET", "/admin/translations/settings", undefined).catch(() => null))) {
+  const store = (await admin("GET", "/stores")).stores[0]
+  await admin("POST", `/stores/${store.id}`, { supported_locales: [{ locale_code: "en-US" }, { locale_code: "da-DK" }, { locale_code: "de-DE" }] }).catch((e) => console.log("locales", e.message.slice(0, 160)))
+  if (!(await admin("GET", "/translations?limit=1")).translations?.length) {
+    const da = { "Medusa T-Shirt": ["Medusa T-shirt", "Klassisk bomulds-T-shirt til hverdagen."], "Medusa Sweatshirt": ["Medusa Sweatshirt", "Blød sweatshirt i økologisk bomuld."], "Medusa Mug": ["Medusa Krus", "Krus til din morgenkaffe."] }
+    const de = { "Medusa T-Shirt": ["Medusa T-Shirt", "Klassisches Baumwoll-T-Shirt für jeden Tag."], "Medusa Sweatpants": ["Medusa Jogginghose", "Bequeme Jogginghose für zu Hause."] }
+    const create = []
+    for (const p of allProducts) {
+      if (da[p.title]) create.push({ reference_id: p.id, reference: "product", locale_code: "da-DK", translations: { title: da[p.title][0], description: da[p.title][1] } })
+      if (de[p.title]) create.push({ reference_id: p.id, reference: "product", locale_code: "de-DE", translations: { title: de[p.title][0], description: de[p.title][1] } })
+    }
+    await admin("POST", "/translations/batch", { create }).catch((e) => console.log("translations", e.message.slice(0, 200)))
+  }
+}

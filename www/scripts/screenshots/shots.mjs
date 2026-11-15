@@ -613,6 +613,12 @@ export const shots = [
     await page.waitForTimeout(500)
   }, clip: async () => ({ x: 150, y: 150, width: 330, height: 150 }) },
 
+
+  // =========================== Translations (stand started with MEDUSA_FF_TRANSLATION=true) ===
+  { id: "translations-page", page: `${GS}/translations`, alt: "Translations settings page", route: `${S}/translations` },
+  { id: "form-translations-settings", page: `${GS}/translations`, alt: "Form to manage translatable resources and their fields", route: `${S}/translations/settings`, clip: modalClip },
+  { id: "translations-statistics", page: `${GS}/translations`, alt: "Translation statistics in Translated fields section", route: `${S}/translations`, el: cardRe(/Translated|Statistics|Fields/) },
+
   // draft orders
   { id: "draft-form", page: `${UG}/orders/draft-orders/create`, alt: "Draft order form", route: "/draft-orders/create", clip: modalClip },
   ...[["draft-summary", "Order Summary", "Summary"], ["draft-customer", "Customer Section", "Customer"], ["draft-activity", "Activity Section", "Activity"], ["draft-shipping", "Shipping Section", "Shipping"]].map(([id, alt, heading]) => ({
