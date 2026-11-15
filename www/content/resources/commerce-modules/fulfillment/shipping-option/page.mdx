@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/fulfillment.mjs"
+
 export const metadata = {
   title: `Shipping Option`,
 }
@@ -47,6 +49,8 @@ A shipping option is restricted by a service zone, which limits the locations wh
 
 For example, a fulfillment provider may have a shipping option that can be used in the United States and another in Canada.
 
+<Diagram alt="A diagram showcasing the relation between shipping options and service zones." spec={diagramPages["resources/commerce-modules/fulfillment/shipping-option"][0]} />
+
 Service zones can be more restrictive, such as limiting to certain cities or province codes.
 
 <Note title="Tip">
@@ -54,6 +58,8 @@ Service zones can be more restrictive, such as limiting to certain cities or pro
 The province code is always in lowercase and in [ISO 3166-2 format](https://en.wikipedia.org/wiki/ISO_3166-2).
 
 </Note>
+
+<Diagram alt="A diagram showcasing the relation between shipping options, service zones, and geo zones" spec={diagramPages["resources/commerce-modules/fulfillment/shipping-option"][1]} />
 
 ---
 
@@ -75,7 +81,11 @@ These rules are represented by the ShippingOptionRule data model. Its properties
     - To create a negation condition that considers `value` against the rule, use `nin`, which validates that the provided values aren’t in the rule’s values.
 - `value`: One or more values.
 
+<Diagram alt="A diagram showcasing the relation between shipping option and shipping option rules." spec={diagramPages["resources/commerce-modules/fulfillment/shipping-option"][2]} />
+
 A shipping option can have multiple rules. For example, you can add rules to a shipping option so that it's available if the customer belongs to the VIP group and the total weight is less than 2000g.
+
+<Diagram alt="A diagram showcasing how a shipping option can have multiple rules." spec={diagramPages["resources/commerce-modules/fulfillment/shipping-option"][3]} />
 
 ---
 

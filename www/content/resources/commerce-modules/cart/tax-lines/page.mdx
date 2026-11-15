@@ -5,6 +5,8 @@ products:
 
 import { Table } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/cart.mjs"
+
 export const metadata = {
   title: `Tax Lines in Cart Module`,
 }
@@ -16,6 +18,8 @@ In this document, you’ll learn about tax lines in a cart and how to retrieve t
 ## What are Tax Lines?
 
 A tax line indicates the tax rate of a line item or a shipping method. The LineItemTaxLine data model represents a line item’s tax line, and the ShippingMethodTaxLine data model represents a shipping method’s tax line.
+
+<Diagram alt="A diagram showcasing the relation between other data models and the tax line models" spec={diagramPages["resources/commerce-modules/cart/tax-lines"][0]} />
 
 ---
 
@@ -32,6 +36,8 @@ So, instead of calculating the tax rate and adding it to the item/method’s sub
 The following diagram is a simplified showcase of how a subtotal is calculated from the taxes perspective.
 
 </Note>
+
+<Diagram alt="A diagram showing an example of calculating the subtotal of a line item using its taxes" spec={diagramPages["resources/commerce-modules/cart/tax-lines"][1]} />
 
 For example, if a line item's amount is `5000`, the tax rate is `10`, and tax inclusivity is enabled, the tax amount is 10% of `5000`, which is `500`, making the unit price of the line item `4500`.
 

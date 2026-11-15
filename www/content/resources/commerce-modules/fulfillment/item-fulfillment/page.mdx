@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/fulfillment.mjs"
+
 export const metadata = {
   title: `Item Fulfillment Concepts`,
 }
@@ -19,6 +21,8 @@ A fulfillment can be created to fulfill orders, [returns](../../order/return/), 
 A fulfillment is associated with a [fulfillment provider](../fulfillment-provider/page.mdx) that handles all its processing, such as creating a shipment for the fulfillment’s items.
 
 The fulfillment is also associated with a [shipping option](../shipping-option/page.mdx) of that provider, which determines how the item is shipped.
+
+<Diagram alt="A diagram showcasing the relation between a fulfillment, fulfillment provider, and shipping option" spec={diagramPages["resources/commerce-modules/fulfillment/item-fulfillment"][0]} />
 
 ---
 
@@ -56,6 +60,8 @@ The merged address is forwarded to the Fulfillment Module Provider but the order
 A fulfillment is used to fulfill one or more items. Each item is represented by the FulfillmentItem data model.
 
 The fulfillment item holds details relevant to fulfilling the item, such as barcode, SKU, and quantity to fulfill.
+
+<Diagram alt="A diagram showcasing the relation between fulfillment and fulfillment items." spec={diagramPages["resources/commerce-modules/fulfillment/item-fulfillment"][1]} />
 
 ---
 

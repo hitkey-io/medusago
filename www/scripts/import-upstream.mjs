@@ -80,6 +80,12 @@ const EDITS = [
 const { shots } = await import("./screenshots/shots.mjs")
 // an entry with `file` reuses the picture of another entry
 const ownShots = new Map(shots.filter((x) => fs.existsSync(path.join(root, "public/images/shots", `${x.file ?? x.id}.webp`))).map((x) => [`${x.page}|${x.alt}`, x.file ?? x.id]))
+// diagrams we drew ourselves (www/diagrams, rendered by src/components/Diagram.tsx), keyed by page and alt text
+const diagramPages = new Map()
+for (const f of fs.readdirSync(path.join(root, "diagrams")).filter((x) => x.endsWith(".mjs") && !["lib.mjs", "shared.mjs"].includes(x))) {
+  const { pages } = await import(path.join(root, "diagrams", f))
+  for (const [page, specs] of Object.entries(pages)) diagramPages.set(page, { module: f, specs })
+}
 const imagesFile = path.join(root, "images.json")
 // one row per picture of a page (older runs appended duplicates; "done" wins)
 const images = []
@@ -181,13 +187,26 @@ for (const page of pages) {
   }
   let text = fs.readFileSync(src, "utf8")
   const file = `${section}/${rel || "index"}`
+  const diagrams = process.env.NO_DIAGRAMS ? undefined : diagramPages.get(file)
+  // the pictures of a page, in the order of the upstream page; `diagrams.specs[n]` is the diagram that replaces the n-th one
+  let ordinal = -1
+  let diagramImport = ""
   text = text.replace(/^[ \t]*!\[([^\]]*)\]\((https?:\/\/[^)]+)\)[ \t]*\n?/gm, (_, alt, url) => {
+    ordinal++
+    if (diagrams?.specs[ordinal]) {
+      const known = images.find((i) => i.page === file && i.upstream === url)
+      if (known) known.status = "done"
+      else images.push({ page: file, alt, upstream: url, status: "done" })
+      diagramImport = `import { pages as diagramPages } from "diagrams/${diagrams.module}"\n`
+      return `<Diagram alt=${JSON.stringify(applyTerms(alt))} spec={diagramPages[${JSON.stringify(file)}][${ordinal}]} />\n`
+    }
     const own = ownShots.get(`${file}|${alt}`)
     const known = images.find((i) => i.page === file && i.upstream === url)
     if (known) known.status = own ? "done" : "todo"
     else images.push({ page: file, alt, upstream: url, status: own ? "done" : "todo" })
     return own ? `![${alt}](/images/shots/${own}.webp)\n` : ""
   })
+  if (diagramImport) text = text.replace(/^(export const metadata)/m, `${diagramImport}\n$1`)
   // Links to the upstream site become links to the same page of this site.
   text = text.replace(/\]\(https:\/\/docs\.medusajs\.com(\/(?:api|resources|ui|user-guide|learn)(?:[/#)][^)]*)?)\)/g, "]($1)")
   // troubleshooting guides are not ported (they cover the Node installer and TypeScript server): drop their sections and imports

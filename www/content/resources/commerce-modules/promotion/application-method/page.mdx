@@ -1,5 +1,7 @@
 import { Table } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/promotion.mjs"
+
 export const metadata = {
   title: `Application Method`,
 }
@@ -220,6 +222,8 @@ When the promotion is applied to a cart item or a shipping method (in other word
 
 The `ApplicationMethod` data model has a collection of PromotionRule records to restrict which items or shipping methods the promotion applies to. The `target_rules` property in the `ApplicationMethod` represents this relation.
 
+<Diagram alt="A diagram showcasing the target_rules relation between the ApplicationMethod and PromotionRule data models" spec={diagramPages["resources/commerce-modules/promotion/application-method"][0]} />
+
 In this example, the promotion is only applied to product variants in the cart that have the SKU `SHIRT`.
 
 <Note title="Warning" type="warning">
@@ -235,6 +239,8 @@ A target rule's `attribute` must be prefixed based on the `target_type`: use `it
 When the promotion’s type is `buyget`, you must specify the “buy X” condition. For example, a cart must have two shirts before the promotion can be applied.
 
 The application method has a collection of `PromotionRule` items to define the “buy X” rule. The `buy_rules` property in the `ApplicationMethod` represents this relation.
+
+<Diagram alt="A diagram showcasing the buy_rules relation between the ApplicationMethod and PromotionRule data models" spec={diagramPages["resources/commerce-modules/promotion/application-method"][1]} />
 
 In this example, the cart must have two product variants with the SKU `SHIRT` for the promotion to be applied.
 

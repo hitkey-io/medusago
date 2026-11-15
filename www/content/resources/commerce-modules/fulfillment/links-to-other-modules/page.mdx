@@ -8,6 +8,8 @@ products:
 
 import { CodeTabs, CodeTab, Table } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/fulfillment.mjs"
+
 export const metadata = {
   title: `Links between Fulfillment Module and Other Modules`,
 }
@@ -169,7 +171,11 @@ The [Order Module](../../order/page.mdx) provides order-management functionaliti
 
 Medusa defines a link between the `Fulfillment` and `Order` data models. A fulfillment is created for an orders' items.
 
+<Diagram alt="A diagram showcasing an example of how data models from the Fulfillment and Order modules are linked" spec={diagramPages["resources/commerce-modules/fulfillment/links-to-other-modules"][0]} />
+
 A fulfillment is also created for a return's items. So, Medusa defines a link between the `Fulfillment` and `Return` data models.
+
+<Diagram alt="A diagram showcasing an example of how data models from the Fulfillment and Order modules are linked" spec={diagramPages["resources/commerce-modules/fulfillment/links-to-other-modules"][1]} />
 
 ### Link to Order Shipping Methods
 
@@ -183,6 +189,8 @@ The Pricing Module provides features to store, manage, and retrieve the best pri
 
 Medusa defines a link between the `PriceSet` and `ShippingOption` data models. A shipping option's price is stored as a price set.
 
+<Diagram alt="A diagram showcasing an example of how data models from the Pricing and Fulfillment modules are linked" spec={diagramPages["resources/commerce-modules/fulfillment/links-to-other-modules"][2]} />
+
 ## Product Module
 
 Medusa defines a link between the `ShippingProfile` data model and the `Product` data model of the Product Module. Each product must belong to a shipping profile.
@@ -193,5 +201,8 @@ The Stock Location Module provides features to manage stock locations in a store
 
 Medusa defines a link between the `FulfillmentSet` and `StockLocation` data models. A fulfillment set can be conditioned to a specific stock location.
 
+<Diagram alt="A diagram showcasing an example of how data models from the Fulfillment and Stock Location modules are linked" spec={diagramPages["resources/commerce-modules/fulfillment/links-to-other-modules"][3]} />
+
 Medusa also defines a link between the `FulfillmentProvider` and `StockLocation` data models to indicate the providers that can be used in a location.
 
+<Diagram alt="A diagram showcasing an example of how data models from the Fulfillment and Stock Location modules are linked" spec={diagramPages["resources/commerce-modules/fulfillment/links-to-other-modules"][4]} />

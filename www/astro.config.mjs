@@ -28,6 +28,7 @@ export default defineConfig({
     ],
     resolve: {
       alias: [
+        { find: /^diagrams\//, replacement: r("diagrams") + "/" },
         { find: /^next\/link$/, replacement: r("shims/next/link.tsx") },
         { find: /^next\/image$/, replacement: r("shims/next/image.tsx") },
         { find: /^next\/dynamic$/, replacement: r("shims/next/dynamic.tsx") },

@@ -1,0 +1,15 @@
+// Screenshots the diagrams of a page of a running dev server (bun scripts/diagram-shot.mjs <page path> [out.png] [theme])
+import { chromium } from "playwright-core"
+const [pagePath, out = "/tmp/diagram.png", theme = "light"] = process.argv.slice(2)
+const b = await chromium.launch({ channel: "chrome", headless: true })
+const ctx = await b.newContext({ viewport: { width: 1435, height: 900 }, deviceScaleFactor: 1 })
+await ctx.addInitScript((t) => localStorage.setItem("theme", t), theme)
+const page = await ctx.newPage()
+const errors = []
+page.on("pageerror", (e) => errors.push(String(e)))
+await page.goto((process.env.BASE || "http://localhost:4400") + pagePath, { waitUntil: "networkidle" })
+await page.waitForTimeout(1500)
+const figs = await page.locator("figure:has(svg[role=img])").all()
+console.log("diagrams:", figs.length, "errors:", errors.slice(0, 2))
+for (let i = 0; i < figs.length; i++) await figs[i].screenshot({ path: out.replace(/\.png$/, `-${i}.png`) })
+await b.close()

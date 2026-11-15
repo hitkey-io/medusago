@@ -1,5 +1,7 @@
 import { CardList } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/tax.mjs"
+
 export const metadata = {
   title: `Tax Module Provider`,
 }
@@ -19,6 +21,8 @@ Refer to this [Medusa Admin User Guide](!user-guide!/settings/tax-regions) to le
 The Tax Module Provider handles tax line calculations in the MedusaGo application. It integrates third-party tax services, such as TaxJar, or implements custom tax calculation logic.
 
 The MedusaGo application uses the Tax Module Provider whenever it needs to calculate tax lines for a cart or order, or when you calculate the tax lines using the Tax Module's service.
+
+<Diagram alt="Diagram showcasing the communication between Medusa the Tax Module Provider, and the third-party tax provider." spec={diagramPages["resources/commerce-modules/tax/tax-provider"][0]} />
 
 ### Default Tax Provider
 
@@ -80,6 +84,8 @@ For each Tax Module Provider, the MedusaGo application finds all tax provider se
 A registered tax provider is represented by the TaxProvider data model in the MedusaGo application.
 
 This data model is used to reference a service in the Tax Module Provider and determine whether it's installed in the application.
+
+<Diagram alt="Diagram showcasing the TaxProvider data model" spec={diagramPages["resources/commerce-modules/tax/tax-provider"][1]} />
 
 The `TaxProvider` data model has the following properties:
 

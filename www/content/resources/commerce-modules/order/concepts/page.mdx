@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/order.mjs"
+
 export const metadata = {
   title: `Order Concepts`,
 }
@@ -33,6 +35,8 @@ You can also edit an order's locale using the [Update Order](!api!/admin/orders)
 
 The items purchased in an order are represented by the OrderItem data model. An order can have multiple items.
 
+<Diagram alt="A diagram showcasing the relation between an order and its items." spec={diagramPages["resources/commerce-modules/order/concepts"][0]} />
+
 ### Item's Product Details
 
 The details of the purchased products are represented by the LineItem data model. Not only does a line item hold the details of the product, but also details related to its price, adjustments due to promotions, and taxes.
@@ -51,6 +55,8 @@ An order item exposes two metadata fields:
 An order has one or more shipping methods used to handle item shipment.
 
 Each shipping method is represented by the OrderShippingMethod data model that holds its details. The shipping method is linked to the order through the OrderShipping data model.
+
+<Diagram alt="A diagram showcasing the relation between an order and its items." spec={diagramPages["resources/commerce-modules/order/concepts"][1]} />
 
 ### data Property
 

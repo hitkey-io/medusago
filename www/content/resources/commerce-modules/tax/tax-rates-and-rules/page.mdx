@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/tax.mjs"
+
 export const metadata = {
   title: `Tax Rates and Rules`,
 }
@@ -35,6 +37,8 @@ You can create tax rates that override the default for specific conditions or ru
 For example, you can have a default 10% tax rate, but for products of type “Shirt” it is 15%.
 
 A tax region can have multiple tax rates, and each tax rate can have multiple tax rules. The TaxRateRule data model represents a tax rate’s rule.
+
+<Diagram alt="A diagram showcasing the relation between TaxRegion, TaxRate, and TaxRateRule" spec={diagramPages["resources/commerce-modules/tax/tax-rates-and-rules"][0]} />
 
 The following two properties of the data model identify the rule’s target:
 

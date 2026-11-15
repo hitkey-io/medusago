@@ -1,5 +1,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent, TabsContentWrapper, TypeList } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/pricing.mjs"
+
 export const metadata = {
   title: `Prices Calculation`,
 }
@@ -140,6 +142,8 @@ Both prices are returned in an object with the following properties:
 ### Original Price Selection Logic
 
 When the calculated price isn't from a price list of type `override`, the original price is selected based on the following logic:
+
+<Diagram alt="Diagram illustrating the original price selection logic" spec={diagramPages["resources/commerce-modules/pricing/price-calculation"][0]} />
 
 1. If the context doesn't have any rules, select the default price (the price without any rules).
 2. If the context has rules and there's a price that matches all the rules, select that price.

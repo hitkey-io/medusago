@@ -5,6 +5,8 @@ products:
 
 import { CodeTabs, CodeTab, Table } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/api-key.mjs"
+
 export const metadata = {
   title: `Links between API Key Module and Other Modules`,
 }
@@ -57,6 +59,8 @@ The API Key Module has the following links to other modules:
 ## Sales Channel Module
 
 You can create a publishable API key and associate it with a sales channel. Medusa defines a link between the `ApiKey` and the `SalesChannel` data models.
+
+<Diagram alt="A diagram showcasing an example of how data models from the API Key and Sales Channel modules are linked" spec={diagramPages["resources/commerce-modules/api-key/links-to-other-modules"][0]} />
 
 This is useful to avoid passing the sales channel's ID as a parameter of every request, and instead pass the publishable API key in the header of any request to the Store API route.
 

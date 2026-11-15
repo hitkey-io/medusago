@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/fulfillment.mjs"
+
 export const metadata = {
   title: `Fulfillment Module Provider`,
 }
@@ -17,6 +19,8 @@ Refer to this [Medusa Admin User Guide](!user-guide!/settings/locations-and-ship
 A Fulfillment Module Provider handles fulfilling items, typically using a third-party integration.
 
 Fulfillment Module Providers registered in the Fulfillment Module's options are stored and represented by the FulfillmentProvider data model.
+
+<Diagram alt="Diagram showcasing the communication between Medusa, the Fulfillment Module Provider, and the third-party fulfillment provider." spec={diagramPages["resources/commerce-modules/fulfillment/fulfillment-provider"][0]} />
 
 ---
 
@@ -67,6 +71,8 @@ For each Fulfillment Module Provider, the MedusaGo application finds all fulfill
 A registered fulfillment provider is represented by the FulfillmentProvider data model in the MedusaGo application.
 
 This data model is used to reference a service in the Fulfillment Module Provider and determine whether it's installed in the application.
+
+<Diagram alt="Diagram showcasing the FulfillmentProvider data model" spec={diagramPages["resources/commerce-modules/fulfillment/fulfillment-provider"][1]} />
 
 The `FulfillmentProvider` data model has the following properties:
 

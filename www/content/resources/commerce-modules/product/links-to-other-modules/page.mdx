@@ -10,6 +10,8 @@ products:
 
 import { CodeTabs, CodeTab, Table, Prerequisites } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/product.mjs"
+
 export const metadata = {
   title: `Links between Product Module and Other Modules`,
 }
@@ -264,6 +266,8 @@ The Inventory Module provides inventory-management features for any stock-kept i
 
 Medusa defines a link between the `ProductVariant` and `InventoryItem` data models. Each product variant has different inventory details.
 
+<Diagram alt="A diagram showcasing an example of how data models from the Product and Inventory modules are linked." spec={diagramPages["resources/commerce-modules/product/links-to-other-modules"][0]} />
+
 When the `manage_inventory` property of a product variant is enabled, you can manage the variant's inventory in different locations through this relation.
 
 <Note title="Tip">
@@ -285,6 +289,8 @@ The Product Module doesn't provide pricing-related features.
 
 Instead, Medusa defines a link between the `ProductVariant` and the `PriceSet` data models. A product variant’s prices are stored belonging to a price set.
 
+<Diagram alt="A diagram showcasing an example of how data models from the Pricing and Product Module are linked." spec={diagramPages["resources/commerce-modules/product/links-to-other-modules"][1]} />
+
 So, to add prices for a product variant, create a price set and add the prices to it.
 
 ## Sales Channel Module
@@ -292,6 +298,8 @@ So, to add prices for a product variant, create a price set and add the prices t
 The Sales Channel Module provides functionalities to manage multiple selling channels in your store.
 
 Medusa defines a link between the `Product` and `SalesChannel` data models. A product can have different availability in different sales channels.
+
+<Diagram alt="A diagram showcasing an example of how data models from the Product and Sales Channel modules are linked." spec={diagramPages["resources/commerce-modules/product/links-to-other-modules"][2]} />
 
 ## Translation Module
 

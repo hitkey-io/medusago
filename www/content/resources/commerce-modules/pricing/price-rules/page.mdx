@@ -12,6 +12,8 @@ products:
 
 import { CodeTabs, CodeTab } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/pricing.mjs"
+
 export const metadata = {
   title: `Price Tiers and Rules`,
 }
@@ -93,15 +95,21 @@ The `Price` data model has a `rules_count` property, which indicates how many ru
 
 For example, you create a price restricted to `10557` zip codes.
 
+<Diagram alt="A diagram showcasing the relation between the PriceRule and Price" spec={diagramPages["resources/commerce-modules/pricing/price-rules"][0]} />
+
 A price can have multiple price rules.
 
 For example, a price can be restricted by a region and a zip code.
+
+<Diagram alt="A diagram showcasing the relation between the PriceRule and Price with multiple rules." spec={diagramPages["resources/commerce-modules/pricing/price-rules"][1]} />
 
 ### Price List Rules
 
 Rules applied to a price list are represented by the PriceListRule data model.
 
 The `rules_count` property of a `PriceList` indicates how many rules are applied to it.
+
+<Diagram alt="A diagram showcasing the relation between the PriceSet, PriceList, Price, RuleType, and PriceListRuleValue" spec={diagramPages["resources/commerce-modules/pricing/price-rules"][2]} />
 
 ### How is the Price Rule Applied?
 

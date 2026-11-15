@@ -12,6 +12,8 @@ products:
 
 import { CodeTabs, CodeTab, Table } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/order.mjs"
+
 export const metadata = {
   title: `Links between Order Module and Other Modules`,
 }
@@ -231,13 +233,19 @@ The [Cart Module](../../cart/page.mdx) provides cart-management features.
 
 Medusa defines a link between the `Order` and `Cart` data models. The order is linked to the cart used for the purchased.
 
+<Diagram alt="A diagram showcasing an example of how data models from the Cart and Order modules are linked" spec={diagramPages["resources/commerce-modules/order/links-to-other-modules"][0]} />
+
 ## Fulfillment Module
 
 ### Link to Fulfillment
 
 A fulfillment is created for an orders' items. Medusa defines a link between the `Fulfillment` and `Order` data models.
 
+<Diagram alt="A diagram showcasing an example of how data models from the Fulfillment and Order modules are linked" spec={diagramPages["resources/commerce-modules/order/links-to-other-modules"][1]} />
+
 A fulfillment is also created for a return's items. So, Medusa defines a link between the `Fulfillment` and `Return` data models.
+
+<Diagram alt="A diagram showcasing an example of how data models from the Fulfillment and Order modules are linked" spec={diagramPages["resources/commerce-modules/order/links-to-other-modules"][2]} />
 
 ### Link to Shipping Option
 
@@ -249,6 +257,8 @@ An order's payment details are stored in a payment collection. This also applies
 
 So, Medusa defines links between the `PaymentCollection` data model and the `Order`, `OrderClaim`, and `OrderExchange` data models.
 
+<Diagram alt="A diagram showcasing an example of how data models from the Order and Payment modules are linked" spec={diagramPages["resources/commerce-modules/order/links-to-other-modules"][3]} />
+
 ## Product Module
 
 Medusa defines read-only links between:
@@ -259,6 +269,8 @@ Medusa defines read-only links between:
 ## Promotion Module
 
 An order is associated with the promotion applied on it. Medusa defines a link between the `Order` and `Promotion` data models.
+
+<Diagram alt="A diagram showcasing an example of how data models from the Order and Promotion modules are linked" spec={diagramPages["resources/commerce-modules/order/links-to-other-modules"][4]} />
 
 ## Region Module
 

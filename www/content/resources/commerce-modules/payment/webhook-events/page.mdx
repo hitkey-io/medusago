@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/payment.mjs"
+
 export const metadata = {
   title: `Payment Webhook Events`,
 }
@@ -50,6 +52,8 @@ The webhook listener API route executes the getWebhookActionAndData method of th
 Payment providers have a similar getWebhookActionAndData method to process the webhook event. So, if you're implementing a custom payment provider, make sure to implement it to handle webhook events.
 
 </Note>
+
+<Diagram alt="A diagram showcasing the steps of how the getWebhookActionAndData method words" spec={diagramPages["resources/commerce-modules/payment/webhook-events"][0]} />
 
 If the `getWebhookActionAndData` method returns an `authorized` or `captured` action, the MedusaGo application will perform one of the following actions:
 

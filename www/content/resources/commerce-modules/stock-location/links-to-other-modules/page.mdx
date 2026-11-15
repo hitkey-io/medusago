@@ -7,6 +7,8 @@ products:
 
 import { CodeTabs, CodeTab, Table } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/stock-location.mjs"
+
 export const metadata = {
   title: `Links between Stock Location Module and Other Modules`,
 }
@@ -110,7 +112,11 @@ A fulfillment set can be conditioned to a specific stock location.
 
 Medusa defines a link between the `FulfillmentSet` and `StockLocation` data models.
 
+<Diagram alt="A diagram showcasing an example of how data models from the Fulfillment and Stock Location modules are linked" spec={diagramPages["resources/commerce-modules/stock-location/links-to-other-modules"][0]} />
+
 Medusa also defines a link between the `FulfillmentProvider` and `StockLocation` data models to indicate the providers that can be used in a location.
+
+<Diagram alt="A diagram showcasing an example of how data models from the Fulfillment and Stock Location modules are linked" spec={diagramPages["resources/commerce-modules/stock-location/links-to-other-modules"][1]} />
 
 ## Inventory Module
 
@@ -122,3 +128,4 @@ A stock location is associated with a sales channel. This scopes inventory quant
 
 Medusa defines a link between the `SalesChannel` and `StockLocation` data models.
 
+<Diagram alt="A diagram showcasing an example of how resources from the Sales Channel and Stock Location modules are linked" spec={diagramPages["resources/commerce-modules/stock-location/links-to-other-modules"][2]} />

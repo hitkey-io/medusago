@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/payment.mjs"
+
 export const metadata = {
   title: `Payment Session`,
 }
@@ -11,6 +13,8 @@ In this document, you’ll learn what a payment session is.
 A payment session, represented by the PaymentSession data model, is a payment amount to be authorized. It’s associated with a payment provider that handles authorizing it.
 
 A payment collection can have multiple payment sessions. Using this feature, you can implement payment in installments or payments using multiple providers.
+
+<Diagram alt="Diagram showcasing how every payment session has a different payment provider" spec={diagramPages["resources/commerce-modules/payment/payment-session"][0]} />
 
 ---
 

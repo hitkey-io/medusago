@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/order.mjs"
+
 export const metadata = {
   title: `Order Return`,
 }
@@ -23,6 +25,8 @@ A return is requested either by the customer from the storefront, or the merchan
 The [Create Return API route](!api!/store/returns) doesn't require customer authentication, so that guest customers can request a return for their orders. To add access rules to the route, refer to the [Restrict Return Creation guide](../secure-return-creation/page.mdx).
 
 </Note>
+
+<Diagram alt="Diagram showcasing the automated RMA flow." spec={diagramPages["resources/commerce-modules/order/return"][0]} />
 
 Once the merchant receives the returned items, they mark the return as received.
 

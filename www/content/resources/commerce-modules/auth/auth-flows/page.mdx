@@ -2,6 +2,8 @@
 sidebar_label: "Authentication Flows"
 ---
 
+import { pages as diagramPages } from "diagrams/auth.mjs"
+
 export const metadata = {
   title: `Authentication Flows with the Auth Main Service`,
 }
@@ -21,6 +23,8 @@ This guide is only recommended for complex cases, where you may need to heavily 
 ## Auth Flow 1: Basic Authentication
 
 The basic authentication flow requires first using the `register` method, then the `authenticate` method.
+
+<Diagram alt="Diagram showcasing the basic authentication flow" spec={diagramPages["resources/commerce-modules/auth/auth-flows"][0]} />
 
 #### Registering Auth Identities with Same Identifier
 

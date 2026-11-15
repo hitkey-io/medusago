@@ -11,6 +11,8 @@ products:
   - sales channel
 ---
 
+import { pages as diagramPages } from "diagrams/product.mjs"
+
 export const metadata = {
   title: `Product Variant Inventory`,
 }
@@ -39,7 +41,11 @@ When `manage_inventory` is enabled, the MedusaGo application tracks the inventor
 
 When a product variant has `manage_inventory` enabled, the MedusaGo application creates an inventory item using the [Inventory Module](../../inventory/page.mdx) and links it to the product variant.
 
+<Diagram alt="Diagram showcasing the link between a product variant and its inventory item" spec={diagramPages["resources/commerce-modules/product/variant-inventory"][0]} />
+
 The inventory item has one or more locations, called inventory levels, that represent the stock quantity of the product variant at a specific location. This allows you to manage inventory across multiple warehouses, such as a warehouse in the US and another in Europe.
+
+<Diagram alt="Diagram showcasing the link between a variant and its inventory item, and the inventory item's level." spec={diagramPages["resources/commerce-modules/product/variant-inventory"][1]} />
 
 <Note title="Tip">
 
@@ -48,6 +54,8 @@ Learn more about inventory concepts in the [Inventory Module's documentation](..
 </Note>
 
 The MedusaGo application represents and manages stock locations using the [Stock Location Module](../../stock-location/page.mdx). It creates a read-only link between the `InventoryLevel` and `StockLocation` data models so that it can retrieve the stock location of an inventory level.
+
+<Diagram alt="Diagram showcasing the read-only link between an inventory level and a stock location" spec={diagramPages["resources/commerce-modules/product/variant-inventory"][2]} />
 
 <Note title="Tip">
 
@@ -62,6 +70,8 @@ When a storefront sends a request to the MedusaGo application, it must always pa
 The MedusaGo application links sales channels to stock locations, indicating the locations available for a specific sales channel. So, all inventory-related operations are scoped by the sales channel and its associated stock locations.
 
 For example, the availability of a product variant is determined by the `stocked_quantity` of its inventory level at the stock location linked to the storefront's sales channel.
+
+<Diagram alt="Diagram showcasing the overall relations between inventory, stock location, and sales channel concepts" spec={diagramPages["resources/commerce-modules/product/variant-inventory"][3]} />
 
 ---
 

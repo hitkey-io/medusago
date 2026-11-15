@@ -1,5 +1,7 @@
 import { CodeTabs, CodeTab, Table } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/inventory.mjs"
+
 export const metadata = {
   title: `Links between Inventory Module and Other Modules`,
 }
@@ -72,6 +74,8 @@ Read-only links are used to query data across modules, but the relations aren't 
 ## Product Module
 
 Each product variant has different inventory details. Medusa defines a link between the `ProductVariant` and `InventoryItem` data models.
+
+<Diagram alt="A diagram showcasing an example of how data models from the Inventory and Product Module are linked." spec={diagramPages["resources/commerce-modules/inventory/links-to-other-modules"][0]} />
 
 A product variant whose `manage_inventory` property is enabled has an associated inventory item. Through that inventory's items relations in the Inventory Module, you can manage and check the variant's inventory quantity.
 

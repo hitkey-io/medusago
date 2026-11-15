@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/auth.mjs"
+
 export const metadata = {
   title: `How to Use Authentication Routes`,
 }
@@ -26,6 +28,8 @@ This authentication flow doesn't require validation with third-party services.
 
 The steps are:
 
+<Diagram alt="Diagram showcasing the basic authentication flow between the frontend and the MedusaGo application" spec={diagramPages["resources/commerce-modules/auth/authentication-route"][0]} />
+
 1. Register the user with the [Register Route](#register-route).
 2. Use the authentication token to create the user with their respective API route.
     - For example, for customers you would use the [Create Customer API route](!api!/store/customers).
@@ -51,6 +55,8 @@ This authentication flow authenticates the user with a third-party service, such
 </Note>
 
 It requires the following steps:
+
+<Diagram alt="Diagram showcasing the authentication flow between the frontend, MedusaGo application, and third-party service" spec={diagramPages["resources/commerce-modules/auth/authentication-route"][1]} />
 
 1. Authenticate the user with the [Auth Route](#login-route).
 2. The auth route returns a URL to authenticate with third-party service, such as login with Google. The frontend (such as a storefront), when it receives a `location` property in the response, must redirect to the returned location.

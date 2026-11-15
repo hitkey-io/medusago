@@ -6,6 +6,8 @@ products:
 
 import { CodeTabs, CodeTab, Table } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/pricing.mjs"
+
 export const metadata = {
   title: `Links between Pricing Module and Other Modules`,
 }
@@ -75,11 +77,15 @@ The Fulfillment Module provides fulfillment-related functionalities, including s
 
 Medusa defines a link between the `PriceSet` and `ShippingOption` data models. A shipping option's price is stored as a price set.
 
+<Diagram alt="A diagram showcasing an example of how data models from the Pricing and Fulfillment modules are linked" spec={diagramPages["resources/commerce-modules/pricing/links-to-other-modules"][0]} />
+
 ## Product Module
 
 The Product Module doesn't store or manage the prices of product variants.
 
 Medusa defines a link between the `ProductVariant` and the `PriceSet`. A product variant's prices are stored as prices belonging to a price set.
+
+<Diagram alt="A diagram showcasing an example of how data models from the Pricing and Product Module are linked. The PriceSet is linked to the ProductVariant of the Product Module." spec={diagramPages["resources/commerce-modules/pricing/links-to-other-modules"][1]} />
 
 So, when you want to add prices for a product variant, you create a price set and add the prices to it.
 

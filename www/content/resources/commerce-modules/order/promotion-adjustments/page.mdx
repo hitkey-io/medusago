@@ -4,6 +4,8 @@ products:
   - promotion
 ---
 
+import { pages as diagramPages } from "diagrams/order.mjs"
+
 export const metadata = {
   title: `Promotions Adjustments in Orders`,
 }
@@ -17,6 +19,8 @@ In this document, you’ll learn how a promotion is applied to an order’s item
 An adjustment line indicates a change to a line item or a shipping method’s amount. It’s used to apply promotions or discounts on an order.
 
 The OrderLineItemAdjustment data model represents changes on a line item, and the OrderShippingMethodAdjustment data model represents changes on a shipping method.
+
+<Diagram alt="A diagram showcasing the relation between an order, its items and shipping methods, and their adjustment lines" spec={diagramPages["resources/commerce-modules/order/promotion-adjustments"][0]} />
 
 The `amount` property of the adjustment line indicates the amount to be discounted from the original amount.
 

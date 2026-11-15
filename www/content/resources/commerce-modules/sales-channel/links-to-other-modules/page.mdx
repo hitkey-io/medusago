@@ -9,6 +9,8 @@ products:
 
 import { CodeTabs, CodeTab, Table } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/sales-channel.mjs"
+
 export const metadata = {
   title: `Links between Sales Channel Module and Other Modules`,
 }
@@ -126,6 +128,8 @@ A publishable API key allows you to easily specify the sales channel scope in a 
 
 Medusa defines a link between the `ApiKey` and the `SalesChannel` data models.
 
+<Diagram alt="A diagram showcasing an example of how resources from the Sales Channel and API Key modules are linked" spec={diagramPages["resources/commerce-modules/sales-channel/links-to-other-modules"][0]} />
+
 ## Cart Module
 
 Medusa defines a read-only link between the [Cart Module](../../cart/page.mdx)'s `Cart` data model and the `SalesChannel` data model. Because the link is read-only from the `Cart`'s side, you can only retrieve the sales channel of a cart, and not the other way around.
@@ -138,6 +142,8 @@ Medusa defines a read-only link between the [Order Module](../../order/page.mdx)
 
 A product has different availability for different sales channels. Medusa defines a link between the `Product` and the `SalesChannel` data models.
 
+<Diagram alt="A diagram showcasing an example of how resources from the Sales Channel and Product modules are linked" spec={diagramPages["resources/commerce-modules/sales-channel/links-to-other-modules"][1]} />
+
 A product can be available in more than one sales channel. You can retrieve only the products of a sales channel.
 
 ## Stock Location Module
@@ -146,3 +152,4 @@ A stock location is associated with a sales channel. This scopes inventory quant
 
 Medusa defines a link between the `SalesChannel` and `StockLocation` data models.
 
+<Diagram alt="A diagram showcasing an example of how resources from the Sales Channel and Stock Location modules are linked" spec={diagramPages["resources/commerce-modules/sales-channel/links-to-other-modules"][2]} />

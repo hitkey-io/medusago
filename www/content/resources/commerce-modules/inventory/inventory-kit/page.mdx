@@ -9,6 +9,8 @@ products:
   - stock location
 ---
 
+import { pages as diagramPages } from "diagrams/inventory.mjs"
+
 export const metadata = {
   title: `Inventory Kits`,
 }
@@ -50,6 +52,8 @@ To implement this in MedusaGo, you can:
 
 Then, whenever a customer purchases a bicycle, the inventory of each part is updated accordingly. You can also use the `required_quantity` of the variant's inventory items to set how much quantity is consumed of the part's inventory when a bicycle is sold. For example, the bicycle's wheels require 2 wheels inventory items to be sold when a bicycle is sold.
 
+<Diagram alt="Diagram showcasing how a variant is linked to multi-part inventory items" spec={diagramPages["resources/commerce-modules/inventory/inventory-kit"][0]} />
+
 ## Bundled Products
 
 <Note>
@@ -60,7 +64,10 @@ While inventory kits support bundled products, some features like custom pricing
 
 Consider you have three products: shirt, pants, and shoes. You sell those products separately, but you also want to offer them as a bundle.
 
+<Diagram alt="Diagram showcasing products each having their own variants and inventory" spec={diagramPages["resources/commerce-modules/inventory/inventory-kit"][1]} />
+
 You can do that by creating a product, where each variant re-uses the inventory items of each of the shirt, pants, and shoes products.
 
 Then, when the bundled product's variant is purchased, the inventory quantity of the associated inventory items are updated.
 
+<Diagram alt="Diagram showcasing a bundled product using the same inventory as the products part of the bundle" spec={diagramPages["resources/commerce-modules/inventory/inventory-kit"][2]} />

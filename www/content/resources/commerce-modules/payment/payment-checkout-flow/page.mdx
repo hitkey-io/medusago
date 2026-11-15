@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/payment.mjs"
+
 export const metadata = {
   title: `Payment Steps in Checkout Flow`,
 }
@@ -13,6 +15,8 @@ The MedusaGo application has a built-in payment flow that allows you to accept p
 This flow is designed to be flexible and extensible, allowing you to integrate with various payment providers.
 
 The payment flow consists of the following steps:
+
+<Diagram alt="A diagram showcasing the payment flow's steps" spec={diagramPages["resources/commerce-modules/payment/payment-checkout-flow"][0]} />
 
 - [Create Payment Collection](!api!/store/payment-collections): Create a payment collection associated with a cart.
     - This payment collection will hold all details related to the payment operations.

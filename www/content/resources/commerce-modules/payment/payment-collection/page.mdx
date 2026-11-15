@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/payment.mjs"
+
 export const metadata = {
   title: `Payment Collection`,
 }
@@ -24,6 +26,8 @@ The payment collection supports multiple payment sessions and payments.
 
 You can use this to accept payments in increments or split payments across payment providers.
 
+<Diagram alt="Diagram showcasing how a payment collection can have multiple payment sessions and payments" spec={diagramPages["resources/commerce-modules/payment/payment-collection"][0]} />
+
 ---
 
 ## Usage with the Cart Module
@@ -32,3 +36,4 @@ The Cart Module provides cart management features. However, it doesn’t provide
 
 During checkout, the MedusaGo application links a cart to a payment collection, which will be used for further payment processing. It also implements the [payment flow](../payment-flow/page.mdx) during checkout.
 
+<Diagram alt="Diagram showcasing the relation between the Payment and Cart modules" spec={diagramPages["resources/commerce-modules/payment/payment-collection"][1]} />

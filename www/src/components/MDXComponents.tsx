@@ -27,6 +27,7 @@ import {
   SimilarPages,
   LearningPath,
 } from "docs-ui"
+import { Diagram } from "./Diagram"
 
 // The same set the upstream sites use, minus the Enterprise-only components
 // (EnterpriseNotice, PermissionsBadge).
@@ -34,6 +35,7 @@ export const mdxComponents: MDXComponentsType = {
   ...UiMdxComponents,
   InlineIcon,
   InlineThemeImage,
+  Diagram,
   TypeList,
   WorkflowDiagram,
   SourceCodeLink,

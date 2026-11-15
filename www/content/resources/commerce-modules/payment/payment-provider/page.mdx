@@ -1,5 +1,7 @@
 import { CardList } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/payment.mjs"
+
 export const metadata = {
   title: `Payment Module Provider`,
 }
@@ -23,6 +25,8 @@ The Payment Module Provider handles payment processing in the MedusaGo applicati
 To authorize a payment amount with a payment provider, a payment session is created and associated with that payment provider. The payment provider is then used to handle the authorization.
 
 After the payment session is authorized, the payment provider is associated with the resulting payment and handles its payment processing, such as to capture or refund payment.
+
+<Diagram alt="Diagram showcasing the communication between Medusa, the Payment Module Provider, and the third-party payment provider." spec={diagramPages["resources/commerce-modules/payment/payment-provider"][0]} />
 
 ### List of Payment Module Providers
 
@@ -68,6 +72,8 @@ For each Payment Module Provider, the MedusaGo application finds all payment pro
 ### PaymentProvider Data Model
 
 A registered payment provider is represented by the PaymentProvider data model in the MedusaGo application.
+
+<Diagram alt="Diagram showcasing the PaymentProvider data model" spec={diagramPages["resources/commerce-modules/payment/payment-provider"][1]} />
 
 This data model is used to reference a service in the Payment Module Provider and determine whether it's installed in the application.
 

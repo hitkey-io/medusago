@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/inventory.mjs"
+
 export const metadata = {
   title: `Inventory Module in MedusaGo Flows`,
 }
@@ -16,6 +18,8 @@ This flow is implemented within the createProductVariantsWorkflow
 
 </Note>
 
+<Diagram alt="A diagram showcasing how the Inventory Module is used in the product variant creation flow" spec={diagramPages["resources/commerce-modules/inventory/inventory-in-flows"][0]} />
+
 ---
 
 ## Add to Cart
@@ -28,6 +32,8 @@ This flow is implemented within the addToCartWorkflow
 
 </Note>
 
+<Diagram alt="A diagram showcasing how the Inventory Module is used in the add to cart flow" spec={diagramPages["resources/commerce-modules/inventory/inventory-in-flows"][1]} />
+
 ---
 
 ## Order is Placed
@@ -39,6 +45,8 @@ When an order is placed, the MedusaGo application creates a reservation item for
 This flow is implemented within the completeCartWorkflow
 
 </Note>
+
+<Diagram alt="A diagram showcasing how the Inventory Module is used in the order placement flow" spec={diagramPages["resources/commerce-modules/inventory/inventory-in-flows"][2]} />
 
 ---
 
@@ -64,6 +72,8 @@ Each fulfilled item whose variant has `manage_inventory` enabled must have an as
 
 </Note>
 
+<Diagram alt="A diagram showcasing how the Inventory Module is used in the order fulfillment flow" spec={diagramPages["resources/commerce-modules/inventory/inventory-in-flows"][3]} />
+
 ---
 
 ## Order Return
@@ -75,6 +85,8 @@ When an item in an order is returned and the associated variant has its `manage_
 This flow is implemented within the confirmReturnReceiveWorkflow
 
 </Note>
+
+<Diagram alt="A diagram showcasing how the Inventory Module is used in the order return flow" spec={diagramPages["resources/commerce-modules/inventory/inventory-in-flows"][4]} />
 
 ### Dismissed Returned Items
 

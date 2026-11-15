@@ -1,5 +1,7 @@
 import { Table } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/promotion.mjs"
+
 export const metadata = {
   title: `Promotion Concepts`,
 }
@@ -108,6 +110,8 @@ A promotion can be restricted by a set of rules, each rule is represented by the
 
 For example, you can create a promotion that only customers of the `VIP` customer group can use.
 
+<Diagram alt="A diagram showcasing the relation between Promotion and PromotionRule" spec={diagramPages["resources/commerce-modules/promotion/concepts"][0]} />
+
 A `PromotionRule`'s `attribute` property indicates the property's name to which this rule is applied. For example, `customer.groups.id`.
 
 The `attribute` must be an exact key that Medusa recognizes. Refer to [Rule Attributes](#rule-attributes) for the list of supported keys.
@@ -126,6 +130,8 @@ For example, to restrict the promotion to only `VIP` and `B2B` customer groups:
 
 - Add a `PromotionRule` record with its `attribute` property set to `customer.groups.id` and `operator` property to `in`.
 - Add two `PromotionRuleValue` records associated with the rule: one with the value `VIP` and the other `B2B`.
+
+<Diagram alt="A diagram showcasing the relation between PromotionRule and PromotionRuleValue when a rule has multiple values" spec={diagramPages["resources/commerce-modules/promotion/concepts"][1]} />
 
 In this case, a customer’s group must be in the `VIP` and `B2B` set of values to use the promotion.
 
