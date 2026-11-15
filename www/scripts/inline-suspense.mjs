@@ -6,7 +6,7 @@
 import fs from "node:fs"
 import path from "node:path"
 
-const dist = path.resolve(import.meta.dirname, "../dist")
+const dist = process.env.DIST || path.resolve(import.meta.dirname, "../dist")
 const walk = (d) =>
   fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]))
 

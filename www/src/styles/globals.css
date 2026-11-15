@@ -41,3 +41,12 @@
 .grecaptcha-badge {
   visibility: hidden;
 }
+/* Full page loads (home <-> docs) keep the old page on screen until the new one can paint, instead of showing a blank frame in between.
+   Navigations inside the docs don't load a page at all: see the router in src/components/PageApp.tsx. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 120ms;
+}

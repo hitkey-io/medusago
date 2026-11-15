@@ -29,6 +29,13 @@ const ogImage = site + "/og.png"
 <html lang="en" class="h-full w-full">
   <head>
     <meta charset="utf-8" />
+    <!-- the stored theme, before the first paint (the React provider reads it again once the page is interactive) -->
+    <script is:inline>
+      try {
+        var theme = localStorage.getItem("theme")
+        document.documentElement.setAttribute("data-theme", theme === "dark" ? "dark" : "light")
+      } catch (e) {}
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -52,6 +59,8 @@ const ogImage = site + "/og.png"
     <meta name="twitter:image" content={ogImage} />
   </head>
   <body class="h-screen w-full overflow-hidden">
+    <!-- tells the island which page module to load before it hydrates (see PageApp.tsx) -->
+    <script is:inline define:vars={{ file }}>window.__PAGE_FILE__ = file</script>
     <PageApp client:load file={file} section={section} path={path} />
   </body>
 </html>

@@ -36,8 +36,12 @@ export const ColorModeProvider = ({ children }: ColorModeProviderProps) => {
   }, [])
 
   useEffect(() => {
+    // until the stored theme is read, leave the one that the script in the page head set before the first paint
+    if (!loaded) {
+      return
+    }
     document.querySelector("html")?.setAttribute("data-theme", colorMode)
-  }, [colorMode])
+  }, [colorMode, loaded])
 
   useEffect(() => {
     if (!loaded) {

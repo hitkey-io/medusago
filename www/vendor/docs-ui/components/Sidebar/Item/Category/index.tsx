@@ -22,9 +22,6 @@ export const SidebarItemCategory = ({
   className,
 }: SidebarItemCategoryProps) => {
   const [showLoading, setShowLoading] = useState(false)
-  const [open, setOpen] = useState(
-    item.initialOpen !== undefined ? item.initialOpen : false
-  )
   const {
     isItemActive,
     updatePersistedCategoryState,
@@ -39,6 +36,10 @@ export const SidebarItemCategory = ({
       item,
     })
   }, [isItemActive, item])
+  // a category that holds the active page starts open (also in the HTML of the server)
+  const [open, setOpen] = useState(
+    item.initialOpen !== undefined ? item.initialOpen : isActive
+  )
 
   useEffect(() => {
     if (open && itemShowLoading) {

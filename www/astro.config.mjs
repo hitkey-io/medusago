@@ -41,6 +41,10 @@ export default defineConfig({
         { find: /^~\//, replacement: r("src") + "/" },
       ],
     },
+    // Do not mangle identifiers. With them mangled, React finds that the first render in the browser differs from the HTML of the server on every
+    // page that has code tabs (an api reference, the workflows chapter...), throws the server-rendered article away and renders it again: the page
+    // flashes right after it loads. Without mangling the browser keeps the server's DOM (+9 % gzipped JavaScript).
+    esbuild: { minifyIdentifiers: false },
     ssr: { noExternal: ["@medusajs/ui", "@medusajs/icons", "react-tooltip", "react-medium-image-zoom"] },
   },
 })

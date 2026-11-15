@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
 import clsx from "clsx"
 import {
   Configure,
@@ -114,6 +115,7 @@ export const SearchHits = ({
   const { items: hits, sendEvent } = useHits<HitType>()
   const { status } = useInstantSearch()
   const { setIsOpen } = useSearch()
+  const router = useRouter()
 
   useEffect(() => {
     if (status !== "loading" && status !== "stalled") {
@@ -223,7 +225,7 @@ export const SearchHits = ({
                   sendEvent("click", item, "Search Result Clicked")
                   if (checkIfInternal(item.url)) {
                     e.preventDefault()
-                    window.location.href = item.url
+                    router.push(item.url)
                     setIsOpen(false)
                   }
                 }}

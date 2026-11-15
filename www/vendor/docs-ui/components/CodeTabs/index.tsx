@@ -2,7 +2,7 @@
 
 import React, { Children, useCallback, useEffect, useMemo, useRef } from "react"
 import { Badge } from "@/components/Badge"
-import { CodeBlockProps, CodeBlockStyle } from "@/components/CodeBlock"
+import { CodeBlock, CodeBlockProps, CodeBlockStyle } from "@/components/CodeBlock"
 import { useColorMode } from "@/providers/ColorMode"
 import clsx from "clsx"
 import { CodeBlockActions, CodeBlockActionsProps } from "../CodeBlock/Actions"
@@ -128,8 +128,7 @@ export const CodeTabs = ({
 
       if (
         typeof codeBlock.type !== "string" &&
-        (("name" in codeBlock.type && codeBlock.type.name === "CodeBlock") ||
-          "source" in codeBlockProps)
+        (codeBlock.type === CodeBlock || "source" in codeBlockProps)
       ) {
         codeBlockProps = {
           ...codeBlockProps,

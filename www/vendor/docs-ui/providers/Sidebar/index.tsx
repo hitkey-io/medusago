@@ -345,13 +345,17 @@ export const SidebarProvider = ({
   const categoriesStorageKey = `${project.title}_categories`
   const hideSidebarStorageKey = `hide_sidebar`
   const [sidebars, dispatch] = useReducer(reducer, initialSidebars)
-  const [activePath, setActivePath] = useState<string | null>("")
+  // The server renders the sidebar with the active page already selected (and its category open): if it started empty and found the page in an
+  // effect, every page load would first show the sidebar collapsed and then jump.
+  const pathname = usePathname()
+  const [activePath, setActivePath] = useState<string | null>(
+    shouldHandlePathChange ? pathname : ""
+  )
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false)
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true)
   const sidebarRef = useRef<HTMLDivElement>(null)
   const [sidebarTopHeight, setSidebarTopHeight] = useState(0)
 
-  const pathname = usePathname()
   const router = useRouter()
   const { isBrowser } = useIsBrowser()
 
