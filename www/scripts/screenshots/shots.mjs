@@ -170,7 +170,44 @@ const promotionSection = (type, heading, attribute, comboIndex = 0) => ({
   el: (page) => page.locator("[role=dialog]").last().locator("div").filter({ has: page.locator(`text="${heading}"`) }).filter({ has: page.locator("button:has-text('Add condition')") }).last(),
 })
 
+// "Create shipping option": step 1 filled in, step 2 (prices), or the conditional prices dialog of a price cell
+const shippingOptionFlow = (stage) => async (page) => {
+  const d = page.locator("[role=dialog]").last()
+  await d.locator("input[name=name]").fill("Same-day Delivery")
+  const combos = d.locator("[role=combobox]")
+  for (const i of [0, 1, 2, 3]) { await combos.nth(i).click(); await page.waitForTimeout(300); await page.locator("[role=option]:visible").first().click(); await page.waitForTimeout(400) }
+  if (stage === 1) return
+  await d.locator("button:has-text('Continue')").click()
+  await page.waitForTimeout(1000)
+  if (stage === 2) { await page.mouse.click(233, 183); await page.keyboard.type("15"); await page.keyboard.press("Enter"); return }
+  await page.mouse.click(233, 183)
+  await page.mouse.click(203, 183)
+  await page.waitForTimeout(700)
+}
+
 const UG = "user-guide"
+// --- settings -----------------------------------------------------------------------------------------
+const S = "/settings"
+const GS = `${UG}/settings`
+const keyOf = (type) => firstIdBy(`/api-keys?type=${type}`, "api_keys", (k) => k.type === type)
+const firstIdBy = (list, key, find) => idOf(list, key, find)
+const locationId = firstId("/stock-locations", "stock_locations")
+// the first location with its first delivery service zone and one of its shipping options
+const zoneInfo = async (c) => {
+  const r = await c.api("/stock-locations?fields=id,*fulfillment_sets,*fulfillment_sets.service_zones,*fulfillment_sets.service_zones.shipping_options")
+  const loc = r.stock_locations[0]
+  const set = loc.fulfillment_sets.find((f) => f.type === "shipping")
+  const zone = set.service_zones[0]
+  return { loc: loc.id, set: set.id, zone: zone.id, option: zone.shipping_options?.[0]?.id }
+}
+const zoneRoute = (tail) => async (c) => { const z = await zoneInfo(c); return `${S}/locations/${z.loc}/fulfillment-set/${z.set}/service-zone/${z.zone}${tail}` }
+const byName = (list, key, name, field = "name") => idOf(list, key, (x) => x[field] === name)
+const firstOf = (list, key) => firstId(list, key)
+const taxRegionOf = (cc, province) => idOf("/tax-regions?limit=50&fields=id,country_code,province_code,parent_id", "tax_regions", (r) => r.country_code === cc && (province ? r.province_code === province : !r.parent_id))
+const regionId = firstId("/regions", "regions")
+const channelId = idOf("/sales-channels", "sales_channels", (x) => x.name === "Webshop")
+const workflowId = async (c) => (await c.api("/workflows-executions?limit=1")).workflow_executions[0].id
+
 export const shots = [
   // --- lists and overviews -------------------------------------------------------------------
   { id: "orders-list", page: `${UG}/orders`, alt: "Orders List", route: "/orders" },
@@ -370,6 +407,132 @@ export const shots = [
   { id: "promotion-section-shipping", page: `${UG}/promotions/create`, alt: "What shipping methods will the promotion be applied to section", ...promotionSection("Free shipping", "What shipping methods will the promotion be applied to?", "Shipping") },
   { file: "promotion-section-who", page: `${UG}/promotions/create`, alt: "Who can use this code form" },
   { file: "promotion-section-who", page: `${UG}/promotions/create`, alt: "Who can use this code section" },
+
+
+  // =========================== Settings =========================================================
+  // publishable and secret API keys
+  { id: "form-create-publishable-key", page: `${GS}/developer/publishable-api-keys`, alt: "Create publishable API key form", route: `${S}/publishable-api-keys/create`, clip: modalClip },
+  { id: "publishable-key-details", page: `${GS}/developer/publishable-api-keys`, alt: "Publishable API key details page", route: async (c) => `${S}/publishable-api-keys/${await keyOf("publishable")(c)}` },
+  { id: "publishable-key-copy", page: `${GS}/developer/publishable-api-keys`, alt: "Copy publishable API key", route: async (c) => `${S}/publishable-api-keys/${await keyOf("publishable")(c)}`, run: async (page) => { await page.getByText(/^pk_/).first().hover(); await page.waitForTimeout(400) }, el: (p) => p.locator("main div.shadow-elevation-card-rest").first() },
+  { id: "form-edit-publishable-key", page: `${GS}/developer/publishable-api-keys`, alt: "Edit publishable API key form", route: async (c) => `${S}/publishable-api-keys/${await keyOf("publishable")(c)}/edit`, clip: modalClip },
+  { id: "form-key-add-channels", page: `${GS}/developer/publishable-api-keys`, alt: "Add sales channels form", route: async (c) => `${S}/publishable-api-keys/${await keyOf("publishable")(c)}/sales-channels` },
+  { id: "key-remove-channels", page: `${GS}/developer/publishable-api-keys`, alt: "Remove sales channels from publishable API key", route: async (c) => `${S}/publishable-api-keys/${await keyOf("publishable")(c)}`, run: tickFirstRow("Sales Channels") },
+  { id: "form-create-secret-key", page: `${GS}/developer/secret-api-keys`, alt: "Create secret API key form", route: `${S}/secret-api-keys/create`, clip: modalClip },
+  { id: "secret-key-details", page: `${GS}/developer/secret-api-keys`, alt: "Secret API key details page", route: async (c) => `${S}/secret-api-keys/${await keyOf("secret")(c)}` },
+  { id: "form-edit-secret-key", page: `${GS}/developer/secret-api-keys`, alt: "Edit secret API key form", route: async (c) => `${S}/secret-api-keys/${await keyOf("secret")(c)}/edit`, clip: modalClip },
+  { id: "workflow-details", page: `${GS}/developer/workflows`, alt: "Workflow executions details", route: async (c) => `${S}/workflows/${await workflowId(c)}` },
+  { id: "workflow-history", page: `${GS}/developer/workflows`, alt: "Workflow executions history", route: async (c) => `${S}/workflows/${await workflowId(c)}`, run: async (page) => { await page.mouse.move(700, 500); await page.mouse.wheel(0, 700); await page.waitForTimeout(500) } },
+
+  // locations and shipping
+  { id: "form-create-location", page: `${GS}/locations-and-shipping/locations`, alt: "Create location form", route: `${S}/locations/create`, clip: modalClip },
+  { id: "location-details", page: `${GS}/locations-and-shipping/locations`, alt: "Locations details page", route: async (c) => `${S}/locations/${await locationId(c)}` },
+  { id: "form-edit-location", page: `${GS}/locations-and-shipping/locations`, alt: "Edit location form", route: async (c) => `${S}/locations/${await locationId(c)}/edit`, clip: modalClip },
+  { id: "form-create-service-zone", page: `${GS}/locations-and-shipping/locations`, alt: "Create service zone form", route: async (c) => { const z = await zoneInfo(c); return `${S}/locations/${z.loc}/fulfillment-set/${z.set}/service-zones/create` }, clip: modalClip },
+  { id: "form-create-shipping-option-1", page: `${GS}/locations-and-shipping/locations`, alt: "Create shipping option form step 1", route: zoneRoute("/shipping-option/create") },
+  { id: "form-create-shipping-option-2", page: `${GS}/locations-and-shipping/locations`, alt: "Create shipping option form step 2", route: zoneRoute("/shipping-option/create"), run: shippingOptionFlow(2) },
+  { id: "form-conditional-price", page: `${GS}/locations-and-shipping/locations`, alt: "Conditional shipping option price form", route: zoneRoute("/shipping-option/create"), run: shippingOptionFlow(3), clip: modalClip },
+  { id: "form-edit-service-zone", page: `${GS}/locations-and-shipping/locations`, alt: "Edit service zone form", route: zoneRoute("/edit"), clip: modalClip },
+  { id: "form-service-zone-areas", page: `${GS}/locations-and-shipping/locations`, alt: "Manage service zone areas", route: zoneRoute("/areas"), clip: modalClip },
+  { id: "form-edit-shipping-option", page: `${GS}/locations-and-shipping/locations`, alt: "Edit shipping option details form", route: async (c) => { const z = await zoneInfo(c); return `${S}/locations/${z.loc}/fulfillment-set/${z.set}/service-zone/${z.zone}/shipping-option/${z.option}/edit` }, clip: modalClip },
+  { id: "form-shipping-option-prices", page: `${GS}/locations-and-shipping/locations`, alt: "Edit shipping option prices form", route: async (c) => { const z = await zoneInfo(c); return `${S}/locations/${z.loc}/fulfillment-set/${z.set}/service-zone/${z.zone}/shipping-option/${z.option}/pricing` } },
+  { id: "form-location-channels", page: `${GS}/locations-and-shipping/locations`, alt: "Change associated sales channels", route: async (c) => `${S}/locations/${await locationId(c)}/sales-channels` },
+  { id: "form-location-providers", page: `${GS}/locations-and-shipping/locations`, alt: "Manage fulfillment providers", route: async (c) => `${S}/locations/${await locationId(c)}/fulfillment-providers` },
+
+  // shipping option types and shipping profiles
+  { id: "shipping-option-types-list", page: `${GS}/locations-and-shipping/shipping-option-types`, alt: "Shipping Option Types list", route: `${S}/locations/shipping-option-types` },
+  { id: "form-create-shipping-option-type", page: `${GS}/locations-and-shipping/shipping-option-types`, alt: "Create shipping option type form", route: `${S}/locations/shipping-option-types/create`, clip: modalClip },
+  { id: "shipping-option-type-details", page: `${GS}/locations-and-shipping/shipping-option-types`, alt: "Shipping Option Type details page", route: async (c) => `${S}/locations/shipping-option-types/${await firstOf("/shipping-option-types", "shipping_option_types")(c)}` },
+  { id: "form-edit-shipping-option-type", page: `${GS}/locations-and-shipping/shipping-option-types`, alt: "Edit shipping option type form", route: async (c) => `${S}/locations/shipping-option-types/${await firstOf("/shipping-option-types", "shipping_option_types")(c)}/edit`, clip: modalClip },
+  { id: "shipping-profiles-list", page: `${GS}/locations-and-shipping/shipping-profiles`, alt: "Shipping profiles list", route: `${S}/locations/shipping-profiles` },
+  { id: "form-create-shipping-profile", page: `${GS}/locations-and-shipping/shipping-profiles`, alt: "Create shipping profile form", route: `${S}/locations/shipping-profiles/create`, clip: modalClip },
+  { id: "shipping-profile-details", page: `${GS}/locations-and-shipping/shipping-profiles`, alt: "Shipping profile details", route: async (c) => `${S}/locations/shipping-profiles/${await firstOf("/shipping-profiles", "shipping_profiles")(c)}` },
+
+  // product tags and types
+  { id: "product-tags-list", page: `${GS}/product-tags`, alt: "Product tags list", route: `${S}/product-tags` },
+  { id: "form-create-product-tag", page: `${GS}/product-tags`, alt: "Create product tag form", route: `${S}/product-tags/create`, clip: modalClip },
+  { id: "product-tag-details", page: `${GS}/product-tags`, alt: "Product tag details", route: async (c) => `${S}/product-tags/${await firstOf("/product-tags", "product_tags")(c)}` },
+  { id: "form-edit-product-tag", page: `${GS}/product-tags`, alt: "Edit product tag form", route: async (c) => `${S}/product-tags/${await firstOf("/product-tags", "product_tags")(c)}/edit`, clip: modalClip },
+  { id: "product-types-list", page: `${GS}/product-types`, alt: "Product types list", route: `${S}/product-types` },
+  { id: "form-create-product-type", page: `${GS}/product-types`, alt: "Create product type form", route: `${S}/product-types/create`, clip: modalClip },
+  { id: "product-type-details", page: `${GS}/product-types`, alt: "Product type details", route: async (c) => `${S}/product-types/${await firstOf("/product-types", "product_types")(c)}` },
+  { id: "form-edit-product-type", page: `${GS}/product-types`, alt: "Edit product type form", route: async (c) => `${S}/product-types/${await firstOf("/product-types", "product_types")(c)}/edit`, clip: modalClip },
+
+  // profile, refund and return reasons
+  { id: "form-edit-profile", page: `${GS}/profile`, alt: "Edit profile form", route: `${S}/profile/edit`, clip: modalClip },
+  { id: "refund-reasons-list", page: `${GS}/refund-reasons`, alt: "Refund reasons list", route: `${S}/refund-reasons` },
+  { id: "form-create-refund-reason", page: `${GS}/refund-reasons`, alt: "Create refund reason form", route: `${S}/refund-reasons/create`, clip: modalClip },
+  { id: "form-edit-refund-reason", page: `${GS}/refund-reasons`, alt: "Edit refund reason form", route: async (c) => `${S}/refund-reasons/${await firstOf("/refund-reasons", "refund_reasons")(c)}/edit`, clip: modalClip },
+  { id: "return-reasons-list", page: `${GS}/return-reasons`, alt: "Return reasons list", route: `${S}/return-reasons` },
+  { id: "form-create-return-reason", page: `${GS}/return-reasons`, alt: "Create return reason form", route: `${S}/return-reasons/create`, clip: modalClip },
+  { id: "form-edit-return-reason", page: `${GS}/return-reasons`, alt: "Edit return reason form", route: async (c) => `${S}/return-reasons/${await firstOf("/return-reasons", "return_reasons")(c)}/edit`, clip: modalClip },
+
+  // regions
+  { id: "regions-list", page: `${GS}/regions`, alt: "Regions list", route: `${S}/regions` },
+  { id: "form-create-region", page: `${GS}/regions`, alt: "Create region form", route: `${S}/regions/create` },
+  { id: "region-details", page: `${GS}/regions`, alt: "Region details", route: async (c) => `${S}/regions/${await regionId(c)}` },
+  { id: "form-edit-region", page: `${GS}/regions`, alt: "Edit region details form", route: async (c) => `${S}/regions/${await regionId(c)}/edit`, clip: modalClip },
+  { id: "region-remove-countries", page: `${GS}/regions`, alt: "Remove countries from region", route: async (c) => `${S}/regions/${await regionId(c)}`, run: tickFirstRow("Countries") },
+
+  // sales channels
+  { id: "sales-channels-list", page: `${GS}/sales-channels`, alt: "Sales channels list", route: `${S}/sales-channels` },
+  { id: "form-create-sales-channel", page: `${GS}/sales-channels`, alt: "Create sales channel form", route: `${S}/sales-channels/create`, clip: modalClip },
+  { id: "sales-channel-details", page: `${GS}/sales-channels`, alt: "Sales channel details", route: async (c) => `${S}/sales-channels/${await channelId(c)}` },
+  { id: "form-edit-sales-channel", page: `${GS}/sales-channels`, alt: "Edit sales channel form", route: async (c) => `${S}/sales-channels/${await channelId(c)}/edit`, clip: modalClip },
+  { id: "form-channel-add-products", page: `${GS}/sales-channels`, alt: "Add products to sales channel", route: async (c) => `${S}/sales-channels/${await channelId(c)}/add-products` },
+  { id: "channel-remove-products", page: `${GS}/sales-channels`, alt: "Remove products from sales channel", route: async (c) => `${S}/sales-channels/${await channelId(c)}`, run: tickFirstRow("Products") },
+
+  // store
+  { id: "store-details", page: `${GS}/store`, alt: "Store Details", route: `${S}/store` },
+  { id: "form-edit-store", page: `${GS}/store`, alt: "Edit store form", route: `${S}/store/edit`, clip: modalClip },
+  { id: "form-store-currencies", page: `${GS}/store`, alt: "Add currencies to store", route: `${S}/store/currencies` },
+  { id: "store-remove-currencies", page: `${GS}/store`, alt: "Remove currencies from store", route: `${S}/store`, run: tickFirstRow("Currencies") },
+
+  // tax regions
+  { id: "tax-regions-list", page: `${GS}/tax-regions`, alt: "Tax regions list", route: `${S}/tax-regions` },
+  { id: "form-create-tax-region", page: `${GS}/tax-regions`, alt: "Create tax region form", route: `${S}/tax-regions/create`, clip: modalClip },
+  { id: "tax-region-details", page: `${GS}/tax-regions`, alt: "Tax region details", route: async (c) => `${S}/tax-regions/${await taxRegionOf("dk")(c)}` },
+  { id: "form-edit-tax-region", page: `${GS}/tax-regions`, alt: "Edit tax region form", route: async (c) => `${S}/tax-regions/${await taxRegionOf("dk")(c)}/edit`, clip: modalClip },
+  { id: "form-edit-default-tax-rate", page: `${GS}/tax-regions`, alt: "Edit default tax rate form", route: async (c) => {
+    const id = await taxRegionOf("dk")(c)
+    const r = (await c.api(`/tax-regions/${id}?fields=*tax_rates`)).tax_region
+    return `${S}/tax-regions/${id}/tax-rates/${r.tax_rates[0].id}/edit`
+  }, clip: modalClip },
+  { id: "form-create-tax-override", page: `${GS}/tax-regions`, alt: "Create tax rate override form", route: async (c) => `${S}/tax-regions/${await taxRegionOf("us")(c)}/overrides/create`, clip: modalClip },
+  { id: "form-edit-tax-override", page: `${GS}/tax-regions`, alt: "Edit tax rate override form", route: async (c) => {
+    const id = await taxRegionOf("us")(c)
+    const r = (await c.api(`/tax-regions/${id}?fields=*tax_rates,*tax_rates.rules`)).tax_region
+    const o = r.tax_rates.find((x) => x.rules?.length) || r.tax_rates[0]
+    return `${S}/tax-regions/${id}/overrides/${o.id}/edit`
+  }, clip: modalClip },
+  { id: "tax-sublevel-section", page: `${GS}/tax-regions`, alt: "Sublevel regions section", route: async (c) => `${S}/tax-regions/${await taxRegionOf("us")(c)}`, el: cardRe(/^(States|Provinces)/) },
+  { id: "form-create-tax-sublevel", page: `${GS}/tax-regions`, alt: "Create sublevel region form", route: async (c) => `${S}/tax-regions/${await taxRegionOf("dk")(c)}/provinces/create`, clip: modalClip },
+  { id: "tax-sublevel-details", page: `${GS}/tax-regions`, alt: "Sublevel tax region details page", route: async (c) => `${S}/tax-regions/${await taxRegionOf("us", "ca")(c)}` },
+
+  { id: "tax-sublevel-alert", page: `${GS}/tax-regions`, alt: "Enable sublevel regions alert", route: async (c) => `${S}/tax-regions/${await taxRegionOf("dk")(c)}`, el: (p) => p.getByText("Sublevel regions are disabled").first().locator("xpath=ancestor::div[contains(@class,'shadow-elevation-card-rest') or contains(@class,'rounded-lg')][1]") },
+  { id: "tax-region-actions-icon", page: `${GS}/tax-regions`, alt: "The icon to click on", route: async (c) => `${S}/tax-regions/${await taxRegionOf("dk")(c)}`, run: async (page) => {
+    // the "..." of the region's header card
+    await page.mouse.click(1385, 219)
+    await page.getByRole("menuitem").first().waitFor()
+  }, clip: async (page) => {
+    const menu = await page.getByRole("menu").boundingBox()
+    return { x: 232, y: 182, width: 1203, height: menu.y + menu.height - 182 + 24 }
+  } },
+
+
+  // users and invites
+  { id: "users-list", page: `${GS}/users`, alt: "Users List", route: `${S}/users` },
+  { id: "user-details", page: `${GS}/users`, alt: "User details page", route: async (c) => `${S}/users/${await idOf("/users", "users", (u) => u.email === "sara.holm@example.com")(c)}` },
+  { id: "form-edit-user", page: `${GS}/users`, alt: "Edit user details form", route: async (c) => `${S}/users/${await idOf("/users", "users", (u) => u.email === "sara.holm@example.com")(c)}/edit`, clip: modalClip },
+  { id: "form-invite-user", page: `${GS}/users/invites`, alt: "Invite user form", route: `${S}/users/invite`, clip: modalClip },
+  { id: "invites-table", page: `${GS}/users/invites`, alt: "Pending invites table", route: `${S}/users/invite`, clip: async (page) => {
+    // "Pending Invites" and its table, without the invite form above
+    return page.evaluate(() => {
+      const d = [...document.querySelectorAll("[role=dialog]")].pop()
+      const h = [...d.querySelectorAll("*")].find((e) => !e.children.length && /^Pending Invites$/.test(e.textContent.trim())).getBoundingClientRect()
+      const t = [...d.querySelectorAll("*")].filter((e) => !e.children.length && /of \d+ results/.test(e.textContent)).pop().getBoundingClientRect()
+      return { x: h.x - 48, y: h.y - 20, width: 820, height: t.bottom - h.y + 100 }
+    })
+  } },
 
   // draft orders
   { id: "draft-form", page: `${UG}/orders/draft-orders/create`, alt: "Draft order form", route: "/draft-orders/create", clip: modalClip },

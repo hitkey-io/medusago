@@ -83,3 +83,41 @@ if (!promos.find((p) => p.code === "BUY2GET1")) {
     },
   }).catch((e) => console.log("buy-get", e.message.slice(0, 200)))
 }
+
+// --- product types and tags, tax sublevels and overrides, more users, pending invites ------------------------------------
+const allProducts = (await admin("GET", "/products?fields=id,title,*tags&limit=50")).products
+if (!(await admin("GET", "/product-types")).product_types.length) {
+  const types = {}
+  for (const value of ["Clothing", "Accessories"]) types[value] = (await admin("POST", "/product-types", { value })).product_type
+  const tags = []
+  for (const value of ["Summer", "Cotton", "Bestseller"]) tags.push((await admin("POST", "/product-tags", { value })).product_tag)
+  for (const [i, p] of allProducts.entries()) {
+    await admin("POST", `/products/${p.id}`, { type_id: (p.title.includes("Mug") ? types.Accessories : types.Clothing).id, tags: tags.filter((_, j) => (i + j) % 2 === 0).map((t) => ({ id: t.id })) })
+  }
+}
+
+const taxRegions = (await admin("GET", "/tax-regions?fields=id,country_code,parent_id&limit=50")).tax_regions
+const us = taxRegions.find((r) => r.country_code === "us" && !r.parent_id)
+if (us && !taxRegions.some((r) => r.parent_id === us.id)) {
+  const ca = (await admin("POST", "/tax-regions", { country_code: "us", province_code: "ca", parent_id: us.id, default_tax_rate: { name: "California sales tax", rate: 7.25, code: "ca-sales" } })).tax_region
+  await admin("POST", "/tax-rates", { tax_region_id: us.id, name: "Clothing exemption", code: "clothing", rate: 0, rules: [{ reference: "product_type", reference_id: (await admin("GET", "/product-types")).product_types[0].id }] }).catch((e) => console.log("override", e.message.slice(0, 160)))
+}
+
+const users = (await admin("GET", "/users")).users
+if (users.length < 3) {
+  for (const [email, first_name, last_name] of [["sara.holm@example.com", "Sara", "Holm"], ["jonas.berg@example.com", "Jonas", "Berg"]]) {
+    const invite = (await admin("POST", "/invites", { email })).invite
+    const reg = await call("POST", "/auth/user/emailpass/register", { email, password: "supersecret" })
+    await call("POST", `/admin/invites/accept?token=${invite.token}`, { email, first_name, last_name }, { authorization: `Bearer ${reg.token}` }).catch((e) => console.log("accept", e.message.slice(0, 200)))
+  }
+}
+if (!(await admin("GET", "/invites")).invites.length) {
+  for (const email of ["amelie.martin@example.com", "tobias.kruger@example.com"]) await admin("POST", "/invites", { email }).catch((e) => console.log("invite", e.message.slice(0, 160)))
+}
+
+// --- the admin user's name and the store's defaults (shown in the profile, the users list and the store details) --------
+await admin("POST", "/users/me", { first_name: "Alex", last_name: "Nielsen" }).catch((e) => console.log("profile", e.message.slice(0, 160)))
+{
+  const store = (await admin("GET", "/stores")).stores[0]
+  await admin("POST", `/stores/${store.id}`, { default_region_id: region.id, default_location_id: sl.id }).catch((e) => console.log("store defaults", e.message.slice(0, 200)))
+}

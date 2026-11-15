@@ -60,7 +60,7 @@ const b2b = (await admin("POST", "/sales-channels", { name: "B2B Portal", descri
 const channels = [webshop, b2b]
 await admin("POST", `/stock-locations/${sl.id}/sales-channels`, { add: [sc.id, webshop.id, b2b.id] })
 await admin("POST", `/stock-locations/${sl.id}/fulfillment-providers`, { add: ["manual_manual"] })
-await admin("POST", `/stock-locations/${sl.id}/fulfillment-sets`, { name: "European Warehouse delivery", type: "delivery" })
+await admin("POST", `/stock-locations/${sl.id}/fulfillment-sets`, { name: "European Warehouse delivery", type: "shipping" })
 const fset = (await admin("GET", `/stock-locations/${sl.id}?fields=*fulfillment_sets`)).stock_location.fulfillment_sets
   .find((f) => f.name === "European Warehouse delivery")
 const zone = (await admin("POST", `/fulfillment-sets/${fset.id}/service-zones`, {
