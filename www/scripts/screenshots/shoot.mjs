@@ -30,7 +30,13 @@ await page.addInitScript(() => {
 
 // the Admin API with the logged-in session, to find the records a shot needs
 const api = async (p) => (await context.request.get(`${BASE}/admin${p}`)).json()
-const ctx = { api, BASE }
+// writes, for the few shots that need a record in a given state (the change stays in the stand's database)
+const send = async (method, p, data) => {
+  const r = await context.request.fetch(`${BASE}/admin${p}`, { method, data })
+  if (!r.ok()) throw new Error(`${method} ${p}: ${r.status()} ${(await r.text()).slice(0, 160)}`)
+  return r.json().catch(() => ({}))
+}
+const ctx = { api, send, BASE }
 
 // log in through the form, like a user
 async function login() {

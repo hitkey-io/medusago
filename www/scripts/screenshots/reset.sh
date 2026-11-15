@@ -12,6 +12,7 @@ docker exec medusago-ref-pg psql -U postgres -q -c "drop database if exists docs
 for i in $(seq 1 30); do curl -s -o /dev/null localhost:9000/health && break; sleep 1; done
 cd - >/dev/null
 node scripts/screenshots/seed.mjs
+node scripts/screenshots/seed-extra.mjs
 # spread the order dates over the last weeks (dates only exist in the database)
 docker exec medusago-ref-pg psql -U postgres -d docs_shots -q -c "
 update \"order\" o set created_at = now() - (interval '1 day' * (n.rn * 2 + 1)) - (interval '1 minute' * (n.rn * 37 % 600)),

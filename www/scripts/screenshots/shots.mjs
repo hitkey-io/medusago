@@ -73,6 +73,29 @@ const fulfillmentOf = (n) => async (c) => {
   return { order: o, fulfillment: r.order.fulfillments[0].id }
 }
 
+// an order whose items have no reservations (to show "Not allocated" and the allocation form)
+const deallocated = (n) => async (c) => {
+  const id = await ordId(n)(c)
+  const o = (await c.api(`/orders/${id}?fields=*items`)).order
+  const rs = (await c.api("/reservations?limit=100")).reservations.filter((r) => o.items.some((i) => i.id === r.line_item_id))
+  for (const r of rs) await c.send("DELETE", `/reservations/${r.id}`)
+  return id
+}
+const returnOf = (n) => async (c) => {
+  const o = await ordId(n)(c)
+  return { order: o, ret: (await c.api(`/returns?order_id=${o}`)).returns[0].id }
+}
+// a confirmation pop-up: the dialog with some air around it
+const promptClip = async (page) => {
+  const b = await page.getByRole("alertdialog").boundingBox()
+  const m = 48
+  return { x: b.x - m, y: b.y - m, width: b.width + 2 * m, height: b.height + 2 * m }
+}
+const openFulfillmentAction = (label) => async (page) => {
+  await page.getByRole("button", { name: label }).first().click()
+  await page.getByRole("alertdialog").waitFor()
+}
+
 const UG = "user-guide"
 export const shots = [
   // --- lists and overviews -------------------------------------------------------------------
@@ -153,6 +176,31 @@ export const shots = [
   { id: "form-create-exchange", page: `${UG}/orders/exchanges`, alt: "Create Exchange Form", route: orderRoute(5, "/exchanges"), clip: modalClip },
   { id: "form-order-edit", page: `${UG}/orders/edit`, alt: "Order Edit Form", route: orderRoute(6, "/edits"), clip: modalClip },
 
+  // the rest of the order page: pop-ups, allocation, receiving a return
+  { id: "order-not-allocated", page: `${UG}/orders/manage`, alt: "Not Allocated Badge", route: async (c) => `/orders/${await deallocated(11)(c)}`, el: card("Summary") },
+  { id: "form-allocate-items", page: `${UG}/orders/manage`, alt: "Allocate Items Form", route: async (c) => `/orders/${await deallocated(11)(c)}/allocate-items`, wait: 1500, run: async (page) => {
+    await page.getByRole("dialog").last().getByRole("combobox").first().click()
+    await page.getByRole("option", { name: /European Warehouse/ }).click()
+    await page.waitForTimeout(1200)
+  }, clip: modalClip },
+  { id: "order-cancel-dropdown", page: `${UG}/orders/manage`, alt: "Cancel Order Dropdown", route: orderRoute(11), run: async (page) => {
+    await page.locator("main div.shadow-elevation-card-rest", { hasText: / from (Webshop|B2B Portal)/ }).first().locator("button[aria-haspopup=menu]").click()
+    await page.getByRole("menuitem", { name: /Cancel/ }).waitFor()
+  }, clip: async (page) => {
+    const head = await page.locator("main div.shadow-elevation-card-rest", { hasText: / from (Webshop|B2B Portal)/ }).first().boundingBox()
+    const menu = await page.getByRole("menu").boundingBox()
+    const right = Math.max(head.x + head.width, menu.x + menu.width) + 16
+    return { x: head.x, y: head.y, width: right - head.x, height: menu.y + menu.height - head.y + 24 }
+  } },
+  { id: "popup-mark-delivered", page: `${UG}/orders/fulfillments`, alt: "Mark as Delivered Pop-up", route: orderRoute(2), run: openFulfillmentAction("Mark as delivered"), clip: promptClip },
+  { id: "popup-mark-picked-up", page: `${UG}/orders/fulfillments`, alt: "Mark as Picked Up Pop-up", route: orderRoute(14), run: openFulfillmentAction("Mark as picked up"), clip: promptClip },
+  { id: "popup-cancel-fulfillment", page: `${UG}/orders/fulfillments`, alt: "Cancel Fulfillment Pop-up", route: orderRoute(3), run: async (page) => {
+    await page.locator("div.shadow-elevation-card-rest", { has: page.getByRole("heading", { name: /^Fulfillment #/ }) }).first().getByRole("button").filter({ has: page.locator("svg") }).first().click()
+    await page.getByRole("menuitem", { name: /Cancel/ }).click()
+    await page.getByRole("alertdialog").waitFor()
+  }, clip: promptClip },
+  { id: "form-mark-received", page: `${UG}/orders/returns`, alt: "Mark Received Form", route: async (c) => { const r = await returnOf(7)(c); return `/orders/${r.order}/returns/${r.ret}/receive` }, clip: modalClip },
+
   // draft orders
   { id: "draft-form", page: `${UG}/orders/draft-orders/create`, alt: "Draft order form", route: "/draft-orders/create", clip: modalClip },
   ...[["draft-summary", "Order Summary", "Summary"], ["draft-customer", "Customer Section", "Customer"], ["draft-activity", "Activity Section", "Activity"], ["draft-shipping", "Shipping Section", "Shipping"]].map(([id, alt, heading]) => ({
@@ -174,4 +222,5 @@ export const shots = [
   { id: "draft-form-transfer", page: `${UG}/orders/draft-orders/manage`, alt: "Transfer ownership form for draft order", route: draftRoute("/transfer-ownership"), clip: modalClip },
   { id: "draft-form-email", page: `${UG}/orders/draft-orders/manage`, alt: "Edit email in draft order form", route: draftRoute("/email"), clip: modalClip },
   { id: "draft-form-shipping-address", page: `${UG}/orders/draft-orders/manage`, alt: "Edit shipping address in draft order form", route: draftRoute("/shipping-address"), clip: modalClip },
+  { id: "draft-form-billing-address", page: `${UG}/orders/draft-orders/manage`, alt: "Edit billing address in draft order form", route: draftRoute("/billing-address"), clip: modalClip },
 ]

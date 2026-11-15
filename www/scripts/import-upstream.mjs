@@ -78,7 +78,13 @@ const EDITS = [
 const { shots } = await import("./screenshots/shots.mjs")
 const ownShots = new Map(shots.filter((x) => fs.existsSync(path.join(root, "public/images/shots", `${x.id}.png`))).map((x) => [`${x.page}|${x.alt}`, x.id]))
 const imagesFile = path.join(root, "images.json")
-const images = fs.existsSync(imagesFile) ? JSON.parse(fs.readFileSync(imagesFile, "utf8")) : []
+// one row per picture of a page (older runs appended duplicates; "done" wins)
+const images = []
+for (const i of fs.existsSync(imagesFile) ? JSON.parse(fs.readFileSync(imagesFile, "utf8")) : []) {
+  const same = images.find((x) => x.page === i.page && x.upstream === i.upstream)
+  if (!same) images.push(i)
+  else if (i.status === "done") same.status = "done"
+}
 
 // MedusaGo terminology. Applied to prose only (never inside code fences). "Medusa"
 // stays where it names the upstream project, its API, the Admin or the UI kit.

@@ -247,6 +247,8 @@ await admin("POST", "/reservations", { inventory_item_id: items[0].id, location_
 await admin("POST", "/draft-orders", {
   email: customers[2].email, region_id: eu.id, sales_channel_id: webshop.id, customer_id: customers[2].id,
   items: [{ variant_id: pick(1).id, quantity: 2 }],
+  shipping_address: { first_name: customers[2].first_name, last_name: customers[2].last_name, address_1: "12 Nyhavn", city: "Copenhagen", postal_code: "1051", country_code: "dk", phone: "+4512345678" },
+  billing_address: { first_name: customers[2].first_name, last_name: customers[2].last_name, address_1: "12 Nyhavn", city: "Copenhagen", postal_code: "1051", country_code: "dk" },
 }).catch((e) => log("draft order", e.message.slice(0, 200)))
 const sale = (variantIds, amount) => variantIds.map((variant_id) => ({ variant_id, amount, currency_code: "eur" }))
 await admin("POST", "/price-lists", { title: "Black Friday", description: "Black Friday prices", status: "active", type: "sale", prices: sale(allVariants.slice(0, 4).map((v) => v.id), 7) }).catch((e) => log("price list", e.message.slice(0, 200)))
