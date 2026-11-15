@@ -121,3 +121,6 @@ await admin("POST", "/users/me", { first_name: "Alex", last_name: "Nielsen" }).c
   const store = (await admin("GET", "/stores")).stores[0]
   await admin("POST", `/stores/${store.id}`, { default_region_id: region.id, default_location_id: sl.id }).catch((e) => console.log("store defaults", e.message.slice(0, 200)))
 }
+
+// --- a notification in the admin feed: a finished product export ---------------------------------------------------------
+if (!(await admin("GET", "/notifications?limit=1")).notifications?.length) await admin("POST", "/products/export", {}).catch((e) => console.log("export", e.message.slice(0, 160)))

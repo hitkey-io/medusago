@@ -185,6 +185,20 @@ const shippingOptionFlow = (stage) => async (page) => {
   await page.waitForTimeout(700)
 }
 
+// "Create price list": details filled in, then the products step (two products ticked), then the prices step
+const priceListFlow = (stage) => async (page) => {
+  const d = page.locator("[role=dialog]").last()
+  await d.locator("input[name=title]").fill("Summer Sale")
+  await d.locator("textarea[name=description]").fill("Summer prices for selected products")
+  await d.locator("button:has-text('Continue')").click()
+  await page.waitForTimeout(1200)
+  await page.mouse.click(43, 195); await page.mouse.click(43, 243)
+  await page.waitForTimeout(400)
+  if (stage === 2) return
+  await d.locator("button:has-text('Continue')").click()
+  await page.waitForTimeout(1200)
+}
+
 const UG = "user-guide"
 // --- settings -----------------------------------------------------------------------------------------
 const S = "/settings"
@@ -383,6 +397,8 @@ export const shots = [
 
   // =========================== Price lists ======================================================
   { id: "price-list-create-details", page: `${UG}/price-lists/create`, alt: "Create Price List Details Form", route: "/price-lists/create" },
+  { id: "price-list-create-products", page: `${UG}/price-lists/create`, alt: "Create Price List Products Form", route: "/price-lists/create", run: priceListFlow(2) },
+  { id: "price-list-create-prices", page: `${UG}/price-lists/create`, alt: "Create Price List Pricing Form", route: "/price-lists/create", run: priceListFlow(3) },
   { id: "form-edit-price-list", page: `${UG}/price-lists/manage`, alt: "Edit price list form", route: async (c) => `/price-lists/${await blackFriday(c)}/edit`, clip: modalClip },
   { id: "form-price-list-configuration", page: `${UG}/price-lists/manage`, alt: "Edit price list configurations form", route: async (c) => `/price-lists/${await blackFriday(c)}/configuration`, clip: modalClip },
   { id: "price-list-remove-products", page: `${UG}/price-lists/manage`, alt: "Remove products from price list", route: async (c) => `/price-lists/${await blackFriday(c)}`, run: tickFirstRow("Products") },
@@ -533,6 +549,69 @@ export const shots = [
       return { x: h.x - 48, y: h.y - 20, width: 820, height: t.bottom - h.y + 100 }
     })
   } },
+
+
+  // =========================== The admin overview ===============================================
+  { id: "admin-overview", page: `${UG}/index`, alt: "Medusa Admin Overview", route: "/orders" },
+  { id: "sidebar-menu", page: `${UG}/index`, alt: "Sidebar Menu", route: "/orders", clip: async () => ({ x: 0, y: 0, width: 220, height: 807 }) },
+  { id: "sidebar-shortcuts", page: `${UG}/index`, alt: "Sidebar Shortcuts", route: "/orders", run: async (page) => {
+    await page.getByRole("link", { name: "Products", exact: true }).first().hover()
+    await page.waitForTimeout(2200)
+  }, clip: async () => ({ x: 0, y: 40, width: 420, height: 260 }) },
+  { id: "sidebar-settings-profile", page: `${UG}/index`, alt: "Settings and profile", route: "/orders", clip: async () => ({ x: 0, y: 687, width: 220, height: 120 }) },
+  { id: "profile-quick-actions", page: `${UG}/index`, alt: "Profile Quick Actions", route: "/orders", run: async (page) => {
+    await page.getByText("Alex Nielsen").last().click()
+    await page.getByRole("menuitem").first().waitFor()
+  }, clip: async () => ({ x: 0, y: 427, width: 440, height: 380 }) },
+  { id: "search-window", page: `${UG}/index`, alt: "Search Window", route: "/orders", run: async (page) => {
+    await page.keyboard.press("Meta+k")
+    await page.waitForTimeout(900)
+  } },
+  { id: "notifications-window", page: `${UG}/index`, alt: "Notifications Window", route: "/orders", run: async (page) => {
+    await page.mouse.click(1410, 26)
+    await page.waitForTimeout(900)
+  } },
+  { id: "dark-theme", page: `${UG}/index`, alt: "Dark Theme", route: "/orders", run: async (page) => {
+    await page.evaluate(() => { sessionStorage.setItem("shoot-theme", "dark"); localStorage.setItem("medusa_admin_theme", "dark") })
+    await page.reload({ waitUntil: "networkidle" })
+    await page.waitForTimeout(900)
+  }, after: (page) => page.evaluate(() => sessionStorage.removeItem("shoot-theme")) },
+  { id: "reset-password-form", page: `${UG}/reset-password`, alt: "Reset password form", route: () => {
+    // the dashboard only decodes the token to show the form
+    const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url")
+    const now = Math.floor(Date.now() / 1000)
+    return `/reset-password?token=${b64({ alg: "HS256", typ: "JWT" })}.${b64({ entity_id: "admin@medusa-test.com", provider: "emailpass", iat: now, exp: now + 900 })}.x`
+  }, anonymous: true },
+
+
+  // =========================== Tips: lists and the bulk editor ==================================
+  { id: "tips-list-overview", page: `${UG}/tips/lists`, alt: "List Overview", route: "/products" },
+  { id: "tips-list-filters", page: `${UG}/tips/lists`, alt: "Add Filters", route: "/products", run: async (page) => {
+    await page.getByRole("button", { name: "Add filter" }).click()
+    await page.getByRole("menuitem").first().waitFor()
+  } },
+  { id: "tips-list-search", page: `${UG}/tips/lists`, alt: "Search Items", route: "/products", run: async (page) => {
+    await page.getByPlaceholder("Search").first().fill("Sweat")
+    await page.waitForTimeout(1500)
+  } },
+  { id: "tips-list-sort", page: `${UG}/tips/lists`, alt: "Sort Items", route: "/products", run: async (page) => {
+    await page.locator("main button[aria-haspopup=menu]").first().click()
+    await page.waitForTimeout(700)
+  } },
+  { id: "tips-bulk-editor", page: `${UG}/tips/bulk-editor`, alt: "Bulk Editor Example", route: tshirtRoute("/prices") },
+  { id: "tips-bulk-columns", page: `${UG}/tips/bulk-editor`, alt: "Change viewed columns", route: tshirtRoute("/prices"), run: async (page) => {
+    await page.getByRole("button", { name: "View" }).click()
+    await page.waitForTimeout(600)
+  } },
+  { id: "tips-bulk-select", page: `${UG}/tips/bulk-editor`, alt: "Select multiple cells", route: tshirtRoute("/prices"), run: async (page) => {
+    // drag from the first price cell down to the third one
+    await page.mouse.move(233, 183); await page.mouse.down(); await page.mouse.move(233, 262, { steps: 6 }); await page.mouse.up()
+    await page.waitForTimeout(500)
+  } },
+  { id: "tips-bulk-dot", page: `${UG}/tips/bulk-editor`, alt: "Draggable blue dot", route: tshirtRoute("/prices"), run: async (page) => {
+    await page.mouse.click(233, 224)
+    await page.waitForTimeout(500)
+  }, clip: async () => ({ x: 150, y: 150, width: 330, height: 150 }) },
 
   // draft orders
   { id: "draft-form", page: `${UG}/orders/draft-orders/create`, alt: "Draft order form", route: "/draft-orders/create", clip: modalClip },

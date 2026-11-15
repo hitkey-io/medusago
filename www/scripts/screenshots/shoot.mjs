@@ -27,7 +27,8 @@ const context = await browser.newContext({
 })
 const page = await context.newPage()
 await page.addInitScript(() => {
-  localStorage.setItem("medusa_admin_theme", "light")
+  // light unless a shot asked for another theme (sessionStorage "shoot-theme", cleared by the shot's `after`)
+  localStorage.setItem("medusa_admin_theme", sessionStorage.getItem("shoot-theme") || "light")
 })
 
 // the Admin API with the logged-in session, to find the records a shot needs
@@ -81,6 +82,7 @@ for (const shot of shots) {
     // text-heavy screenshots stay sharp at a fraction of the PNG size
     await sharp(file).webp({ quality: 90, effort: 6 }).toFile(path.join(OUT, `${shot.id}.webp`))
     fs.rmSync(file)
+    if (shot.after) await shot.after(page, ctx)
     console.log("ok  ", shot.id)
   } catch (e) {
     failed++
