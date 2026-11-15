@@ -49,16 +49,9 @@ const modalClip = async (page) => {
     return { top, left, right, bottom }
   }, { focus, footerY: cancel?.y ?? null, boxY: box.y })
   if (!focus) {
-    // a drawer: short forms are cut below their last field, long ones (they scroll) are shown whole
-    const fields = d.locator("input:visible, textarea:visible, [role=combobox]:visible")
-    const n = await fields.count()
-    let lastBottom = 0
-    for (let i = 0; i < n; i++) {
-      const bb = await fields.nth(i).boundingBox()
-      if (bb) lastBottom = Math.max(lastBottom, bb.y + bb.height)
-    }
-    const short = lastBottom < box.y + box.height * 0.5
-    return { x: box.x, y: box.y, width: box.width, height: short ? lastBottom - box.y + 40 : box.height }
+    // a drawer: a short form is cut below its content, a long one (it scrolls) is shown whole
+    const short = r.bottom < box.y + box.height * 0.6
+    return { x: box.x, y: box.y, width: box.width, height: short ? r.bottom - box.y + 40 : box.height }
   }
   const m = 48
   return { x: r.left - m, y: r.top - m, width: r.right - r.left + 2 * m, height: r.bottom - r.top + 2 * m }
@@ -142,6 +135,40 @@ const createProductFlow = (stage) => async (page) => {
   await page.locator("[role=option]").first().click()
   await d.locator('input[placeholder^="How many"]').first().fill("1")
 }
+
+const emma = idOf("/customers", "customers", (x) => x.email === "emma.larsen@example.com")
+const vipGroup = idOf("/customer-groups", "customer_groups", (g) => g.name === "VIP")
+const firstItem = firstId("/inventory-items", "inventory_items")
+const firstReservation = firstId("/reservations", "reservations")
+const promo = (code) => idOf("/promotions", "promotions", (x) => x.code === code)
+const campaign = firstId("/campaigns", "campaigns")
+const blackFriday = idOf("/price-lists", "price_lists", (x) => x.title === "Black Friday")
+// tick the first row of a table inside a card (the command bar with "Remove" shows up)
+const tickFirstRow = (heading) => async (page) => {
+  await card(heading)(page).getByRole("checkbox").nth(1).click()
+  await page.waitForTimeout(500)
+}
+
+// "Create promotion": the details step of a promotion type (radio cards: "Amount off products", "Free shipping"...), with one condition added in a section
+const promotionSection = (type, heading, attribute, comboIndex = 0) => ({
+  route: "/promotions/create",
+  run: async (page) => {
+    const d = page.locator("[role=dialog]").last()
+    await d.getByText(type, { exact: true }).first().click()
+    await d.locator("button:has-text('Continue')").click()
+    await page.waitForTimeout(900)
+    const section = d.locator("div").filter({ has: page.locator(`text="${heading}"`) }).filter({ has: page.locator("button:has-text('Add condition')") }).last()
+    await section.scrollIntoViewIfNeeded()
+    await section.locator("button:has-text('Add condition')").first().click()
+    await page.waitForTimeout(500)
+    if (attribute) {
+      await section.locator("[role=combobox]").nth(comboIndex).click()
+      await page.locator("[role=option]", { hasText: attribute }).first().click()
+      await page.waitForTimeout(400)
+    }
+  },
+  el: (page) => page.locator("[role=dialog]").last().locator("div").filter({ has: page.locator(`text="${heading}"`) }).filter({ has: page.locator("button:has-text('Add condition')") }).last(),
+})
 
 const UG = "user-guide"
 export const shots = [
@@ -290,6 +317,59 @@ export const shots = [
     { file: "create-product-4", page: `${UG}/products/create/bundle`, alt: "Create Product Fourth Step" },
   { file: "create-product-kit-enabled", page: `${UG}/products/create/multi-part`, alt: "Enable has inventory kit" },
   { file: "create-product-4", page: `${UG}/products/create/multi-part`, alt: "Create Product Fourth Step" },
+
+  // =========================== Customers ========================================================
+  { id: "form-edit-customer-group", page: `${UG}/customers/groups`, alt: "Edit Customer Group", route: async (c) => `/customer-groups/${await vipGroup(c)}/edit`, clip: modalClip },
+  { id: "form-group-add-customers", page: `${UG}/customers/groups`, alt: "Add Customers to Group", route: async (c) => `/customer-groups/${await vipGroup(c)}/add-customers` },
+  { id: "group-remove-customers", page: `${UG}/customers/groups`, alt: "Remove customers from group", route: async (c) => `/customer-groups/${await vipGroup(c)}`, run: tickFirstRow("Customers") },
+  { id: "form-edit-customer", page: `${UG}/customers/manage`, alt: "Edit Customer Form", route: async (c) => `/customers/${await emma(c)}/edit`, clip: modalClip },
+  { id: "form-customer-transfer", page: `${UG}/customers/manage`, alt: "Transfer ownership form", route: async (c) => {
+    const id = await emma(c)
+    const o = (await c.api(`/orders?customer_id=${id}&limit=1`)).orders[0]
+    return `/customers/${id}/${o.id}/transfer`
+  }, clip: modalClip },
+  { id: "form-customer-add-groups", page: `${UG}/customers/manage`, alt: "Add groups form", route: async (c) => `/customers/${await emma(c)}/add-customer-groups` },
+  { id: "customer-remove-groups", page: `${UG}/customers/manage`, alt: "Remove customer from groups", route: async (c) => `/customers/${await emma(c)}`, run: tickFirstRow("Customer Groups") },
+  { id: "form-customer-add-address", page: `${UG}/customers/manage`, alt: "Add address form", route: async (c) => `/customers/${await emma(c)}/create-address`, clip: modalClip },
+
+  // =========================== Inventory ========================================================
+  { id: "form-create-inventory-item", page: `${UG}/inventory/inventory`, alt: "Create Inventory Item Form", route: "/inventory/create" },
+  { id: "form-edit-inventory-item", page: `${UG}/inventory/inventory`, alt: "Edit Inventory Item Form", route: async (c) => `/inventory/${await firstItem(c)}/edit`, clip: modalClip },
+  { id: "form-inventory-attributes", page: `${UG}/inventory/inventory`, alt: "Edit Inventory Item Attributes Form", route: async (c) => `/inventory/${await firstItem(c)}/attributes`, clip: modalClip },
+  { id: "form-inventory-locations", page: `${UG}/inventory/inventory`, alt: "Manage Locations Form", route: async (c) => `/inventory/${await firstItem(c)}/locations`, clip: modalClip },
+  { id: "form-inventory-quantity", page: `${UG}/inventory/inventory`, alt: "Manage Quantity Form", route: async (c) => `/inventory/${await firstItem(c)}/locations/${await firstId("/stock-locations", "stock_locations")(c)}`, clip: modalClip },
+  { id: "form-create-reservation", page: `${UG}/inventory/reservations`, alt: "Create Reservation form", route: "/reservations/create", clip: modalClip },
+  { id: "form-edit-reservation", page: `${UG}/inventory/reservations`, alt: "Edit Reservation form", route: async (c) => `/reservations/${await firstReservation(c)}/edit`, clip: modalClip },
+  { id: "reservation-details", page: `${UG}/inventory/reservations`, alt: "Reservation details page", route: async (c) => `/reservations/${await firstReservation(c)}` },
+  { file: "form-create-reservation", page: `${UG}/inventory/inventory`, alt: "Create Reservation form" },
+  { file: "form-edit-reservation", page: `${UG}/inventory/inventory`, alt: "Edit Reservation form" },
+
+  // =========================== Price lists ======================================================
+  { id: "price-list-create-details", page: `${UG}/price-lists/create`, alt: "Create Price List Details Form", route: "/price-lists/create" },
+  { id: "form-edit-price-list", page: `${UG}/price-lists/manage`, alt: "Edit price list form", route: async (c) => `/price-lists/${await blackFriday(c)}/edit`, clip: modalClip },
+  { id: "form-price-list-configuration", page: `${UG}/price-lists/manage`, alt: "Edit price list configurations form", route: async (c) => `/price-lists/${await blackFriday(c)}/configuration`, clip: modalClip },
+  { id: "price-list-remove-products", page: `${UG}/price-lists/manage`, alt: "Remove products from price list", route: async (c) => `/price-lists/${await blackFriday(c)}`, run: tickFirstRow("Products") },
+  { id: "form-price-list-prices", page: `${UG}/price-lists/manage`, alt: "Edit prices in price list", route: async (c) => `/price-lists/${await blackFriday(c)}/products/edit` },
+
+  // =========================== Promotions =======================================================
+  { id: "form-create-campaign", page: `${UG}/promotions/campaigns`, alt: "Create Campaign Form", route: "/campaigns/create" },
+  { id: "form-edit-campaign", page: `${UG}/promotions/campaigns`, alt: "Edit Campaign Details", route: async (c) => `/campaigns/${await campaign(c)}/edit`, clip: modalClip },
+  { id: "form-campaign-budget", page: `${UG}/promotions/campaigns`, alt: "Edit Campaign Budget Limit", route: async (c) => `/campaigns/${await campaign(c)}/edit-budget`, clip: modalClip },
+  { id: "form-campaign-add-promotions", page: `${UG}/promotions/campaigns`, alt: "Add Promotions to Campaign", route: async (c) => `/campaigns/${await campaign(c)}/add-promotions` },
+  { id: "campaign-remove-promotions", page: `${UG}/promotions/campaigns`, alt: "Remove Promotions from Campaign", route: async (c) => `/campaigns/${await campaign(c)}`, run: tickFirstRow("Promotions") },
+  { id: "form-edit-promotion", page: `${UG}/promotions/manage`, alt: "Edit Promotion Form", route: async (c) => `/promotions/${await promo("SUMMER10")(c)}/edit`, clip: modalClip },
+  { id: "form-promotion-who", page: `${UG}/promotions/manage`, alt: "Edit who can use the promotion form", route: async (c) => `/promotions/${await promo("SUMMER10")(c)}/rules/edit`, clip: modalClip },
+  { id: "form-promotion-items", page: `${UG}/promotions/manage`, alt: "Edit the items the promotion applies to form", route: async (c) => `/promotions/${await promo("SUMMER10")(c)}/target-rules/edit`, clip: modalClip },
+  { id: "form-promotion-buy", page: `${UG}/promotions/manage`, alt: "Edit Buy X Promotion Condition form", route: async (c) => `/promotions/${await promo("BUY2GET1")(c)}/buy-rules/edit`, clip: modalClip },
+  { id: "form-promotion-shipping", page: `${UG}/promotions/manage`, alt: "Edit shipping methods condition form", route: async (c) => `/promotions/${await promo("FREESHIP")(c)}/target-rules/edit`, clip: modalClip },
+  { id: "form-promotion-add-to-campaign", page: `${UG}/promotions/manage`, alt: "Add Promotion to Campaign form", route: async (c) => `/promotions/${await promo("FREESHIP")(c)}/add-to-campaign`, clip: modalClip },
+  { id: "promotion-create-1", page: `${UG}/promotions/create`, alt: "Create Promotion Form First Step", route: "/promotions/create" },
+
+  { id: "promotion-section-who", page: `${UG}/promotions/create`, alt: "Who can use this section", ...promotionSection("Amount off products", "Who can use this code?", "Customer Group", 1) },
+  { id: "promotion-section-items", page: `${UG}/promotions/create`, alt: "What items will the promotion be applied to section", ...promotionSection("Amount off products", "What items will the promotion be applied to?", "Product") },
+  { id: "promotion-section-shipping", page: `${UG}/promotions/create`, alt: "What shipping methods will the promotion be applied to section", ...promotionSection("Free shipping", "What shipping methods will the promotion be applied to?", "Shipping") },
+  { file: "promotion-section-who", page: `${UG}/promotions/create`, alt: "Who can use this code form" },
+  { file: "promotion-section-who", page: `${UG}/promotions/create`, alt: "Who can use this code section" },
 
   // draft orders
   { id: "draft-form", page: `${UG}/orders/draft-orders/create`, alt: "Draft order form", route: "/draft-orders/create", clip: modalClip },

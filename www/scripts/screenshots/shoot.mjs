@@ -5,6 +5,8 @@
 import { chromium } from "playwright-core"
 import fs from "node:fs"
 import path from "node:path"
+import os from "node:os"
+import sharp from "sharp"
 import { shots } from "./shots.mjs"
 
 const BASE = process.env.STAND_URL || "http://localhost:9000"
@@ -65,7 +67,7 @@ for (const shot of shots) {
     await page.waitForTimeout(shot.wait ?? 900)
     if (shot.run) await shot.run(page, ctx)
     await page.waitForTimeout(400)
-    const file = path.join(OUT, `${shot.id}.png`)
+    const file = path.join(os.tmpdir(), `shot-${shot.id}.png`) // converted to WebP below
     if (shot.clip) {
       // a computed crop in CSS px (a form: from its title to its last field)
       const clip = await shot.clip(page, ctx); if (process.env.DEBUG_CLIP) console.log(shot.id, JSON.stringify(clip)); await page.screenshot({ path: file, clip })
@@ -76,6 +78,9 @@ for (const shot of shots) {
     } else {
       await page.screenshot({ path: file })
     }
+    // text-heavy screenshots stay sharp at a fraction of the PNG size
+    await sharp(file).webp({ quality: 90, effort: 6 }).toFile(path.join(OUT, `${shot.id}.webp`))
+    fs.rmSync(file)
     console.log("ok  ", shot.id)
   } catch (e) {
     failed++

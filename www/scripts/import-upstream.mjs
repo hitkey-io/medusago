@@ -77,7 +77,7 @@ const EDITS = [
 // pictures we shot ourselves (scripts/screenshots) are kept at the place of the upstream one
 const { shots } = await import("./screenshots/shots.mjs")
 // an entry with `file` reuses the picture of another entry
-const ownShots = new Map(shots.filter((x) => fs.existsSync(path.join(root, "public/images/shots", `${x.file ?? x.id}.png`))).map((x) => [`${x.page}|${x.alt}`, x.file ?? x.id]))
+const ownShots = new Map(shots.filter((x) => fs.existsSync(path.join(root, "public/images/shots", `${x.file ?? x.id}.webp`))).map((x) => [`${x.page}|${x.alt}`, x.file ?? x.id]))
 const imagesFile = path.join(root, "images.json")
 // one row per picture of a page (older runs appended duplicates; "done" wins)
 const images = []
@@ -201,7 +201,7 @@ for (const page of pages) {
     const known = images.find((i) => i.page === file && i.upstream === url)
     if (known) known.status = own ? "done" : "todo"
     else images.push({ page: file, alt, upstream: url, status: own ? "done" : "todo" })
-    return own ? `![${alt}](/images/shots/${own}.png)\n` : ""
+    return own ? `![${alt}](/images/shots/${own}.webp)\n` : ""
   })
   // Links to the upstream site become links to the same page of this site.
   text = text.replace(/\]\(https:\/\/docs\.medusajs\.com(\/(?:api|resources|ui|user-guide|learn)(?:[/#)][^)]*)?)\)/g, "]($1)")
