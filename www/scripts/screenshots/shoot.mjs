@@ -50,7 +50,7 @@ async function login() {
 let failed = 0
 let loggedIn = false
 for (const shot of shots) {
-  if (only.size && !only.has(shot.id)) continue
+  if (shot.file || (only.size && !only.has(shot.id))) continue
   try {
     if (shot.anonymous) {
       // pictures of the pages before login: a clean context without the session

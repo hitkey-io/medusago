@@ -96,6 +96,53 @@ const openFulfillmentAction = (label) => async (page) => {
   await page.getByRole("alertdialog").waitFor()
 }
 
+const cardRe = (re) => (page) =>
+  page.locator("div.shadow-elevation-card-rest", { has: page.getByRole("heading", { name: re }) })
+const tshirt = idOf("/products", "products", (x) => x.title === "Medusa T-Shirt")
+const tshirtRoute = (tail = "") => async (c) => `/products/${await tshirt(c)}${tail}`
+const variantRoute = (tail = "") => async (c) => {
+  const id = await tshirt(c)
+  const p = await c.api(`/products/${id}?fields=+variants.id`)
+  return `/products/${id}/variants/${p.product.variants[0].id}${tail}`
+}
+const categoryWithProducts = async (c) => {
+  const r = await c.api("/product-categories?fields=+products.id&limit=50")
+  return r.product_categories.find((x) => x.products?.length).id
+}
+
+// the "Create product" wizard, driven up to a stage: 1 details, 2 organize, 3 variants, 4 variants with an inventory kit, 5 inventory kits.
+// (nothing is published: the picture is taken before the last button)
+const createProductFlow = (stage) => async (page) => {
+  const d = page.locator("[role=dialog]").last()
+  const next = async () => { await d.locator("button:has-text('Continue')").click(); await page.waitForTimeout(800) }
+  await d.locator("input[name=title]").fill("Medusa Hoodie")
+  await d.locator("input[name=subtitle]").fill("Warm and cosy")
+  await d.locator("textarea[name=description]").fill("A warm and cozy hoodie")
+  if (stage === 1) return
+  await d.getByText("Yes, this is a product with variants").click()
+  await d.getByText("Product options").scrollIntoViewIfNeeded()
+  await d.locator("[role=combobox]").first().click()
+  await page.keyboard.type("Size"); await page.waitForTimeout(400); await page.keyboard.press("Enter")
+  await d.locator('input[placeholder="Red, Blue, Green"]').click()
+  for (const v of ["S", "M", "L"]) { await page.keyboard.type(v); await page.keyboard.press("Enter") }
+  await next()
+  if (stage === 2) return
+  await next()
+  for (const [i, sku] of ["HOODIE-S", "HOODIE-M", "HOODIE-L"].entries()) {
+    await page.mouse.click(383, 183 + i * 41); await page.keyboard.type(sku); await page.keyboard.press("Enter")
+    await page.mouse.click(985, 183 + i * 41); await page.keyboard.type("45"); await page.keyboard.press("Enter")
+    await page.mouse.click(533, 183 + i * 41)
+  }
+  if (stage === 3) { await page.mouse.click(1000, 500); return }
+  await page.mouse.click(833, 183)
+  await page.waitForTimeout(500)
+  if (stage === 4) return
+  await next()
+  await d.locator("[role=combobox]").first().click()
+  await page.locator("[role=option]").first().click()
+  await d.locator('input[placeholder^="How many"]').first().fill("1")
+}
+
 const UG = "user-guide"
 export const shots = [
   // --- lists and overviews -------------------------------------------------------------------
@@ -200,6 +247,49 @@ export const shots = [
     await page.getByRole("alertdialog").waitFor()
   }, clip: promptClip },
   { id: "form-mark-received", page: `${UG}/orders/returns`, alt: "Mark Received Form", route: async (c) => { const r = await returnOf(7)(c); return `/orders/${r.order}/returns/${r.ret}/receive` }, clip: modalClip },
+
+  // =========================== Products =========================================================
+  { id: "form-create-category", page: `${UG}/products/categories`, alt: "Create Category Form", route: "/categories/create", clip: modalClip },
+  { id: "form-edit-category", page: `${UG}/products/categories`, alt: "Edit category details", route: async (c) => `/categories/${await categoryWithProducts(c)}/edit`, clip: modalClip },
+  { id: "form-category-add-products", page: `${UG}/products/categories`, alt: "Add products to category form", route: async (c) => `/categories/${await categoryWithProducts(c)}/products` },
+  { id: "form-category-ranking", page: `${UG}/products/categories`, alt: "Edit categories ranking form", route: "/categories/organize" },
+  { id: "form-create-collection", page: `${UG}/products/collections`, alt: "Create Collection Form", route: "/collections/create", clip: modalClip },
+  { id: "form-edit-collection", page: `${UG}/products/collections`, alt: "Edit collection form", route: async (c) => `/collections/${await firstId("/collections", "collections")(c)}/edit`, clip: modalClip },
+  { id: "form-collection-add-products", page: `${UG}/products/collections`, alt: "Add products to collection form", route: async (c) => `/collections/${await firstId("/collections", "collections")(c)}/products` },
+  { id: "form-import-products", page: `${UG}/products/import`, alt: "Import Products Form", route: "/products/import", clip: async (page) => {
+    // the drawer, down to the template file card
+    return page.evaluate(() => {
+      const d = [...document.querySelectorAll("[role=dialog]")].pop().getBoundingClientRect()
+      const t = [...document.querySelectorAll("*")].filter((e) => !e.children.length && /product-import-template/.test(e.textContent)).pop().getBoundingClientRect()
+      return { x: d.x, y: d.y, width: d.width, height: t.bottom - d.y + 60 }
+    })
+  } },
+  { id: "product-options-list", page: `${UG}/products/options`, alt: "Product Options List in the Medusa Admin dashboard", route: "/product-options" },
+  { id: "form-create-option", page: `${UG}/products/options`, alt: "Create Product Option form in the Medusa Admin dashboard", route: "/product-options/create", clip: modalClip },
+  { id: "form-edit-option", page: `${UG}/products/options`, alt: "Edit Product Option form in the Medusa Admin dashboard", route: async (c) => `/product-options/${await firstId("/product-options", "product_options")(c)}/edit`, clip: modalClip },
+  { id: "form-manage-product-options", page: `${UG}/products/edit`, alt: "Manage Product Options form in the Medusa Admin dashboard", route: tshirtRoute("/options/manage"), clip: modalClip },
+  { id: "product-section-details", page: `${UG}/products/edit`, alt: "Product Details Section", route: tshirtRoute(), el: (p) => p.locator("main div.shadow-elevation-card-rest").first() },
+  ...[["product-section-media", "Media Section", /^Media$/], ["product-section-options", "Options Section", /^Options$/], ["product-section-variants", "Variants Section", /^Variants$/],
+    ["product-section-channels", "Sales Channels Section", /^Sales Channels$/], ["product-section-shipping", "Shipping Configuration Section", /^Shipping/],
+    ["product-section-organize", "Organize Section", /^Organize$/], ["product-section-attributes", "Attributes Section", /^Attributes$/]].map(([id, alt, re]) => ({
+    id, page: `${UG}/products/edit`, alt, route: tshirtRoute(), el: cardRe(re),
+  })),
+  { id: "variant-details", page: `${UG}/products/variants`, alt: "Product Variant Details", route: variantRoute() },
+  { id: "variant-inventory-editor", page: `${UG}/products/variants`, alt: "Product Variant Inventory Bulk Editor", route: tshirtRoute("/stock") },
+
+  { id: "category-remove-products", page: `${UG}/products/categories`, alt: "Remove products from category", route: async (c) => `/categories/${await categoryWithProducts(c)}`, run: async (page) => {
+    await card("Products")(page).getByRole("checkbox").nth(1).click()
+    await page.waitForTimeout(500)
+  } },
+  { id: "create-product-1", page: `${UG}/products/create`, alt: "Create Product First Step", route: "/products/create", run: createProductFlow(1) },
+  { id: "create-product-2", page: `${UG}/products/create`, alt: "Create Product Second Step", route: "/products/create", run: createProductFlow(2) },
+  { id: "create-product-3", page: `${UG}/products/create`, alt: "Create Product Third Step", route: "/products/create", run: createProductFlow(3) },
+  { id: "create-product-4", page: `${UG}/products/create`, alt: "Create Product Fourth Step", route: "/products/create", run: createProductFlow(5) },
+  { id: "create-product-kit-enabled", page: `${UG}/products/create/bundle`, alt: "Enable has inventory kit", route: "/products/create", run: createProductFlow(4) },
+  // the same pictures on the pages of bundled and multi-part products
+    { file: "create-product-4", page: `${UG}/products/create/bundle`, alt: "Create Product Fourth Step" },
+  { file: "create-product-kit-enabled", page: `${UG}/products/create/multi-part`, alt: "Enable has inventory kit" },
+  { file: "create-product-4", page: `${UG}/products/create/multi-part`, alt: "Create Product Fourth Step" },
 
   // draft orders
   { id: "draft-form", page: `${UG}/orders/draft-orders/create`, alt: "Draft order form", route: "/draft-orders/create", clip: modalClip },

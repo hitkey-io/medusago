@@ -76,7 +76,8 @@ const EDITS = [
 ]
 // pictures we shot ourselves (scripts/screenshots) are kept at the place of the upstream one
 const { shots } = await import("./screenshots/shots.mjs")
-const ownShots = new Map(shots.filter((x) => fs.existsSync(path.join(root, "public/images/shots", `${x.id}.png`))).map((x) => [`${x.page}|${x.alt}`, x.id]))
+// an entry with `file` reuses the picture of another entry
+const ownShots = new Map(shots.filter((x) => fs.existsSync(path.join(root, "public/images/shots", `${x.file ?? x.id}.png`))).map((x) => [`${x.page}|${x.alt}`, x.file ?? x.id]))
 const imagesFile = path.join(root, "images.json")
 // one row per picture of a page (older runs appended duplicates; "done" wins)
 const images = []
