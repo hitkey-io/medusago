@@ -138,9 +138,9 @@ The order of the middlewares matters, since `rejectInvalidAuth` reads the `AuthC
 
 Now, a request with no credentials reaches the route as a guest, a request with valid credentials reaches the route with its `AuthContext` set, and a request with expired or invalid credentials receives a `401` error.
 
-### Override Authentication for Medusa's API Routes
+### Override Authentication for MedusaGo's API Routes
 
-In some cases, you may want to override the authentication requirement for Medusa's API routes. For example, you may want to allow custom actor types to access existing protected API routes.
+In some cases, you may want to override the authentication requirement for MedusaGo's API routes. For example, you may want to allow custom actor types to access existing protected API routes.
 
 It's not possible to change the [authentication middleware](!docs!/learn/fundamentals/api-routes/middlewares) applied to an existing API route. Instead, you need to replicate the API route and apply the authentication middleware to it.
 

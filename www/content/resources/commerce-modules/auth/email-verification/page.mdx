@@ -19,10 +19,6 @@ In this guide, you'll learn how to enable email verification requirement for cus
 <Prerequisites
   items={[
     {
-      text: "Medusa v2.16.0 or later",
-      link: "!docs!/learn/update"
-    },
-    {
       text: "Notification Module Provider for the email channel, such as SendGrid or Resend",
     }
   ]}
@@ -61,8 +57,6 @@ To implement the storefront part of the flow, refer to the [Verify Customer Acco
 When the storefront requests to send an email verification notification, Medusa emits the `auth.verification_requested` event. You can listen to this event in a [subscriber](!docs!/learn/fundamentals/events-and-subscribers) to send the email verification notification.
 
 <Note>
-
-The `auth.verification_requested` event payload changed in Medusa v2.17.0. The `actor_type` and `provider_identity_id` fields were removed, `provider` was renamed to `code_provider`, and `entity_type` was added. If you have a subscriber written before v2.17.0, update it to use the payload described in this guide.
 
 </Note>
 

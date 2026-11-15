@@ -12,7 +12,7 @@ In this chapter, you’ll learn how to create a UI route in the admin dashboard.
 
 The Medusa Admin dashboard is customizable, allowing you to add new pages, called UI routes. You create a UI route as a React component showing custom content that allows admin users to perform custom actions.
 
-For example, you can add a new page to show and manage product reviews, which aren't available natively in Medusa.
+For example, you can add a new page to show and manage product reviews, which aren't available natively in MedusaGo.
 
 You can create a UI route directly in your MedusaGo application, or in a [plugin](../../plugins/page.mdx) if you want to share the UI route across multiple MedusaGo applications.
 
@@ -112,12 +112,6 @@ The above example adds a new sidebar item with the label `Custom Route` and an i
 
 ### Specify UI Route Sidebar Rank
 
-<Note>
-
-UI route ranking is available starting [Medusa v2.11.4](https://github.com/medusajs/medusa/releases/tag/v2.11.4).
-
-</Note>
-
 By default, custom UI routes are added to the sidebar in the order their files are loaded. This applies to your custom UI routes, and UI routes defined in plugins.
 
 You can specify the ranking of your UI route in the sidebar using the `rank` property passed to `defineRouteConfig`.
@@ -185,12 +179,12 @@ In the sidebar, "Analytics" with the rank `1` will be added before "Reports" wit
 
 #### How are UI Routes Sorted in the Sidebar
 
-Medusa sorts custom UI routes based on their rank:
+MedusaGo sorts custom UI routes based on their rank:
 
 1. UI routes that have ranks are sorted in ascending order.
 2. UI routes without a rank are added after the ranked UI routes.
 
-Medusa also applies the same sorting logic to UI routes at the nested level. Learn more in the [Nested UI Routes Ranking](#nested-ui-routes-ranking) section.
+MedusaGo also applies the same sorting logic to UI routes at the nested level. Learn more in the [Nested UI Routes Ranking](#nested-ui-routes-ranking) section.
 
 ### Nested UI Routes
 
@@ -466,12 +460,6 @@ In the `loader` function, you retrieve the brands from a custom API route and re
 
 Then, in the `handle.breadcrumb` function, you receive the `loaderData` prop containing the brand information returned by the `loader` function. You can use this data to return a dynamic breadcrumb label.
 
-<Note>
-
-The `loaderData` prop replaces the `data` prop starting from [Medusa v2.19.0](https://github.com/medusajs/medusa/releases/tag/v2.19.0), which upgraded the Medusa Admin to React Router v7. In earlier versions, use the `data` prop instead.
-
-</Note>
-
 When you open the UI route at `http://localhost:9000/app/brands/123`, the breadcrumb will show the brand's name, such as `Acme`.
 
 <Note title="Tip">
@@ -483,12 +471,6 @@ You also use the `useLoaderData` hook to access the data returned by the `loader
 ---
 
 ## Set UI Route Page Title
-
-<Note>
-
-This feature is available starting [Medusa v2.17.2](https://github.com/medusajs/medusa/releases/tag/v2.17.2).
-
-</Note>
 
 By default, a UI route's page title is set to the `label` property of the route's configuration.
 
@@ -547,12 +529,6 @@ export const handle = {
 In the `loader` function, you retrieve the brand from a custom API route and return it.
 
 Then, in the `handle.seo` function, you receive the `match` object whose `loaderData` property holds the data returned by the `loader` function. You use this data to return the dynamic title.
-
-<Note>
-
-The `loaderData` property replaces the `data` property starting from [Medusa v2.19.0](https://github.com/medusajs/medusa/releases/tag/v2.19.0), which upgraded the Medusa Admin to React Router v7. In earlier versions, use the `data` property instead.
-
-</Note>
 
 When you open the UI route at `http://localhost:9000/app/brands/123`, the browser tab's title will show the brand's name, such as `Acme - Medusa`.
 

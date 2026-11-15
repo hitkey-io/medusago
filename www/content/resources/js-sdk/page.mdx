@@ -210,7 +210,7 @@ The `Medusa` initializer accepts as a parameter an object with the following pro
       - `local` for the Local Storage.
       - `session` for the Session Storage.
       - `memory` to store it within the SDK for the current application's runtime.
-      - `custom` to define custom storage using the `auth.storage` configuration. If `auth.storage` isn't defined, the SDK throws an error. This option is only available after Medusa v2.5.1.
+      - `custom` to define custom storage using the `auth.storage` configuration. If `auth.storage` isn't defined, the SDK throws an error.
       - `nostore` to not store the token.
 
       </Table.Cell>
@@ -228,7 +228,7 @@ The `Medusa` initializer accepts as a parameter an object with the following pro
       </Table.Cell>
       <Table.Cell>
 
-      This option is only available after Medusa v2.5.1. It's an object or class that's used when `auth.jwtTokenStorageMethod` is `custom` to store the JWT token. It's useful when using the JS SDK in an environment where Local or Session Storage isn't available. The object or class must have the following methods:
+      It's an object or class that's used when `auth.jwtTokenStorageMethod` is `custom` to store the JWT token. It's useful when using the JS SDK in an environment where Local or Session Storage isn't available. The object or class must have the following methods:
 
       - `setItem`: A function that accepts a key and value to store the JWT token.
       - `getItem`: A function that accepts a key to retrieve the JWT token.
@@ -258,9 +258,6 @@ The `Medusa` initializer accepts as a parameter an object with the following pro
       - `include`: (default) to pass the `credentials: include` option.
       - `omit`: to pass the `credentials: omit` option.
       - `same-origin`: to pass the `credentials: same-origin` option.
-
-      This option is only available after [Medusa v2.1.1](https://github.com/medusajs/medusa/releases/tag/v2.1.1).
-
       </Table.Cell>
       <Table.Cell>
 

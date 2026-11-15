@@ -8,7 +8,7 @@ export const metadata = {
 
 # {metadata.title}
 
-In this chapter, you'll learn about allowed fields in API routes, how to set them on custom API routes, and how to override them for Medusa's API routes.
+In this chapter, you'll learn about allowed fields in API routes, how to set them on custom API routes, and how to override them for MedusaGo's API routes.
 
 ## What are Allowed Fields?
 
@@ -25,7 +25,7 @@ Set `Allowed` even on your custom API routes, not only on Medusa's routes. Since
 `Allowed` is different than `Disallowed`:
 
 - `Allowed` is an opt-in list. Without it, a route retrieves any field a client requests.
-- `Disallowed` is a deny list that is always enforced, even for fields in the `Allowed` list. Medusa's API routes don't set it, so use it on your own routes to block a path segment that the allowed list would otherwise let through.
+- `Disallowed` is a deny list that is always enforced, even for fields in the `Allowed` list. MedusaGo's API routes don't set it, so use it on your own routes to block a path segment that the allowed list would otherwise let through.
 
 ---
 
@@ -105,7 +105,7 @@ In this example, a request with `fields=id,variants.prices` doesn't retrieve `va
 
 ## API Routes that Restrict Retrievable Fields
 
-Some of Medusa's API routes already set `Allowed`, which means you can't pass your custom linked data models in the `fields` query parameter of these routes. They're restricted to keep them performant and secure.
+Some of MedusaGo's API routes already set `Allowed`, which means you can't pass your custom linked data models in the `fields` query parameter of these routes. They're restricted to keep them performant and secure.
 
 Every [Store API route](!api!/store) sets `Allowed`. Each route allows its default fields and a small set of extra fields and relations, and rejects everything else. Refer to the API reference of an API route for its full list of allowed fields.
 
@@ -113,7 +113,7 @@ A few [Admin API routes](!api!/admin) also restrict the fields and relations you
 
 ---
 
-## How to Override Allowed Fields of Medusa's API Routes?
+## How to Override Allowed Fields of MedusaGo's API Routes?
 
 For the routes mentioned above, you need to override the allowed fields and relations to be retrieved. You can do this by applying a [global middleware](!docs!/learn/fundamentals/api-routes/middlewares) to those routes.
 

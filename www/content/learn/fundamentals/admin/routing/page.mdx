@@ -16,7 +16,7 @@ In this chapter, you'll learn about routing-related customizations that you can 
 
 <Note title="React Router v7">
 
-Starting from [Medusa v2.19.0](https://github.com/medusajs/medusa/releases/tag/v2.19.0), the Medusa Admin uses React Router v7. If your project has its own `react-router-dom` dependency, update it to v7 to avoid installing two versions of React Router, which leads to a `useNavigate() may be used only in the context of a Router` error in your admin customizations.
+The Medusa Admin uses React Router v7. If your project has its own `react-router-dom` dependency, update it to v7 to avoid installing two versions of React Router, which leads to a `useNavigate() may be used only in the context of a Router` error in your admin customizations.
 
 React Router v7 also removed the `json` and `defer` utilities. Instead of `json`, return a `Response` object with a JSON body from your loader. Instead of `defer`, return a plain object holding the unresolved promises.
 
@@ -58,12 +58,6 @@ This adds a widget to a product's details page with a link to the Orders page. T
 ---
 
 ## Fetch Data with Route Loaders
-
-<Note>
-
-Route loaders are available starting from Medusa v2.5.1.
-
-</Note>
 
 In your UI routes and settings pages, you may need to retrieve data to use in your route component. For example, you may want to fetch a list of products to display on a custom page.
 
@@ -176,12 +170,6 @@ In the loader, you can fetch data asynchronously using the route parameter and r
 ## Other React Router Utilities
 
 ### Route Handles
-
-<Note>
-
-Route handles are available starting from Medusa v2.5.1.
-
-</Note>
 
 In your UI route or any route file, you can export a `handle` object to define [route handles](https://reactrouter.com/start/data/route-object#handle). The object is passed to the loader and route contexts.
 
