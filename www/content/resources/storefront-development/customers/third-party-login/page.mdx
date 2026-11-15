@@ -23,10 +23,9 @@ In this guide, you'll learn how to implement third-party or social login in your
 By following the steps in this guide, you'll learn how to:
 
 - Create a login page with a button that starts the third-party login process. This redirects customers to the third-party service for authentication.
-- Create a callback page that the third-party service redirects to after authentication. This page receives query parameters from the third-party service and uses them to validate the authentication in Medusa.
+- Create a callback page that the third-party service redirects to after authentication. This page receives query parameters from the third-party service and uses them to validate the authentication in MedusaGo.
 
 These are the pages you need in your storefront to allow customers to log in or create an account using a third-party service.
-
 
 <Prerequisites
   items={[
@@ -163,7 +162,6 @@ The JS SDK sets and passes authentication headers or session cookies automatical
 ## Step 2: Callback Page in Storefront
 
 After the customer clicks the "Login with Google" button, they're redirected to Google to authenticate. Once they authenticate with Google, they're redirected back to your storefront to the callback page. You set this page's URL in Google's OAuth credentials configurations.
-
 
 In this step, you'll create the callback page that handles the response from Google and creates or retrieves the customer account. You'll implement the page step-by-step to explain the different parts of the flow. You can copy the full page code from the [Full Code Example for Third-Party Login Callback Page](#full-code-example-for-third-party-login-callback-page) section.
 
@@ -349,12 +347,12 @@ This method assumes that the token received from the [Validate Callback API rout
 
 ### e. Validate Callback Function
 
-Finally, you'll add to the page a function that validates the authentication callback in Medusa and creates or retrieves the customer account. It will use the functions added earlier.
+Finally, you'll add to the page a function that validates the authentication callback in MedusaGo and creates or retrieves the customer account. It will use the functions added earlier.
 
 Add in the place of the new `TODO` the `validateCallback` function that runs when the page first loads to validate the authentication:
 
 export const validateReactHighlights = [
-  ["2", "sendCallback", "Validate the callback in Medusa and retrieve the authentication token"],
+  ["2", "sendCallback", "Validate the callback in MedusaGo and retrieve the authentication token"],
   ["6", "shouldCreateCustomer", "Check if the decoded token has an `actor_id` property to decide whether a customer needs to be created"],
   ["9", "createCustomer", "Create a customer if the decoded token doesn't have `actor_id`"],
   ["11", "refreshToken", "Fetch a new token for the created customer"],
@@ -392,7 +390,7 @@ The `validateCallback` function uses the functions added earlier to implement th
 2. Decode the token to check if it has an `actor_id` property.
   - If the property exists, the customer is already registered. The authentication token can be used for subsequent authenticated requests.
   - If the property doesn't exist, this is the first time the customer is authenticating with the third-party service. So:
-      1. Create a customer. The `user_metadata` in the decoded token will hold the customer's information in the third-party provider, such as their `email`. You can use this value as the customer's email in Medusa.
+      1. Create a customer. The `user_metadata` in the decoded token will hold the customer's information in the third-party provider, such as their `email`. You can use this value as the customer's email in MedusaGo.
       2. Refetch the customer's authentication token.
       3. Use the token for subsequent authenticated requests.
 3. Retrieve the customer's details as an example of testing authentication.
@@ -539,7 +537,6 @@ const queryParams = new URLSearchParams(window.location.search)
 const code = queryParams.get("code")
 const state = queryParams.get("state")
 
-
 const sendCallback = async () => {
   let token = ""
 
@@ -601,7 +598,6 @@ const validateCallback = async () => {
 In this section, you'll find a general overview of the third-party login flow in the storefront. This is useful if you're not using the JS SDK or want to understand the flow better.
 
 If you already set up the Auth Module Provider in your MedusaGo application, you can log in a customer with a third-party service, such as Google or GitHub, using the following flow:
-
 
 1. Authenticate the customer with the [Authenticate Customer API route](!api!/store/auth). It may return:
     - A URL in a `location` property to authenticate with a third-party service, such as Google. When you receive this property, redirect to the returned location.

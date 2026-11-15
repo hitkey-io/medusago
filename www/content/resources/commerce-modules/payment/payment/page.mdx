@@ -24,7 +24,6 @@ When a payment is captured, a capture, represented by the Capture data model, is
 
 The payment can also be captured incrementally, each time a capture record is created for that amount.
 
-
 ---
 
 ## Refund Payments
@@ -33,14 +32,13 @@ When a payment is refunded, a refund, represented by the Refund data model, is c
 
 A payment can be refunded multiple times, and each time a refund record is created.
 
-
 ---
 
 ## data Property
 
 Payment providers may need additional data to process the payment later. For example, the ID of the associated payment in the third-party provider.
 
-The `Payment` data model has a `data` property used to store that data. The first time it's set is when the [payment provider in Medusa](../payment-provider/page.mdx) authorizes the payment.
+The `Payment` data model has a `data` property used to store that data. The first time it's set is when the [payment provider in MedusaGo](../payment-provider/page.mdx) authorizes the payment.
 
 Then, the `data` property is passed to the Medusa payment provider when the payment is captured or refunded, allowing the payment provider to utilize the data to process the payment with the third-party provider.
 

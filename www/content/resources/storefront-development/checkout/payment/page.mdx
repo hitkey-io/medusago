@@ -22,7 +22,6 @@ In this guide, you'll learn how to implement the last step of the checkout flow,
 
 The payment step requires implementing the following flow:
 
-
 1. Retrieve the payment providers using the [List Payment Providers API route](!api!/store/payment-providers).
 2. Customer chooses the payment provider to use.
 3. If the cart doesn't have an associated payment collection, create a payment collection for it using the [Create Payment Collection API route](!api!/store/payment-collections).
@@ -280,12 +279,6 @@ In the `Fetch API` example, the `handlePayment` function implements this flow by
 
 ## Update Payment Session Client Data
 
-<Note>
-
-The Update Payment Session API route is available since Medusa [v2.22.1](https://github.com/medusajs/medusa/releases/tag/v2.22.1).
-
-</Note>
-
 Some payment providers' checkout components return details that the provider needs to authorize the payment. To pass these details to the payment session, use the JS SDK's `updatePaymentSession` method, which sends a request to the [Update Payment Session API route](!api!/store/payment-collections):
 
 ```ts
@@ -330,7 +323,7 @@ In those cases, you can either:
 
 - Make sure the payment session is only initialized when the cart has a total greater than `0`.
 - Use payment providers like the Manual System Payment Provider, which doesn't create a payment session with a third-party provider.
-    - The Manual System Payment Provider is available by default in Medusa and can be used to handle payments without a third-party provider. It allows you to mark the order as paid without requiring any additional actions from the customer.
+    - The Manual System Payment Provider is available by default in MedusaGo and can be used to handle payments without a third-party provider. It allows you to mark the order as paid without requiring any additional actions from the customer.
     - Make sure to configure the Manual System Payment Provider in your store's region. Learn more in the [Manage Region](!user-guide!/settings/regions#edit-region-details) user guide.
 
 ---

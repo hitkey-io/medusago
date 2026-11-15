@@ -220,7 +220,6 @@ When the promotion is applied to a cart item or a shipping method (in other word
 
 The `ApplicationMethod` data model has a collection of PromotionRule records to restrict which items or shipping methods the promotion applies to. The `target_rules` property in the `ApplicationMethod` represents this relation.
 
-
 In this example, the promotion is only applied to product variants in the cart that have the SKU `SHIRT`.
 
 <Note title="Warning" type="warning">
@@ -237,7 +236,6 @@ When the promotion’s type is `buyget`, you must specify the “buy X” condit
 
 The application method has a collection of `PromotionRule` items to define the “buy X” rule. The `buy_rules` property in the `ApplicationMethod` represents this relation.
 
-
 In this example, the cart must have two product variants with the SKU `SHIRT` for the promotion to be applied.
 
 <Note title="Warning" type="warning">
@@ -246,7 +244,7 @@ Like target rules, a buy rule's `attribute` must be prefixed based on the `targe
 
 </Note>
 
-A `buyget` promotion only discounts a matching "Get Y" item that is already in the cart. It doesn't add the free product to the cart automatically. If the target item isn't in the cart, Medusa doesn't apply the promotion. This is true whether the promotion is automatic or the customer applies it with a code.
+A `buyget` promotion only discounts a matching "Get Y" item that is already in the cart. It doesn't add the free product to the cart automatically. If the target item isn't in the cart, MedusaGo doesn't apply the promotion. This is true whether the promotion is automatic or the customer applies it with a code.
 
 ### How Items are Selected for Buy X Get Y Promotions
 
@@ -300,12 +298,6 @@ This condition is applied on the quantity of every applicable item in the cart. 
 ```
 
 ### Cart Level Restriction
-
-<Note>
-
-The `once` allocation type is available from [Medusa v2.11.0](https://github.com/medusajs/medusa/releases/tag/v2.11.0).
-
-</Note>
 
 When the `allocation` property in the `ApplicationMethod` is set to `once`, you must set the `max_quantity` property of `ApplicationMethod`. It limits how many items in total the promotion is applied to.
 

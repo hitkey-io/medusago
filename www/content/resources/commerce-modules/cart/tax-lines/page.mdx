@@ -17,7 +17,6 @@ In this document, you’ll learn about tax lines in a cart and how to retrieve t
 
 A tax line indicates the tax rate of a line item or a shipping method. The LineItemTaxLine data model represents a line item’s tax line, and the ShippingMethodTaxLine data model represents a shipping method’s tax line.
 
-
 ---
 
 ## Tax Inclusivity
@@ -33,7 +32,6 @@ So, instead of calculating the tax rate and adding it to the item/method’s sub
 The following diagram is a simplified showcase of how a subtotal is calculated from the taxes perspective.
 
 </Note>
-
 
 For example, if a line item's amount is `5000`, the tax rate is `10`, and tax inclusivity is enabled, the tax amount is 10% of `5000`, which is `500`, making the unit price of the line item `4500`.
 
@@ -52,11 +50,11 @@ Whether Medusa recalculates the tax lines depends on the `automatic_taxes` setti
 
 Regardless of the `automatic_taxes` setting, Medusa only calculates tax lines once the cart's shipping address has a country code. Until you set the shipping address's country, the cart's line items and shipping methods have no tax lines.
 
-Medusa determines the tax rates from the country in the cart's shipping address, not from the list of countries in the cart's [region](../../region/page.mdx). So, a region with multiple countries doesn't have a default country for tax calculation. Medusa calculates each customer's taxes based on the country they set in their shipping address.
+Medusa determines the tax rates from the country in the cart's shipping address, not from the list of countries in the cart's [region](../../region/page.mdx). So, a region with multiple countries doesn't have a default country for tax calculation. MedusaGo calculates each customer's taxes based on the country they set in their shipping address.
 
 <Note>
 
-If the cart's region has only one country, Medusa sets that country as the cart's shipping address country when creating the cart. So, Medusa can calculate tax lines without the customer setting their address. For a region with multiple countries, the customer must set their shipping address's country before Medusa calculates tax lines.
+If the cart's region has only one country, Medusa sets that country as the cart's shipping address country when creating the cart. So, Medusa can calculate tax lines without the customer setting their address. For a region with multiple countries, the customer must set their shipping address's country before MedusaGo calculates tax lines.
 
 </Note>
 
@@ -84,7 +82,7 @@ The following table explains how each cart operation affects the cart's tax line
       </Table.Cell>
       <Table.Cell>
 
-      Medusa calculates the tax lines of the new item.
+      MedusaGo calculates the tax lines of the new item.
 
       </Table.Cell>
     </Table.Row>
@@ -96,7 +94,7 @@ The following table explains how each cart operation affects the cart's tax line
       </Table.Cell>
       <Table.Cell>
 
-      Medusa calculates the tax lines of the new shipping method.
+      MedusaGo calculates the tax lines of the new shipping method.
 
       </Table.Cell>
     </Table.Row>
@@ -120,7 +118,7 @@ The following table explains how each cart operation affects the cart's tax line
       </Table.Cell>
       <Table.Cell>
 
-      Medusa doesn't recalculate tax lines. Instead, it derives the new tax amounts from the item's existing tax rates.
+      MedusaGo doesn't recalculate tax lines. Instead, it derives the new tax amounts from the item's existing tax rates.
 
       </Table.Cell>
     </Table.Row>
@@ -132,7 +130,7 @@ The following table explains how each cart operation affects the cart's tax line
       </Table.Cell>
       <Table.Cell>
 
-      Medusa doesn't recalculate the tax lines of the cart's other items.
+      MedusaGo doesn't recalculate the tax lines of the cart's other items.
 
       </Table.Cell>
     </Table.Row>

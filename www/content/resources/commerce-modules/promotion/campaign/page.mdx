@@ -18,7 +18,6 @@ A Campaign groups [promotions](../concepts/page.mdx#what-is-a-promotion) under t
 
 Use campaigns to group promotions that share the same time frame or target audience, and to limit promotion usage.
 
-
 ---
 
 ## Limit Promotion Usage with Campaign Budgets
@@ -38,19 +37,12 @@ There are two types of global budgets:
 - `usage`: The number of times a promotion can be used.
     - For example, if the usage limit is `10`, customers can use the promotion only 10 times. After that, it can no longer be applied.
 
-
 Global budgets track usage and limits through the following properties of the `CampaignBudget` data model:
 
 - `limit`: The maximum amount or number of uses allowed for the promotion.
 - `used`: The current amount spent or number of times the promotion has been used.
 
 ### Attribute-based Budgets
-
-<Note>
-
-Attribute-based budgets were introduced in [Medusa v2.11.0](https://github.com/medusajs/medusa/releases/tag/v2.11.0).
-
-</Note>
 
 An attribute-based budget limits promotion usage based on a cart attribute. Use these budget types to have granular control over how many times a promotion can be used based on specific attributes.
 
@@ -73,7 +65,6 @@ The `CampaignBudgetUsage` data model tracks the usage of attribute-based budgets
 2. `used`: The number of times the promotion has been used for that attribute value.
 
 For example, if the attribute is `customer_id`, a new `CampaignBudgetUsage` record is created for each customer that uses the promotion to track their individual usage. Once a customer exceeds the limit set in the `CampaignBudget`, they can no longer use the promotion.
-
 
 ---
 

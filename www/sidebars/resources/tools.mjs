@@ -20,8 +20,8 @@ export const toolsSidebar = [
       {
         type: "sidebar",
         sidebar_id: "medusa-cli",
-        title: "Medusa CLI",
-        childSidebarTitle: "Medusa CLI Reference",
+        title: "MedusaGo CLI",
+        childSidebarTitle: "MedusaGo CLI Reference",
         initialOpen: true,
         children: [
           {

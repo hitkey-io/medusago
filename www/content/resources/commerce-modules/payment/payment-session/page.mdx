@@ -12,16 +12,15 @@ A payment session, represented by the PaymentSession data model, is a payment am
 
 A payment collection can have multiple payment sessions. Using this feature, you can implement payment in installments or payments using multiple providers.
 
-
 ---
 
 ## data Property
 
 Payment providers may need additional data to process the payment later. For example, the ID of the session in the third-party provider.
 
-The `PaymentSession` data model has a `data` property used to store that data. It's set by the [payment provider in Medusa](../payment-provider/page.mdx) when the payment is initialized.
+The `PaymentSession` data model has a `data` property used to store that data. It's set by the [payment provider in MedusaGo](../payment-provider/page.mdx) when the payment is initialized.
 
-Then, when the payment session is authorized, the `data` property is used by the payment provider in Medusa to process the payment with the third-party provider.
+Then, when the payment session is authorized, the `data` property is used by the payment provider in MedusaGo to process the payment with the third-party provider.
 
 <Note title="Tip">
 

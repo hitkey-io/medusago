@@ -176,8 +176,6 @@ Read-only links are used to query data across modules, but the relations aren't 
   </Table.Body>
 </Table>
 
-
-
 ---
 
 ## Customer Module
@@ -190,25 +188,17 @@ Medusa defines a read-only link between the `ShippingMethod` data model and the 
 
 This link allows you to retrieve the shipping option that a shipping method was created from.
 
-<Note>
-
-This read-only link was added in [Medusa v2.10.0](https://github.com/medusajs/medusa/releases/tag/v2.10.0)
-
-</Note>
-
 ## Order Module
 
 The [Order Module](../../order/page.mdx) provides order-management features.
 
 Medusa defines a link between the `Cart` and `Order` data models. The cart is linked to the order created once the cart is completed.
 
-
 ## Payment Module
 
 The [Payment Module](../../payment/page.mdx) handles payment processing and management.
 
 Medusa defines a link between the `Cart` and `PaymentCollection` data models. A cart has a payment collection which holds all the authorized payment sessions and payments made related to the cart.
-
 
 ## Product Module
 
@@ -222,7 +212,6 @@ Medusa defines read-only links between:
 The [Promotion Module](../../promotion/page.mdx) provides discount features.
 
 Medusa defines a link between the `Cart` and `Promotion` data models. This indicates the promotions applied on a cart.
-
 
 Medusa also defines a read-only link between the `LineItemAdjustment` and `Promotion` data models. This means you can retrieve the details of the promotion applied on a line item, but you don't manage the links in a pivot table in the database. The promotion of a line item is determined by the `promotion_id` property of the `LineItemAdjustment` data model.
 

@@ -43,13 +43,12 @@ Using inventory kits, you can implement use cases like:
 
 Consider your store sells bicycles that consist of a frame, wheels, and seats, and you want to manage the inventory of these parts separately.
 
-To implement this in Medusa, you can:
+To implement this in MedusaGo, you can:
 
 - Create inventory items for each of the different parts.
 - For each bicycle product, add a variant whose inventory kit consists of the inventory items of each of the parts.
 
 Then, whenever a customer purchases a bicycle, the inventory of each part is updated accordingly. You can also use the `required_quantity` of the variant's inventory items to set how much quantity is consumed of the part's inventory when a bicycle is sold. For example, the bicycle's wheels require 2 wheels inventory items to be sold when a bicycle is sold.
-
 
 ## Bundled Products
 
@@ -60,7 +59,6 @@ While inventory kits support bundled products, some features like custom pricing
 </Note>
 
 Consider you have three products: shirt, pants, and shoes. You sell those products separately, but you also want to offer them as a bundle.
-
 
 You can do that by creating a product, where each variant re-uses the inventory items of each of the shirt, pants, and shoes products.
 

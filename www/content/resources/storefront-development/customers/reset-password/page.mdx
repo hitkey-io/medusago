@@ -301,9 +301,3 @@ In this example, you receive the `token` and `email` from the page's query param
 Then, when the form that has the password field is submitted, you send a request to the [Reset Password API route](!api!/store/auth), passing it the token, email, and new password.
 
 Notice that the JS SDK passes the token in the `Authorization: Bearer` header. So, if you're implementing this flow without using the JS SDK, make sure to pass the token accordingly.
-
-<Note>
-
-Before [Medusa v2.6](https://github.com/medusajs/medusa/releases/tag/v2.6), you passed the token as a query parameter. Now, you must pass it in the `Authorization: Bearer` header.
-
-</Note>

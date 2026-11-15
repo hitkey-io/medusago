@@ -26,7 +26,6 @@ This authentication flow doesn't require validation with third-party services.
 
 The steps are:
 
-
 1. Register the user with the [Register Route](#register-route).
 2. Use the authentication token to create the user with their respective API route.
     - For example, for customers you would use the [Create Customer API route](!api!/store/customers).
@@ -53,7 +52,6 @@ This authentication flow authenticates the user with a third-party service, such
 
 It requires the following steps:
 
-
 1. Authenticate the user with the [Auth Route](#login-route).
 2. The auth route returns a URL to authenticate with third-party service, such as login with Google. The frontend (such as a storefront), when it receives a `location` property in the response, must redirect to the returned location.
 3. Once the authentication with the third-party service finishes, it redirects back to the frontend with a `code` query parameter. So, make sure your third-party service is configured to redirect to your frontend page after successful authentication.
@@ -66,7 +64,6 @@ It requires the following steps:
     - For example, for customers you would use the [Create Customer API route](!api!/store/customers).
     - For admin users, you accept an invite using the [Accept Invite API route](!api!/admin/invites)
 8. The frontend sends a request to the [Refresh Token Route](#refresh-token-route) to retrieve a new token with the user information populated.
-
 
 ---
 
@@ -121,7 +118,7 @@ Use that token in the header of subsequent requests to send authenticated reques
 
 ### Handling Existing Identities
 
-An auth identity with the same email may already exist in Medusa. This can happen if:
+An auth identity with the same email may already exist in MedusaGo. This can happen if:
 
 - Another actor type is using that email. For example, an admin user is trying to register as a customer.
 - The same email belongs to a record of the same actor type. For example, another customer has the same email.
@@ -317,12 +314,6 @@ To reset a user's password:
 
 ### Generate Reset Password Token Route
 
-<Note>
-
-This route is available since [Medusa v2.16.0](https://github.com/medusajs/medusa/releases/tag/v2.16.0). On earlier versions, the route does not exist.
-
-</Note>
-
 The MedusaGo application defines an API route at `/auth/{actor_type}/{auth_provider}/reset-password` that emits the `auth.password_reset` event, passing the token in the payload.
 
 ```bash
@@ -384,12 +375,6 @@ Its path parameters are:
 - `{provider}`: the auth provider to handle the authentication. For example, `emailpass`.
 
 #### Pass Token in Authorization Header
-
-<Note>
-
-Before [Medusa v2.6](https://github.com/medusajs/medusa/releases/tag/v2.6), you passed the token as a query parameter. Now, you must pass it in the `Authorization` header.
-
-</Note>
 
 In the request's authorization header, you must pass the token generated using the [Generate Reset Password Token route](#generate-reset-password-token-route). You pass it as a bearer token.
 

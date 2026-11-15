@@ -67,6 +67,8 @@ const ENTERPRISE = [/^settings\/roles/, /^settings\/policies/, /^enterprise(\/|$
 // Targeted edits for features MedusaGo does not include (RBAC, SSO). Each entry:
 // [page regex, line regex] drops the matching paragraph, [page, regex, replacement] replaces text.
 const EDITS = [
+  [/^promotions\/create$/, /If this field isn.t visible in your admin, contact your technical team to \[update your Medusa version\]/],
+  [/^settings\/search$/, /Search indexes are available from [^\n]*\n/, "If you don’t see the Search settings in your Medusa Admin, ask your technical team to set up search for your store.\n"],
   [/^settings\/translations$/, /^With only the `translation:read` policy/],
   [/^settings\/users\/invites$/, /^4\. If your store uses the role-based access control/],
   [/^settings\/users\/invites$/, /^The \*\*Roles\*\* field only appears if your store uses the RBAC feature/],
@@ -87,24 +89,7 @@ for (const i of fs.existsSync(imagesFile) ? JSON.parse(fs.readFileSync(imagesFil
   else if (i.status === "done") same.status = "done"
 }
 
-// MedusaGo terminology. Applied to prose only (never inside code fences). "Medusa"
-// stays where it names the upstream project, its API, the Admin or the UI kit.
-const TERMS = [
-  [/`medusa-config\.(ts|js)`/g, "`medusa-config.go`"],
-  [/\bcreate-medusa-app\b(?!-errors)/g, "create-medusago-app"],
-  [/\bMedusa (application|applications|server|backend|project|projects|instance|instances|installation)\b/gi, "MedusaGo $1"],
-]
-function applyTerms(text) {
-  let inFence = false
-  return text
-    .split("\n")
-    .map((line) => {
-      if (/^\s*```/.test(line)) inFence = !inFence
-      if (inFence || /^\s*```/.test(line)) return line
-      return TERMS.reduce((l, [re, to]) => l.replace(re, to), line)
-    })
-    .join("\n")
-}
+import { applyTerms, dropVersionNotes } from "./lib/polish.mjs"
 
 // A page that is skipped must not linger from an earlier import.
 const removeStale = (dst) => {
@@ -267,6 +252,11 @@ for (const page of pages) {
   text = text.replace(/<Note[^>]*title="Cloud [Uu]ser\??"[^>]*>[\s\S]*?<\/Note>\n*/g, "")
   text = text.replace("such as [Medusa Search](!cloud!/search) or PostgreSQL", "such as PostgreSQL")
   text = text.split("\n").filter((l) => !/available to Cloud users|\(!cloud!/.test(l)).join("\n")
+  if (section === "user-guide") {
+    // the translations prerequisites list a Medusa release
+    text = removeObjects(text, /link: "https:\/\/github\.com\/medusajs\/medusa\/releases\/tag\/v2\.13\.0"/)
+    text = dropVersionNotes(text)
+  }
   text = applyTerms(text)
   // Backend start commands. Admin extensions (src/admin) are compiled by the build, there is no dev server for them.
   const startBackend = (_, label) => "```bash" + (label ? ` badgeLabel="MedusaGo Application" badgeColor="green"` : "") + "\ngo run . develop\n```"

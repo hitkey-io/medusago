@@ -19,12 +19,6 @@ export const metadata = {
 
 In this guide, you'll learn how to set up and configure your products based on their shipping and inventory requirements, their type, how you want to sell them, or your commerce ecosystem.
 
-<Note>
-
-The concepts in this guide are applicable starting from [Medusa v2.5.1](https://github.com/medusajs/medusa/releases/tag/v2.5.1).
-
-</Note>
-
 ## Scenario
 
 Businesses can have different selling requirements. They may sell:
@@ -33,7 +27,7 @@ Businesses can have different selling requirements. They may sell:
 2. Items that don't require shipping or inventory management, such as selling digital products, services, or booking appointments.
 3. Items whose inventory is managed by an external system, such as an ERP.
 
-Medusa supports these different selling requirements by allowing you to configure shipping and inventory requirements for products and their variants.
+MedusaGo supports these different selling requirements by allowing you to configure shipping and inventory requirements for products and their variants.
 
 This guide explains how these configurations work, then provides examples of setting up different use cases.
 
@@ -45,7 +39,6 @@ This guide explains how these configurations work, then provides examples of set
 
 The MedusaGo application defines a link between the `Product` data model and the [ShippingProfile](../../fulfillment/concepts/page.mdx#shipping-profile) data model in the [Fulfillment Module](../../fulfillment/page.mdx), allowing you to associate a product with a shipping profile.
 
-
 When a product is associated with a shipping profile, its variants require shipping and fulfillment when purchased. This is useful for physical products or digital products that require custom fulfillment.
 
 If a product doesn't have an associated shipping profile, its variants don't require shipping and fulfillment when purchased. This is useful for digital products, for example, that don't require shipping.
@@ -55,7 +48,6 @@ If a product doesn't have an associated shipping profile, its variants don't req
 A product variant whose inventory is managed by Medusa (its `manage_inventory` property is enabled) has an [inventory item](../../inventory/concepts/page.mdx#inventoryitem).
 
 The inventory item has a `requires_shipping` property that can be used to override the variant's shipping requirement. This is useful if the product has an associated shipping profile but you want to disable shipping for a specific variant, or vice versa.
-
 
 <Note title="Tip">
 
@@ -67,7 +59,6 @@ When a product variant is purchased, the MedusaGo application decides whether th
 
 1. If the product variant has an inventory item, the MedusaGo application uses the inventory item's `requires_shipping` property to determine if the item requires shipping.
 2. If the product variant doesn't have an inventory item, the MedusaGo application checks whether the product has an associated shipping profile to determine if the item requires shipping.
-
 
 ### Shipping Requirements vs Shipping Options
 

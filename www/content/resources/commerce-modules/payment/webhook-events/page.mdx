@@ -51,7 +51,6 @@ Payment providers have a similar getWebhookActionAndData method to process the w
 
 </Note>
 
-
 If the `getWebhookActionAndData` method returns an `authorized` or `captured` action, the MedusaGo application will perform one of the following actions:
 
 <Note>
@@ -60,6 +59,6 @@ View the full flow of the webhook event processing in the processPaymentWorkflow
 
 </Note>
 
-- If the method returns an `authorized` action, Medusa will set the associated payment session to `authorized`.
-- If the method returns a `captured` action, Medusa will set the associated payment session to `captured`.
-- In either cases, if the cart associated with the payment session is not completed yet, Medusa will complete the cart.
+- If the method returns an `authorized` action, MedusaGo will set the associated payment session to `authorized`.
+- If the method returns a `captured` action, MedusaGo will set the associated payment session to `captured`.
+- In either cases, if the cart associated with the payment session is not completed yet, MedusaGo will complete the cart.

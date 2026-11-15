@@ -16,7 +16,7 @@ export const metadata = {
 
 # {metadata.title}
 
-In this guide, you'll learn about the lifecycle of a reservation in Medusa: when Medusa creates a reservation, how a reservation affects available stock, and when Medusa releases or deletes a reservation.
+In this guide, you'll learn about the lifecycle of a reservation in MedusaGo: when MedusaGo creates a reservation, how a reservation affects available stock, and when Medusa releases or deletes a reservation.
 
 ## What is a Reservation?
 
@@ -31,7 +31,7 @@ So, the available quantity of an inventory item in a location is its `stocked_qu
 
 <Note>
 
-Medusa only manages reservations for inventory items whose variants have `manage_inventory` enabled. Variants with `manage_inventory` disabled don't have reservations, and Medusa doesn't track their stock.
+Medusa only manages reservations for inventory items whose variants have `manage_inventory` enabled. Variants with `manage_inventory` disabled don't have reservations, and MedusaGo doesn't track their stock.
 
 </Note>
 
@@ -41,7 +41,7 @@ Medusa only manages reservations for inventory items whose variants have `manage
 
 ### Order Placement
 
-Medusa creates a reservation for each of the order's inventory items when an order is placed by completing a cart. This is implemented in the completeCartWorkflow.
+MedusaGo creates a reservation for each of the order's inventory items when an order is placed by completing a cart. This is implemented in the completeCartWorkflow.
 
 The reservation is created in the location associated with the order's sales channel, and its quantity is the ordered quantity.
 
@@ -95,7 +95,7 @@ You can also delete reservations manually, such as when a custom reservation is 
 
 A variant can be linked to multiple inventory items, forming an [inventory kit](../inventory-kit/page.mdx). This is useful for use cases like multi-part or bundled products.
 
-When a variant has an inventory kit, Medusa creates a reservation for each of the variant's inventory items. The reserved quantity of each inventory item is the ordered quantity multiplied by the inventory item's `required_quantity`.
+When a variant has an inventory kit, MedusaGo creates a reservation for each of the variant's inventory items. The reserved quantity of each inventory item is the ordered quantity multiplied by the inventory item's `required_quantity`.
 
 For example, if a bicycle variant requires two wheel inventory items, ordering one bicycle reserves two units of the wheel inventory item.
 

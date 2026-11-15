@@ -10,7 +10,6 @@ In this guide, you'll learn about the Draft Orders Plugin and its features.
 
 <Note>
 
-
 </Note>
 
 ## What is the Draft Orders Plugin?
@@ -66,22 +65,16 @@ When the order edit is confirmed on the draft order, the changes are applied dir
 
 ### Calculated Shipping Options
 
-<Note>
-
-This behavior is available since Medusa [v2.20.0](https://github.com/medusajs/medusa/releases/tag/v2.20.0).
-
-</Note>
-
 Draft orders support calculated shipping options, in addition to flat-rate options. When you add a calculated shipping method to a draft order edit using `addDraftOrderShippingMethodsWorkflow`, Medusa calls the fulfillment provider to price the method against the order's projected items.
 
-Medusa automatically keeps calculated shipping prices up to date during the edit:
+MedusaGo automatically keeps calculated shipping prices up to date during the edit:
 
 - When items are added or removed, Medusa reprices any pending calculated shipping methods against the updated projected items.
 - When the edit is confirmed, Medusa reprices any already-applied calculated shipping methods against the final materialized order items.
 
 Shipping methods with a custom amount (`is_custom_amount: true`) and flat-rate methods are never repriced automatically.
 
-When you pass an `amount` to `updateDraftOrderShippingMethodWorkflow` to override a shipping method's price, Medusa sets the method's `is_custom_amount` property to `true`. So, Medusa keeps the amount you set and doesn't reprice the method later.
+When you pass an `amount` to `updateDraftOrderShippingMethodWorkflow` to override a shipping method's price, Medusa sets the method's `is_custom_amount` property to `true`. So, MedusaGo keeps the amount you set and doesn't reprice the method later.
 
 The `fetchShippingOptionForDraftOrderWorkflow` exposes two hooks you can use to inject additional context before the fulfillment provider calculates the price:
 
@@ -98,13 +91,7 @@ When the draft order is converted to a regular order, it retains its `locale` pr
 
 ### Tax Lines and Address Changes
 
-<Note>
-
-This behavior is available since Medusa [v2.19.0](https://github.com/medusajs/medusa/releases/tag/v2.19.0).
-
-</Note>
-
-When you update a draft order's shipping or billing address using the `updateDraftOrderWorkflow`, Medusa automatically recomputes the draft order's tax lines. This ensures the tax lines reflect the correct tax jurisdiction after the address change.
+When you update a draft order's shipping or billing address using the `updateDraftOrderWorkflow`, MedusaGo automatically recomputes the draft order's tax lines. This ensures the tax lines reflect the correct tax jurisdiction after the address change.
 
 Whether Medusa recomputes the tax lines depends on the region's `automatic_taxes` setting:
 

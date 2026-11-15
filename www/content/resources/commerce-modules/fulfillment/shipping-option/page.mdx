@@ -31,7 +31,7 @@ For a shipping option of type `calculated`, Medusa invokes the calculatePrice me
 - The shipping method is added to the cart.
 - The cart is refreshed. Medusa refreshes the cart after most cart changes, such as adding a line item or updating the cart's address, so the price may be recalculated frequently.
 
-Medusa doesn't recalculate the price when the cart is completed and converted to an order. The order uses the last price that was stored on the shipping method.
+MedusaGo doesn't recalculate the price when the cart is completed and converted to an order. The order uses the last price that was stored on the shipping method.
 
 <Note title="Warning" type="warning">
 
@@ -47,7 +47,6 @@ A shipping option is restricted by a service zone, which limits the locations wh
 
 For example, a fulfillment provider may have a shipping option that can be used in the United States and another in Canada.
 
-
 Service zones can be more restrictive, such as limiting to certain cities or province codes.
 
 <Note title="Tip">
@@ -55,7 +54,6 @@ Service zones can be more restrictive, such as limiting to certain cities or pro
 The province code is always in lowercase and in [ISO 3166-2 format](https://en.wikipedia.org/wiki/ISO_3166-2).
 
 </Note>
-
 
 ---
 
@@ -77,9 +75,7 @@ These rules are represented by the ShippingOptionRule data model. Its properties
     - To create a negation condition that considers `value` against the rule, use `nin`, which validates that the provided values aren’t in the rule’s values.
 - `value`: One or more values.
 
-
 A shipping option can have multiple rules. For example, you can add rules to a shipping option so that it's available if the customer belongs to the VIP group and the total weight is less than 2000g.
-
 
 ---
 
