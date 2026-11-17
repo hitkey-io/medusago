@@ -244,7 +244,8 @@ func isFieldAliasNestedRelationHelper(nestedKey string, entry, keyConfig *typesj
 		return false
 	}
 	for _, c := range configs {
-		if len(c.Relationships) == 0 {
+		// relationships?.every(...): undefined never matches, [] always does.
+		if c.Relationships == nil {
 			continue
 		}
 		all := true
@@ -257,10 +258,20 @@ func isFieldAliasNestedRelationHelper(nestedKey string, entry, keyConfig *typesj
 		if !all {
 			continue
 		}
+		relationsAlias := map[string]bool{}
+		for _, rel := range c.Relationships {
+			relationsAlias[rel.Alias] = true
+		}
+		if len(relationsAlias) == 0 {
+			return false
+		}
 		for _, ext := range c.Extends {
-			if _, ok := ext.FieldAlias[nestedKey]; ok {
-				return true
+			alias, ok := ext.FieldAlias[nestedKey]
+			if !ok {
+				continue
 			}
+			segments := strings.Split(alias.Path, ".")
+			return !relationsAlias[segments[len(segments)-1]]
 		}
 		return false
 	}
