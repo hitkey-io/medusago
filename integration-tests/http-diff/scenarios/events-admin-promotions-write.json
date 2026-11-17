@@ -84,7 +84,7 @@
   {"name": "events__update_automatic_limit", "method": "GET", "path": "/events-capture"},
   {"name": "events_reset__update_automatic_limit", "method": "POST", "path": "/events-capture", "body": {}},
   {"name": "rules_batch", "method": "POST", "bearer": "login", "path": "/admin/promotions/{{create.promotion.id}}/rules/batch", "body": {"create": [{"attribute": "currency_code", "operator": "eq", "values": "eur", "description": "Euro only"}], "update": [{"id": "{{get.promotion.rules.0.id}}", "values": ["g1", "g2"]}]}},
-  {"name": "events__rules_batch", "method": "GET", "path": "/events-capture"},
+  {"name": "events__rules_batch", "method": "GET", "path": "/events-capture", "sortby": {"events": "name"}},
   {"name": "events_reset__rules_batch", "method": "POST", "path": "/events-capture", "body": {}},
   {"name": "rules_batch_update_missing", "method": "POST", "bearer": "login", "path": "/admin/promotions/{{create.promotion.id}}/rules/batch", "body": {"update": [{"id": "prorul_missing", "values": "x"}]}},
   {"name": "events__rules_batch_update_missing", "method": "GET", "path": "/events-capture"},
