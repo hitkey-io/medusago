@@ -3,7 +3,9 @@ package query
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
+	"sync"
 
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	typesjoiner "github.com/hitkey-io/medusago/packages/core/types/src/joiner"
@@ -140,6 +142,8 @@ type IndexService interface {
 	QueryIndex(ctx context.Context, in IndexQueryInput) (data []any, metadata *dal.Record, err error)
 }
 
+var warnIndexDeprecation sync.Once
+
 // SetIndexModule registers the index module (createQuery's indexModule).
 func (q *Query) SetIndexModule(index IndexService) { q.indexModule = index }
 
@@ -156,6 +160,10 @@ func (q *Query) index(ctx context.Context, in GraphInput, joinFilters *dal.Recor
 	if q.indexModule == nil {
 		return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "Index module is not loaded.")
 	}
+	// Query.#hasWarnedIndexDeprecation: warned once per process.
+	warnIndexDeprecation.Do(func() {
+		slog.Default().Warn(utilsmodulessdk.IndexModuleDeprecationMessage)
+	})
 	mainEntity := in.Entity
 	fields := []string{mainEntity + ".id"}
 	filters := dal.NewRecord()
