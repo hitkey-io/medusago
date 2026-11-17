@@ -7,7 +7,7 @@
       "Vary": "Origin"
     },
     "body": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5MzYxMzIsImV4cCI6MTc5NTAyMjUzMn0.YlSdZNx2EwClB-eu8OCiMqOZwDmodmeV28Ktd_HT3Ss"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5NDE5NzUsImV4cCI6MTc5NTAyODM3NX0.eU4A5nky9k-ba5CP7iJFBjpHHFaYJwttnRD-cqhXHk4"
     }
   },
   "modules": {
@@ -19,9 +19,6 @@
     },
     "body": {
       "modules": [
-        {
-          "key": "index"
-        },
         {
           "key": "cache"
         },
@@ -38,19 +35,19 @@
           "key": "stock_location"
         },
         {
-          "key": "product"
+          "key": "inventory"
         },
         {
-          "key": "inventory"
+          "key": "product"
         },
         {
           "key": "pricing"
         },
         {
-          "key": "promotion"
+          "key": "customer"
         },
         {
-          "key": "customer"
+          "key": "promotion"
         },
         {
           "key": "sales_channel"
@@ -59,16 +56,16 @@
           "key": "cart"
         },
         {
-          "key": "api_key"
-        },
-        {
           "key": "store"
         },
         {
-          "key": "order"
+          "key": "api_key"
         },
         {
           "key": "settings"
+        },
+        {
+          "key": "order"
         },
         {
           "key": "user"
@@ -80,28 +77,28 @@
           "key": "auth"
         },
         {
-          "key": "region"
+          "key": "file"
         },
         {
-          "key": "file"
+          "key": "region"
         },
         {
           "key": "currency"
         },
         {
-          "key": "tax"
-        },
-        {
           "key": "payment"
         },
         {
-          "key": "translation"
+          "key": "fulfillment"
+        },
+        {
+          "key": "tax"
         },
         {
           "key": "notification"
         },
         {
-          "key": "fulfillment"
+          "key": "translation"
         }
       ]
     }
@@ -114,7 +111,19 @@
       "Vary": "Origin"
     },
     "body": {
-      "translation_settings": {}
+      "translation_settings": {
+        "product": {
+          "id": "trset_01M7NE1VX481RQ73EG77Q7CEA0",
+          "fields": [
+            "title",
+            "subtitle",
+            "description",
+            "material"
+          ],
+          "inactive_fields": [],
+          "is_active": true
+        }
+      }
     }
   },
   "settings_variant": {
@@ -125,7 +134,17 @@
       "Vary": "Origin"
     },
     "body": {
-      "translation_settings": {}
+      "translation_settings": {
+        "product_variant": {
+          "id": "trset_01M7NE1VX4BT95FY1NQ42R24A7",
+          "fields": [
+            "title",
+            "material"
+          ],
+          "inactive_fields": [],
+          "is_active": true
+        }
+      }
     }
   },
   "settings_inactive": {
@@ -170,8 +189,29 @@
       "Vary": "Origin"
     },
     "body": {
-      "locales": [],
-      "count": 0,
+      "locales": [
+        {
+          "code": "ar-AE",
+          "name": "Arabic (United Arab Emirates)"
+        },
+        {
+          "code": "ar-EG",
+          "name": "Arabic (Egypt)"
+        },
+        {
+          "code": "ar-SA",
+          "name": "Arabic (Saudi Arabia)"
+        },
+        {
+          "code": "bg-BG",
+          "name": "Bulgarian (Bulgaria)"
+        },
+        {
+          "code": "bn-BD",
+          "name": "Bengali (Bangladesh)"
+        }
+      ],
+      "count": 52,
       "offset": 0,
       "limit": 5
     }
@@ -184,8 +224,24 @@
       "Vary": "Origin"
     },
     "body": {
-      "locales": [],
-      "count": 0,
+      "locales": [
+        {
+          "code": "zh-CN",
+          "name": "Chinese Simplified (China)",
+          "id": "loc_01M7NE1VAJV8QH8YKX57ZMY2W8"
+        },
+        {
+          "code": "vi-VN",
+          "name": "Vietnamese (Vietnam)",
+          "id": "loc_01M7NE1VAJ4GQ6B5TSAT976CN6"
+        },
+        {
+          "code": "uk-UA",
+          "name": "Ukrainian (Ukraine)",
+          "id": "loc_01M7NE1VAHX4AA7XN90QED942A"
+        }
+      ],
+      "count": 52,
       "offset": 2,
       "limit": 3
     }
@@ -198,8 +254,21 @@
       "Vary": "Origin"
     },
     "body": {
-      "locales": [],
-      "count": 0,
+      "locales": [
+        {
+          "code": "de-AT",
+          "name": "German (Austria)"
+        },
+        {
+          "code": "de-CH",
+          "name": "German (Switzerland)"
+        },
+        {
+          "code": "de-DE",
+          "name": "German (Germany)"
+        }
+      ],
+      "count": 3,
       "offset": 0,
       "limit": 200
     }
@@ -212,34 +281,47 @@
       "Vary": "Origin"
     },
     "body": {
-      "locales": [],
-      "count": 0,
+      "locales": [
+        {
+          "code": "da-DK",
+          "name": "Danish (Denmark)"
+        },
+        {
+          "code": "fr-FR",
+          "name": "French (France)"
+        }
+      ],
+      "count": 2,
       "offset": 0,
       "limit": 200
     }
   },
   "locale": {
-    "status": 404,
+    "status": 200,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "not_found",
-      "message": "Locale with code: fr-FR was not found"
+      "locale": {
+        "code": "fr-FR",
+        "name": "French (France)"
+      }
     }
   },
   "locale_fields": {
-    "status": 404,
+    "status": 200,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "not_found",
-      "message": "Locale with code: de-DE was not found"
+      "locale": {
+        "code": "de-DE",
+        "id": "loc_01M7NE1VAHPE5XA4BEMFXTS43X"
+      }
     }
   },
   "locale_missing": {
@@ -346,7 +428,7 @@
         "default_location_id": null,
         "metadata": null,
         "created_at": "2026-11-09T19:54:05.054Z",
-        "updated_at": "2026-11-17T17:22:12.262Z",
+        "updated_at": "2026-11-17T18:59:36.050Z",
         "supported_currencies": [
           {
             "id": "stocur_01M70XZZX0GYPBFZT50SNMMW4E",
@@ -399,20 +481,36 @@
         ],
         "supported_locales": [
           {
-            "id": "stloc_01M7N8FMN83C6W8BR6SYJR67ED",
+            "id": "stloc_01M7NE1ZFK4T25VCHCZEKZBTZS",
             "locale_code": "fr-FR",
             "store_id": "store_01M70XZZVZGMCRNBFVVWA8Q8A3",
-            "created_at": "2026-11-17T17:22:12.257Z",
-            "updated_at": "2026-11-17T17:22:12.257Z",
-            "deleted_at": null
+            "created_at": "2026-11-17T18:59:36.048Z",
+            "updated_at": "2026-11-17T18:59:36.048Z",
+            "deleted_at": null,
+            "locale": {
+              "id": "loc_01M7NE1VAH98HXTQM03K2138ZT",
+              "code": "fr-FR",
+              "name": "French (France)",
+              "created_at": "2026-11-17T18:59:31.794Z",
+              "updated_at": "2026-11-17T18:59:31.794Z",
+              "deleted_at": null
+            }
           },
           {
-            "id": "stloc_01M7N8FMN8WHRVHW9M530286BS",
+            "id": "stloc_01M7NE1ZFKVX075240FA5ARS95",
             "locale_code": "de-DE",
             "store_id": "store_01M70XZZVZGMCRNBFVVWA8Q8A3",
-            "created_at": "2026-11-17T17:22:12.257Z",
-            "updated_at": "2026-11-17T17:22:12.257Z",
-            "deleted_at": null
+            "created_at": "2026-11-17T18:59:36.048Z",
+            "updated_at": "2026-11-17T18:59:36.048Z",
+            "deleted_at": null,
+            "locale": {
+              "id": "loc_01M7NE1VAHPE5XA4BEMFXTS43X",
+              "code": "de-DE",
+              "name": "German (Germany)",
+              "created_at": "2026-11-17T18:59:31.794Z",
+              "updated_at": "2026-11-17T18:59:31.794Z",
+              "deleted_at": null
+            }
           }
         ]
       }
@@ -430,10 +528,18 @@
         "id": "store_01M70XZZVZGMCRNBFVVWA8Q8A3",
         "supported_locales": [
           {
-            "locale_code": "fr-FR"
+            "locale_code": "fr-FR",
+            "locale": {
+              "name": "French (France)",
+              "code": "fr-FR"
+            }
           },
           {
-            "locale_code": "de-DE"
+            "locale_code": "de-DE",
+            "locale": {
+              "name": "German (Germany)",
+              "code": "de-DE"
+            }
           }
         ]
       }
@@ -488,7 +594,6 @@
         }
       ],
       "count": 3,
-      "estimate_count": 3,
       "offset": 0,
       "limit": 50
     }
@@ -526,11 +631,14 @@
     "body": {
       "created": [
         {
-          "id": "trans_01M7N8FMRJB7B68JEWQTA3F1CS",
+          "id": "trans_01M7NE1ZGS5ZSBPX61359NR8JM",
           "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
           "reference": "product",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "title": "Chemise Lunaire",
+            "description": "Une chemise douce"
+          }
         }
       ],
       "updated": [],
@@ -551,11 +659,14 @@
     "body": {
       "created": [
         {
-          "id": "trans_01M7N8FMSAN877EA375R00QCN5",
+          "id": "trans_01M7NE1ZH5057SE2RMXATADHGS",
           "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
           "reference": "product",
           "locale_code": "de-DE",
-          "translations": {}
+          "translations": {
+            "title": "Mondhemd",
+            "subtitle": ""
+          }
         }
       ],
       "updated": [],
@@ -576,11 +687,14 @@
     "body": {
       "created": [
         {
-          "id": "trans_01M7N8FMT0TENMEF0ZCWAN5TB7",
+          "id": "trans_01M7NE1ZHGSECGDX5EQQ4KXYFV",
           "reference_id": "variant_01M70Y000G904MD1KJ0SDSRS44",
           "reference": "product_variant",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "title": "Petit",
+            "material": "null"
+          }
         }
       ],
       "updated": [],
@@ -601,11 +715,14 @@
     "body": {
       "created": [
         {
-          "id": "trans_01M7N8FMTQKCF2VCD9TQPTN3E1",
+          "id": "trans_01M7NE1ZHWWJ22G6VMCYZTBG2V",
           "reference_id": "pcat_01M70XZZYR1AEAYH942Q4KFQG5",
           "reference": "product_category",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "name": "Vetements",
+            "description": "Tout"
+          }
         }
       ],
       "updated": [],
@@ -626,7 +743,7 @@
     "body": {
       "created": [
         {
-          "id": "trans_01M7N8FMVEC904MEBSNP1F1P7V",
+          "id": "trans_01M7NE1ZJ96EDESGW2NBQBRSAT",
           "reference_id": "ship_fictional_01",
           "reference": "spaceship",
           "locale_code": "fr-FR",
@@ -687,35 +804,47 @@
     "body": {
       "translations": [
         {
-          "id": "trans_01M7N8FMRJB7B68JEWQTA3F1CS",
+          "id": "trans_01M7NE1ZGS5ZSBPX61359NR8JM",
           "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
           "reference": "product",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "title": "Chemise Lunaire",
+            "description": "Une chemise douce"
+          }
         },
         {
-          "id": "trans_01M7N8FMSAN877EA375R00QCN5",
+          "id": "trans_01M7NE1ZH5057SE2RMXATADHGS",
           "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
           "reference": "product",
           "locale_code": "de-DE",
-          "translations": {}
+          "translations": {
+            "title": "Mondhemd",
+            "subtitle": ""
+          }
         },
         {
-          "id": "trans_01M7N8FMT0TENMEF0ZCWAN5TB7",
+          "id": "trans_01M7NE1ZHGSECGDX5EQQ4KXYFV",
           "reference_id": "variant_01M70Y000G904MD1KJ0SDSRS44",
           "reference": "product_variant",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "title": "Petit",
+            "material": "null"
+          }
         },
         {
-          "id": "trans_01M7N8FMTQKCF2VCD9TQPTN3E1",
+          "id": "trans_01M7NE1ZHWWJ22G6VMCYZTBG2V",
           "reference_id": "pcat_01M70XZZYR1AEAYH942Q4KFQG5",
           "reference": "product_category",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "name": "Vetements",
+            "description": "Tout"
+          }
         },
         {
-          "id": "trans_01M7N8FMVEC904MEBSNP1F1P7V",
+          "id": "trans_01M7NE1ZJ96EDESGW2NBQBRSAT",
           "reference_id": "ship_fictional_01",
           "reference": "spaceship",
           "locale_code": "fr-FR",
@@ -737,34 +866,34 @@
     "body": {
       "translations": [
         {
-          "id": "trans_01M7N8FMRJB7B68JEWQTA3F1CS",
+          "id": "trans_01M7NE1ZGS5ZSBPX61359NR8JM",
           "locale_code": "fr-FR",
-          "translated_field_count": 0,
-          "created_at": "2026-11-17T17:22:12.371Z"
+          "translated_field_count": 2,
+          "created_at": "2026-11-17T18:59:36.089Z"
         },
         {
-          "id": "trans_01M7N8FMSAN877EA375R00QCN5",
+          "id": "trans_01M7NE1ZH5057SE2RMXATADHGS",
           "locale_code": "de-DE",
-          "translated_field_count": 0,
-          "created_at": "2026-11-17T17:22:12.394Z"
+          "translated_field_count": 1,
+          "created_at": "2026-11-17T18:59:36.102Z"
         },
         {
-          "id": "trans_01M7N8FMT0TENMEF0ZCWAN5TB7",
+          "id": "trans_01M7NE1ZHGSECGDX5EQQ4KXYFV",
           "locale_code": "fr-FR",
-          "translated_field_count": 0,
-          "created_at": "2026-11-17T17:22:12.417Z"
+          "translated_field_count": 1,
+          "created_at": "2026-11-17T18:59:36.112Z"
         },
         {
-          "id": "trans_01M7N8FMTQKCF2VCD9TQPTN3E1",
+          "id": "trans_01M7NE1ZHWWJ22G6VMCYZTBG2V",
           "locale_code": "fr-FR",
-          "translated_field_count": 0,
-          "created_at": "2026-11-17T17:22:12.439Z"
+          "translated_field_count": 2,
+          "created_at": "2026-11-17T18:59:36.124Z"
         },
         {
-          "id": "trans_01M7N8FMVEC904MEBSNP1F1P7V",
+          "id": "trans_01M7NE1ZJ96EDESGW2NBQBRSAT",
           "locale_code": "fr-FR",
           "translated_field_count": 0,
-          "created_at": "2026-11-17T17:22:12.462Z"
+          "created_at": "2026-11-17T18:59:36.137Z"
         }
       ],
       "count": 5,
@@ -782,18 +911,24 @@
     "body": {
       "translations": [
         {
-          "id": "trans_01M7N8FMRJB7B68JEWQTA3F1CS",
+          "id": "trans_01M7NE1ZGS5ZSBPX61359NR8JM",
           "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
           "reference": "product",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "title": "Chemise Lunaire",
+            "description": "Une chemise douce"
+          }
         },
         {
-          "id": "trans_01M7N8FMT0TENMEF0ZCWAN5TB7",
+          "id": "trans_01M7NE1ZHGSECGDX5EQQ4KXYFV",
           "reference_id": "variant_01M70Y000G904MD1KJ0SDSRS44",
           "reference": "product_variant",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "title": "Petit",
+            "material": "null"
+          }
         }
       ],
       "count": 4,
@@ -811,18 +946,24 @@
     "body": {
       "translations": [
         {
-          "id": "trans_01M7N8FMSAN877EA375R00QCN5",
+          "id": "trans_01M7NE1ZH5057SE2RMXATADHGS",
           "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
           "reference": "product",
           "locale_code": "de-DE",
-          "translations": {}
+          "translations": {
+            "title": "Mondhemd",
+            "subtitle": ""
+          }
         },
         {
-          "id": "trans_01M7N8FMRJB7B68JEWQTA3F1CS",
+          "id": "trans_01M7NE1ZGS5ZSBPX61359NR8JM",
           "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
           "reference": "product",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "title": "Chemise Lunaire",
+            "description": "Une chemise douce"
+          }
         }
       ],
       "count": 2,
@@ -840,11 +981,14 @@
     "body": {
       "translations": [
         {
-          "id": "trans_01M7N8FMRJB7B68JEWQTA3F1CS",
+          "id": "trans_01M7NE1ZGS5ZSBPX61359NR8JM",
           "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
           "reference": "product",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "title": "Chemise Lunaire",
+            "description": "Une chemise douce"
+          }
         }
       ],
       "count": 1,
@@ -876,18 +1020,24 @@
     "body": {
       "translations": [
         {
-          "id": "trans_01M7N8FMT0TENMEF0ZCWAN5TB7",
+          "id": "trans_01M7NE1ZHGSECGDX5EQQ4KXYFV",
           "reference_id": "variant_01M70Y000G904MD1KJ0SDSRS44",
           "reference": "product_variant",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "title": "Petit",
+            "material": "null"
+          }
         },
         {
-          "id": "trans_01M7N8FMTQKCF2VCD9TQPTN3E1",
+          "id": "trans_01M7NE1ZHWWJ22G6VMCYZTBG2V",
           "reference_id": "pcat_01M70XZZYR1AEAYH942Q4KFQG5",
           "reference": "product_category",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "name": "Vetements",
+            "description": "Tout"
+          }
         }
       ],
       "count": 2,
@@ -918,11 +1068,14 @@
       "created": [],
       "updated": [
         {
-          "id": "trans_01M7N8FMRJB7B68JEWQTA3F1CS",
+          "id": "trans_01M7NE1ZGS5ZSBPX61359NR8JM",
           "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
           "reference": "product",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "title": "Chemise Solaire",
+            "description": "Une chemise douce"
+          }
         }
       ],
       "deleted": {
@@ -955,11 +1108,14 @@
       "created": [],
       "updated": [
         {
-          "id": "trans_01M7N8FMT0TENMEF0ZCWAN5TB7",
+          "id": "trans_01M7NE1ZHGSECGDX5EQQ4KXYFV",
           "reference_id": "variant_01M70Y000G904MD1KJ0SDSRS44",
           "reference": "product_variant",
           "locale_code": "fr-FR",
-          "translations": {}
+          "translations": {
+            "title": "Moyen",
+            "material": "Coton"
+          }
         }
       ],
       "deleted": {
@@ -980,11 +1136,14 @@
       "created": [],
       "updated": [
         {
-          "id": "trans_01M7N8FMTQKCF2VCD9TQPTN3E1",
+          "id": "trans_01M7NE1ZHWWJ22G6VMCYZTBG2V",
           "reference_id": "pcat_01M70XZZYR1AEAYH942Q4KFQG5",
           "reference": "product_category",
           "locale_code": "fr-BE",
-          "translations": {}
+          "translations": {
+            "name": "Vetements",
+            "description": "Tout"
+          }
         }
       ],
       "deleted": {
@@ -1027,40 +1186,6 @@
     },
     "body": {
       "statistics": {
-        "product": {
-          "expected": 0,
-          "translated": 0,
-          "missing": 0,
-          "by_locale": {
-            "fr-FR": {
-              "expected": 0,
-              "translated": 0,
-              "missing": 0
-            },
-            "de-DE": {
-              "expected": 0,
-              "translated": 0,
-              "missing": 0
-            }
-          }
-        },
-        "product_variant": {
-          "expected": 0,
-          "translated": 0,
-          "missing": 0,
-          "by_locale": {
-            "fr-FR": {
-              "expected": 0,
-              "translated": 0,
-              "missing": 0
-            },
-            "de-DE": {
-              "expected": 0,
-              "translated": 0,
-              "missing": 0
-            }
-          }
-        },
         "spaceship": {
           "expected": 0,
           "translated": 0,
@@ -1078,20 +1203,54 @@
             }
           }
         },
-        "product_category": {
-          "expected": 0,
-          "translated": 0,
-          "missing": 0,
+        "product": {
+          "expected": 24,
+          "translated": 2,
+          "missing": 22,
           "by_locale": {
             "fr-FR": {
-              "expected": 0,
-              "translated": 0,
-              "missing": 0
+              "expected": 12,
+              "translated": 1,
+              "missing": 11
             },
             "de-DE": {
-              "expected": 0,
+              "expected": 12,
+              "translated": 1,
+              "missing": 11
+            }
+          }
+        },
+        "product_variant": {
+          "expected": 20,
+          "translated": 2,
+          "missing": 18,
+          "by_locale": {
+            "fr-FR": {
+              "expected": 10,
+              "translated": 2,
+              "missing": 8
+            },
+            "de-DE": {
+              "expected": 10,
               "translated": 0,
-              "missing": 0
+              "missing": 10
+            }
+          }
+        },
+        "product_category": {
+          "expected": 8,
+          "translated": 0,
+          "missing": 8,
+          "by_locale": {
+            "fr-FR": {
+              "expected": 4,
+              "translated": 0,
+              "missing": 4
+            },
+            "de-DE": {
+              "expected": 4,
+              "translated": 0,
+              "missing": 4
             }
           }
         }
@@ -1108,14 +1267,14 @@
     "body": {
       "statistics": {
         "product_tag": {
-          "expected": 0,
+          "expected": 2,
           "translated": 0,
-          "missing": 0,
+          "missing": 2,
           "by_locale": {
             "fr-FR": {
-              "expected": 0,
+              "expected": 2,
               "translated": 0,
-              "missing": 0
+              "missing": 2
             }
           }
         }
@@ -1145,37 +1304,55 @@
       "data": [
         {
           "id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
+          "title": "Draft Hoodie",
+          "subtitle": null,
+          "description": null,
+          "material": null,
           "translations": [
             {
-              "id": "trans_01M7N8FMRJB7B68JEWQTA3F1CS",
+              "id": "trans_01M7NE1ZGS5ZSBPX61359NR8JM",
               "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
               "reference": "product",
               "locale_code": "fr-FR",
-              "translations": {},
-              "translated_field_count": 0,
-              "created_at": "2026-11-17T17:22:12.371Z",
-              "updated_at": "2026-11-17T17:22:12.570Z",
+              "translations": {
+                "title": "Chemise Solaire",
+                "description": "Une chemise douce"
+              },
+              "translated_field_count": 1,
+              "created_at": "2026-11-17T18:59:36.089Z",
+              "updated_at": "2026-11-17T18:59:36.196Z",
               "deleted_at": null
             },
             {
-              "id": "trans_01M7N8FMSAN877EA375R00QCN5",
+              "id": "trans_01M7NE1ZH5057SE2RMXATADHGS",
               "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
               "reference": "product",
               "locale_code": "de-DE",
-              "translations": {},
-              "translated_field_count": 0,
-              "created_at": "2026-11-17T17:22:12.394Z",
-              "updated_at": "2026-11-17T17:22:12.394Z",
+              "translations": {
+                "title": "Mondhemd",
+                "subtitle": ""
+              },
+              "translated_field_count": 1,
+              "created_at": "2026-11-17T18:59:36.102Z",
+              "updated_at": "2026-11-17T18:59:36.102Z",
               "deleted_at": null
             }
           ]
         },
         {
           "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
+          "title": "Medusa Sweatpants",
+          "subtitle": null,
+          "description": null,
+          "material": null,
           "translations": []
         },
         {
           "id": "prod_01M70XZZZ4FBS8GYD7B7RQYZPR",
+          "title": "Medusa T-Shirt",
+          "subtitle": null,
+          "description": "A comfortable cotton t-shirt",
+          "material": null,
           "translations": []
         }
       ],
@@ -1195,16 +1372,21 @@
       "data": [
         {
           "id": "variant_01M70Y000G904MD1KJ0SDSRS44",
+          "title": "Default",
+          "material": null,
           "translations": [
             {
-              "id": "trans_01M7N8FMT0TENMEF0ZCWAN5TB7",
+              "id": "trans_01M7NE1ZHGSECGDX5EQQ4KXYFV",
               "reference_id": "variant_01M70Y000G904MD1KJ0SDSRS44",
               "reference": "product_variant",
               "locale_code": "fr-FR",
-              "translations": {},
-              "translated_field_count": 0,
-              "created_at": "2026-11-17T17:22:12.417Z",
-              "updated_at": "2026-11-17T17:22:12.611Z",
+              "translations": {
+                "title": "Moyen",
+                "material": "Coton"
+              },
+              "translated_field_count": 2,
+              "created_at": "2026-11-17T18:59:36.112Z",
+              "updated_at": "2026-11-17T18:59:36.213Z",
               "deleted_at": null
             }
           ]
@@ -1226,16 +1408,21 @@
       "data": [
         {
           "id": "pcat_01M70XZZYR1AEAYH942Q4KFQG5",
+          "name": "Clothing",
+          "description": "",
           "translations": [
             {
-              "id": "trans_01M7N8FMTQKCF2VCD9TQPTN3E1",
+              "id": "trans_01M7NE1ZHWWJ22G6VMCYZTBG2V",
               "reference_id": "pcat_01M70XZZYR1AEAYH942Q4KFQG5",
               "reference": "product_category",
               "locale_code": "fr-BE",
-              "translations": {},
-              "translated_field_count": 0,
-              "created_at": "2026-11-17T17:22:12.439Z",
-              "updated_at": "2026-11-17T17:22:12.639Z",
+              "translations": {
+                "name": "Vetements",
+                "description": "Tout"
+              },
+              "translated_field_count": 2,
+              "created_at": "2026-11-17T18:59:36.124Z",
+              "updated_at": "2026-11-17T18:59:36.225Z",
               "deleted_at": null
             }
           ]
@@ -1273,15 +1460,32 @@
     }
   },
   "settings_update": {
-    "status": 400,
+    "status": 200,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Field 'update, 0, id' is required"
+      "created": [],
+      "updated": [
+        {
+          "id": "trset_01M7NE1VX481RQ73EG77Q7CEA0",
+          "entity_type": "product",
+          "fields": [
+            "title"
+          ],
+          "is_active": true,
+          "created_at": "2026-11-17T18:59:32.388Z",
+          "updated_at": "2026-11-17T18:59:36.289Z",
+          "deleted_at": null
+        }
+      ],
+      "deleted": {
+        "ids": [],
+        "object": "translation_settings",
+        "deleted": true
+      }
     }
   },
   "after_settings_update": {
@@ -1294,16 +1498,20 @@
     "body": {
       "translations": [
         {
-          "id": "trans_01M7N8FMSAN877EA375R00QCN5",
+          "id": "trans_01M7NE1ZH5057SE2RMXATADHGS",
           "locale_code": "de-DE",
-          "translations": {},
-          "translated_field_count": 0
+          "translations": {
+            "title": "Mondhemd"
+          },
+          "translated_field_count": 1
         },
         {
-          "id": "trans_01M7N8FMRJB7B68JEWQTA3F1CS",
+          "id": "trans_01M7NE1ZGS5ZSBPX61359NR8JM",
           "locale_code": "fr-FR",
-          "translations": {},
-          "translated_field_count": 0
+          "translations": {
+            "title": "Chemise Solaire"
+          },
+          "translated_field_count": 1
         }
       ],
       "count": 2,
@@ -1319,7 +1527,20 @@
       "Vary": "Origin"
     },
     "body": {
-      "translation_settings": {}
+      "translation_settings": {
+        "product": {
+          "id": "trset_01M7NE1VX481RQ73EG77Q7CEA0",
+          "fields": [
+            "title"
+          ],
+          "inactive_fields": [
+            "subtitle",
+            "description",
+            "material"
+          ],
+          "is_active": true
+        }
+      }
     }
   },
   "statistics_after": {
@@ -1332,19 +1553,19 @@
     "body": {
       "statistics": {
         "product": {
-          "expected": 0,
-          "translated": 0,
-          "missing": 0,
+          "expected": 6,
+          "translated": 2,
+          "missing": 4,
           "by_locale": {
             "fr-FR": {
-              "expected": 0,
-              "translated": 0,
-              "missing": 0
+              "expected": 3,
+              "translated": 1,
+              "missing": 2
             },
             "de-DE": {
-              "expected": 0,
-              "translated": 0,
-              "missing": 0
+              "expected": 3,
+              "translated": 1,
+              "missing": 2
             }
           }
         }
@@ -1352,15 +1573,33 @@
     }
   },
   "settings_deactivate": {
-    "status": 400,
+    "status": 200,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Field 'update, 0, id' is required"
+      "created": [],
+      "updated": [
+        {
+          "id": "trset_01M7NE1VX4BT95FY1NQ42R24A7",
+          "entity_type": "product_variant",
+          "fields": [
+            "title",
+            "material"
+          ],
+          "is_active": false,
+          "created_at": "2026-11-17T18:59:32.388Z",
+          "updated_at": "2026-11-17T18:59:36.316Z",
+          "deleted_at": null
+        }
+      ],
+      "deleted": {
+        "ids": [],
+        "object": "translation_settings",
+        "deleted": true
+      }
     }
   },
   "settings_variant_after": {
@@ -1371,7 +1610,17 @@
       "Vary": "Origin"
     },
     "body": {
-      "translation_settings": {}
+      "translation_settings": {
+        "product_variant": {
+          "id": "trset_01M7NE1VX4BT95FY1NQ42R24A7",
+          "fields": [],
+          "inactive_fields": [
+            "title",
+            "material"
+          ],
+          "is_active": false
+        }
+      }
     }
   },
   "variant_translations_inactive": {
@@ -1384,7 +1633,7 @@
     "body": {
       "translations": [
         {
-          "id": "trans_01M7N8FMT0TENMEF0ZCWAN5TB7",
+          "id": "trans_01M7NE1ZHGSECGDX5EQQ4KXYFV",
           "translations": {},
           "translated_field_count": 0
         }
@@ -1415,36 +1664,19 @@
     },
     "body": {
       "type": "invalid_data",
-      "message": "Invalid request: Field 'update, 0, id' is required"
+      "message": "Invalid translation settings:\n- product doesn't have the following fields set as translatable: handle, status"
     }
   },
   "settings_duplicate": {
-    "status": 200,
+    "status": 400,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "created": [
-        {
-          "id": "trset_01M7N8FNDWZSPHBFZRTXTQP06H",
-          "entity_type": "product",
-          "fields": [
-            "title"
-          ],
-          "is_active": true,
-          "created_at": "2026-11-17T17:22:13.052Z",
-          "updated_at": "2026-11-17T17:22:13.052Z",
-          "deleted_at": null
-        }
-      ],
-      "updated": [],
-      "deleted": {
-        "ids": [],
-        "object": "translation_settings",
-        "deleted": true
-      }
+      "type": "invalid_data",
+      "message": "Translation settings with entity_type: product, already exists."
     }
   },
   "settings_bad_body": {
@@ -1467,19 +1699,35 @@
       "Vary": "Origin"
     },
     "body": {
-      "translation_settings": {}
+      "translation_settings": {
+        "product_tag": {
+          "id": "trset_01M7NE1VX4SQ8MSK8E8YA3M3J0",
+          "fields": [
+            "value"
+          ],
+          "inactive_fields": [],
+          "is_active": true
+        }
+      }
     }
   },
   "settings_delete": {
-    "status": 400,
+    "status": 200,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Field 'delete, 0' is required"
+      "created": [],
+      "updated": [],
+      "deleted": {
+        "ids": [
+          "trset_01M7NE1VX4SQ8MSK8E8YA3M3J0"
+        ],
+        "object": "translation_settings",
+        "deleted": true
+      }
     }
   },
   "settings_tag_after": {
@@ -1503,14 +1751,14 @@
     "body": {
       "created": [
         {
-          "id": "trset_01M7N8FNFXEZF5G5XYZT9MVV73",
+          "id": "trset_01M7NE1ZSX9VQC6PNEDNGNY61F",
           "entity_type": "product_tag",
           "fields": [
             "value"
           ],
           "is_active": false,
-          "created_at": "2026-11-17T17:22:13.118Z",
-          "updated_at": "2026-11-17T17:22:13.118Z",
+          "created_at": "2026-11-17T18:59:36.381Z",
+          "updated_at": "2026-11-17T18:59:36.381Z",
           "deleted_at": null
         }
       ],
@@ -1532,7 +1780,7 @@
     "body": {
       "translation_settings": {
         "product_tag": {
-          "id": "trset_01M7N8FNFXEZF5G5XYZT9MVV73",
+          "id": "trset_01M7NE1ZSX9VQC6PNEDNGNY61F",
           "fields": [],
           "inactive_fields": [
             "value"
@@ -1554,7 +1802,7 @@
       "updated": [],
       "deleted": {
         "ids": [
-          "trans_01M7N8FMSAN877EA375R00QCN5"
+          "trans_01M7NE1ZH5057SE2RMXATADHGS"
         ],
         "object": "translation",
         "deleted": true
@@ -1571,7 +1819,7 @@
     "body": {
       "translations": [
         {
-          "id": "trans_01M7N8FMRJB7B68JEWQTA3F1CS",
+          "id": "trans_01M7NE1ZGS5ZSBPX61359NR8JM",
           "locale_code": "fr-FR"
         }
       ],
@@ -1626,7 +1874,7 @@
     "body": {
       "created": [
         {
-          "id": "trans_01M7N8FNKJJ2CNWY2KBAREQVAA",
+          "id": "trans_01M7NE1ZV39320TGGA95SRW0BQ",
           "reference_id": "prod_01M70XZZZ49MK9W0NV0YSF74CE",
           "reference": "product",
           "locale_code": "de-DE",
