@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"sync"
 
 	"github.com/hitkey-io/medusago/packages/core/types/src/joiner"
 	modulessdk "github.com/hitkey-io/medusago/packages/core/types/src/modules-sdk"
@@ -77,13 +78,20 @@ func NewWorkflowsModuleService(opts modulessdk.ServiceOptions, joinerConfig *joi
 	ctx := context.Background()
 	connection := ioredis.New(url, redisOptions)
 	workerConnection := ioredis.New(url, redisOptions)
-	if err := connection.Ping(ctx).Err(); err != nil {
+	publisher := ioredis.New(pubURL, pubOptions)
+	subscriber := ioredis.New(pubURL, pubOptions)
+	// the loader connects the main and worker connections, then the pub/sub
+	// ones (Promise.all); a failure is only logged
+	if err := pingAll(ctx, connection, workerConnection); err != nil {
 		logger.Error(fmt.Sprintf("[Workflow-engine-redis] An error occurred while connecting to Redis in module 'workflow-engine-redis': %v", err))
 	} else {
 		logger.Info("[Workflow-engine-redis] Connection to Redis in module 'workflow-engine-redis' established")
 	}
-	publisher := ioredis.New(pubURL, pubOptions)
-	subscriber := ioredis.New(pubURL, pubOptions)
+	if err := pingAll(ctx, publisher, subscriber); err != nil {
+		logger.Error(fmt.Sprintf("[Workflow-engine-redis] An error occurred while connecting to Redis PubSub in module 'workflow-engine-redis': %v", err))
+	} else {
+		logger.Info("[Workflow-engine-redis] Connection to Redis PubSub in module 'workflow-engine-redis' established")
+	}
 	var c composer.Container
 	if opts.Container != nil {
 		c = opts.Container
@@ -189,4 +197,25 @@ func (s *WorkflowsModuleService) Remove(jobID string) error { return s.storage.R
 // ClearExpiredExecutions mirrors clearExpiredExecutions.
 func (s *WorkflowsModuleService) ClearExpiredExecutions(ctx context.Context) error {
 	return s.storage.ClearExpiredExecutions(ctx)
+}
+
+// pingAll connects the clients concurrently (Promise.all of connect()):
+// the first error.
+func pingAll(ctx context.Context, clients ...*ioredis.Client) error {
+	errs := make([]error, len(clients))
+	var wg sync.WaitGroup
+	for i, c := range clients {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			errs[i] = c.Ping(ctx).Err()
+		}()
+	}
+	wg.Wait()
+	for _, err := range errs {
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
