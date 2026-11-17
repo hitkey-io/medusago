@@ -272,7 +272,10 @@ func action(kv ...any) *dal.Record {
 }
 
 // computeActionForBudgetExceeded mirrors computeActionForBudgetExceeded.
-func computeActionForBudgetExceeded(promotion *dal.Record, amount any, usage *dal.Record) *dal.Record {
+// allotted holds the amounts already given out per budget id by earlier
+// adjustments of the same computeActions call; it is updated with amount
+// when a spend or spend_by_attribute adjustment fits.
+func computeActionForBudgetExceeded(promotion *dal.Record, amount any, usage *dal.Record, allotted map[string]any) *dal.Record {
 	budget := crec(crec(promotion, "campaign"), "budget")
 	if budget == nil {
 		return nil
@@ -294,14 +297,25 @@ func computeActionForBudgetExceeded(promotion *dal.Record, amount any, usage *da
 			used = 0
 		}
 	}
+	isSpend := typ == "spend" || spendByAttr
+	budgetID := cstr(budget, "id")
+	var allottedAmount any = 0
+	if allotted != nil {
+		if v, ok := allotted[budgetID]; ok && v != nil {
+			allottedAmount = v
+		}
+	}
 	var total *totals.BN
-	if typ == "spend" || spendByAttr {
-		total = totals.Add(used, amount)
+	if isSpend {
+		total = totals.Add(used, allottedAmount, amount)
 	} else {
 		total = totals.Add(used, 1)
 	}
 	if limit := cget(budget, "limit"); ctruthy(limit) && totals.Gt(total, limit) {
 		return action("action", "campaignBudgetExceeded", "code", cget(promotion, "code"))
+	}
+	if isSpend && allotted != nil {
+		allotted[budgetID] = totals.Add(allottedAmount, amount)
 	}
 	return nil
 }
@@ -428,7 +442,7 @@ func number(v any) float64 {
 }
 
 // applyPromotionToItems mirrors applyPromotionToItems.
-func applyPromotionToItems(promotion *dal.Record, items []*dal.Record, applied map[string]any, allocationOverride string, usage *dal.Record) []*dal.Record {
+func applyPromotionToItems(promotion *dal.Record, items []*dal.Record, applied map[string]any, allocationOverride string, usage *dal.Record, allotted map[string]any) []*dal.Record {
 	am := crec(promotion, "application_method")
 	if am == nil {
 		return nil
@@ -505,7 +519,7 @@ func applyPromotionToItems(promotion *dal.Record, items []*dal.Record, applied m
 		if totals.Lte(amount, 0) {
 			continue
 		}
-		if a := computeActionForBudgetExceeded(promotion, amount, usage); a != nil {
+		if a := computeActionForBudgetExceeded(promotion, amount, usage, allotted); a != nil {
 			actions = append(actions, a)
 			continue
 		}
@@ -532,7 +546,7 @@ func minFloat(a, b float64) float64 {
 }
 
 // applyPromotionToShippingMethods mirrors applyPromotionToShippingMethods.
-func applyPromotionToShippingMethods(promotion *dal.Record, methods []*dal.Record, applied map[string]any, usage *dal.Record) []*dal.Record {
+func applyPromotionToShippingMethods(promotion *dal.Record, methods []*dal.Record, applied map[string]any, usage *dal.Record, allotted map[string]any) []*dal.Record {
 	am := crec(promotion, "application_method")
 	allocation := cstr(am, "allocation")
 	var actions []*dal.Record
@@ -566,7 +580,7 @@ func applyPromotionToShippingMethods(promotion *dal.Record, methods []*dal.Recor
 			if totals.Lte(amount, 0) {
 				continue
 			}
-			if a := computeActionForBudgetExceeded(promotion, amount, usage); a != nil {
+			if a := computeActionForBudgetExceeded(promotion, amount, usage, allotted); a != nil {
 				actions = append(actions, a)
 				continue
 			}
@@ -604,7 +618,7 @@ func applyPromotionToShippingMethods(promotion *dal.Record, methods []*dal.Recor
 			if totals.Lte(amount, 0) {
 				continue
 			}
-			if a := computeActionForBudgetExceeded(promotion, amount, usage); a != nil {
+			if a := computeActionForBudgetExceeded(promotion, amount, usage, allotted); a != nil {
 				actions = append(actions, a)
 				continue
 			}
@@ -740,6 +754,7 @@ func (s *PromotionModuleService) ComputeActions(ctx context.Context, promotionCo
 	eligibleBuyItemMap := newEligibleItemsByCode()
 	eligibleTargetItemMap := newEligibleItemsByCode()
 	applied := map[string]any{}
+	allotted := map[string]any{}
 	for _, pa := range toApply {
 		promotion := byPromoCode[cstr(pa, "code")]
 		am := crec(promotion, "application_method")
@@ -773,7 +788,7 @@ func (s *PromotionModuleService) ComputeActions(ctx context.Context, promotionCo
 				usage = rows[0]
 			}
 			if budgetType == "use_by_attribute" && usage != nil {
-				if a := computeActionForBudgetExceeded(promotion, 1, usage); a != nil {
+				if a := computeActionForBudgetExceeded(promotion, 1, usage, nil); a != nil {
 					actions = append(actions, a)
 					continue
 				}
@@ -792,15 +807,18 @@ func (s *PromotionModuleService) ComputeActions(ctx context.Context, promotionCo
 		if !areRulesValidForContext(crecords(cget(promotion, "rules")), applicationContext, "order") || !currencyValid {
 			continue
 		}
+		var promotionActions []*dal.Record
+		appliedSnapshot := copyAnyMap(applied)
+		allottedSnapshot := copyAnyMap(allotted)
 		switch cstr(promotion, "type") {
 		case "buyget":
 			_, itemsDefined := applicationContext.Get("items")
 			itemsDefined = itemsDefined && cget(applicationContext, "items") != nil
-			buyGetActions, err := getComputedActionsForBuyGet(promotion, items, itemsDefined, applied, eligibleBuyItemMap, eligibleTargetItemMap, usage)
+			buyGetActions, err := getComputedActionsForBuyGet(promotion, items, itemsDefined, applied, eligibleBuyItemMap, eligibleTargetItemMap, usage, allotted)
 			if err != nil {
 				return nil, err
 			}
-			actions = append(actions, buyGetActions...)
+			promotionActions = append(promotionActions, buyGetActions...)
 		case "standard":
 			target := cstr(am, "target_type")
 			override := ""
@@ -811,7 +829,7 @@ func (s *PromotionModuleService) ComputeActions(ctx context.Context, promotionCo
 				if _, ok := applicationContext.Get("items"); !ok || cget(applicationContext, "items") == nil {
 					return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, `"items" should be present as an array in the context for computeActions`)
 				}
-				actions = append(actions, applyPromotionToItems(promotion, items, applied, override, usage)...)
+				promotionActions = append(promotionActions, applyPromotionToItems(promotion, items, applied, override, usage, allotted)...)
 			}
 			if target == "shipping_methods" {
 				if _, ok := applicationContext.Get("shipping_methods"); !ok || cget(applicationContext, "shipping_methods") == nil {
@@ -828,9 +846,27 @@ func (s *PromotionModuleService) ComputeActions(ctx context.Context, promotionCo
 						return totals.Lt(firstDefined(cget(applicableMethods[i], "subtotal"), 0), firstDefined(cget(applicableMethods[j], "subtotal"), 0))
 					})
 				}
-				actions = append(actions, applyPromotionToShippingMethods(promotion, applicableMethods, applied, usage)...)
+				promotionActions = append(promotionActions, applyPromotionToShippingMethods(promotion, applicableMethods, applied, usage, allotted)...)
 			}
 		}
+		budgetExceeded := false
+		for _, a := range promotionActions {
+			if cstr(a, "action") == "campaignBudgetExceeded" {
+				budgetExceeded = true
+				break
+			}
+		}
+		if !budgetExceeded {
+			actions = append(actions, promotionActions...)
+			continue
+		}
+		// The helpers already recorded the adjustments that fit, so undo them
+		// before the next promotion reads these maps.
+		applied = appliedSnapshot
+		allotted = allottedSnapshot
+		eligibleBuyItemMap.delete(cstr(promotion, "code"))
+		eligibleTargetItemMap.delete(cstr(promotion, "code"))
+		actions = append(actions, action("action", "campaignBudgetExceeded", "code", cget(promotion, "code")))
 	}
 	for _, a := range actions {
 		if v, ok := a.Get("amount"); ok && v != nil {
@@ -838,6 +874,14 @@ func (s *PromotionModuleService) ComputeActions(ctx context.Context, promotionCo
 		}
 	}
 	return actions, nil
+}
+
+func copyAnyMap(m map[string]any) map[string]any {
+	out := make(map[string]any, len(m))
+	for k, v := range m {
+		out[k] = v
+	}
+	return out
 }
 
 func firstDefined(vs ...any) any {

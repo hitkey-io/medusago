@@ -138,10 +138,6 @@ func jsNumber(v any) (float64, bool) {
 	return 0, false
 }
 
-func quoteSQL(s string) string {
-	return "'" + strings.ReplaceAll(s, "'", "''") + "'"
-}
-
 // BuildPromotionRuleQueryFilterFromContext mirrors
 // buildPromotionRuleQueryFilterFromContext: a raw filter excluding the
 // promotions with a rule (promotion, target or buy rule) the context cannot
@@ -213,27 +209,39 @@ func BuildPromotionRuleQueryFilterFromContext(ctx context.Context, db dal.Querie
 		order = kept
 	}
 
-	var conditions []string
+	// The attributes and values are bound as query parameters; each
+	// condition renders its placeholders in order.
+	type condition func(arg func(any) string) string
+	placeholders := func(arg func(any) string, values []string) string {
+		ph := make([]string, len(values))
+		for i, v := range values {
+			ph[i] = arg(v)
+		}
+		return strings.Join(ph, ",")
+	}
+	var conditions []condition
 	for _, attribute := range order {
+		attribute := attribute
 		values := attributes[attribute].values
 		strs := make([]string, len(values))
 		var numbers []float64
 		for i, v := range values {
-			strs[i] = quoteSQL(jsString(v))
+			strs[i] = jsString(v)
 			if n, isNum := jsNumber(v); isNum {
 				numbers = append(numbers, n)
 			}
 		}
-		stringValues := strings.Join(strs, ",")
-		escaped := quoteSQL(attribute)
-		if len(stringValues) > 0 {
-			conditions = append(conditions, fmt.Sprintf(`(pr.attribute = %s AND pr.operator IN ('in', 'eq') AND NOT EXISTS (
+		if len(strs) > 0 {
+			conditions = append(conditions, func(arg func(any) string) string {
+				attr := arg(attribute)
+				return fmt.Sprintf(`(pr.attribute = %s AND pr.operator IN ('in', 'eq') AND NOT EXISTS (
         SELECT 1
         FROM promotion_rule_value prv_inner
         WHERE prv_inner.promotion_rule_id = pr.id
           AND prv_inner.deleted_at IS NULL
           AND prv_inner.value IN (%s)
-      ))`, escaped, stringValues))
+      ))`, attr, placeholders(arg, strs))
+			})
 		}
 		if len(numbers) > 0 {
 			minValue, maxValue := math.Inf(1), math.Inf(-1)
@@ -243,35 +251,65 @@ func BuildPromotionRuleQueryFilterFromContext(ctx context.Context, db dal.Querie
 			}
 			minS, maxS := totals.JSNumberToString(minValue), totals.JSNumberToString(maxValue)
 			conditions = append(conditions,
-				fmt.Sprintf(`(pr.attribute = %s AND pr.operator = 'gt' AND CAST(prv.value AS DECIMAL) >= %s)`, escaped, maxS),
-				fmt.Sprintf(`(pr.attribute = %s AND pr.operator = 'gte' AND prv.value NOT IN (%s) AND CAST(prv.value AS DECIMAL) > %s)`, escaped, stringValues, maxS),
-				fmt.Sprintf(`(pr.attribute = %s AND pr.operator = 'lt' AND CAST(prv.value AS DECIMAL) <= %s)`, escaped, minS),
-				fmt.Sprintf(`(pr.attribute = %s AND pr.operator = 'lte' AND prv.value NOT IN (%s) AND CAST(prv.value AS DECIMAL) < %s)`, escaped, stringValues, minS),
+				func(arg func(any) string) string {
+					return fmt.Sprintf(`(pr.attribute = %s AND pr.operator = 'gt' AND CAST(prv.value AS DECIMAL) >= %s)`, arg(attribute), maxS)
+				},
+				func(arg func(any) string) string {
+					attr := arg(attribute)
+					return fmt.Sprintf(`(pr.attribute = %s AND pr.operator = 'gte' AND prv.value NOT IN (%s) AND CAST(prv.value AS DECIMAL) > %s)`, attr, placeholders(arg, strs), maxS)
+				},
+				func(arg func(any) string) string {
+					return fmt.Sprintf(`(pr.attribute = %s AND pr.operator = 'lt' AND CAST(prv.value AS DECIMAL) <= %s)`, arg(attribute), minS)
+				},
+				func(arg func(any) string) string {
+					attr := arg(attribute)
+					return fmt.Sprintf(`(pr.attribute = %s AND pr.operator = 'lte' AND prv.value NOT IN (%s) AND CAST(prv.value AS DECIMAL) < %s)`, attr, placeholders(arg, strs), minS)
+				},
 			)
 		}
 	}
 
 	if len(order) == 0 {
 		return func(alias string, _ func(any) string) string {
-			return excludePromotionsWithRuleMatching(alias, "TRUE")
+			return excludePromotionsWithRuleMatching(alias, func() string { return "TRUE" })
 		}, true, nil
 	}
 
-	joined := strings.Join(conditions, " OR ")
-	if float64(len(joined)) > 2147483648*0.9 {
-		return nil, false, nil
-	}
-	keys := make([]string, len(order))
-	for i, a := range order {
-		keys[i] = quoteSQL(a)
-	}
-	attributeKeys := strings.Join(keys, ",")
-	unsatisfiable := fmt.Sprintf(`(
+	// unsatisfiable renders the condition, binding its parameters in text
+	// order: the attributes (NOT IN), the attributes (IN), then the values
+	// of each condition, like the bindings of upstream.
+	unsatisfiable := func(arg func(any) string) string {
+		notIn := make([]string, len(order))
+		for i, a := range order {
+			notIn[i] = arg(a)
+		}
+		in := make([]string, len(order))
+		for i, a := range order {
+			in[i] = arg(a)
+		}
+		parts := make([]string, len(conditions))
+		for i, c := range conditions {
+			parts[i] = c(arg)
+		}
+		return fmt.Sprintf(`(
     pr.attribute NOT IN (%s)
     OR (pr.attribute IN (%s) AND (%s))
-  )`, attributeKeys, attributeKeys, joined)
-	return func(alias string, _ func(any) string) string {
-		return excludePromotionsWithRuleMatching(alias, unsatisfiable)
+  )`, strings.Join(notIn, ","), strings.Join(in, ","), strings.Join(parts, " OR "))
+	}
+	// upstream guards the length of the joined conditions (with "?"
+	// placeholders)
+	joinedLen := 0
+	for i, c := range conditions {
+		if i > 0 {
+			joinedLen += len(" OR ")
+		}
+		joinedLen += len(c(func(any) string { return "?" }))
+	}
+	if float64(joinedLen) > 2147483648*0.9 {
+		return nil, false, nil
+	}
+	return func(alias string, arg func(any) string) string {
+		return excludePromotionsWithRuleMatching(alias, func() string { return unsatisfiable(arg) })
 	}, true, nil
 }
 
@@ -291,7 +329,7 @@ var ruleSources = []struct{ from, promotionID string }{
 }
 
 // excludePromotionsWithRuleMatching mirrors excludePromotionsWithRuleMatching.
-func excludePromotionsWithRuleMatching(alias, condition string) string {
+func excludePromotionsWithRuleMatching(alias string, condition func() string) string {
 	parts := make([]string, len(ruleSources))
 	for i, src := range ruleSources {
 		parts[i] = fmt.Sprintf(`NOT EXISTS (
@@ -300,7 +338,7 @@ func excludePromotionsWithRuleMatching(alias, condition string) string {
       LEFT JOIN promotion_rule_value prv
         ON prv.promotion_rule_id = pr.id AND prv.deleted_at IS NULL
       WHERE %s = %s.id AND %s
-    )`, src.from, src.promotionID, alias, condition)
+    )`, src.from, src.promotionID, alias, condition())
 	}
 	return strings.Join(parts, " AND ")
 }
