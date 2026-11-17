@@ -170,13 +170,20 @@ func buildAdminWithNode(dir, outDir, mode string, admin config.AdminOptions, sou
 // whose package.json exports "./admin" contributes "<name>/admin" (bundled as
 // a package), one whose .medusa/server/medusa-plugin-options.json has a
 // srcDir contributes "<srcDir>/admin" (compiled as a source). Plugins are
-// resolved from the project like require.resolve; one that is not installed
-// is skipped with a warning (upstream fails, but the Go project does not
-// otherwise need the Node packages of its default plugins).
+// resolved from the project like require.resolve, then (resolvePluginPkgFile:
+// default plugins are dependencies of @medusajs/medusa, hidden by strict
+// package managers) from the @medusajs/medusa package directory; one that is
+// not installed is skipped with a warning (upstream fails, but the Go project
+// does not otherwise need the Node packages of its default plugins).
 func resolveAdminPlugins(dir string, plugins []config.PluginConfig, logger *slog.Logger) (sources, packages []string) {
 	sources, packages = []string{}, []string{}
 	for _, p := range plugins {
 		pkgPath := resolveNodePackageJSON(dir, p.Resolve)
+		if pkgPath == "" {
+			if medusaPkg := resolveNodePackageJSON(dir, "@medusajs/medusa"); medusaPkg != "" {
+				pkgPath = resolveNodePackageJSON(filepath.Dir(medusaPkg), p.Resolve)
+			}
+		}
 		if pkgPath == "" {
 			logger.Warn(fmt.Sprintf("Unable to resolve plugin %q: its admin extensions are not compiled (install it in the project to include them)", p.Resolve))
 			continue

@@ -32,13 +32,9 @@ func NewDefaultQuery(db dal.Querier, moduleServices ...map[string]any) (*query.Q
 }
 
 // NewDefaultQueryAndLink builds Query and Link (remoteLink) for the default
-// configuration (with the translation module when it is registered).
+// configuration.
 func NewDefaultQueryAndLink(db dal.Querier, registered map[string]any) (*query.Query, *modulessdk.Link, error) {
-	flags := map[string]any{}
-	if _, ok := registered[utilsmodulessdk.TRANSLATION]; ok {
-		flags["translation"] = true
-	}
-	q, link, _, err := NewQueryAndLink(db, config.DefineConfig(config.InputConfig{FeatureFlags: flags}), registered)
+	q, link, _, err := NewQueryAndLink(db, config.DefineConfig(config.InputConfig{}), registered)
 	return q, link, err
 }
 
@@ -137,8 +133,6 @@ func NewQueryAndLink(db dal.Querier, cfg config.ConfigModule, registered map[str
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	if _, ok := registered[utilsmodulessdk.TRANSLATION]; ok {
-		q.EnableTranslations()
-	}
+
 	return q, modulessdk.NewLink(qc.JoinerConfigs, linkServices, moduleServices), qc, nil
 }

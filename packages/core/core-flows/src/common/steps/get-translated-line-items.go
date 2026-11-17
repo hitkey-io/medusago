@@ -146,7 +146,7 @@ var GetTranslatedLineItemsStep = composer.CreateStep("get-translated-line-items"
 			items = []*dal.Record{}
 		}
 		q, _ := ctx.Container.Resolve(common.ContainerRegistrationKeys.QUERY).(*query.Query)
-		if !q.TranslationsEnabled() || in.Locale == "" || len(items) == 0 {
+		if in.Locale == "" || len(items) == 0 {
 			return composer.NewStepResponse(items), nil
 		}
 		variants := make([]*dal.Record, 0, len(in.Variants))

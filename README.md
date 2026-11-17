@@ -69,7 +69,7 @@ compares status codes, headers, cookies and response bodies byte for byte, and
 compares the database contents after each scenario. Module and Query behaviour
 is checked the same way.
 
-Feature-flagged areas (index engine, translations, view configurations) are
+Feature-flagged areas (index engine, view configurations) are
 supported with their flags enabled. Known gaps are tracked in the
 [issues](https://github.com/hitkey-io/medusago/issues). Medusa Enterprise
 Edition features (RBAC, SSO) are not part of this project.

@@ -22,8 +22,7 @@ type Query struct {
 	indexModule IndexService
 	// searchModule is the search module (nil when it is not loaded).
 	searchModule SearchService
-	// translations mirrors the translation feature flag (applyTranslations).
-	translations bool
+
 	// caching is the caching module (nil when it is not loaded) and
 	// cachingFlag the caching feature flag (@Cached).
 	caching     caching.Module
