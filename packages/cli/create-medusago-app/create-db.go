@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -105,10 +106,10 @@ func getDbClientAndCredentials(ctx context.Context, dbName, dbURL string, verbos
 	return d, nil
 }
 
-// runCreateDb mirrors runCreateDb: the database is created and the client
-// reconnects to it.
+// runCreateDb mirrors runCreateDb: the database is created (its name quoted
+// like client.escapeIdentifier) and the client reconnects to it.
 func runCreateDb(ctx context.Context, d *dbSetup) error {
-	if _, err := d.conn.Exec(ctx, fmt.Sprintf(`CREATE DATABASE "%s"`, d.dbName)); err != nil {
+	if _, err := d.conn.Exec(ctx, "CREATE DATABASE "+escapeIdentifier(d.dbName)); err != nil {
 		return err
 	}
 	_ = d.conn.Close(ctx)
@@ -118,4 +119,10 @@ func runCreateDb(ctx context.Context, d *dbSetup) error {
 	}
 	d.conn = conn
 	return nil
+}
+
+// escapeIdentifier mirrors pg Client.escapeIdentifier: the name in double
+// quotes, its double quotes doubled.
+func escapeIdentifier(s string) string {
+	return `"` + strings.ReplaceAll(s, `"`, `""`) + `"`
 }
