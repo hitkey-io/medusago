@@ -143,19 +143,34 @@ func (m *eligibleItemsByCode) set(code string, items []EligibleItem) {
 	m.items[code] = items
 }
 
+func (m *eligibleItemsByCode) delete(code string) {
+	if _, ok := m.items[code]; !ok {
+		return
+	}
+	delete(m.items, code)
+	for i, c := range m.codes {
+		if c == code {
+			m.codes = append(m.codes[:i:i], m.codes[i+1:]...)
+			break
+		}
+	}
+}
+
 // calculateRemainingQuantities mirrors calculateRemainingQuantities.
-func calculateRemainingQuantities(eligibleItems []*dal.Record, itemsMap *eligibleItemsByCode, currentPromotionCode string) *bnMap {
+func calculateRemainingQuantities(eligibleItems []*dal.Record, consumedItemMaps []*eligibleItemsByCode, currentPromotionCode string) *bnMap {
 	remaining := newBNMap()
 	for _, item := range eligibleItems {
 		id := cstr(item, "id")
 		consumed := totals.Convert(0)
-		for _, code := range itemsMap.codes {
-			if code == currentPromotionCode {
-				continue
-			}
-			for _, e := range itemsMap.items[code] {
-				if e.ItemID == id {
-					consumed = totals.Add(consumed, e.Quantity)
+		for _, itemsMap := range consumedItemMaps {
+			for _, code := range itemsMap.codes {
+				if code == currentPromotionCode {
+					continue
+				}
+				for _, e := range itemsMap.items[code] {
+					if e.ItemID == id {
+						consumed = totals.Add(consumed, e.Quantity)
+					}
 				}
 			}
 		}
@@ -244,7 +259,7 @@ func preparePromotionApplicationState(eligibleBuyItems, eligibleTargetItems []*d
 }
 
 // applyPromotionToTargetItems mirrors applyPromotionToTargetItems.
-func applyPromotionToTargetItems(targetItems []EligibleItem, itemIDPromotionAmount *bnMap, applied map[string]any, promotion *dal.Record, itemsMap map[string]*dal.Record, config buyGetConfig, usage *dal.Record) ([]*dal.Record, *totals.BN) {
+func applyPromotionToTargetItems(targetItems []EligibleItem, itemIDPromotionAmount *bnMap, applied map[string]any, promotion *dal.Record, itemsMap map[string]*dal.Record, config buyGetConfig, usage *dal.Record, allotted map[string]any) ([]*dal.Record, *totals.BN) {
 	var actions []*dal.Record
 	appliedQuantity := totals.Convert(0)
 	remainingQty := totals.Convert(config.targetApplyQuantity)
@@ -278,7 +293,7 @@ func applyPromotionToTargetItems(targetItems []EligibleItem, itemIDPromotionAmou
 			continue
 		}
 		remainingQty = totals.Sub(remainingQty, multiplier)
-		if a := computeActionForBudgetExceeded(promotion, amount, usage); a != nil {
+		if a := computeActionForBudgetExceeded(promotion, amount, usage, allotted); a != nil {
 			actions = append(actions, a)
 			continue
 		}
@@ -358,7 +373,7 @@ func filterItemsByPromotionRules(items []*dal.Record, rules []*dal.Record) []*da
 }
 
 // getComputedActionsForBuyGet mirrors getComputedActionsForBuyGet.
-func getComputedActionsForBuyGet(promotion *dal.Record, items []*dal.Record, itemsDefined bool, applied map[string]any, eligibleBuyItemMap, eligibleTargetItemMap *eligibleItemsByCode, usage *dal.Record) ([]*dal.Record, error) {
+func getComputedActionsForBuyGet(promotion *dal.Record, items []*dal.Record, itemsDefined bool, applied map[string]any, eligibleBuyItemMap, eligibleTargetItemMap *eligibleItemsByCode, usage *dal.Record, allotted map[string]any) ([]*dal.Record, error) {
 	valid, err := isValidBuyGetPromotionContext(promotion, items, itemsDefined)
 	if err != nil || !valid {
 		return nil, err
@@ -371,9 +386,19 @@ func getComputedActionsForBuyGet(promotion *dal.Record, items []*dal.Record, ite
 	am := crec(promotion, "application_method")
 	code := cstr(promotion, "code")
 	eligibleBuy := filterItemsByPromotionRules(items, crecords(cget(am, "buy_rules")))
-	eligibleTarget := filterItemsByPromotionRules(items, crecords(cget(am, "target_rules")))
-	remainingBuy := calculateRemainingQuantities(eligibleBuy, eligibleBuyItemMap, code)
-	remainingTarget := calculateRemainingQuantities(eligibleTarget, eligibleTargetItemMap, code)
+	discountable := []*dal.Record{}
+	for _, item := range items {
+		if !item.Has("is_discountable") || ctruthy(cget(item, "is_discountable")) {
+			discountable = append(discountable, item)
+		}
+	}
+	eligibleTarget := filterItemsByPromotionRules(discountable, crecords(cget(am, "target_rules")))
+	// A unit consumed by another promotion is unavailable in either role,
+	// whether it was used to satisfy that promotion's buy rules or received
+	// its discount.
+	consumedItemMaps := []*eligibleItemsByCode{eligibleBuyItemMap, eligibleTargetItemMap}
+	remainingBuy := calculateRemainingQuantities(eligibleBuy, consumedItemMaps, code)
+	remainingTarget := calculateRemainingQuantities(eligibleTarget, consumedItemMaps, code)
 	targetItemsInDiscountOrder := sortTargetItemsByStrategy(eligibleTarget, cstr(am, "target_selection_strategy"))
 
 	totalBuy := newEligibleItemsMap()
@@ -394,7 +419,7 @@ func getComputedActionsForBuyGet(promotion *dal.Record, items []*dal.Record, ite
 		if !state.isValid {
 			break
 		}
-		applicationActions, quantity := applyPromotionToTargetItems(state.targetItems, itemIDPromotionAmount, applied, promotion, itemsMap, config, usage)
+		applicationActions, quantity := applyPromotionToTargetItems(state.targetItems, itemIDPromotionAmount, applied, promotion, itemsMap, config, usage, allotted)
 		actions = append(actions, applicationActions...)
 		appliedQuantity = totals.Add(appliedQuantity, quantity)
 		updateEligibleItemQuantities(remainingBuy, remainingTarget, state)

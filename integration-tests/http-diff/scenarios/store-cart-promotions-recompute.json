@@ -1,0 +1,534 @@
+[
+  {
+    "name": "login",
+    "method": "POST",
+    "path": "/auth/user/emailpass",
+    "body": {
+      "email": "admin@medusa-test.com",
+      "password": "supersecret"
+    }
+  },
+  {
+    "name": "pk",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys",
+    "body": {
+      "title": "Store",
+      "type": "publishable"
+    }
+  },
+  {
+    "name": "channels",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/sales-channels?order=name&fields=id,name"
+  },
+  {
+    "name": "link",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/api-keys/{{pk.api_key.id}}/sales-channels?fields=id",
+    "body": {
+      "add": [
+        "{{channels.sales_channels.0.id}}"
+      ]
+    }
+  },
+  {
+    "name": "locations",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/stock-locations?fields=id"
+  },
+  {
+    "name": "profiles",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/shipping-profiles?fields=id"
+  },
+  {
+    "name": "fs",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/stock-locations/{{locations.stock_locations.0.id}}/fulfillment-sets?fields=id,fulfillment_sets.id",
+    "body": {
+      "name": "EU",
+      "type": "shipping"
+    }
+  },
+  {
+    "name": "zone",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/fulfillment-sets/{{fs.stock_location.fulfillment_sets.0.id}}/service-zones?fields=id,service_zones.id",
+    "body": {
+      "name": "Germany",
+      "geo_zones": [
+        {
+          "type": "country",
+          "country_code": "de"
+        }
+      ]
+    }
+  },
+  {
+    "name": "link_provider",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/stock-locations/{{locations.stock_locations.0.id}}/fulfillment-providers?fields=id",
+    "body": {
+      "add": [
+        "manual_manual"
+      ]
+    }
+  },
+  {
+    "name": "regions",
+    "method": "GET",
+    "path": "/store/regions?order=name&fields=id,name",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "so_tiered",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/shipping-options?fields=id,prices.amount,prices.price_rules.attribute",
+    "body": {
+      "name": "Tiered",
+      "service_zone_id": "{{zone.fulfillment_set.service_zones.0.id}}",
+      "shipping_profile_id": "{{profiles.shipping_profiles.0.id}}",
+      "price_type": "flat",
+      "provider_id": "manual_manual",
+      "type": {
+        "label": "Tiered",
+        "code": "tiered"
+      },
+      "prices": [
+        {
+          "currency_code": "eur",
+          "amount": 10
+        },
+        {
+          "currency_code": "eur",
+          "amount": 0,
+          "rules": [
+            {
+              "attribute": "item_total",
+              "operator": "gte",
+              "value": 60
+            }
+          ]
+        }
+      ],
+      "rules": [
+        {
+          "attribute": "enabled_in_store",
+          "operator": "eq",
+          "value": "true"
+        },
+        {
+          "attribute": "is_return",
+          "operator": "eq",
+          "value": "false"
+        }
+      ]
+    }
+  },
+  {
+    "name": "products",
+    "method": "GET",
+    "path": "/store/products?fields=id,title,variants.id&order=title",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    }
+  },
+  {
+    "name": "tax_region",
+    "method": "GET",
+    "bearer": "login",
+    "path": "/admin/tax-regions?country_code=de&fields=id"
+  },
+  {
+    "name": "rate_default",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/tax-rates?fields=id",
+    "body": {
+      "tax_region_id": "{{tax_region.tax_regions.0.id}}",
+      "name": "DE VAT",
+      "code": "DE19",
+      "rate": 19,
+      "is_default": true
+    }
+  },
+  {
+    "name": "fix20",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code",
+    "body": {
+      "code": "FIX20",
+      "type": "standard",
+      "status": "active",
+      "application_method": {
+        "type": "fixed",
+        "target_type": "items",
+        "allocation": "across",
+        "value": 20,
+        "currency_code": "eur"
+      }
+    }
+  },
+  {
+    "name": "ship50",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code",
+    "body": {
+      "code": "SHIP50",
+      "type": "standard",
+      "status": "active",
+      "application_method": {
+        "type": "percentage",
+        "target_type": "shipping_methods",
+        "allocation": "each",
+        "value": 50,
+        "max_quantity": 1
+      }
+    }
+  },
+  {
+    "name": "cart",
+    "method": "POST",
+    "path": "/store/carts?fields=id,total,item_total,shipping_total,discount_total,promotions.code,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.id,shipping_methods.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "region_id": "{{regions.regions.0.id}}",
+      "shipping_address": {
+        "country_code": "de",
+        "city": "Berlin"
+      },
+      "items": [
+        {
+          "variant_id": "{{products.products.0.variants.1.id}}",
+          "quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "name": "add_shipping",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/shipping-methods?fields=id,total,item_total,shipping_total,discount_total,promotions.code,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.id,shipping_methods.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "option_id": "{{so_tiered.shipping_option.id}}"
+    }
+  },
+  {
+    "name": "apply_ship50",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,item_total,shipping_total,discount_total,promotions.code,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.id,shipping_methods.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "SHIP50"
+      ]
+    }
+  },
+  {
+    "name": "apply_fix20",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,item_total,shipping_total,discount_total,promotions.code,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.id,shipping_methods.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "FIX20"
+      ]
+    }
+  },
+  {
+    "name": "remove_fix20",
+    "method": "DELETE",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,item_total,shipping_total,discount_total,promotions.code,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.id,shipping_methods.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "FIX20"
+      ]
+    }
+  },
+  {
+    "name": "apply_both",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/promotions?fields=id,total,item_total,shipping_total,discount_total,promotions.code,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.id,shipping_methods.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "FIX20",
+        "SHIP50"
+      ]
+    },
+    "sortby": {
+      "cart.promotions": "code"
+    }
+  },
+  {
+    "name": "quantity_down",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/line-items/{{cart.cart.items.0.id}}?fields=id,total,item_total,shipping_total,discount_total,promotions.code,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.id,shipping_methods.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "quantity": 1
+    },
+    "sortby": {
+      "cart.promotions": "code"
+    }
+  },
+  {
+    "name": "quantity_up",
+    "method": "POST",
+    "path": "/store/carts/{{cart.cart.id}}/line-items/{{cart.cart.items.0.id}}?fields=id,total,item_total,shipping_total,discount_total,promotions.code,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.id,shipping_methods.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "quantity": 3
+    }
+  },
+  {
+    "name": "campaign",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/campaigns?fields=id",
+    "body": {
+      "name": "Budget",
+      "campaign_identifier": "BUDGET15",
+      "budget": {
+        "type": "spend",
+        "limit": 15,
+        "currency_code": "eur"
+      }
+    }
+  },
+  {
+    "name": "each10",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code",
+    "body": {
+      "code": "EACH10",
+      "type": "standard",
+      "status": "active",
+      "campaign_id": "{{campaign.campaign.id}}",
+      "application_method": {
+        "type": "fixed",
+        "target_type": "items",
+        "allocation": "each",
+        "value": 10,
+        "max_quantity": 1,
+        "currency_code": "eur"
+      }
+    }
+  },
+  {
+    "name": "across10",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code",
+    "body": {
+      "code": "ACROSS10",
+      "type": "standard",
+      "status": "active",
+      "campaign_id": "{{campaign.campaign.id}}",
+      "application_method": {
+        "type": "fixed",
+        "target_type": "items",
+        "allocation": "across",
+        "value": 10,
+        "currency_code": "eur"
+      }
+    }
+  },
+  {
+    "name": "across8",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/promotions?fields=id,code",
+    "body": {
+      "code": "ACROSS8",
+      "type": "standard",
+      "status": "active",
+      "campaign_id": "{{campaign.campaign.id}}",
+      "application_method": {
+        "type": "fixed",
+        "target_type": "items",
+        "allocation": "across",
+        "value": 8,
+        "currency_code": "eur"
+      }
+    }
+  },
+  {
+    "name": "cart2",
+    "method": "POST",
+    "path": "/store/carts?fields=id,items.id",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "region_id": "{{regions.regions.0.id}}",
+      "shipping_address": {
+        "country_code": "de"
+      },
+      "items": [
+        {
+          "variant_id": "{{products.products.0.variants.1.id}}",
+          "quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "cart2_add",
+    "method": "POST",
+    "path": "/store/carts/{{cart2.cart.id}}/line-items?fields=id,items.id",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "variant_id": "{{products.products.1.variants.0.id}}",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "apply_each10",
+    "method": "POST",
+    "path": "/store/carts/{{cart2.cart.id}}/promotions?fields=id,total,item_total,shipping_total,discount_total,promotions.code,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.id,shipping_methods.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "EACH10"
+      ]
+    }
+  },
+  {
+    "name": "replace_none",
+    "method": "POST",
+    "path": "/store/carts/{{cart2.cart.id}}/promotions?fields=id,total,item_total,shipping_total,discount_total,promotions.code,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.id,shipping_methods.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": []
+    }
+  },
+  {
+    "name": "apply_across",
+    "method": "POST",
+    "path": "/store/carts/{{cart2.cart.id}}/promotions?fields=id,total,item_total,shipping_total,discount_total,promotions.code,items.id,items.quantity,items.adjustments.code,items.adjustments.amount,shipping_methods.id,shipping_methods.amount,shipping_methods.adjustments.code,shipping_methods.adjustments.amount",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "promo_codes": [
+        "ACROSS10",
+        "ACROSS8"
+      ]
+    }
+  },
+  {
+    "name": "product",
+    "method": "POST",
+    "bearer": "login",
+    "path": "/admin/products?fields=id,variants.id,variants.inventory_items.inventory_item_id",
+    "body": {
+      "title": "Inventoryless",
+      "status": "published",
+      "shipping_profile_id": "{{profiles.shipping_profiles.0.id}}",
+      "sales_channels": [
+        {
+          "id": "{{channels.sales_channels.0.id}}"
+        }
+      ],
+      "options": [
+        {
+          "title": "Size",
+          "values": [
+            "One"
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "title": "One",
+          "sku": "INVLESS-ONE",
+          "manage_inventory": true,
+          "options": {
+            "Size": "One"
+          },
+          "prices": [
+            {
+              "amount": 12,
+              "currency_code": "eur"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "unlink_inventory",
+    "method": "DELETE",
+    "bearer": "login",
+    "path": "/admin/products/{{product.product.id}}/variants/{{product.product.variants.0.id}}/inventory-items/{{product.product.variants.0.inventory_items.0.inventory_item_id}}?fields=id"
+  },
+  {
+    "name": "add_inventoryless",
+    "method": "POST",
+    "path": "/store/carts/{{cart2.cart.id}}/line-items",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "variant_id": "{{product.product.variants.0.id}}",
+      "quantity": 1
+    }
+  },
+  {
+    "name": "create_inventoryless",
+    "method": "POST",
+    "path": "/store/carts?fields=id",
+    "headers": {
+      "x-publishable-api-key": "{{pk.api_key.token}}"
+    },
+    "body": {
+      "region_id": "{{regions.regions.0.id}}",
+      "items": [
+        {
+          "variant_id": "{{product.product.variants.0.id}}",
+          "quantity": 1
+        }
+      ]
+    }
+  }
+]

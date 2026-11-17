@@ -154,7 +154,9 @@ var ListShippingOptionsForCartWithPricingWorkflow = composer.CreateWorkflow("lis
 		vars.Set("filters", filters)
 		vars.Set("id", flatIDs)
 		cp := dal.NewRecord()
-		cp.Set("context", cart)
+		// the cart is step data upstream (JSON): its totals are plain
+		// numbers, matched by the numeric price rules (e.g. item_total)
+		cp.Set("context", commonsteps.JSONRoundTrip(cart))
 		vars.Set("calculated_price", cp)
 		flat, err := commonsteps.UseRemoteQueryStep.Config("shipping-options-query-flat-rate", composer.StepOptions{}).Run(e, commonsteps.RemoteStepInput{EntryPoint: "shipping_options", Fields: flatRateFields, Variables: vars})
 		if err != nil {

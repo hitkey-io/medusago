@@ -173,7 +173,8 @@ func orderPromoLink(orderID, promotionID any) *dal.Record {
 }
 
 type promoRevert struct {
-	created, dismissed []*dal.Record
+	CreatedLinks   []*dal.Record `json:"createdLinks"`
+	DismissedLinks []*dal.Record `json:"dismissedLinks"`
 }
 
 // UpdateDraftOrderPromotionsStep mirrors updateDraftOrderPromotionsStep.
@@ -231,7 +232,17 @@ var UpdateDraftOrderPromotionsStep = composer.CreateStep("update-draft-order-pro
 				return composer.StepResponse[any]{}, err
 			}
 		}
-		return composer.NewStepResponse[any](nil, any(promoRevert{toCreate, toDismiss})), nil
+		// only the links that did not exist before are dismissed on revert
+		created := []*dal.Record{}
+		for _, l := range toCreate {
+			if p, ok := get(l, utilsmodulessdk.PROMOTION).(*dal.Record); ok && !existingMap[get(p, "promotion_id")] {
+				created = append(created, l)
+			}
+		}
+		if toDismiss == nil {
+			toDismiss = []*dal.Record{}
+		}
+		return composer.NewNullStepResponse[any](any(promoRevert{created, toDismiss})), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		r, ok := data.(promoRevert)
@@ -239,13 +250,13 @@ var UpdateDraftOrderPromotionsStep = composer.CreateStep("update-draft-order-pro
 			return nil
 		}
 		link := commonsteps.LinkOf(ctx.Container)
-		if len(r.dismissed) > 0 {
-			if _, err := link.Create(ctx.Context, r.dismissed); err != nil {
+		if len(r.CreatedLinks) > 0 {
+			if _, err := link.Dismiss(ctx.Context, r.CreatedLinks); err != nil {
 				return err
 			}
 		}
-		if len(r.created) > 0 {
-			if _, err := link.Dismiss(ctx.Context, r.created); err != nil {
+		if len(r.DismissedLinks) > 0 {
+			if _, err := link.Create(ctx.Context, r.DismissedLinks); err != nil {
 				return err
 			}
 		}

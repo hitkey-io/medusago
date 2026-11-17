@@ -16,7 +16,7 @@ import (
 )
 
 var createOrderFreshFields = []string{"shipping_address.*", "billing_address.*", "summary.*", "items.*", "credit_lines.*", "items.tax_lines.*",
-	"items.adjustments.*", "shipping_methods.*", "shipping_methods.tax_lines.*", "shipping_methods.adjustments.*", "transactions.*", "currency_code",
+	"items.adjustments.*", "shipping_methods.*", "shipping_methods.tax_lines.*", "shipping_methods.adjustments.*", "transactions.*", "metadata", "currency_code",
 	"items.tax_lines.*", "items.adjustments.*", "shipping_methods.tax_lines.*", "shipping_methods.adjustments.*", "total", "id", "email", "customer_id"}
 
 func copyRec(r *dal.Record) *dal.Record {

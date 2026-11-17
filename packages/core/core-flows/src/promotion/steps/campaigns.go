@@ -144,7 +144,11 @@ var AddCampaignPromotionsStep = composer.CreateStep("add-campaign-promotions",
 				return composer.StepResponse[any]{}, err
 			}
 		}
-		return composer.NewNullStepResponse[any](any(in)), nil
+		ids := in.Add
+		if ids == nil {
+			ids = []any{}
+		}
+		return composer.NewStepResponse[any](any(ids), any(in)), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		in, ok := data.(LinkInput)
@@ -163,7 +167,11 @@ var RemoveCampaignPromotionsStep = composer.CreateStep("remove-campaign-promotio
 				return composer.StepResponse[any]{}, err
 			}
 		}
-		return composer.NewNullStepResponse[any](any(in)), nil
+		ids := in.Remove
+		if ids == nil {
+			ids = []any{}
+		}
+		return composer.NewStepResponse[any](any(ids), any(in)), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		in, ok := data.(LinkInput)

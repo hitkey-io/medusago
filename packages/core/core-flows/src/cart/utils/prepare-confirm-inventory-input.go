@@ -65,6 +65,12 @@ func DeepFlatMap(data any, path string, callback func(ctx map[string]*dal.Record
 		}
 		if len(remaining) == 0 {
 			if isList {
+				// An empty leaf still describes a valid branch: the callback
+				// runs with the context gathered so far.
+				if len(list) == 0 {
+					callback(clone(f.ctx))
+					continue
+				}
 				for _, item := range list {
 					c := clone(f.ctx)
 					c[lastKey], _ = item.(*dal.Record)
@@ -130,6 +136,7 @@ func PrepareConfirmInventoryInput(in ConfirmVariantInventoryInput) ([]ConfirmInv
 	variants := map[any]variantInfo{}
 	availability := map[any]map[any]*totals.BigNumber{}
 	withLocation := map[any]bool{}
+	withInventoryItems := map[any]bool{}
 	hasManaged := false
 	channel := in.SalesChannelID
 
@@ -183,6 +190,7 @@ func PrepareConfirmInventoryInput(in ConfirmVariantInventoryInput) ([]ConfirmInv
 			}
 		}
 		if ii != nil {
+			withInventoryItems[Get(variant, "id")] = true
 			key := fmt.Sprintf("%v-%v", Get(ii, "inventory_item_id"), Get(ii, "variant_id"))
 			if _, ok := pviiMap[key]; !ok {
 				pviiKeys = append(pviiKeys, key)
@@ -205,6 +213,9 @@ func PrepareConfirmInventoryInput(in ConfirmVariantInventoryInput) ([]ConfirmInv
 		for _, id := range variantOrder {
 			v := variants[id]
 			if Truthy(v.manageInventory) && !withLocation[id] && !Truthy(v.allowBackord) && !itemBackorder[id] {
+				if !withInventoryItems[id] {
+					return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, fmt.Sprintf("Variant %v does not have any inventory items associated with it.", id))
+				}
 				return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, fmt.Sprintf("Sales channel %s is not associated with any stock location for variant %v.", channel, id))
 			}
 		}
