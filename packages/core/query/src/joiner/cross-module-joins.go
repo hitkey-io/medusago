@@ -425,27 +425,93 @@ func rewriteRootFilters(query *RemoteJoinerQuery, serviceConfig *ServiceConfig, 
 	if !ok || rootFilters == nil {
 		return
 	}
-	for _, key := range rootFilters.Keys() {
-		value, _ := rootFilters.Get(key)
-		filters, isRec := value.(*dal.Record)
-		if strings.HasPrefix(key, "$") || !isRec {
+	rewriteFiltersAtPath(nil, rootFilters, serviceConfig, catalog, registry, residual)
+}
+
+// rewriteFiltersAtPath mirrors rewriteFiltersAtPath: rewrites the
+// cross-module filters found in filters, located at pathSegments below the
+// root. Same-module relation filters are walked to reach cross-module paths
+// nested below them. Pushed filters are pruned, along with relation filters
+// they leave empty. Only top-level filters can be residual; nested filters
+// that can't be pushed down stay in place.
+func rewriteFiltersAtPath(pathSegments []string, filters *dal.Record, serviceConfig *ServiceConfig, catalog *GraphCatalog, registry *specRegistry, residual *[]ResidualCrossModuleFilter) {
+	isRoot := len(pathSegments) == 0
+	for _, key := range filters.Keys() {
+		value, _ := filters.Get(key)
+		nestedFilters, isRec := value.(*dal.Record)
+		if strings.HasPrefix(key, "$") || !isRec || nestedFilters == nil {
 			continue
 		}
-		res := resolveChain(serviceConfig, []string{key}, catalog)
+		segments := append(append([]string{}, pathSegments...), key)
+		res := resolveChain(serviceConfig, segments, catalog)
 		if res.outcome == "native" {
+			hadFilters := nestedFilters.Len() > 0
+			rewriteRelationFilters(segments, nestedFilters, serviceConfig, catalog, registry, residual)
+			if hadFilters && nestedFilters.Len() == 0 {
+				filters.Delete(key)
+			}
 			continue
 		}
+		// Paths that cross modules but cannot be pushed down are residual.
 		if res.outcome == "residual" {
-			*residual = append(*residual, ResidualCrossModuleFilter{Path: key, Filters: filters})
+			if isRoot {
+				*residual = append(*residual, ResidualCrossModuleFilter{Path: key, Filters: nestedFilters})
+			}
 			continue
 		}
-		candidates := collectCandidates([]string{key}, res.levels, filters, serviceConfig, catalog)
-		if candidates == nil || !registerCandidates(registry, candidates) {
-			*residual = append(*residual, ResidualCrossModuleFilter{Path: key, Filters: filters})
-			continue
+		if pushDownFilters(segments, res.levels, nestedFilters, serviceConfig, registry, catalog) {
+			filters.Delete(key)
+		} else if isRoot {
+			*residual = append(*residual, ResidualCrossModuleFilter{Path: key, Filters: nestedFilters})
 		}
-		rootFilters.Delete(key)
 	}
+}
+
+// rewriteRelationFilters mirrors rewriteRelationFilters: handles a
+// same-module path. Below a hasMany relation the cross-module filters and
+// their siblings must match the same child row, so the relation's filters
+// are pushed down as a whole, or not at all.
+func rewriteRelationFilters(pathSegments []string, filters *dal.Record, serviceConfig *ServiceConfig, catalog *GraphCatalog, registry *specRegistry, residual *[]ResidualCrossModuleFilter) {
+	hops := resolvePathHops(serviceConfig, pathSegments, catalog)
+	if len(hops) == 0 {
+		return
+	}
+	lastHop := hops[len(hops)-1]
+	if lastHop.kind != "internal" || !hasCrossModuleFilters(pathSegments, filters, serviceConfig, catalog) {
+		return
+	}
+	if lastHop.internal == nil || !lastHop.internal.IsList {
+		rewriteFiltersAtPath(pathSegments, filters, serviceConfig, catalog, registry, residual)
+		return
+	}
+	levels := buildChainLevels(hops, serviceConfig, catalog)
+	if levels != nil && pushDownFilters(pathSegments, levels, filters, serviceConfig, registry, catalog) {
+		for _, key := range filters.Keys() {
+			filters.Delete(key)
+		}
+	}
+}
+
+// hasCrossModuleFilters mirrors hasCrossModuleFilters.
+func hasCrossModuleFilters(pathSegments []string, filters *dal.Record, serviceConfig *ServiceConfig, catalog *GraphCatalog) bool {
+	for _, key := range filters.Keys() {
+		value, _ := filters.Get(key)
+		nested, isRec := value.(*dal.Record)
+		if strings.HasPrefix(key, "$") || !isRec || nested == nil {
+			continue
+		}
+		segments := append(append([]string{}, pathSegments...), key)
+		if resolveChain(serviceConfig, segments, catalog).outcome != "native" || hasCrossModuleFilters(segments, nested, serviceConfig, catalog) {
+			return true
+		}
+	}
+	return false
+}
+
+// pushDownFilters mirrors pushDownFilters.
+func pushDownFilters(pathSegments []string, levels []chainLevel, filters *dal.Record, rootConfig *ServiceConfig, registry *specRegistry, catalog *GraphCatalog) bool {
+	candidates := collectCandidates(pathSegments, levels, filters, rootConfig, catalog)
+	return candidates != nil && registerCandidates(registry, candidates)
 }
 
 // rewriteExpandFilters mirrors rewriteExpandFilters.

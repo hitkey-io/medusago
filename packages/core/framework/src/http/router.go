@@ -104,6 +104,8 @@ type ApiLoaderOptions struct {
 	AdminCors    string
 	StoreCors    string
 	AuthCors     string
+	// CorsOptions mirrors projectConfig.http.corsOptions.
+	CorsOptions CorsOptions
 	// Authenticate builds the authenticate middleware (avoids an import
 	// cycle with the middlewares package).
 	Authenticate func(actorType []string, authType []string, opts AuthenticateOptions) MiddlewareFunction
@@ -270,7 +272,7 @@ func LoadAPI(app *App, o ApiLoaderOptions) {
 	}
 
 	applyCors := func(namespace string, cors string, pick func(RouteDescriptor) bool) {
-		fn := Cors(ParseCorsOrigins(cors))
+		fn := Cors(ParseCorsOrigins(cors), o.CorsOptions)
 		app.Use(namespace, func(req *MedusaRequest, res *MedusaResponse, next NextFunction) error {
 			method := req.Method
 			if method == "OPTIONS" {

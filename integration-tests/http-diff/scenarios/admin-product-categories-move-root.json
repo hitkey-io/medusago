@@ -1,0 +1,13 @@
+[
+  { "name": "login", "method": "POST", "path": "/auth/user/emailpass", "body": { "email": "admin@medusa-test.com", "password": "supersecret" } },
+  { "name": "root", "method": "POST", "bearer": "login", "path": "/admin/product-categories?fields=id,name,rank,mpath,parent_category_id", "body": { "name": "Outdoor Gear" } },
+  { "name": "child", "method": "POST", "bearer": "login", "path": "/admin/product-categories?fields=id,name,rank,mpath,parent_category_id", "body": { "name": "Tents", "parent_category_id": "{{root.product_category.id}}" } },
+  { "name": "grand", "method": "POST", "bearer": "login", "path": "/admin/product-categories?fields=id,name,rank,mpath,parent_category_id", "body": { "name": "Dome tents", "parent_category_id": "{{child.product_category.id}}" } },
+  { "name": "great", "method": "POST", "bearer": "login", "path": "/admin/product-categories?fields=id,name,rank,mpath,parent_category_id", "body": { "name": "Two person", "parent_category_id": "{{grand.product_category.id}}" } },
+  { "name": "move_to_root", "method": "POST", "bearer": "login", "path": "/admin/product-categories/{{child.product_category.id}}?fields=id,name,rank,mpath,parent_category_id", "body": { "parent_category_id": null } },
+  { "name": "list_after", "method": "GET", "bearer": "login", "path": "/admin/product-categories?order=name&fields=id,name,rank,mpath,parent_category_id&limit=100" },
+  { "name": "tree_after", "method": "GET", "bearer": "login", "path": "/admin/product-categories/{{grand.product_category.id}}?include_descendants_tree=true&fields=id,name,mpath,*category_children" },
+  { "name": "ancestors_after", "method": "GET", "bearer": "login", "path": "/admin/product-categories/{{grand.product_category.id}}?include_ancestors_tree=true&fields=id,name,mpath,*parent_category" },
+  { "name": "move_back", "method": "POST", "bearer": "login", "path": "/admin/product-categories/{{child.product_category.id}}?fields=id,name,rank,mpath,parent_category_id", "body": { "parent_category_id": "{{root.product_category.id}}" } },
+  { "name": "list_back", "method": "GET", "bearer": "login", "path": "/admin/product-categories?order=name&fields=id,name,rank,mpath,parent_category_id&limit=100" }
+]

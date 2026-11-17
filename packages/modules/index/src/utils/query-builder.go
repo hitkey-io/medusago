@@ -670,7 +670,7 @@ type joinEntity struct {
 	alias     string
 }
 
-func (q *QueryBuilder) buildQueryParts(structure any, parentAlias string, parentEntity *SchemaPropertiesMapEntry, parentProperty string, aliasPath []string, level int, am *aliasMap) ([]string, error) {
+func (q *QueryBuilder) buildQueryParts(structure any, parentAlias string, parentEntity *SchemaPropertiesMapEntry, parentProperty string, aliasPath []string, level int, am *aliasMap) ([]knexRaw, error) {
 	currentAliasPath := strings.Join(append(append([]string(nil), aliasPath...), parentProperty), ".")
 	isSelectableField := q.allSchemaFields[parentProperty]
 	entities, _ := q.getEntity(currentAliasPath, false)
@@ -714,7 +714,7 @@ func (q *QueryBuilder) buildQueryParts(structure any, parentAlias string, parent
 		}
 	}
 
-	var queryParts []string
+	var queryParts []knexRaw
 	for _, join := range allEntities {
 		joinBuilder := newKnexBuilder()
 		alias := join.alias
@@ -754,13 +754,15 @@ func (q *QueryBuilder) buildQueryParts(structure any, parentAlias string, parent
 					break
 				}
 			}
-			sql, err := joinBuilder.ToQuery()
+			// joinBuilder.toSQL(): the values stay bound, so a `?` inside one
+			// is not taken for a placeholder of the query it is joined into.
+			sql, bindings, err := joinBuilder.toSQL()
 			if err != nil {
 				return nil, err
 			}
 			sql = strings.Replace(sql, "select * ", "", 1)
 			sql = strings.Replace(sql, "where", "and", 1)
-			queryParts = append(queryParts, sql)
+			queryParts = append(queryParts, knexRaw{sql: sql, bindings: bindings})
 		}
 	}
 
@@ -771,11 +773,7 @@ func (q *QueryBuilder) buildQueryParts(structure any, parentAlias string, parent
 		if err != nil {
 			return nil, err
 		}
-		for _, p := range parts {
-			if p != "" {
-				queryParts = append(queryParts, p)
-			}
-		}
+		queryParts = append(queryParts, parts...)
 	}
 	return queryParts, nil
 }
@@ -1014,14 +1012,14 @@ func (q *QueryBuilder) BuildQuery(hasPagination, hasCount bool) (sql string, sql
 	}
 	inner.From("cat_" + NormalizeTableName(rootEntity) + " AS " + q.getShortAlias(am, rootKey, 0))
 	for _, p := range joinParts {
-		inner.JoinRaw(p)
+		inner.JoinRaw(p.sql, p.bindings...)
 	}
 
 	if hasTextSearch {
 		searchWhereParts := []string{rootAlias + "." + q.searchVectorColumnName + " @@ plainto_tsquery('simple', ?)"}
 		for _, part := range joinParts {
 			var chunks []string
-			for _, c := range strings.Split(part, " as ") {
+			for _, c := range strings.Split(part.sql, " as ") {
 				chunks = append(chunks, strings.Split(c, " on ")...)
 			}
 			for _, alias := range chunks {
@@ -1070,11 +1068,11 @@ func (q *QueryBuilder) BuildQuery(hasPagination, hasCount bool) (sql string, sql
 	}
 
 	outer.From("cat_" + NormalizeTableName(rootEntity) + " AS " + q.getShortAlias(am, rootKey, 0))
-	innerSQL, err := inner.ToQuery()
+	innerSQL, innerBindings, err := inner.toSQL()
 	if err != nil {
 		return "", "", err
 	}
-	outer.JoinRaw("INNER JOIN (" + innerSQL + ") AS paginated_ids ON " + rootAlias + ".id = paginated_ids.id")
+	outer.JoinRaw("INNER JOIN ("+innerSQL+") AS paginated_ids ON "+rootAlias+".id = paginated_ids.id", innerBindings...)
 	if err := q.parseWhere(am, filter, outer, ""); err != nil {
 		return "", "", err
 	}
@@ -1083,7 +1081,7 @@ func (q *QueryBuilder) BuildQuery(hasPagination, hasCount bool) (sql string, sql
 		return "", "", err
 	}
 	for _, p := range outerParts {
-		outer.JoinRaw(p)
+		outer.JoinRaw(p.sql, p.bindings...)
 	}
 	sp := &selectParts{values: map[string]selectPart{}}
 	q.buildSelectParts(get(selectOnlyStructure, rootKey), rootKey, am, nil, sp)

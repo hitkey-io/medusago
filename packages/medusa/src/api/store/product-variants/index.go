@@ -59,7 +59,7 @@ var StoreProductVariantParams = utils.CreateSelectParams().Merge(contextFields)
 var StoreProductVariantListParams = utils.CreateFindParams(utils.FindParamsOptions{Offset: utils.Num(0), Limit: utils.Num(20)}).
 	Merge(contextFields).Merge(filterFields).Merge(commonvalidators.ApplyAndAndOrOperators(filterFields))
 
-var link = httputils.LinkFilterOptions{EntryPoint: "product_sales_channel", ResourceID: "product_id", FilterableField: "sales_channel_id", FilterByField: "product.id"}
+var salesChannelFilter = httputils.CrossModuleFilterOptions{FilterableField: "sales_channel_id", RelationPath: "product.sales_channels.id"}
 
 func publishedProduct() middlewares.DefaultFilter {
 	v := dal.NewRecord()
@@ -70,7 +70,7 @@ func publishedProduct() middlewares.DefaultFilter {
 func chain(first ...medusahttp.MiddlewareFunction) []medusahttp.MiddlewareFunction {
 	return append(first,
 		productmw.FilterByValidSalesChannels(),
-		httputils.MaybeApplyLinkFilter(link),
+		httputils.ApplyCrossModuleFilter(salesChannelFilter),
 		middlewares.ApplyDefaultFilters(publishedProduct()),
 		productmw.NormalizeDataForContext("calculated_price"),
 		productmw.SetPricingContext("calculated_price"),
@@ -153,7 +153,7 @@ func graph(req *medusahttp.MedusaRequest, filters *dal.Record, pagination *dal.R
 
 // GET mirrors GET.
 func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
-	r, withInventory, err := graph(req, req.FilterableFields, req.QueryConfig.Pagination, caching.Enabled())
+	r, withInventory, err := graph(req, req.FilterableFields, req.QueryConfig.Pagination, products.ListCacheOptions())
 	if err != nil {
 		return err
 	}

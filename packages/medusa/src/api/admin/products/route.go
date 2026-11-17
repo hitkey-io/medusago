@@ -7,17 +7,8 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 )
 
-// GET mirrors GET: with the index engine, the filtered listings go
-// through query.index (getProductsWithIndexEngine).
+// GET mirrors GET.
 func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
-	if indexEngineEnabled(req) && useIndexEngine(req) {
-		return getProductsWithIndexEngine(req, res)
-	}
-	return getProducts(req, res)
-}
-
-// getProducts mirrors getProducts.
-func getProducts(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	withDeleted := req.QueryConfig.WithDeleted != nil && *req.QueryConfig.WithDeleted
 	r, err := httputils.RefetchEntities(req.Ctx(), req.Scope, httputils.RefetchEntitiesInput{
 		Entity: "product", IDOrFilter: req.FilterableFields, Fields: RemapKeysForProduct(req.QueryConfig.Fields),
@@ -31,7 +22,12 @@ func getProducts(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) 
 		products[i] = RemapProductResponse(p)
 	}
 	r.Data = products
-	return res.JSON(httputils.ListResponse("products", r))
+	out := httputils.ListResponse("products", r)
+	// TODO upstream: remove estimate_count in the next minor release.
+	if indexEngineEnabled(req) {
+		withEstimateCount(out)
+	}
+	return res.JSON(out)
 }
 
 // POST mirrors POST.

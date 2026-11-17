@@ -20,13 +20,11 @@ var (
 	ListProductQueryConfig     = httputils.QueryConfig{Defaults: DefaultStoreProductFields, Allowed: allowed, StoreRelationsLimit: 4, DefaultLimit: 50, IsList: true}
 )
 
-var productSalesChannelLink = httputils.LinkFilterOptions{EntryPoint: "product_sales_channel", ResourceID: "product_id", FilterableField: "sales_channel_id"}
+var productSalesChannelFilter = httputils.CrossModuleFilterOptions{FilterableField: "sales_channel_id", RelationPath: "sales_channels.id"}
 
-// applyMaybeLinkFilterIfNecessary mirrors applyMaybeLinkFilterIfNecessary
-// (the index engine filters on sales channels itself).
-func applyMaybeLinkFilterIfNecessary(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, next medusahttp.NextFunction) error {
-	canUseIndex := !(featureflags.IsPresent(get(req.FilterableFields, "tags")) || featureflags.IsPresent(get(req.FilterableFields, "categories")))
-	if indexEngineEnabled(req) && canUseIndex {
+// applySalesChannelCrossModuleFilter mirrors applySalesChannelCrossModuleFilter.
+func applySalesChannelCrossModuleFilter(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, next medusahttp.NextFunction) error {
+	if !featureflags.IsPresent(get(req.FilterableFields, "sales_channel_id")) {
 		next(nil)
 		return nil
 	}
@@ -48,7 +46,7 @@ func applyMaybeLinkFilterIfNecessary(req *medusahttp.MedusaRequest, res *medusah
 		next(nil)
 		return nil
 	}
-	return httputils.MaybeApplyLinkFilter(productSalesChannelLink)(req, res, next)
+	return httputils.ApplyCrossModuleFilter(productSalesChannelFilter)(req, res, next)
 }
 
 func authenticateCustomer() medusahttp.MiddlewareFunction {
@@ -63,7 +61,7 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 		authenticateCustomer(),
 		httputils.ValidateAndTransformQuery(StoreGetProductsParams, ListProductQueryConfig),
 		productmw.FilterByValidSalesChannels(),
-		applyMaybeLinkFilterIfNecessary,
+		applySalesChannelCrossModuleFilter,
 		middlewares.ApplyDefaultFilters(published, middlewares.DefaultFilter{Key: "categories", Fn: func(filters *dal.Record, fields []string) any {
 			ids, _ := filters.Get("category_id")
 			filters.Delete("category_id")
@@ -86,7 +84,7 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 		httputils.ValidateAndTransformQuery(StoreGetProductsParams, RetrieveProductQueryConfig),
 		middlewares.ApplyParamsAsFilters(map[string]string{"id": "id"}),
 		productmw.FilterByValidSalesChannels(),
-		httputils.MaybeApplyLinkFilter(productSalesChannelLink),
+		httputils.ApplyCrossModuleFilter(productSalesChannelFilter),
 		middlewares.ApplyDefaultFilters(published),
 		productmw.NormalizeDataForContext(),
 		productmw.SetPricingContext(),

@@ -118,22 +118,79 @@ func (s *ProductModuleService) categoryEvent(ctx context.Context, action string,
 	s.SaveEvent(ctx, utilsmodulessdk.ModuleEventBuilderFactory(utilsmodulessdk.PRODUCT, action, "product_category", "product.product-category."+action)(ids...))
 }
 
+// parentKey is entry.parent_category_id || null.
+func parentKey(entry *dal.Record) any {
+	parentID, _ := entry.Get("parent_category_id")
+	if parentID == "" || parentID == false {
+		return nil
+	}
+	return parentID
+}
+
+// parentLookupID is categoryData.parent_category_id ?? categoryData.parent_category?.id.
+func parentLookupID(entry *dal.Record) any {
+	if id, _ := entry.Get("parent_category_id"); id != nil {
+		return id
+	}
+	if parent, ok := func() any { x, _ := entry.Get("parent_category"); return x }().(*dal.Record); ok && parent != nil {
+		id, _ := parent.Get("id")
+		return id
+	}
+	return nil
+}
+
 func (s *ProductModuleService) createCategories(ctx context.Context, data []*dal.Record) ([]*dal.Record, error) {
-	var out []*dal.Record
-	for i, entry := range data {
-		c := clone(entry)
-		if v, _ := c.Get("handle"); v == nil {
-			c.Set("handle", KebabCase(strOf(c, "name")))
+	// Count the siblings of every parent before creating any category: the
+	// next rank of a parent then grows with each category created under it.
+	var parentIDs []any
+	nextRank := map[any]float64{}
+	for _, entry := range data {
+		parentID := parentKey(entry)
+		if _, seen := nextRank[parentID]; seen {
+			continue
 		}
-		parentID, _ := c.Get("parent_category_id")
-		if parentID == "" {
-			parentID = nil
-		}
+		nextRank[parentID] = 0
+		parentIDs = append(parentIDs, parentID)
+	}
+	for _, parentID := range parentIDs {
 		siblings, err := s.countSiblings(ctx, parentID)
 		if err != nil {
 			return nil, err
 		}
-		max := float64(siblings + i)
+		nextRank[parentID] = float64(siblings)
+	}
+	// The parents are loaded once, before any category is created.
+	var lookupIDs []any
+	seenLookup := map[string]bool{}
+	for _, entry := range data {
+		id := parentLookupID(entry)
+		if s, ok := id.(string); ok && s != "" && !seenLookup[s] {
+			seenLookup[s] = true
+			lookupIDs = append(lookupIDs, s)
+		}
+	}
+	parentsByID := map[string]*dal.Record{}
+	if len(lookupIDs) > 0 {
+		f := dal.NewRecord()
+		f.Set("id", lookupIDs)
+		rows, err := s.categories().List(ctx, f, utilsmodulessdk.FindConfig{})
+		if err != nil {
+			return nil, err
+		}
+		for _, r := range rows {
+			parentsByID[strOf(r, "id")] = r
+		}
+	}
+
+	var out []*dal.Record
+	for _, entry := range data {
+		c := clone(entry)
+		if v, _ := c.Get("handle"); v == nil {
+			c.Set("handle", KebabCase(strOf(c, "name")))
+		}
+		parentID := parentKey(entry)
+		max := nextRank[parentID]
+		nextRank[parentID] = max + 1
 		rank, hasRank := numberOf(func() any { x, _ := c.Get("rank"); return x }())
 		if !hasRank || rank > max {
 			rank = max
@@ -149,13 +206,11 @@ func (s *ProductModuleService) createCategories(ctx context.Context, data []*dal
 			}
 		}
 		var parent *dal.Record
-		if parentID != nil {
-			parent, err = s.findCategory(ctx, parentID)
-			if err != nil {
-				return nil, err
-			}
+		if lookupID := parentLookupID(c); lookupID != nil && lookupID != "" {
+			key, _ := lookupID.(string)
+			parent = parentsByID[key]
 			if parent == nil {
-				return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_ARGUMENT, fmt.Sprintf("Parent category with id: '%v' does not exist", parentID))
+				return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_ARGUMENT, fmt.Sprintf("Parent category with id: '%v' does not exist", lookupID))
 			}
 		}
 		id := common.GenerateEntityID(strOf(c, "id"), "pcat")
@@ -269,9 +324,10 @@ func (s *ProductModuleService) updateCategories(ctx context.Context, data []*dal
 		var mpathUpdates []any
 		switch {
 		case parentGiven && fmt.Sprint(newParent) != fmt.Sprint(curParent):
-			if newParent == nil {
-				c.Set("mpath", "")
-			} else {
+			// updateMpathRecursively: the category and its descendants get
+			// the new base mpath (the category id alone at the root).
+			base := id
+			if newParent != nil {
 				parent, err := s.findCategory(ctx, newParent)
 				if err != nil {
 					return nil, err
@@ -279,19 +335,19 @@ func (s *ProductModuleService) updateCategories(ctx context.Context, data []*dal
 				if parent == nil {
 					return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_ARGUMENT, fmt.Sprintf("Parent category with id: '%v' does not exist", newParent))
 				}
-				base := strOf(parent, "mpath") + "." + id
-				c.Set("mpath", base)
-				oldMpath := strOf(current, "mpath")
-				desc, err := dal.QueryRows(ctx, s.db, `select "id", "mpath" from "product_category" where "mpath" like $1 and "deleted_at" is null`, oldMpath+".%")
-				if err != nil {
-					return nil, dal.MapDBError(err)
-				}
-				for _, d := range desc {
-					u := dal.NewRecord()
-					u.Set("id", d["id"])
-					u.Set("mpath", base+fmt.Sprint(d["mpath"])[len(oldMpath):])
-					mpathUpdates = append(mpathUpdates, u)
-				}
+				base = strOf(parent, "mpath") + "." + id
+			}
+			c.Set("mpath", base)
+			oldMpath := strOf(current, "mpath")
+			desc, err := dal.QueryRows(ctx, s.db, `select "id", "mpath" from "product_category" where "mpath" like $1 and "deleted_at" is null`, oldMpath+".%")
+			if err != nil {
+				return nil, dal.MapDBError(err)
+			}
+			for _, d := range desc {
+				u := dal.NewRecord()
+				u.Set("id", d["id"])
+				u.Set("mpath", base+fmt.Sprint(d["mpath"])[len(oldMpath):])
+				mpathUpdates = append(mpathUpdates, u)
 			}
 			siblings, err := s.countSiblings(ctx, newParent)
 			if err != nil {

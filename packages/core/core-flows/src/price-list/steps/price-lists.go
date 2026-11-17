@@ -307,22 +307,72 @@ var CreatePriceListPricesStep = composer.CreateStep("create-price-list-prices",
 		return pricing(ctx.Container).RemovePrices(ctx.Context, ids)
 	})
 
-// UpdatePriceListPricesStep mirrors updatePriceListPricesStep. Upstream
-// iterates its map of the prices before the update with Object.entries, so
-// the compensation data is always empty and the compensation restores
-// nothing; it is kept so the step is compensated like upstream.
+// buildPriceSetPricesForModule mirrors buildPriceSetPricesForModule:
+// { ...price, price_set_id: price.price_set?.id, rules }.
+func buildPriceSetPricesForModule(prices []*dal.Record) []any {
+	out := make([]any, 0, len(prices))
+	for _, price := range prices {
+		r := dal.NewRecord()
+		for _, k := range price.Keys() {
+			v, _ := price.Get(k)
+			r.Set(k, v)
+		}
+		ps, _ := get(price, "price_set").(*dal.Record)
+		r.Set("price_set_id", get(ps, "id"))
+		// buildPriceSetRules: undefined without price_rules
+		if price.Has("price_rules") {
+			rules := dal.NewRecord()
+			for _, rule := range records(get(price, "price_rules")) {
+				rules.Set(fmt.Sprint(get(rule, "attribute")), get(rule, "value"))
+			}
+			r.Set("rules", rules)
+		}
+		out = append(out, r)
+	}
+	return out
+}
+
+// UpdatePriceListPricesStep mirrors updatePriceListPricesStep: the
+// compensation restores the prices as they were before the update.
 var UpdatePriceListPricesStep = composer.CreateStep("update-price-list-prices",
 	func(ctx composer.StepExecutionContext, in PriceListsStepInput) (composer.StepResponse[[]*dal.Record], error) {
-		data, _ := priceListPrices(in, false)
+		data, priceIDs := priceListPrices(in, false)
 		if len(data) == 0 {
-			return composer.NewStepResponse([]*dal.Record{}, any([]any{})), nil
+			return composer.NewStepResponse([]*dal.Record{}), nil
 		}
-		updated, err := pricing(ctx.Container).UpdatePriceListPrices(ctx.Context, data)
+		svc := pricing(ctx.Container)
+		var existing []*dal.Record
+		if len(priceIDs) > 0 {
+			f := dal.NewRecord()
+			f.Set("id", priceIDs)
+			var err error
+			existing, err = svc.ListBySuffix(ctx.Context, "Prices", f, utilsmodulessdk.FindConfig{Relations: []string{"price_list", "price_set", "price_rules"}})
+			if err != nil {
+				return composer.StepResponse[[]*dal.Record]{}, err
+			}
+		}
+		var listIDs []string
+		byList := map[string][]*dal.Record{}
+		for _, price := range existing {
+			pl, _ := get(price, "price_list").(*dal.Record)
+			id := fmt.Sprint(get(pl, "id"))
+			if _, seen := byList[id]; !seen {
+				listIDs = append(listIDs, id)
+			}
+			byList[id] = append(byList[id], price)
+		}
+		before := make([]any, 0, len(listIDs))
+		for _, id := range listIDs {
+			r := dal.NewRecord()
+			r.Set("price_list_id", id)
+			r.Set("prices", buildPriceSetPricesForModule(byList[id]))
+			before = append(before, r)
+		}
+		updated, err := svc.UpdatePriceListPrices(ctx.Context, data)
 		if err != nil {
 			return composer.StepResponse[[]*dal.Record]{}, err
 		}
-		// dataBeforePriceUpdate
-		return composer.NewStepResponse(updated, any([]any{})), nil
+		return composer.NewStepResponse(updated, any(before)), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		before, _ := data.([]any)

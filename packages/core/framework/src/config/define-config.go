@@ -26,6 +26,30 @@ type HttpConfig struct {
 	RestrictedFields        struct {
 		Store []string `json:"store" yaml:"store"`
 	} `json:"restrictedFields" yaml:"restrictedFields"`
+	// CorsOptions mirrors http.corsOptions: additional CORS options of the
+	// /admin, /store and /auth routes.
+	CorsOptions *HttpCorsOptions `json:"corsOptions,omitempty" yaml:"corsOptions,omitempty"`
+	// SecurityHeaders mirrors http.securityHeaders.
+	SecurityHeaders *HttpSecurityHeadersOptions `json:"securityHeaders,omitempty" yaml:"securityHeaders,omitempty"`
+}
+
+// HttpSecurityHeadersOptions mirrors HttpSecurityHeadersOptions: the
+// security headers set on every response.
+type HttpSecurityHeadersOptions struct {
+	// Enabled defaults to true.
+	Enabled *bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	// FrameAncestors defaults to ["'self'"]; when set, X-Frame-Options is
+	// not sent.
+	FrameAncestors []string `json:"frameAncestors,omitempty" yaml:"frameAncestors,omitempty"`
+}
+
+// HttpCorsOptions mirrors HttpCorsOptions. ExposedHeaders, AllowedHeaders
+// and Methods are a string or a list of strings.
+type HttpCorsOptions struct {
+	MaxAge         *float64 `json:"maxAge,omitempty" yaml:"maxAge,omitempty"`
+	ExposedHeaders any      `json:"exposedHeaders,omitempty" yaml:"exposedHeaders,omitempty"`
+	AllowedHeaders any      `json:"allowedHeaders,omitempty" yaml:"allowedHeaders,omitempty"`
+	Methods        any      `json:"methods,omitempty" yaml:"methods,omitempty"`
 }
 
 // SessionOptions mirrors projectConfig.sessionOptions.

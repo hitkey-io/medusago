@@ -276,7 +276,9 @@ func finalNotFound(req *MedusaRequest, res *MedusaResponse) {
 		html.EscapeString(msg) + "</pre>\n</body>\n</html>\n"
 	h := res.Header()
 	for k := range h {
-		if k != "X-Powered-By" {
+		// finalhandler keeps the headers set before it (X-Powered-By, the
+		// security headers of applySecurityHeaders).
+		if k != "X-Powered-By" && k != "X-Frame-Options" {
 			h.Del(k)
 		}
 	}

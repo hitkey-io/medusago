@@ -123,6 +123,7 @@ func (s *IndexModuleService) eventBus() eventBus {
 // synchronisation of the changed entities (awaited, before the server
 // accepts requests).
 func (s *IndexModuleService) OnApplicationStart(ctx context.Context) error {
+	s.logger.Warn(modulessdk.IndexModuleDeprecationMessage)
 	if err := s.onApplicationStart(ctx); err != nil {
 		s.logger.Error(err.Error())
 	}

@@ -24,59 +24,29 @@ func WrapInventoryQuantity(req *medusahttp.MedusaRequest, variants []any) error 
 	return productmw.WrapVariantsWithInventoryQuantityForSalesChannel(req.Ctx(), httputils.QueryOf(req.Scope), variants, reqIDs, keyIDs)
 }
 
-// GET mirrors GET: with the index engine, query.index unless filtering on
-// what the index does not hold (tags, categories, options).
-func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
-	if indexEngineEnabled(req) {
-		for _, k := range []string{"tags", "categories", "option_value_id", "options"} {
-			if featureflags.IsPresent(get(req.FilterableFields, k)) {
-				return getProducts(req, res, false)
-			}
-		}
-		return getProducts(req, res, true)
-	}
-	return getProducts(req, res, false)
+// translationListCacheTag mirrors TRANSLATION_LIST_CACHE_TAG.
+const translationListCacheTag = "Translation:list:*"
+
+// ListCacheOptions is the cache option of the store product and variant
+// listings: { enable: true, tags: [TRANSLATION_LIST_CACHE_TAG],
+// computeAutomaticTags: true }.
+func ListCacheOptions() *caching.CacheOptions {
+	c := caching.WithTags(true, translationListCacheTag)
+	c.Enable = caching.Enabled().Enable
+	return c
 }
 
-// getProducts mirrors getProducts, and getProductsWithIndexEngine when
-// withIndex is set.
-func getProducts(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, withIndex bool) error {
+// GET mirrors GET.
+func GET(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse) error {
 	fields, withInventory := productmw.PrepareInventoryQuantityFields(req.QueryConfig.Fields, "variants")
 	req.QueryConfig.Fields = fields
-	var r *query.GraphResult
-	var err error
-	if withIndex {
-		filters := req.FilterableFields
-		if ids := get(filters, "sales_channel_id"); featureflags.IsPresent(ids) {
-			sc, ok := get(filters, "sales_channels").(*dal.Record)
-			if !ok {
-				sc = dal.NewRecord()
-				filters.Set("sales_channels", sc)
-			}
-			sc.Set("id", ids)
-			filters.Delete("sales_channel_id")
-		}
-		if featureflags.IsPresent(get(filters, "q")) {
-			if _, ok := get(filters, "variants").(*dal.Record); !ok {
-				filters.Set("variants", dal.NewRecord())
-			}
-		}
-		r, err = httputils.QueryOf(req.Scope).Index(req.Ctx(), query.GraphInput{
-			Entity:     "product",
-			Fields:     req.QueryConfig.Fields,
-			Filters:    filters,
-			Pagination: req.QueryConfig.Pagination,
-			Context:    PricingQueryContext(req),
-		}, nil, joiner.Options{Cache: caching.Enabled(), Locale: req.Locale})
-	} else {
-		r, err = httputils.QueryOf(req.Scope).Graph(req.Ctx(), query.GraphInput{
-			Entity:     "product",
-			Fields:     req.QueryConfig.Fields,
-			Filters:    req.FilterableFields,
-			Pagination: req.QueryConfig.Pagination,
-			Context:    PricingQueryContext(req),
-		}, joiner.Options{Cache: caching.Enabled(), Locale: req.Locale})
-	}
+	r, err := httputils.QueryOf(req.Scope).Graph(req.Ctx(), query.GraphInput{
+		Entity:     "product",
+		Fields:     req.QueryConfig.Fields,
+		Filters:    req.FilterableFields,
+		Pagination: req.QueryConfig.Pagination,
+		Context:    PricingQueryContext(req),
+	}, joiner.Options{Cache: ListCacheOptions(), Locale: req.Locale})
 	if err != nil {
 		return err
 	}
@@ -101,11 +71,10 @@ func getProducts(req *medusahttp.MedusaRequest, res *medusahttp.MedusaResponse, 
 	}
 	out := dal.NewRecord()
 	out.Set("products", data)
-	if withIndex {
-		out.Set("count", get(r.Metadata, "estimate_count"))
-		out.Set("estimate_count", get(r.Metadata, "estimate_count"))
-	} else {
-		out.Set("count", get(r.Metadata, "count"))
+	out.Set("count", get(r.Metadata, "count"))
+	// TODO upstream: remove estimate_count in the next minor release.
+	if indexEngineEnabled(req) {
+		out.Set("estimate_count", get(r.Metadata, "count"))
 	}
 	out.Set("offset", get(r.Metadata, "skip"))
 	out.Set("limit", get(r.Metadata, "take"))
