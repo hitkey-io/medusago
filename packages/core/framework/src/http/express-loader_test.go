@@ -47,6 +47,21 @@ func TestApplySecurityHeaders(t *testing.T) {
 	}
 }
 
+func TestSecurityHeadersOnNotFound(t *testing.T) {
+	w := httptest.NewRecorder()
+	securityApp(nil).ServeHTTP(w, httptest.NewRequest("GET", "/missing", nil))
+	h := w.Header()
+	for k, want := range map[string]string{
+		"X-Content-Type-Options":  "nosniff",
+		"X-Frame-Options":         "SAMEORIGIN",
+		"Content-Security-Policy": "default-src 'none'",
+	} {
+		if got := h.Get(k); got != want {
+			t.Errorf("%s = %q, want %q", k, got, want)
+		}
+	}
+}
+
 func TestCorsOptions(t *testing.T) {
 	maxAge := 7200.0
 	app := NewApp()
