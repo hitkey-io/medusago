@@ -324,9 +324,10 @@ func (s *ProductModuleService) updateCategories(ctx context.Context, data []*dal
 		var mpathUpdates []any
 		switch {
 		case parentGiven && fmt.Sprint(newParent) != fmt.Sprint(curParent):
-			if newParent == nil {
-				c.Set("mpath", "")
-			} else {
+			// updateMpathRecursively: the category and its descendants get
+			// the new base mpath (the category id alone at the root).
+			base := id
+			if newParent != nil {
 				parent, err := s.findCategory(ctx, newParent)
 				if err != nil {
 					return nil, err
@@ -334,19 +335,19 @@ func (s *ProductModuleService) updateCategories(ctx context.Context, data []*dal
 				if parent == nil {
 					return nil, common.NewMedusaError(common.MedusaErrorTypes.INVALID_ARGUMENT, fmt.Sprintf("Parent category with id: '%v' does not exist", newParent))
 				}
-				base := strOf(parent, "mpath") + "." + id
-				c.Set("mpath", base)
-				oldMpath := strOf(current, "mpath")
-				desc, err := dal.QueryRows(ctx, s.db, `select "id", "mpath" from "product_category" where "mpath" like $1 and "deleted_at" is null`, oldMpath+".%")
-				if err != nil {
-					return nil, dal.MapDBError(err)
-				}
-				for _, d := range desc {
-					u := dal.NewRecord()
-					u.Set("id", d["id"])
-					u.Set("mpath", base+fmt.Sprint(d["mpath"])[len(oldMpath):])
-					mpathUpdates = append(mpathUpdates, u)
-				}
+				base = strOf(parent, "mpath") + "." + id
+			}
+			c.Set("mpath", base)
+			oldMpath := strOf(current, "mpath")
+			desc, err := dal.QueryRows(ctx, s.db, `select "id", "mpath" from "product_category" where "mpath" like $1 and "deleted_at" is null`, oldMpath+".%")
+			if err != nil {
+				return nil, dal.MapDBError(err)
+			}
+			for _, d := range desc {
+				u := dal.NewRecord()
+				u.Set("id", d["id"])
+				u.Set("mpath", base+fmt.Sprint(d["mpath"])[len(oldMpath):])
+				mpathUpdates = append(mpathUpdates, u)
 			}
 			siblings, err := s.countSiblings(ctx, newParent)
 			if err != nil {
