@@ -44,6 +44,9 @@ type testCase struct {
 	// upstream returns in a nondeterministic order (e.g. rows of a hash join)
 	// to the item field they are compared sorted by.
 	SortBy map[string]string `json:"sortby"`
+	// PlainErrors records an error that is not a MedusaError (upstream
+	// e.name "Error") instead of failing the case.
+	PlainErrors bool `json:"plain_errors"`
 }
 
 // setupDatabase creates a database migrated by the Go implementation and
@@ -274,6 +277,15 @@ func run(ctx context.Context, svc *modulessdk.MedusaService, custom any, q *quer
 			e := dal.NewRecord()
 			e.Set("type", me.Type)
 			e.Set("message", me.Message)
+			out := dal.NewRecord()
+			out.Set("error", e)
+			return out.MarshalJSON()
+		}
+		// plain errors ({ type: e.name }), e.g. promiseAll aggregated errors
+		if c.PlainErrors {
+			e := dal.NewRecord()
+			e.Set("type", "Error")
+			e.Set("message", err.Error())
 			out := dal.NewRecord()
 			out.Set("error", e)
 			return out.MarshalJSON()

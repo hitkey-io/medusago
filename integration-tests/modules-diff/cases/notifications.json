@@ -1,0 +1,11 @@
+[
+  {"name": "fail", "module": "notification", "service": true, "plain_errors": true, "method": "createNotifications", "args": [{"to": "customer@example.test", "template": "order-placed", "channel": "email", "data": {"a": 1}, "idempotency_key": "retry-key"}]},
+  {"name": "failed", "module": "notification", "method": "listNotifications", "args": [{"idempotency_key": "retry-key"}]},
+  {"name": "retry", "module": "notification", "service": true, "method": "createNotifications", "args": [{"to": "admin@example.test", "template": "order-placed", "channel": "feed", "data": {"a": 2}, "idempotency_key": "retry-key"}]},
+  {"name": "retried", "module": "notification", "method": "listNotifications", "args": [{"id": "{{failed.result.0.id}}"}]},
+  {"name": "again", "module": "notification", "service": true, "method": "createNotifications", "args": [{"to": "admin@example.test", "template": "order-placed", "channel": "feed", "data": {"a": 3}, "idempotency_key": "retry-key"}]},
+  {"name": "all", "module": "notification", "method": "listNotifications", "args": [{"idempotency_key": "retry-key"}]},
+  {"name": "batch", "module": "notification", "service": true, "plain_errors": true, "method": "createNotifications", "args": [[{"to": "a@example.test", "template": "t", "channel": "email", "data": {}, "idempotency_key": "batch-key"}, {"to": "b@example.test", "template": "t", "channel": "feed", "data": {}, "idempotency_key": "batch-sibling"}]]},
+  {"name": "batch_retry", "module": "notification", "service": true, "method": "createNotifications", "args": [[{"to": "a@example.test", "template": "t", "channel": "feed", "data": {}, "idempotency_key": "batch-key"}, {"to": "c@example.test", "template": "t", "channel": "feed", "data": {}, "idempotency_key": "batch-new"}]]},
+  {"name": "batch_rows", "module": "notification", "method": "listNotifications", "args": [{"idempotency_key": ["batch-key", "batch-sibling", "batch-new"]}, {"order": {"idempotency_key": "ASC"}}]}
+]

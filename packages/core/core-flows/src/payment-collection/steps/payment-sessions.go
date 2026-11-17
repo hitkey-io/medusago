@@ -23,6 +23,7 @@ type PaymentService interface {
 	CreatePaymentSession(ctx context.Context, collectionID string, input *dal.Record) (*dal.Record, error)
 	DeletePaymentSession(ctx context.Context, id any) error
 	CreateAccountHolder(ctx context.Context, input *dal.Record) (*dal.Record, error)
+	ReplaceAccountHolder(ctx context.Context, input *dal.Record) (*dal.Record, error)
 	DeleteAccountHolder(ctx context.Context, id any) error
 	UpdatePaymentSession(ctx context.Context, data *dal.Record) (*dal.Record, error)
 }

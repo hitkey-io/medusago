@@ -48,7 +48,7 @@ var RefundPaymentsStep = composer.CreateStep("refund-payments-step",
 			p, err := writes(ctx.Container).RefundPayment(ctx.Context, r)
 			if err != nil {
 				id, _ := r.Get("payment_id")
-				slog.Error(fmt.Sprintf("Error was thrown trying to cancel payment - %v - %v", id, err))
+				slog.Error(fmt.Sprintf("Error was thrown trying to refund payment - %v - %v", id, err))
 				continue
 			}
 			out = append(out, p)

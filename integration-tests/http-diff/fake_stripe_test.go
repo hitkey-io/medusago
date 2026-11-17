@@ -356,6 +356,13 @@ func (f *fakeStripe) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, f.requests)
 		return
 	}
+	if strings.HasPrefix(path, "/__forget_customer/") {
+		// the customer disappears from the account, like one of a database
+		// copied from a setup that uses another Stripe account
+		delete(f.customers, strings.TrimPrefix(path, "/__forget_customer/"))
+		writeJSON(w, dal.NewRecord())
+		return
+	}
 	if strings.HasPrefix(path, "/__simulate/") {
 		// /__simulate/<intent>/<event type>
 		parts := strings.SplitN(strings.TrimPrefix(path, "/__simulate/"), "/", 2)
@@ -426,6 +433,16 @@ func (f *fakeStripe) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if str(params, "description") == "fake_failure" {
 			e := dal.NewRecord()
 			e.Set("message", "Fake failure")
+			e.Set("type", "invalid_request_error")
+			stripeError(w, 400, e)
+			return
+		}
+		if c := str(params, "customer"); c != "" && f.customers[c] == nil {
+			e := dal.NewRecord()
+			e.Set("code", "resource_missing")
+			e.Set("doc_url", "https://stripe.com/docs/error-codes/resource-missing")
+			e.Set("message", fmt.Sprintf("No such customer: '%s'", c))
+			e.Set("param", "customer")
 			e.Set("type", "invalid_request_error")
 			stripeError(w, 400, e)
 			return

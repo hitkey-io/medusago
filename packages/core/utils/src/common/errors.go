@@ -42,10 +42,15 @@ var MedusaErrorCodes = struct {
 	INSUFFICIENT_INVENTORY  string
 	CART_INCOMPATIBLE_STATE string
 	UNKNOWN_MODULES         string
+	// ACCOUNT_HOLDER_NOT_FOUND is thrown by payment providers when an
+	// account holder doesn't exist in the provider anymore, eg. because the
+	// database was copied from a setup that uses another provider account.
+	ACCOUNT_HOLDER_NOT_FOUND string
 }{
-	INSUFFICIENT_INVENTORY:  "insufficient_inventory",
-	CART_INCOMPATIBLE_STATE: "cart_incompatible_state",
-	UNKNOWN_MODULES:         "unknown_modules",
+	INSUFFICIENT_INVENTORY:   "insufficient_inventory",
+	CART_INCOMPATIBLE_STATE:  "cart_incompatible_state",
+	UNKNOWN_MODULES:          "unknown_modules",
+	ACCOUNT_HOLDER_NOT_FOUND: "account_holder_not_found",
 }
 
 // MedusaError is the standardized error used across the project.

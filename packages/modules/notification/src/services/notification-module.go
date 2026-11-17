@@ -114,7 +114,12 @@ func (s *NotificationModuleService) CreateNotifications(ctx context.Context, dat
 		}
 		provider := providersByChannel[fmt.Sprint(get(d, "channel"))]
 		nd := dal.NewRecord()
-		nd.Set("id", common.GenerateEntityID("", "noti"))
+		// a retried failed idempotency key reuses the existing notification
+		if hasKey && found {
+			nd.Set("id", get(existing, "id"))
+		} else {
+			nd.Set("id", common.GenerateEntityID("", "noti"))
+		}
 		for _, k := range d.Keys() {
 			v, _ := d.Get(k)
 			nd.Set(k, v)
@@ -141,6 +146,7 @@ func (s *NotificationModuleService) CreateNotifications(ctx context.Context, dat
 	// rejections are joined in input order into one plain Error
 	var mu sync.Mutex
 	var toUpdate []*dal.Record
+	noExternalID := map[any]bool{}
 	errs := make([]error, len(toProcess))
 	var wg sync.WaitGroup
 	for i, e := range toProcess {
@@ -176,6 +182,12 @@ func (s *NotificationModuleService) CreateNotifications(ctx context.Context, dat
 			}
 			if ext, ok := res.Get("id"); ok {
 				e.data.Set("external_id", ext)
+			} else {
+				// external_id = res.id (undefined): the updated entity
+				// serializes without it
+				mu.Lock()
+				noExternalID[get(e.data, "id")] = true
+				mu.Unlock()
 			}
 			e.data.Set("status", "success")
 			push(nil)
@@ -200,6 +212,9 @@ func (s *NotificationModuleService) CreateNotifications(ctx context.Context, dat
 		}
 		for i, c := range created {
 			if u := updated[get(c, "id")]; u != nil {
+				if noExternalID[get(u, "id")] {
+					u.Delete("external_id")
+				}
 				created[i] = u
 			}
 		}

@@ -108,7 +108,7 @@ func getDbClientAndCredentials(ctx context.Context, dbName, dbURL string, verbos
 // runCreateDb mirrors runCreateDb: the database is created and the client
 // reconnects to it.
 func runCreateDb(ctx context.Context, d *dbSetup) error {
-	if _, err := d.conn.Exec(ctx, fmt.Sprintf(`CREATE DATABASE "%s"`, d.dbName)); err != nil {
+	if _, err := d.conn.Exec(ctx, `CREATE DATABASE `+pgx.Identifier{d.dbName}.Sanitize()); err != nil {
 		return err
 	}
 	_ = d.conn.Close(ctx)

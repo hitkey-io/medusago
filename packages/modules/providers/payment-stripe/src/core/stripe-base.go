@@ -13,6 +13,7 @@ import (
 	"time"
 
 	paymenttypes "github.com/hitkey-io/medusago/packages/core/types/src/payment"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/modules/providers/payment-stripe/src/types"
 	"github.com/hitkey-io/medusago/packages/modules/providers/payment-stripe/src/utils"
@@ -229,6 +230,12 @@ func (s *StripeBase) handleStripeError(err error) (handled, error) {
 	var se *StripeError
 	if !errors.As(err, &se) {
 		return handled{}, s.buildError("An error occurred in InitiatePayment during creation of stripe payment intent", err)
+	}
+	// The customer doesn't exist in the Stripe account, eg. when the database
+	// was copied from a setup that uses another account. Lets workflows
+	// replace the account holder.
+	if se.Code() == "resource_missing" && se.rawGet("param") == "customer" {
+		return handled{}, common.NewMedusaError(common.MedusaErrorTypes.NOT_FOUND, se.Message, common.MedusaErrorCodes.ACCOUNT_HOLDER_NOT_FOUND)
 	}
 	switch se.Type {
 	case "StripeCardError":
@@ -515,6 +522,10 @@ func (s *StripeBase) DeleteAccountHolder(ctx context.Context, input *dal.Record)
 		return nil, s.buildError("No account holder in context", errors.New("No account holder provided while deleting account holder"))
 	}
 	if _, err := s.stripe.Request(ctx, http.MethodDelete, "customers/"+id, nil, RequestOptions{}); err != nil {
+		// Deleting a customer that's already gone is a no-op.
+		if se := (*StripeError)(nil); errors.As(err, &se) && se.Code() == "resource_missing" {
+			return dal.NewRecord(), nil
+		}
 		return nil, s.buildError("An error occurred in deleteAccountHolder", err)
 	}
 	return dal.NewRecord(), nil
