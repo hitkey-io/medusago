@@ -20,6 +20,9 @@ var CreatePromotionsWorkflow = composer.CreateWorkflow("create-promotions",
 		if err != nil {
 			return nil, err
 		}
+		if err := emit(e, "promotion.created", idEvents(created)); err != nil {
+			return nil, err
+		}
 		return created, hook(e, "promotionsCreated", "promotions", created, "additional_data", in.AdditionalData)
 	})
 
@@ -89,6 +92,9 @@ var UpdatePromotionsWorkflow = composer.CreateWorkflow("update-promotions",
 				return nil, err
 			}
 		}
+		if err := emit(e, "promotion.updated", idEvents(updated)); err != nil {
+			return nil, err
+		}
 		return updated, hook(e, "promotionsUpdated", "promotions", updated, "additional_data", in.AdditionalData)
 	})
 
@@ -96,6 +102,9 @@ var UpdatePromotionsWorkflow = composer.CreateWorkflow("update-promotions",
 var DeletePromotionsWorkflow = composer.CreateWorkflow("delete-promotions",
 	func(e *composer.Execution, ids []any) (any, error) {
 		if _, err := steps.DeletePromotionsStep.Run(e, ids); err != nil {
+			return nil, err
+		}
+		if err := emit(e, "promotion.deleted", idsEvents(ids)); err != nil {
 			return nil, err
 		}
 		return nil, hook(e, "promotionsDeleted", "ids", ids)
@@ -210,8 +219,25 @@ var BatchPromotionRulesWorkflow = composer.CreateWorkflow("batch-promotion-rules
 			composer.SetFailedResult(e, res)
 			return BatchPromotionRulesResult{}, err
 		}
+		ev := dal.NewRecord()
+		ev.Set("id", in.ID)
+		ev.Set("rule_type", in.RuleType)
+		ev.Set("created", ruleIDs(created))
+		ev.Set("updated", ruleIDs(updated))
+		ev.Set("deleted", deleted)
+		if err := emit(e, "promotion.rules_updated", ev); err != nil {
+			return BatchPromotionRulesResult{}, err
+		}
 		return BatchPromotionRulesResult{Created: created, Updated: updated, Deleted: del}, nil
 	})
+
+func ruleIDs(rules []*dal.Record) []any {
+	out := make([]any, len(rules))
+	for i, r := range rules {
+		out[i], _ = r.Get("id")
+	}
+	return out
+}
 
 // The Go bodies take one property of the upstream input object.
 func init() {
