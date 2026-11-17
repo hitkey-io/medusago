@@ -265,6 +265,11 @@ func (s *PaymentModuleService) RefundPayment(ctx context.Context, data *dal.Reco
 			u.Set("status", "failed")
 			_, _ = s.Internal("Refund").Update(ctx, u)
 			_, _ = s.Internal("Refund").SoftDelete(ctx, []any{get(refund, "id")})
+			// A concurrent refund may have totaled the collection while this
+			// row was still live, so recompute now that it's excluded.
+			if uerr := s.maybeUpdatePaymentCollection(ctx, get(payment, "payment_collection_id")); uerr != nil {
+				return nil, uerr
+			}
 			return nil, err
 		}
 		pu := dal.NewRecord()

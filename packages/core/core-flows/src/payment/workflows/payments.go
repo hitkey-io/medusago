@@ -326,8 +326,16 @@ var RefundPaymentsWorkflow = composer.CreateWorkflow("refund-payments-workflow",
 		for _, p := range payments {
 			byID[g(p, "id")] = p
 		}
+		// only the payments refunded by the step get an order transaction
+		refundedIDs := map[any]bool{}
+		for _, p := range refunded {
+			refundedIDs[g(p, "id")] = true
+		}
 		var tx []*dal.Record
 		for _, i := range input {
+			if !refundedIDs[g(i, "payment_id")] {
+				continue
+			}
 			p := byID[g(i, "payment_id")]
 			order := asRec(g(asRec(g(p, "payment_collection")), "order"))
 			if order == nil {
