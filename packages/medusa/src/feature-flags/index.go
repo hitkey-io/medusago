@@ -13,12 +13,9 @@ var Caching = ff.FlagSettings{Key: "caching", DefaultVal: false, EnvKey: "MEDUSA
 // IndexEngine mirrors index-engine.ts.
 var IndexEngine = ff.FlagSettings{Key: "index_engine", DefaultVal: false, EnvKey: "MEDUSA_FF_INDEX_ENGINE"}
 
-// Translation mirrors translation.ts.
-var Translation = ff.FlagSettings{Key: "translation", DefaultVal: false, EnvKey: "MEDUSA_FF_TRANSLATION"}
-
 // ViewConfigurations mirrors view-configurations.ts.
 var ViewConfigurations = ff.FlagSettings{Key: "view_configurations", DefaultVal: false, EnvKey: "MEDUSA_FF_VIEW_CONFIGURATIONS"}
 
 // All lists the flags in discovery order (backend-hmr.ts, caching.ts,
-// index-engine.ts, translation.ts, view-configurations.ts).
-var All = []ff.FlagSettings{BackendHmr, Caching, IndexEngine, Translation, ViewConfigurations}
+// index-engine.ts, view-configurations.ts).
+var All = []ff.FlagSettings{BackendHmr, Caching, IndexEngine, ViewConfigurations}

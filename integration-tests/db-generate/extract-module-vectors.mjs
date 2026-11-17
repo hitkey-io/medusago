@@ -38,6 +38,13 @@ const enterprisePaths = fs
   .filter(Boolean)
   .map((p) => p.replace(/\/$/, ""))
 
+// A package whose own LICENSE is the Enterprise Edition licence is Enterprise
+// material even when ENTERPRISE-LICENSE.md does not list it (e.g. the audit module).
+const hasEnterpriseLicense = (pkgDir) => {
+  const file = path.join(UPSTREAM, pkgDir, "LICENSE")
+  return fs.existsSync(file) && /^Medusa Enterprise Edition License/.test(fs.readFileSync(file, "utf8"))
+}
+
 async function generate(models, moduleName) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "gen-vectors-"))
   utils.mikroORMEntityBuilder.clear()
@@ -83,7 +90,7 @@ const vectors = {}
 for (const mod of fs.readdirSync(path.join(UPSTREAM, "packages/modules")).sort()) {
   const pkgDir = `packages/modules/${mod}`
   const distModels = path.join(UPSTREAM, pkgDir, "dist/models")
-  if (!fs.existsSync(distModels) || enterprisePaths.includes(pkgDir)) {
+  if (!fs.existsSync(distModels) || enterprisePaths.includes(pkgDir) || hasEnterpriseLicense(pkgDir)) {
     continue
   }
   const models = loadModels(distModels)

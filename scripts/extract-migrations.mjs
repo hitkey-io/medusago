@@ -184,6 +184,13 @@ const enterprisePaths = fs
   .filter(Boolean)
   .map((p) => p.replace(/\/$/, ""))
 
+// A package whose own LICENSE is the Enterprise Edition licence is Enterprise
+// material even when ENTERPRISE-LICENSE.md does not list it (e.g. the audit module).
+const hasEnterpriseLicense = (pkgDir) => {
+  const file = path.join(UPSTREAM, pkgDir, "LICENSE")
+  return fs.existsSync(file) && /^Medusa Enterprise Edition License/.test(fs.readFileSync(file, "utf8"))
+}
+
 const report = { generated: 0, dynamic: [], modules: [] }
 
 const packageDirs = ["packages/modules", "packages/modules/providers"].flatMap((base) =>
@@ -197,6 +204,7 @@ const packageDirs = ["packages/modules", "packages/modules/providers"].flatMap((
 // compiled into .medusa/server/src/modules/<name>/migrations.
 const pluginModules = fs
   .readdirSync(path.join(UPSTREAM, "packages/plugins"))
+  .filter((plugin) => plugin !== "cloud") // Medusa Cloud only, not part of MedusaGo
   .flatMap((plugin) => {
     const modulesDir = path.join(UPSTREAM, "packages/plugins", plugin, "src/modules")
     if (!fs.existsSync(modulesDir)) return []
@@ -220,7 +228,7 @@ const entries = packageDirs.sort().map((pkgDir) => ({
 
 for (const { pkgDir, distDir, srcDir, outDir } of entries) {
   const mod = path.basename(pkgDir)
-  if (!fs.existsSync(srcDir) || enterprisePaths.includes(pkgDir)) {
+  if (!fs.existsSync(srcDir) || enterprisePaths.includes(pkgDir) || hasEnterpriseLicense(pkgDir)) {
     continue
   }
   if (!fs.existsSync(distDir)) {

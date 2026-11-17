@@ -11,7 +11,6 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/utils"
 	commonvalidators "github.com/hitkey-io/medusago/packages/medusa/src/api/utils/common-validators"
-	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/feature-flags"
 )
 
 // DefaultAdminTranslationFields mirrors defaultAdminTranslationFields.
@@ -116,9 +115,6 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 	{Methods: []string{"POST"}, Matcher: "/admin/translations/settings/batch", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformBody(httputils.Schema(AdminBatchTranslationSettings))}},
 	{Methods: []string{"GET"}, Matcher: "/admin/translations/entities", Middlewares: []medusahttp.MiddlewareFunction{httputils.ValidateAndTransformQuery(AdminTranslationEntitiesParams, ListTransformQueryConfig)}},
 }
-
-// FeatureFlag is the flag of the route files (defineFileConfig isDisabled).
-var FeatureFlag = featureflags.Translation.Key
 
 // Route is route.ts: GET lists the translations through query.graph.
 var Route = medusahttp.Route{GET: httputils.RefetchListRouteWithOptions("translation", "translations", joiner.Options{Cache: caching.Enabled()})}

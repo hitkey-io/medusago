@@ -15,5 +15,7 @@ module.exports = defineConfig({
     },
   },
   admin: { disable: true },
+  // The Medusa Cloud plugin is loaded by default; MedusaGo does not have it.
+  plugins: [{ resolve: "@medusajs/cloud", options: { disabled: true } }],
   modules: [{ resolve: "./src/modules/brand" }],
 })
