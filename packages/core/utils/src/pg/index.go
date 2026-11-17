@@ -18,15 +18,15 @@ func CreateClient(ctx context.Context, cfg *pgx.ConnConfig) (*pgx.Conn, error) {
 	return pgx.ConnectConfig(ctx, cfg)
 }
 
-// CreateDb mirrors createDb.
+// CreateDb mirrors createDb (the name is escaped like escapeIdentifier).
 func CreateDb(ctx context.Context, client *pgx.Conn, databaseName string) error {
-	_, err := client.Exec(ctx, `CREATE DATABASE "`+databaseName+`"`)
+	_, err := client.Exec(ctx, `CREATE DATABASE `+pgx.Identifier{databaseName}.Sanitize())
 	return err
 }
 
 // DbExists mirrors dbExists.
 func DbExists(ctx context.Context, client *pgx.Conn, databaseName string) (bool, error) {
-	rows, err := client.Query(ctx, `SELECT datname FROM pg_catalog.pg_database WHERE datname=$1;`, databaseName)
+	rows, err := client.Query(ctx, `SELECT datname FROM pg_catalog.pg_database WHERE datname = $1;`, databaseName)
 	if err != nil {
 		return false, err
 	}
