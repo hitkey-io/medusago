@@ -262,8 +262,8 @@ type UpdateCartPromotionsInput struct {
 }
 
 type promoRevert struct {
-	created   []*dal.Record
-	dismissed []*dal.Record
+	CreatedLinks   []*dal.Record `json:"createdLinks"`
+	DismissedLinks []*dal.Record `json:"dismissedLinks"`
 }
 
 func promoLink(cartID, promotionID any) *dal.Record {
@@ -332,7 +332,17 @@ var UpdateCartPromotionsStep = composer.CreateStep("update-cart-promotions",
 				return composer.StepResponse[any]{}, err
 			}
 		}
-		return composer.NewNullStepResponse[any](any(promoRevert{toCreate, toDismiss})), nil
+		// only the links that did not exist before are dismissed on revert
+		created := []*dal.Record{}
+		for _, l := range toCreate {
+			if !existingMap[Get(Rec(l, utilsmodulessdk.PROMOTION), "promotion_id")] {
+				created = append(created, l)
+			}
+		}
+		if toDismiss == nil {
+			toDismiss = []*dal.Record{}
+		}
+		return composer.NewNullStepResponse[any](any(promoRevert{created, toDismiss})), nil
 	},
 	func(ctx composer.StepExecutionContext, data any) error {
 		r, ok := data.(promoRevert)
@@ -340,13 +350,13 @@ var UpdateCartPromotionsStep = composer.CreateStep("update-cart-promotions",
 			return nil
 		}
 		link := commonsteps.LinkOf(ctx.Container)
-		if len(r.dismissed) > 0 {
-			if _, err := link.Create(ctx.Context, r.dismissed); err != nil {
+		if len(r.CreatedLinks) > 0 {
+			if _, err := link.Dismiss(ctx.Context, r.CreatedLinks); err != nil {
 				return err
 			}
 		}
-		if len(r.created) > 0 {
-			if _, err := link.Dismiss(ctx.Context, r.created); err != nil {
+		if len(r.DismissedLinks) > 0 {
+			if _, err := link.Create(ctx.Context, r.DismissedLinks); err != nil {
 				return err
 			}
 		}

@@ -9,6 +9,7 @@ import (
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/totals"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 )
 
@@ -250,9 +251,6 @@ var RefreshCartItemsWorkflow = composer.CreateWorkflow("refresh-cart-items",
 		if err != nil {
 			return nil, err
 		}
-		if _, err := RefreshCartShippingMethodsWorkflow.RunAsStep(e, RefreshShippingMethodsInput{Cart: refetched, AdditionalData: in.AdditionalData}); err != nil {
-			return nil, err
-		}
 		if in.ForceRefresh {
 			if _, err := UpdateTaxLinesWorkflow.RunAsStep(e, UpdateTaxLinesInput{CartID: in.CartID}); err != nil {
 				return nil, err
@@ -272,7 +270,7 @@ var RefreshCartItemsWorkflow = composer.CreateWorkflow("refresh-cart-items",
 				}
 			}
 		}
-		if _, err := UpdateCartPromotionsWorkflow.RunAsStep(e, UpdateCartPromotionsInput{CartID: in.CartID, PromoCodes: codes, Action: steps.PromotionActionReplace}); err != nil {
+		if _, err := UpdateCartPromotionsWorkflow.RunAsStep(e, UpdateCartPromotionsInput{CartID: in.CartID, PromoCodes: codes, Action: steps.PromotionActionReplace, AdditionalData: in.AdditionalData}); err != nil {
 			return nil, err
 		}
 		if in.Locale != "" {
@@ -302,8 +300,10 @@ type RefreshShippingMethodsInput struct {
 }
 
 // RefreshCartShippingMethodsWorkflow mirrors refreshCartShippingMethodsWorkflow.
+// It returns { has_changes }: whether a shipping method was removed or its
+// amount (or tax inclusiveness) changed.
 var RefreshCartShippingMethodsWorkflow = composer.CreateWorkflow("refresh-cart-shipping-methods",
-	func(e *composer.Execution, in RefreshShippingMethodsInput) (any, error) {
+	func(e *composer.Execution, in RefreshShippingMethodsInput) (*dal.Record, error) {
 		shouldExecute := in.CartID != ""
 		if in.Cart != nil {
 			shouldExecute = len(Records(Get(in.Cart, "shipping_methods"))) > 0
@@ -337,57 +337,79 @@ var RefreshCartShippingMethodsWorkflow = composer.CreateWorkflow("refresh-cart-s
 			}
 			input = append(input, o)
 		}
-		if len(input) == 0 {
-			return nil, nil
+		validateIn := dal.NewRecord()
+		validateIn.Set("input", in)
+		validateIn.Set("cart", cart)
+		if err := composer.CreateHook(e, "validate", validateIn); err != nil {
+			return nil, err
 		}
-		options, err := ListShippingOptionsForCartWithPricingWorkflow.RunAsStep(e, PricedOptionsInput{CartID: Str(cart, "id"), Options: input, AdditionalData: in.AdditionalData})
+		// the lock is released only when the shipping methods were refreshed
+		// (inside the when() block upstream)
+		hasChanges, err := composer.When(e, "should-prepare-shipping-methods", len(input) > 0, func() (bool, error) {
+			return refreshShippingMethods(e, cart, input, in.AdditionalData)
+		})
 		if err != nil {
 			return nil, err
 		}
-		methods := Records(Get(cart, "shipping_methods"))
-		cleanup := len(methods) > 1
-		required := map[any]bool{}
-		for _, item := range Records(Get(cart, "items")) {
-			if Truthy(Get(item, "requires_shipping")) {
-				if p := Get(Rec(Rec(Rec(item, "variant"), "product"), "shipping_profile"), "id"); Truthy(p) {
-					required[p] = true
-				}
-			}
-		}
-		var toRemove []any
-		var toUpdate []*dal.Record
-		for _, m := range methods {
-			so := findOption(options, Get(m, "shipping_option_id"))
-			price := Get(Rec(so, "calculated_price"), "calculated_amount")
-			valid := so != nil && price != nil
-			if valid && cleanup {
-				if p := Get(so, "shipping_profile_id"); Truthy(p) && !required[p] {
-					valid = false
-				}
-			}
-			if !valid {
-				toRemove = append(toRemove, Get(m, "id"))
-				continue
-			}
-			u := dal.NewRecord()
-			u.Set("id", Get(m, "id"))
-			u.Set("shipping_option_id", Get(so, "id"))
-			u.Set("name", Get(so, "name"))
-			u.Set("amount", Get(Rec(so, "calculated_price"), "calculated_amount"))
-			u.Set("is_tax_inclusive", Get(Rec(so, "calculated_price"), "is_calculated_price_tax_inclusive"))
-			toUpdate = append(toUpdate, u)
-		}
-		err = composer.Parallelize(
-			func() error { _, err := steps.RemoveShippingMethodFromCartStep.Run(e, toRemove); return err },
-			func() error { _, err := steps.UpdateShippingMethodsStep.Run(e, toUpdate); return err },
-		)
-		if err != nil {
-			return nil, err
-		}
-		// released only when the shipping methods were refreshed (inside the
-		// when() block upstream)
-		return nil, releaseLock(e, Str(cart, "id"))
+		out := dal.NewRecord()
+		out.Set("has_changes", hasChanges)
+		return out, nil
 	})
+
+func refreshShippingMethods(e *composer.Execution, cart *dal.Record, input []*dal.Record, additionalData *dal.Record) (bool, error) {
+	options, err := ListShippingOptionsForCartWithPricingWorkflow.RunAsStep(e, PricedOptionsInput{CartID: Str(cart, "id"), Options: input, AdditionalData: additionalData})
+	if err != nil {
+		return false, err
+	}
+	methods := Records(Get(cart, "shipping_methods"))
+	cleanup := len(methods) > 1
+	required := map[any]bool{}
+	for _, item := range Records(Get(cart, "items")) {
+		if Truthy(Get(item, "requires_shipping")) {
+			if p := Get(Rec(Rec(Rec(item, "variant"), "product"), "shipping_profile"), "id"); Truthy(p) {
+				required[p] = true
+			}
+		}
+	}
+	var toRemove []any
+	var toUpdate []*dal.Record
+	hasAmountChanges := false
+	for _, m := range methods {
+		so := findOption(options, Get(m, "shipping_option_id"))
+		price := Get(Rec(so, "calculated_price"), "calculated_amount")
+		valid := so != nil && price != nil
+		if valid && cleanup {
+			if p := Get(so, "shipping_profile_id"); Truthy(p) && !required[p] {
+				valid = false
+			}
+		}
+		if !valid {
+			toRemove = append(toRemove, Get(m, "id"))
+			continue
+		}
+		u := dal.NewRecord()
+		u.Set("id", Get(m, "id"))
+		u.Set("shipping_option_id", Get(so, "id"))
+		u.Set("name", Get(so, "name"))
+		u.Set("amount", Get(Rec(so, "calculated_price"), "calculated_amount"))
+		u.Set("is_tax_inclusive", Get(Rec(so, "calculated_price"), "is_calculated_price_tax_inclusive"))
+		toUpdate = append(toUpdate, u)
+		if !totals.Eq(Get(m, "amount"), Get(u, "amount")) || Get(m, "is_tax_inclusive") != Get(u, "is_tax_inclusive") {
+			hasAmountChanges = true
+		}
+	}
+	err = composer.Parallelize(
+		func() error { _, err := steps.RemoveShippingMethodFromCartStep.Run(e, toRemove); return err },
+		func() error { _, err := steps.UpdateShippingMethodsStep.Run(e, toUpdate); return err },
+	)
+	if err != nil {
+		return false, err
+	}
+	if err := releaseLock(e, Str(cart, "id")); err != nil {
+		return false, err
+	}
+	return len(toRemove) > 0 || hasAmountChanges, nil
+}
 
 // UpsertTaxLinesInput mirrors UpsertTaxLinesWorkflowInput.
 type UpsertTaxLinesInput struct {

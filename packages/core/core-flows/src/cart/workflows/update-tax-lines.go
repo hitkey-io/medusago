@@ -7,6 +7,7 @@ import (
 	taxsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/tax/steps"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
 	"github.com/hitkey-io/medusago/packages/core/query/src/query"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/common"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
 	"github.com/hitkey-io/medusago/packages/core/workflows-sdk/src/utils/composer"
 )
@@ -81,18 +82,31 @@ var UpdateTaxLinesWorkflow = composer.CreateWorkflow("update-tax-lines",
 		return nil, releaseLock(e, Str(cart, "id"))
 	})
 
-// UpdateCartPromotionsInput mirrors UpdateCartPromotionsWorkflowInput.
+// UpdateCartPromotionsInput mirrors UpdateCartPromotionsWorkflowInput & AdditionalData.
 type UpdateCartPromotionsInput struct {
 	CartID                        string
 	Cart                          *dal.Record
 	PromoCodes                    []string
 	Action                        string
 	ForceRefreshPaymentCollection bool
+	AdditionalData                *dal.Record
 }
+
+// UpdateCartPromotionsValidateInput mirrors updateCartPromotionsValidateInput.
+var UpdateCartPromotionsValidateInput = composer.CreateStep("update-cart-promotions-validate-input",
+	func(ctx composer.StepExecutionContext, in UpdateCartPromotionsInput) (composer.StepResponse[any], error) {
+		if in.CartID == "" && Str(in.Cart, "id") == "" {
+			return composer.StepResponse[any]{}, common.NewMedusaError(common.MedusaErrorTypes.INVALID_DATA, "Either cart_id or cart must be provided to update the cart's promotions")
+		}
+		return composer.NewStepResponse[any](nil), nil
+	}, nil)
 
 // UpdateCartPromotionsWorkflow mirrors updateCartPromotionsWorkflow.
 var UpdateCartPromotionsWorkflow = composer.CreateWorkflow("update-cart-promotions",
 	func(e *composer.Execution, in UpdateCartPromotionsInput) (*dal.Record, error) {
+		if _, err := UpdateCartPromotionsValidateInput.Run(e, in); err != nil {
+			return nil, err
+		}
 		cartID := in.CartID
 		if cartID == "" {
 			cartID = Str(in.Cart, "id")
@@ -102,7 +116,7 @@ var UpdateCartPromotionsWorkflow = composer.CreateWorkflow("update-cart-promotio
 		}
 		cart := in.Cart
 		fetched, err := composer.When(e, "should-fetch-cart", cart == nil, func() (*dal.Record, error) {
-			return fetchCart(e, "fetch-cart", in.CartID, CartFieldsForRefreshSteps, false)
+			return fetchCart(e, "fetch-cart", cartID, CartFieldsForRefreshSteps, false)
 		})
 		if err != nil {
 			return nil, err
@@ -140,45 +154,27 @@ var UpdateCartPromotionsWorkflow = composer.CreateWorkflow("update-cart-promotio
 		if err != nil {
 			return nil, err
 		}
-		actions, err := steps.GetActionsToComputeFromPromotionsStep.Run(e, steps.ActionsInput{ComputeActionContext: cart, PromotionCodesToApply: toApply, AdditionalPromotionContext: additionalContext})
+		adjustments, err := RefreshCartPromotionAdjustmentsWorkflow.RunAsStep(e, RefreshCartPromotionAdjustmentsInput{
+			CartID: cartID, Cart: cart, PromoCodes: toApply, AdditionalPromotionContext: additionalContext,
+		})
 		if err != nil {
 			return nil, err
 		}
-		prepared, err := steps.PrepareAdjustmentsFromPromotionActionsStep.Run(e, actions)
+		// Shipping prices can depend on the discounted item total, and
+		// shipping adjustments on the shipping price, so recompute once if
+		// shipping changed.
+		shippingRefresh, err := RefreshCartShippingMethodsWorkflow.RunAsStep(e, RefreshShippingMethodsInput{Cart: cart, AdditionalData: in.AdditionalData})
 		if err != nil {
 			return nil, err
 		}
-		toAny := func(rs []*dal.Record) []any {
-			out := make([]any, len(rs))
-			for i, r := range rs {
-				out[i] = r
+		var recomputed *dal.Record
+		if Truthy(Get(shippingRefresh, "has_changes")) {
+			recomputed, err = RefreshCartPromotionAdjustmentsWorkflow.RunAsStepNamed(e, "refresh-cart-promotion-adjustments-after-shipping", RefreshCartPromotionAdjustmentsInput{
+				CartID: cartID, PromoCodes: toApply, AdditionalPromotionContext: additionalContext,
+			})
+			if err != nil {
+				return nil, err
 			}
-			return out
-		}
-		err = composer.Parallelize(
-			func() error {
-				_, err := steps.RemoveLineItemAdjustmentsStep.Run(e, prepared.LineItemAdjustmentIDsToRemove)
-				return err
-			},
-			func() error {
-				_, err := steps.RemoveShippingMethodAdjustmentsStep.Run(e, prepared.ShippingMethodAdjustmentIDsToRemove)
-				return err
-			},
-			func() error {
-				_, err := steps.CreateLineItemAdjustmentsStep.Run(e, toAny(prepared.LineItemAdjustmentsToCreate))
-				return err
-			},
-			func() error {
-				_, err := steps.CreateShippingMethodAdjustmentsStep.Run(e, toAny(prepared.ShippingMethodAdjustmentsToCreate))
-				return err
-			},
-			func() error {
-				_, err := steps.UpdateCartPromotionsStep.Run(e, steps.UpdateCartPromotionsInput{ID: Str(cart, "id"), PromoCodes: prepared.ComputedPromotionCodes, Action: steps.PromotionActionReplace})
-				return err
-			},
-		)
-		if err != nil {
-			return nil, err
 		}
 		if in.ForceRefreshPaymentCollection {
 			if _, err := RefreshPaymentCollectionForCartWorkflow.RunAsStep(e, RefreshPaymentCollectionInput{Cart: cart}); err != nil {
@@ -188,12 +184,12 @@ var UpdateCartPromotionsWorkflow = composer.CreateWorkflow("update-cart-promotio
 		if err := releaseLock(e, cartID); err != nil {
 			return nil, err
 		}
-		out := dal.NewRecord()
-		skipped := make([]any, len(prepared.SkippedPromoCodes))
-		for i, s := range prepared.SkippedPromoCodes {
-			skipped[i] = s
+		result := adjustments
+		if recomputed != nil {
+			result = recomputed
 		}
-		out.Set("skipped_promo_codes", skipped)
+		out := dal.NewRecord()
+		out.Set("skipped_promo_codes", Get(result, "skipped_promo_codes"))
 		return out, nil
 	})
 

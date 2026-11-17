@@ -296,6 +296,7 @@ func prepareCartToOrder(cart *dal.Record) (*dal.Record, error) {
 	var itemAdjustments []*dal.Record
 	for _, item := range Records(Get(cart, "items")) {
 		isTaxInclusive, _ := Get(item, "is_tax_inclusive").(bool)
+		isCustomPrice := Truthy(Get(item, "is_custom_price"))
 		taxLines := Records(Get(item, "tax_lines"))
 		if taxLines == nil {
 			taxLines = []*dal.Record{}
@@ -306,7 +307,7 @@ func prepareCartToOrder(cart *dal.Record) (*dal.Record, error) {
 		}
 		li, err := PrepareLineItemData(PrepareLineItemDataInput{
 			Item: item, Variant: Rec(item, "variant"), CartID: Str(cart, "id"), UnitPrice: Get(item, "unit_price"),
-			IsTaxInclusive: isTaxInclusive, TaxLines: taxLines, Adjustments: adjustments,
+			IsTaxInclusive: isTaxInclusive, IsCustomPrice: isCustomPrice, TaxLines: taxLines, Adjustments: adjustments,
 		})
 		if err != nil {
 			return nil, err
