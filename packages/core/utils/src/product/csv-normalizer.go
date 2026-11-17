@@ -277,6 +277,7 @@ var variantStaticColumns = []column{
 	{"variant variant rank", asNumber("variant variant rank", "variant_rank")},
 	{"variant width", asNumber("variant width", "width")},
 	{"variant weight", asNumber("variant weight", "weight")},
+	{"variant thumbnail", asString("variant thumbnail", "thumbnail")},
 	{"variant created at", ignored()},
 	{"variant deleted at", ignored()},
 	{"variant updated at", ignored()},
@@ -368,7 +369,9 @@ var knownStaticColumns, knownWildcardColumns = func() (map[string]bool, []string
 	for _, c := range productWildcardColumns {
 		wildcard = append(wildcard, c.name)
 	}
-	return static, append(wildcard, "variant price", "variant option")
+	// "variant image": the "Variant Image N" columns written by the product
+	// export are ignored (variant images are linked through another workflow).
+	return static, append(wildcard, "variant price", "variant image", "variant option")
 }()
 
 // Region is the region data the normalizer resolves region prices with.
