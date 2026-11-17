@@ -115,8 +115,8 @@ func (b *knexBuilder) LeftJoin(table, first, second string) *knexBuilder {
 	return b
 }
 
-func (b *knexBuilder) JoinRaw(sql string) *knexBuilder {
-	b.joins = append(b.joins, knexRaw{sql: sql})
+func (b *knexBuilder) JoinRaw(sql string, bindings ...any) *knexBuilder {
+	b.joins = append(b.joins, knexRaw{sql: sql, bindings: bindings})
 	return b
 }
 
