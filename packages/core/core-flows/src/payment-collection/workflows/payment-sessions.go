@@ -193,7 +193,41 @@ var CreatePaymentSessionsWorkflow = composer.CreateWorkflow("create-payment-sess
 		if _, err := DeletePaymentSessionsWorkflow.RunAsStep(e, ids); err != nil {
 			return nil, err
 		}
-		return steps.CreatePaymentSessionStep.Run(e, sessionIn)
+		attempt, err := steps.TryCreatePaymentSessionStep.Run(e, sessionIn)
+		if err != nil {
+			return nil, err
+		}
+		// when("account-holder-not-found"): the provider can lose an account
+		// holder, eg. when the database was copied from a setup that uses
+		// another provider account. The account holder is then replaced, and
+		// the payment session is created with it.
+		if notFound, _ := g(attempt, "account_holder_not_found").(bool); notFound && existing != nil {
+			replacementCtx := dal.NewRecord()
+			replacementCtx.Set("customer", paymentCustomer)
+			replacementIn := dal.NewRecord()
+			replacementIn.Set("id", g(existing, "id"))
+			replacementIn.Set("provider_id", in.ProviderID)
+			replacementIn.Set("context", replacementCtx)
+			replacement, err := steps.ReplacePaymentAccountHolderStep.Run(e, replacementIn)
+			if err != nil {
+				return nil, err
+			}
+			retryCtx := dal.NewRecord()
+			for _, k := range ctx.Keys() {
+				v, _ := ctx.Get(k)
+				retryCtx.Set(k, v)
+			}
+			retryCtx.Set("account_holder", replacement)
+			retryIn := dal.NewRecord()
+			for _, k := range sessionIn.Keys() {
+				v, _ := sessionIn.Get(k)
+				retryIn.Set(k, v)
+			}
+			retryIn.Set("context", retryCtx)
+			return steps.CreatePaymentSessionStep.Config("create-payment-session-with-replacement-account-holder", composer.StepOptions{}).Run(e, retryIn)
+		}
+		session, _ := g(attempt, "session").(*dal.Record)
+		return session, nil
 	})
 
 // UpdatePaymentSessionClientDataInput mirrors UpdatePaymentSessionClientDataWorkflowInput.

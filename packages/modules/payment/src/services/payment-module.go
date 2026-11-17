@@ -243,6 +243,66 @@ func (s *PaymentModuleService) UpdateAccountHolder(ctx context.Context, input *d
 	return r, nil
 }
 
+// ReplaceAccountHolder mirrors replaceAccountHolder: the provider creates a
+// new record for the account holder (keeping its id), and the previous
+// record is deleted from the provider.
+func (s *PaymentModuleService) ReplaceAccountHolder(ctx context.Context, input *dal.Record) (*dal.Record, error) {
+	existing, err := s.Internal("AccountHolder").Retrieve(ctx, get(input, "id"), utilsmodulessdk.FindConfig{Select: []string{"id", "provider_id", "external_id", "email", "data"}})
+	if err != nil {
+		return nil, err
+	}
+	c := asRecord(get(input, "context"))
+	// Providers return the account holder they're given instead of creating
+	// one, so it's left out.
+	pctx := kv("idempotency_key", fmt.Sprintf("%v-%v", jsTemplate(get(existing, "id")), jsTemplate(get(existing, "external_id"))))
+	if c != nil {
+		for _, k := range c.Keys() {
+			if k == "account_holder" {
+				continue
+			}
+			v, _ := c.Get(k)
+			pctx.Set(k, v)
+		}
+	}
+	provider := fmt.Sprint(get(input, "provider_id"))
+	res, err := s.provider.CreateAccountHolder(ctx, provider, kv("context", pctx))
+	if err != nil {
+		return nil, err
+	}
+	if res == nil || res.Len() == 0 {
+		return nil, common.NewMedusaError(common.MedusaErrorTypes.NOT_ALLOWED, fmt.Sprintf("Provider %s does not support account holders", provider))
+	}
+	u := dal.NewRecord()
+	u.Set("id", get(input, "id"))
+	u.Set("external_id", get(res, "id"))
+	// email: customer?.email, undefined (not assigned) without one
+	if customer := asRecord(get(c, "customer")); customer != nil && customer.Has("email") {
+		u.Set("email", get(customer, "email"))
+	}
+	data := get(res, "data")
+	if data == nil {
+		data = dal.NewRecord()
+	}
+	u.Set("data", data)
+	updated, err := s.Internal("AccountHolder").Update(ctx, u)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := s.provider.DeleteAccountHolder(ctx, fmt.Sprint(get(existing, "provider_id")), kv("context", kv("account_holder", existing))); err != nil {
+		return nil, err
+	}
+	r, _ := updated.(*dal.Record)
+	return r, nil
+}
+
+// jsTemplate formats a value like a JS template literal does.
+func jsTemplate(v any) string {
+	if v == nil {
+		return "null"
+	}
+	return fmt.Sprint(v)
+}
+
 // DeleteAccountHolder mirrors deleteAccountHolder.
 func (s *PaymentModuleService) DeleteAccountHolder(ctx context.Context, id any) error {
 	holder, err := s.Internal("AccountHolder").Retrieve(ctx, id, utilsmodulessdk.FindConfig{Select: []string{"id", "provider_id", "external_id", "email", "data"}})
