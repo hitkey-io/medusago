@@ -44,7 +44,7 @@
   {"name": "get", "method": "GET", "bearer": "login", "path": "/admin/draft-orders/{{create.draft_order.id}}"},
   {"name": "get_missing", "method": "GET", "bearer": "login", "path": "/admin/draft-orders/order_missing"},
   {"name": "update", "method": "POST", "bearer": "login", "path": "/admin/draft-orders/{{create.draft_order.id}}?fields=id,status,is_draft_order,email,version,currency_code,region_id,total,subtotal,tax_total,items.title,items.quantity,items.unit_price,shipping_methods.name,shipping_methods.amount,shipping_address.city", "body": {"email": "draft2@example.test", "shipping_address": {"city": "Hamburg", "postal_code": "20095"}, "metadata": {"source": "email"}}},
-  {"name": "events__update", "method": "GET", "path": "/events-capture"},
+  {"name": "events__update", "method": "GET", "path": "/events-capture", "sortby": {"events": "name"}},
   {"name": "events_reset__update", "method": "POST", "path": "/events-capture", "body": {}},
   {"name": "changes", "method": "GET", "bearer": "login", "path": "/admin/orders/{{create.draft_order.id}}/changes?fields=id,change_type,status,version,actions.action,actions.details", "unordered": ["order_changes"]},
   {"name": "convert", "method": "POST", "bearer": "login", "path": "/admin/draft-orders/{{create.draft_order.id}}/convert-to-order"},
