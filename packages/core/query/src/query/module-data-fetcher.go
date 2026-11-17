@@ -137,10 +137,7 @@ func (f *ModuleDataFetcher) Fetch(ctx context.Context, expand *joiner.ExpandProp
 			config.Take, _ = toIntPtr(a.Value)
 		case "order", "sort":
 			if rec, ok := a.Value.(*dal.Record); ok {
-				for _, k := range rec.Keys() {
-					dir, _ := rec.Get(k)
-					config.Order = append(config.Order, dal.OrderBy{Field: k, Direction: strings.ToUpper(fmt.Sprint(dir))})
-				}
+				config.Order = append(config.Order, flattenOrderBy(rec, "")...)
 			}
 		case "withDeleted":
 			config.WithDeleted, _ = a.Value.(bool)
@@ -262,4 +259,19 @@ func normalizeValue(v any) any {
 	default:
 		return v
 	}
+}
+
+// flattenOrderBy turns a nested order ({ variants: { sku: "ASC" } }, which
+// MikroORM takes as is) into dotted order fields ("variants.sku").
+func flattenOrderBy(order *dal.Record, prefix string) []dal.OrderBy {
+	var out []dal.OrderBy
+	for _, k := range order.Keys() {
+		v, _ := order.Get(k)
+		if nested, ok := v.(*dal.Record); ok {
+			out = append(out, flattenOrderBy(nested, prefix+k+".")...)
+			continue
+		}
+		out = append(out, dal.OrderBy{Field: prefix + k, Direction: strings.ToUpper(fmt.Sprint(v))})
+	}
+	return out
 }

@@ -313,6 +313,7 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 	// fields.
 	relationOrder := map[string][]OrderBy{}
 	var rootOrder []OrderBy
+	joinedOrder := map[int]bool{}
 	populated := map[string]bool{}
 	for _, p := range r.relationPaths(opts) {
 		populated[p] = true
@@ -326,6 +327,10 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 				continue
 			}
 			relationOrder[o.Field[:i]] = append(relationOrder[o.Field[:i]], OrderBy{Field: o.Field[i+1:], Direction: o.Direction})
+			// MikroORM also orders the root query by the field, through a
+			// LEFT JOIN of the relation (the one of a search on it, if any).
+			joinedOrder[len(rootOrder)] = true
+			rootOrder = append(rootOrder, o)
 			continue
 		}
 		rootOrder = append(rootOrder, o)
@@ -336,6 +341,20 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 	if err != nil {
 		return nil, nil, err
 	}
+	var keptOrder []OrderBy
+	for i, o := range opts.Order {
+		if !joinedOrder[i] {
+			keptOrder = append(keptOrder, o)
+			continue
+		}
+		j := strings.LastIndex(o.Field, ".")
+		column, ok := r.joinOrderColumn(qb, o.Field[:j], o.Field[j+1:])
+		if !ok {
+			continue
+		}
+		keptOrder = append(keptOrder, OrderBy{Field: o.Field, Direction: o.Direction, Raw: func(string) string { return column }})
+	}
+	opts.Order = keptOrder
 
 	// Like the BALANCED load strategy, populated to-one relations are LEFT
 	// JOINed in the root query (with the soft delete condition in the join).
@@ -397,20 +416,29 @@ func (r *Repository) find(ctx context.Context, opts FindOptions) ([]*instance, i
 		if len(opts.Order) > 0 {
 			parts := make([]string, len(opts.Order))
 			for i, o := range opts.Order {
-				c, err := r.orderColumn(o.Field, "e0")
-				if err != nil {
-					return nil, nil, err
+				var c string
+				if o.Raw != nil {
+					c = o.Raw("e0")
+				} else {
+					var err error
+					if c, err = r.orderColumn(o.Field, "e0"); err != nil {
+						return nil, nil, err
+					}
 				}
-				fn := "min"
-				if strings.EqualFold(o.Direction, "DESC") {
-					fn = "max"
-				}
-				parts[i] = fmt.Sprintf("%s(%s) %s", fn, c, strings.ToLower(o.Direction))
+				// MikroORM's wrapPaginateSubQuery orders by min() whatever
+				// the direction.
+				parts[i] = fmt.Sprintf("min(%s) %s", c, strings.ToLower(o.Direction))
 			}
 			innerOrder = " order by " + strings.Join(parts, ", ")
 		}
-		sql = fmt.Sprintf(`select "e0".* from %s as "e0" where %s in (select %s from (select %s from %s as "e0"%s%s group by %s%s%s) as "e0")%s`,
-			table, pk, pk, pk, table, qb.joinSQL(), where, pk, innerOrder, paging, order)
+		if len(joinedOrder) > 0 {
+			// the outer query keeps the joins its order uses
+			sql = fmt.Sprintf(`select %s from %s as "e0"%s where %s in (select %s from (select %s from %s as "e0"%s%s group by %s%s%s) as "e0")%s`,
+				rootColumns, table, qb.joinSQL(), pk, pk, pk, table, qb.joinSQL(), where, pk, innerOrder, paging, order)
+		} else {
+			sql = fmt.Sprintf(`select "e0".* from %s as "e0" where %s in (select %s from (select %s from %s as "e0"%s%s group by %s%s%s) as "e0")%s`,
+				table, pk, pk, pk, table, qb.joinSQL(), where, pk, innerOrder, paging, order)
+		}
 	} else {
 		sql = fmt.Sprintf(`select %s from %s as "e0"%s%s%s%s`, rootColumns, table, qb.joinSQL(), where, order, paging)
 	}
@@ -575,6 +603,35 @@ func selectedColumns(e *dml.Entity, tree *fieldTree) []string {
 		}
 	}
 	return out
+}
+
+// joinOrderColumn joins the relation path of an order field like MikroORM
+// does for orderBy (a LEFT JOIN without the soft delete condition, or the
+// join a free text search already made) and returns its column.
+func (r *Repository) joinOrderColumn(qb *queryBuilder, path, field string) (string, bool) {
+	alias, entity, key := "e0", r.Entity, "e0"
+	for _, rel := range strings.Split(path, ".") {
+		next := key + "." + rel
+		if a, ok := qb.joinAliases["q:"+next]; ok {
+			j, err := r.Schema.ResolveJoin(entity, rel)
+			if err != nil {
+				return "", false
+			}
+			alias, entity = a, j.Target
+		} else {
+			a, target, err := qb.joinRelation(entity, alias, rel, key)
+			if err != nil {
+				return "", false
+			}
+			alias, entity = a, target
+		}
+		key = next
+	}
+	prop, ok := entity.MetaProperty(field)
+	if !ok || len(prop.FieldNames) == 0 {
+		return "", false
+	}
+	return col(alias, prop.FieldNames[0]), true
 }
 
 func (r *Repository) orderColumn(field, alias string) (string, error) {
