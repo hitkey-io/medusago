@@ -1,7 +1,9 @@
 package http
 
 import (
+	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -75,9 +77,40 @@ func vary(res *MedusaResponse, field string) {
 	res.Header().Set("Vary", cur+", "+field)
 }
 
-// Cors mirrors the cors package with { origin: [...], credentials: true,
-// preflightContinue: false } as configured by the router.
-func Cors(origins []CorsOrigin) MiddlewareFunction {
+// CorsOptions are the cors options taken from projectConfig.http.corsOptions
+// (maxAge, exposedHeaders, allowedHeaders, methods). The header lists are a
+// string or a list of strings; nil means not set.
+type CorsOptions struct {
+	MaxAge         *float64
+	ExposedHeaders any
+	AllowedHeaders any
+	Methods        any
+}
+
+// joinCorsList mirrors `value.join ? value.join(",") : value`.
+func joinCorsList(v any) string {
+	switch t := v.(type) {
+	case string:
+		return t
+	case []string:
+		return strings.Join(t, ",")
+	case []any:
+		parts := make([]string, len(t))
+		for i, x := range t {
+			parts[i] = fmt.Sprint(x)
+		}
+		return strings.Join(parts, ",")
+	}
+	return fmt.Sprint(v)
+}
+
+// Cors mirrors the cors package with { ...corsOptions, origin: [...],
+// credentials: true, preflightContinue: false } as configured by the router.
+func Cors(origins []CorsOrigin, opts ...CorsOptions) MiddlewareFunction {
+	var o CorsOptions
+	if len(opts) > 0 {
+		o = opts[0]
+	}
 	return func(req *MedusaRequest, res *MedusaResponse, next NextFunction) error {
 		origin := req.Header.Get("Origin")
 		configureOrigin := func() {
@@ -86,16 +119,36 @@ func Cors(origins []CorsOrigin) MiddlewareFunction {
 			}
 			vary(res, "Origin")
 		}
+		configureExposedHeaders := func() {
+			if o.ExposedHeaders == nil {
+				return
+			}
+			if h := joinCorsList(o.ExposedHeaders); h != "" {
+				res.SetHeader("Access-Control-Expose-Headers", h)
+			}
+		}
 		res.SetHeader("Access-Control-Allow-Credentials", "true")
 		if req.Method == "OPTIONS" {
 			res.Header().Del("Access-Control-Allow-Credentials")
 			configureOrigin()
 			res.SetHeader("Access-Control-Allow-Credentials", "true")
-			res.SetHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE")
-			if h := req.Header.Get("Access-Control-Request-Headers"); h != "" {
+			methods := "GET,HEAD,PUT,PATCH,POST,DELETE"
+			if o.Methods != nil {
+				methods = joinCorsList(o.Methods)
+			}
+			res.SetHeader("Access-Control-Allow-Methods", methods)
+			if o.AllowedHeaders == nil {
+				if h := req.Header.Get("Access-Control-Request-Headers"); h != "" {
+					res.SetHeader("Access-Control-Allow-Headers", h)
+				}
+				vary(res, "Access-Control-Request-Headers")
+			} else if h := joinCorsList(o.AllowedHeaders); h != "" {
 				res.SetHeader("Access-Control-Allow-Headers", h)
 			}
-			vary(res, "Access-Control-Request-Headers")
+			if o.MaxAge != nil {
+				res.SetHeader("Access-Control-Max-Age", strconv.FormatFloat(*o.MaxAge, 'f', -1, 64))
+			}
+			configureExposedHeaders()
 			res.Status(204)
 			res.SetHeader("Content-Length", "0")
 			res.End()
@@ -104,6 +157,7 @@ func Cors(origins []CorsOrigin) MiddlewareFunction {
 		res.Header().Del("Access-Control-Allow-Credentials")
 		configureOrigin()
 		res.SetHeader("Access-Control-Allow-Credentials", "true")
+		configureExposedHeaders()
 		next(nil)
 		return nil
 	}

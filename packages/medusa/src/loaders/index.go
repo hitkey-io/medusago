@@ -438,6 +438,7 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 		return req
 	}
 	// express loader
+	medusahttp.ApplySecurityHeaders(app, securityHeadersOptions(cfg.ProjectConfig.HTTP.SecurityHeaders))
 	sessOpts := sessionOptions(cfg.ProjectConfig)
 	store, closeStore, err := sessionStore(cfg.ProjectConfig)
 	if err != nil {
@@ -462,6 +463,7 @@ func InitializeWithOptions(ctx context.Context, cfg config.ConfigModule, opts Op
 		AdminCors:            cfg.ProjectConfig.HTTP.AdminCors,
 		StoreCors:            cfg.ProjectConfig.HTTP.StoreCors,
 		AuthCors:             cfg.ProjectConfig.HTTP.AuthCors,
+		CorsOptions:          corsOptions(cfg.ProjectConfig.HTTP.CorsOptions),
 		Authenticate:         middlewares.Authenticate,
 		BodyParser:           middlewares.BodyParser,
 		BaseRestrictedFields: cfg.ProjectConfig.HTTP.RestrictedFields.Store,
