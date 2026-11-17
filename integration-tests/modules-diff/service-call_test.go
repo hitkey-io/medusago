@@ -31,7 +31,16 @@ func moduleServiceInstance(pool *pgxpool.Pool, key string) (any, error) {
 	if !ok || exp.Service == nil {
 		return nil, fmt.Errorf("module %s has no service", key)
 	}
-	return exp.Service(typesmodulessdk.ServiceOptions{DB: pool})
+	opts := typesmodulessdk.ServiceOptions{DB: pool}
+	// the default notification provider of the reference application
+	if key == modulessdk.NOTIFICATION {
+		local, err := modules.NotificationLocal.NewProvider(typesmodulessdk.ProviderOptions{})
+		if err != nil {
+			return nil, err
+		}
+		opts.Providers = []typesmodulessdk.ProviderInstance{{Identifier: "notification-local", ID: "local", Options: map[string]any{"channels": []any{"feed"}}, Instance: local}}
+	}
+	return exp.Service(opts)
 }
 
 var (
