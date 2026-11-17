@@ -1,6 +1,8 @@
 package workflows
 
 import (
+	"errors"
+
 	"github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/steps"
 	. "github.com/hitkey-io/medusago/packages/core/core-flows/src/cart/utils"
 	commonsteps "github.com/hitkey-io/medusago/packages/core/core-flows/src/common/steps"
@@ -263,6 +265,10 @@ var RefreshCartItemsWorkflow = composer.CreateWorkflow("refresh-cart-items",
 		}
 		codes := in.PromoCodes
 		if !in.PromoCodesDefined {
+			if refetched == nil {
+				// refetchedCart.promotions of an undefined cart
+				return nil, errors.New("Cannot read properties of undefined (reading 'promotions')")
+			}
 			codes = []string{}
 			for _, p := range Records(Get(refetched, "promotions")) {
 				if c := Str(p, "code"); c != "" {

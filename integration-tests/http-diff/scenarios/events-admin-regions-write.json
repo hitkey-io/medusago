@@ -3,7 +3,7 @@
   {"name": "list", "method": "GET", "bearer": "login", "path": "/admin/regions?order=name"},
   {"name": "events_start", "method": "POST", "path": "/events-capture", "body": {}},
   {"name": "create", "method": "POST", "bearer": "login", "path": "/admin/regions", "body": {"name": "Nordics", "currency_code": "SEK", "countries": ["SE", "dk"], "payment_providers": ["pp_system_default"], "is_tax_inclusive": true, "metadata": {"a": 1}}},
-  {"name": "events__create", "method": "GET", "path": "/events-capture"},
+  {"name": "events__create", "method": "GET", "path": "/events-capture", "sortby": {"events": "name"}},
   {"name": "events_reset__create", "method": "POST", "path": "/events-capture", "body": {}},
   {"name": "create_fields", "method": "POST", "bearer": "login", "path": "/admin/regions?fields=id,name,*payment_providers", "body": {"name": "Empty", "currency_code": "gbp"}},
   {"name": "events__create_fields", "method": "GET", "path": "/events-capture"},
