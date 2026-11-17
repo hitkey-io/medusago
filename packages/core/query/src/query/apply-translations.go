@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
-	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/translations"
 )
 
 // This file mirrors @medusajs/utils/src/translations/apply-translations.ts.
@@ -17,13 +17,6 @@ import (
 var translationExcludedKeys = map[string]bool{
 	"id": true, "created_at": true, "updated_at": true, "deleted_at": true, "metadata": true,
 }
-
-// EnableTranslations turns on applyTranslations (the translation feature
-// flag, with its module loaded).
-func (q *Query) EnableTranslations() { q.translations = true }
-
-// TranslationsEnabled reports whether translations are applied.
-func (q *Query) TranslationsEnabled() bool { return q != nil && q.translations }
 
 func translatableObject(v any) (*dal.Record, bool) {
 	r, ok := v.(*dal.Record)
@@ -133,7 +126,7 @@ func applyTranslation(r *dal.Record, byID map[string]*dal.Record) {
 // objects (and of the nested objects with an id) are replaced by their
 // translation in the locale.
 func (q *Query) ApplyTranslations(ctx context.Context, locale string, objects []any) error {
-	if !q.TranslationsEnabled() || locale == "" {
+	if locale == "" {
 		return nil
 	}
 	var present []any
@@ -168,7 +161,7 @@ func (q *Query) ApplyTranslations(ctx context.Context, locale string, objects []
 		filters.Set("locale_code", locale)
 		pagination := dal.NewRecord()
 		pagination.Set("take", float64(batchSize))
-		res, err := q.Graph(ctx, GraphInput{Entity: "translations", Fields: []string{"translations", "reference_id"}, Filters: filters, Pagination: pagination}, joiner.Options{Cache: caching.Enabled()})
+		res, err := q.Graph(ctx, GraphInput{Entity: "translations", Fields: []string{"translations", "reference_id", "id"}, Filters: filters, Pagination: pagination}, joiner.Options{Cache: translations.ListCacheOptions()})
 		if err != nil {
 			return err
 		}

@@ -66,9 +66,7 @@ func ApplyTranslationsToTaxLines(ctx context.Context, q *query.Query, taxLines [
 var GetTranslatedTaxLinesStep = composer.CreateStep("get-translated-tax-lines-step",
 	func(ctx composer.StepExecutionContext, in GetTranslatedTaxLinesStepInput) (composer.StepResponse[TranslatedTaxLines], error) {
 		q, _ := ctx.Container.Resolve(common.ContainerRegistrationKeys.QUERY).(*query.Query)
-		if !q.TranslationsEnabled() {
-			return composer.NewStepResponse(TranslatedTaxLines{ItemTaxLines: in.ItemTaxLines, ShippingTaxLines: in.ShippingTaxLines}), nil
-		}
+
 		items, err := ApplyTranslationsToTaxLines(ctx.Context, q, in.ItemTaxLines, in.Locale)
 		if err != nil {
 			return composer.StepResponse[TranslatedTaxLines]{}, err

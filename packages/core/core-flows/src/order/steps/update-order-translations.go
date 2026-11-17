@@ -93,7 +93,7 @@ var UpdateOrderItemsTranslationsStep = composer.CreateStep("update-order-items-t
 	func(ctx composer.StepExecutionContext, in UpdateOrderItemsTranslationsStepInput) (composer.StepResponse[any], error) {
 		var original []*dal.Record
 		q, _ := ctx.Container.Resolve(common.ContainerRegistrationKeys.QUERY).(*query.Query)
-		if !q.TranslationsEnabled() || in.Locale == "" {
+		if in.Locale == "" {
 			return composer.NewStepResponse[any](nil, any([]*dal.Record{})), nil
 		}
 		processBatch := func(items []*dal.Record) error {
@@ -195,7 +195,7 @@ type UpdateOrderShippingMethodsTranslationsStepInput struct {
 var UpdateOrderShippingMethodsTranslationsStep = composer.CreateStep("update-order-shipping-methods-translations",
 	func(ctx composer.StepExecutionContext, in UpdateOrderShippingMethodsTranslationsStepInput) (composer.StepResponse[[]*dal.Record], error) {
 		q, _ := ctx.Container.Resolve(common.ContainerRegistrationKeys.QUERY).(*query.Query)
-		if !q.TranslationsEnabled() || in.Locale == "" || len(in.ShippingMethods) == 0 {
+		if in.Locale == "" || len(in.ShippingMethods) == 0 {
 			return composer.NewStepResponse(in.ShippingMethods), nil
 		}
 		ids := make([]any, len(in.ShippingMethods))
@@ -259,7 +259,7 @@ type UpdateOrderTaxLinesTranslationsStepInput struct {
 var UpdateOrderTaxLinesTranslationsStep = composer.CreateStep("update-order-tax-lines-translations",
 	func(ctx composer.StepExecutionContext, in UpdateOrderTaxLinesTranslationsStepInput) (composer.StepResponse[any], error) {
 		q, _ := ctx.Container.Resolve(common.ContainerRegistrationKeys.QUERY).(*query.Query)
-		if !q.TranslationsEnabled() || in.Locale == "" {
+		if in.Locale == "" {
 			return composer.NewStepResponse[any](nil, any([]any{})), nil
 		}
 		f := dal.NewRecord()

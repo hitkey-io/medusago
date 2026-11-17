@@ -7,8 +7,8 @@ import (
 	httputils "github.com/hitkey-io/medusago/packages/core/framework/src/http/utils"
 	"github.com/hitkey-io/medusago/packages/core/framework/src/zod"
 	"github.com/hitkey-io/medusago/packages/core/query/src/joiner"
-	"github.com/hitkey-io/medusago/packages/core/utils/src/caching"
 	"github.com/hitkey-io/medusago/packages/core/utils/src/dal"
+	"github.com/hitkey-io/medusago/packages/core/utils/src/translations"
 	"github.com/hitkey-io/medusago/packages/medusa/src/api/utils"
 	commonvalidators "github.com/hitkey-io/medusago/packages/medusa/src/api/utils/common-validators"
 )
@@ -117,4 +117,4 @@ var Middlewares = []medusahttp.MiddlewareRoute{
 }
 
 // Route is route.ts: GET lists the translations through query.graph.
-var Route = medusahttp.Route{GET: httputils.RefetchListRouteWithOptions("translation", "translations", joiner.Options{Cache: caching.Enabled()})}
+var Route = medusahttp.Route{GET: httputils.RefetchListRouteWithOptions("translation", "translations", joiner.Options{Cache: translations.ListCacheOptions()})}

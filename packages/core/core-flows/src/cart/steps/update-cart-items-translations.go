@@ -60,9 +60,7 @@ var UpdateCartItemsTranslationsStep = composer.CreateStep("update-cart-items-tra
 	func(ctx composer.StepExecutionContext, in UpdateCartItemsTranslationsStepInput) (composer.StepResponse[any], error) {
 		var original []*dal.Record
 		q, _ := ctx.Container.Resolve(common.ContainerRegistrationKeys.QUERY).(*query.Query)
-		if !q.TranslationsEnabled() {
-			return composer.NewStepResponse[any](nil, any([]*dal.Record{})), nil
-		}
+
 		processBatch := func(items []*dal.Record) error {
 			var variantIDs []any
 			seen := map[any]bool{}
