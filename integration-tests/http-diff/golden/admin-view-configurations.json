@@ -7,570 +7,259 @@
       "Vary": "Origin"
     },
     "body": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ0NTkzMDMsImV4cCI6MTc5NDU0NTcwM30.dIclEPG-6YCz9pQ60bTBakjtUfJ8Q4NFa2UB-mbCKwQ"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5MzYzMDQsImV4cCI6MTc5NTAyMjcwNH0.YGbkYDXeb-p-KQADK_e889zp-muutOVJKUksXR2lLaQ"
     }
   },
   "list_empty": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configurations": [],
-      "count": 0,
-      "offset": 0,
-      "limit": 20
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "active_empty": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": null,
-      "is_default_active": true,
-      "default_type": "code"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "create_noname": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Name is required unless creating a system default view"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "create_empty_name": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Name is required unless creating a system default view"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "create_missing_config": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Field 'configuration' is required"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "create_unknown_key": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Unrecognized fields: 'color'"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "create_bad_widths": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Expected type: 'number' for field 'configuration, column_widths, id', got: 'wide'"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "create_a": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-        "entity": "orders",
-        "name": "Open orders",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "search": "",
-          "filters": {
-            "region": {
-              "id": "reg_1"
-            },
-            "status": [
-              "pending"
-            ]
-          },
-          "sorting": {
-            "id": "created_at",
-            "desc": true
-          },
-          "extra_flag": true,
-          "column_order": [
-            "status",
-            "display_id"
-          ],
-          "column_widths": {
-            "display_id": 120
-          },
-          "visible_columns": [
-            "display_id",
-            "status"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.340Z",
-        "updated_at": "2026-11-12T04:55:03.340Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "active_after_a": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-        "entity": "orders",
-        "name": "Open orders",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "search": "",
-          "filters": {
-            "region": {
-              "id": "reg_1"
-            },
-            "status": [
-              "pending"
-            ]
-          },
-          "sorting": {
-            "id": "created_at",
-            "desc": true
-          },
-          "extra_flag": true,
-          "column_order": [
-            "status",
-            "display_id"
-          ],
-          "column_widths": {
-            "display_id": 120
-          },
-          "visible_columns": [
-            "display_id",
-            "status"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.340Z",
-        "updated_at": "2026-11-12T04:55:03.340Z",
-        "deleted_at": null
-      },
-      "is_default_active": false
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "create_b": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZGM5N13JFFQVGX9YJ1X",
-        "entity": "orders",
-        "name": "Compact",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "sorting": null,
-          "column_order": [
-            "id"
-          ],
-          "visible_columns": [
-            "id"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.444Z",
-        "updated_at": "2026-11-12T04:55:03.444Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "active_b": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZGM5N13JFFQVGX9YJ1X",
-        "entity": "orders",
-        "name": "Compact",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "sorting": null,
-          "column_order": [
-            "id"
-          ],
-          "visible_columns": [
-            "id"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.444Z",
-        "updated_at": "2026-11-12T04:55:03.444Z",
-        "deleted_at": null
-      },
-      "is_default_active": false
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "create_default": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZHA85C56GBRGX6CT8E1",
-        "entity": "orders",
-        "name": null,
-        "user_id": null,
-        "is_system_default": true,
-        "configuration": {
-          "column_order": [
-            "display_id"
-          ],
-          "visible_columns": [
-            "display_id"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.466Z",
-        "updated_at": "2026-11-12T04:55:03.466Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "create_default_dup": {
-    "status": 422,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "code": "invalid_request_error",
-      "type": "duplicate_error",
-      "message": "A system default view configuration already exists for entity: orders"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "create_products": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZJ6ZKJE35GJDDAGPY9K",
-        "entity": "products",
-        "name": "Products view"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "list_all": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configurations": [
-        {
-          "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-          "entity": "orders",
-          "name": "Open orders",
-          "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-          "is_system_default": false,
-          "configuration": {
-            "search": "",
-            "filters": {
-              "region": {
-                "id": "reg_1"
-              },
-              "status": [
-                "pending"
-              ]
-            },
-            "sorting": {
-              "id": "created_at",
-              "desc": true
-            },
-            "extra_flag": true,
-            "column_order": [
-              "status",
-              "display_id"
-            ],
-            "column_widths": {
-              "display_id": 120
-            },
-            "visible_columns": [
-              "display_id",
-              "status"
-            ]
-          },
-          "created_at": "2026-11-12T04:55:03.340Z",
-          "updated_at": "2026-11-12T04:55:03.340Z"
-        },
-        {
-          "id": "vconf_01M771QZGM5N13JFFQVGX9YJ1X",
-          "entity": "orders",
-          "name": "Compact",
-          "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-          "is_system_default": false,
-          "configuration": {
-            "sorting": null,
-            "column_order": [
-              "id"
-            ],
-            "visible_columns": [
-              "id"
-            ]
-          },
-          "created_at": "2026-11-12T04:55:03.444Z",
-          "updated_at": "2026-11-12T04:55:03.444Z"
-        },
-        {
-          "id": "vconf_01M771QZHA85C56GBRGX6CT8E1",
-          "entity": "orders",
-          "name": null,
-          "user_id": null,
-          "is_system_default": true,
-          "configuration": {
-            "column_order": [
-              "display_id"
-            ],
-            "visible_columns": [
-              "display_id"
-            ]
-          },
-          "created_at": "2026-11-12T04:55:03.466Z",
-          "updated_at": "2026-11-12T04:55:03.466Z"
-        }
-      ],
-      "count": 3,
-      "offset": 0,
-      "limit": 20
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "list_bool_filter": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Expected type: 'boolean' for field 'is_system_default', got: 'true'"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "list_name": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configurations": [
-        {
-          "id": "vconf_01M771QZGM5N13JFFQVGX9YJ1X",
-          "name": "Compact",
-          "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES"
-        }
-      ],
-      "count": 1,
-      "offset": 0,
-      "limit": 20
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "list_paged": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configurations": [
-        {
-          "id": "vconf_01M771QZGM5N13JFFQVGX9YJ1X",
-          "entity": "orders",
-          "name": "Compact",
-          "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-          "is_system_default": false,
-          "configuration": {
-            "sorting": null,
-            "column_order": [
-              "id"
-            ],
-            "visible_columns": [
-              "id"
-            ]
-          },
-          "created_at": "2026-11-12T04:55:03.444Z",
-          "updated_at": "2026-11-12T04:55:03.444Z"
-        }
-      ],
-      "count": 3,
-      "offset": 1,
-      "limit": 1
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "list_products": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configurations": [
-        {
-          "id": "vconf_01M771QZJ6ZKJE35GJDDAGPY9K",
-          "entity": "products",
-          "name": "Products view",
-          "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-          "is_system_default": false,
-          "configuration": {
-            "column_order": [
-              "title"
-            ],
-            "visible_columns": [
-              "title"
-            ]
-          },
-          "created_at": "2026-11-12T04:55:03.495Z",
-          "updated_at": "2026-11-12T04:55:03.495Z"
-        }
-      ],
-      "count": 1,
-      "offset": 0,
-      "limit": 20
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "get_a": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-        "entity": "orders",
-        "name": "Open orders",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "search": "",
-          "filters": {
-            "region": {
-              "id": "reg_1"
-            },
-            "status": [
-              "pending"
-            ]
-          },
-          "sorting": {
-            "id": "created_at",
-            "desc": true
-          },
-          "extra_flag": true,
-          "column_order": [
-            "status",
-            "display_id"
-          ],
-          "column_widths": {
-            "display_id": 120
-          },
-          "visible_columns": [
-            "display_id",
-            "status"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.340Z",
-        "updated_at": "2026-11-12T04:55:03.340Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "get_a_fields": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-        "configuration": {
-          "search": "",
-          "filters": {
-            "region": {
-              "id": "reg_1"
-            },
-            "status": [
-              "pending"
-            ]
-          },
-          "sorting": {
-            "id": "created_at",
-            "desc": true
-          },
-          "extra_flag": true,
-          "column_order": [
-            "status",
-            "display_id"
-          ],
-          "column_widths": {
-            "display_id": 120
-          },
-          "visible_columns": [
-            "display_id",
-            "status"
-          ]
-        }
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "get_wrong_entity": {
@@ -582,7 +271,7 @@
     },
     "body": {
       "type": "not_found",
-      "message": "View configuration with id: vconf_01M771QZDCD1YNJJ542EBBQS65 not found"
+      "message": "Route not found"
     }
   },
   "get_missing": {
@@ -594,273 +283,103 @@
     },
     "body": {
       "type": "not_found",
-      "message": "View configuration with id: vconf_missing not found"
+      "message": "Route not found"
     }
   },
   "update_a_name": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-        "entity": "orders",
-        "name": "Open orders v2",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "search": "",
-          "filters": {
-            "region": {
-              "id": "reg_1"
-            },
-            "status": [
-              "pending"
-            ]
-          },
-          "sorting": {
-            "id": "created_at",
-            "desc": true
-          },
-          "extra_flag": true,
-          "column_order": [
-            "status",
-            "display_id"
-          ],
-          "column_widths": {
-            "display_id": 120
-          },
-          "visible_columns": [
-            "display_id",
-            "status"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.340Z",
-        "updated_at": "2026-11-12T04:55:03.529Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "active_a": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-        "entity": "orders",
-        "name": "Open orders v2",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "search": "",
-          "filters": {
-            "region": {
-              "id": "reg_1"
-            },
-            "status": [
-              "pending"
-            ]
-          },
-          "sorting": {
-            "id": "created_at",
-            "desc": true
-          },
-          "extra_flag": true,
-          "column_order": [
-            "status",
-            "display_id"
-          ],
-          "column_widths": {
-            "display_id": 120
-          },
-          "visible_columns": [
-            "display_id",
-            "status"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.340Z",
-        "updated_at": "2026-11-12T04:55:03.529Z",
-        "deleted_at": null
-      },
-      "is_default_active": false
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "update_a_config": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-        "entity": "orders",
-        "name": "Open orders v2",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "search": "",
-          "filters": {},
-          "sorting": null,
-          "column_order": [],
-          "column_widths": {},
-          "visible_columns": [
-            "status"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.340Z",
-        "updated_at": "2026-11-12T04:55:03.552Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "get_a2": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-        "entity": "orders",
-        "name": "Open orders v2",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "search": "",
-          "filters": {},
-          "sorting": null,
-          "column_order": [],
-          "column_widths": {},
-          "visible_columns": [
-            "status"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.340Z",
-        "updated_at": "2026-11-12T04:55:03.552Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "update_b_config_active": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZGM5N13JFFQVGX9YJ1X",
-        "entity": "orders",
-        "name": "Compact",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "search": "abc",
-          "filters": {},
-          "sorting": null,
-          "column_order": [
-            "id"
-          ],
-          "column_widths": {},
-          "visible_columns": []
-        },
-        "created_at": "2026-11-12T04:55:03.444Z",
-        "updated_at": "2026-11-12T04:55:03.566Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "active_after_b_update": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-        "entity": "orders",
-        "name": "Open orders v2",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "search": "",
-          "filters": {},
-          "sorting": null,
-          "column_order": [],
-          "column_widths": {},
-          "visible_columns": [
-            "status"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.340Z",
-        "updated_at": "2026-11-12T04:55:03.552Z",
-        "deleted_at": null
-      },
-      "is_default_active": false
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "update_b_empty_config": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZGM5N13JFFQVGX9YJ1X",
-        "entity": "orders",
-        "name": "Compact v2",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "search": "",
-          "filters": {},
-          "sorting": null,
-          "column_order": [],
-          "column_widths": {},
-          "visible_columns": []
-        },
-        "created_at": "2026-11-12T04:55:03.444Z",
-        "updated_at": "2026-11-12T04:55:03.581Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "update_default": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZHA85C56GBRGX6CT8E1",
-        "entity": "orders",
-        "name": "Default",
-        "user_id": null,
-        "is_system_default": true,
-        "configuration": {
-          "column_order": [
-            "display_id"
-          ],
-          "visible_columns": [
-            "display_id"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.466Z",
-        "updated_at": "2026-11-12T04:55:03.593Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "update_missing": {
@@ -872,72 +391,55 @@
     },
     "body": {
       "type": "not_found",
-      "message": "View configuration with id: vconf_missing not found"
+      "message": "Route not found"
     }
   },
   "update_invalid": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Expected type: 'string' for field 'configuration, sorting, id', got: '1'; Field 'configuration, sorting, desc' is required"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "set_active_default": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "success": true
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "active_default": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZHA85C56GBRGX6CT8E1",
-        "entity": "orders",
-        "name": "Default",
-        "user_id": null,
-        "is_system_default": true,
-        "configuration": {
-          "column_order": [
-            "display_id"
-          ],
-          "visible_columns": [
-            "display_id"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.466Z",
-        "updated_at": "2026-11-12T04:55:03.593Z",
-        "deleted_at": null
-      },
-      "is_default_active": true,
-      "default_type": "system"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "set_active_wrong_entity": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "View configuration vconf_01M771QZJ6ZKJE35GJDDAGPY9K is not for entity orders"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "set_active_missing": {
@@ -949,154 +451,115 @@
     },
     "body": {
       "type": "not_found",
-      "message": "ViewConfiguration with id: vconf_missing was not found"
+      "message": "Route not found"
     }
   },
   "set_active_invalid": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Field 'view_configuration_id' is required"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "clear_active": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "success": true
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "active_cleared": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZHA85C56GBRGX6CT8E1",
-        "entity": "orders",
-        "name": "Default",
-        "user_id": null,
-        "is_system_default": true,
-        "configuration": {
-          "column_order": [
-            "display_id"
-          ],
-          "visible_columns": [
-            "display_id"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.466Z",
-        "updated_at": "2026-11-12T04:55:03.593Z",
-        "deleted_at": null
-      },
-      "is_default_active": true,
-      "default_type": "system"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "delete_default": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "id": "vconf_01M771QZHA85C56GBRGX6CT8E1",
-      "object": "view_configuration",
-      "deleted": true
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "active_after_delete": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": null,
-      "is_default_active": true,
-      "default_type": "code"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "set_active_b": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "success": true
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "delete_b": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "id": "vconf_01M771QZGM5N13JFFQVGX9YJ1X",
-      "object": "view_configuration",
-      "deleted": true
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "active_after_delete_b": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": {
-        "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-        "entity": "orders",
-        "name": "Open orders v2",
-        "user_id": "user_01M70Y01SPRY6AWYTJKZK9YEES",
-        "is_system_default": false,
-        "configuration": {
-          "search": "",
-          "filters": {},
-          "sorting": null,
-          "column_order": [],
-          "column_widths": {},
-          "visible_columns": [
-            "status"
-          ]
-        },
-        "created_at": "2026-11-12T04:55:03.340Z",
-        "updated_at": "2026-11-12T04:55:03.552Z",
-        "deleted_at": null
-      },
-      "is_default_active": false
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "delete_a": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "id": "vconf_01M771QZDCD1YNJJ542EBBQS65",
-      "object": "view_configuration",
-      "deleted": true
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "delete_a_again": {
@@ -1108,308 +571,211 @@
     },
     "body": {
       "type": "not_found",
-      "message": "View configuration with id: vconf_01M771QZDCD1YNJJ542EBBQS65 not found"
+      "message": "Route not found"
     }
   },
   "active_none": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configuration": null,
-      "is_default_active": true,
-      "default_type": "code"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "list_final": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "view_configurations": [],
-      "count": 0,
-      "offset": 0,
-      "limit": 20
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_list_empty": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_labels": [],
-      "count": 0,
-      "offset": 0,
-      "limit": 50
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_create": {
-    "status": 201,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_label": {
-        "id": "plbl_01M771QZQKKKM7N8P6M07EEF96",
-        "entity": "Order",
-        "property": "display_id",
-        "label": "Order number",
-        "description": "Shown in tables",
-        "created_at": "2026-11-12T04:55:03.668Z",
-        "updated_at": "2026-11-12T04:55:03.668Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_create2": {
-    "status": 201,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_label": {
-        "id": "plbl_01M771QZQT3Y7558CK7D1W8XFX",
-        "entity": "Order",
-        "property": "email",
-        "label": "Customer email",
-        "description": null,
-        "created_at": "2026-11-12T04:55:03.674Z",
-        "updated_at": "2026-11-12T04:55:03.674Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_create_dup": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Property label with entity: Order, property: display_id, already exists."
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_create_invalid": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Value for field 'entity' too small, expected at least: '1'"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_create_missing": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Field 'property' is required; Field 'label' is required"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_create_fields": {
-    "status": 201,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_label": {
-        "id": "plbl_01M771QZS5J1MXF4VGBMFR3YXS",
-        "label": "First name"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_list": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_labels": [
-        {
-          "id": "plbl_01M771QZQKKKM7N8P6M07EEF96",
-          "entity": "Order",
-          "property": "display_id",
-          "label": "Order number",
-          "description": "Shown in tables",
-          "created_at": "2026-11-12T04:55:03.668Z",
-          "updated_at": "2026-11-12T04:55:03.668Z"
-        },
-        {
-          "id": "plbl_01M771QZQT3Y7558CK7D1W8XFX",
-          "entity": "Order",
-          "property": "email",
-          "label": "Customer email",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.674Z",
-          "updated_at": "2026-11-12T04:55:03.674Z"
-        },
-        {
-          "id": "plbl_01M771QZS5J1MXF4VGBMFR3YXS",
-          "entity": "Customer",
-          "property": "first_name",
-          "label": "First name",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.718Z",
-          "updated_at": "2026-11-12T04:55:03.718Z"
-        }
-      ],
-      "count": 3,
-      "offset": 0,
-      "limit": 50
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_list_filter": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_labels": [
-        {
-          "id": "plbl_01M771QZQT3Y7558CK7D1W8XFX",
-          "entity": "Order",
-          "property": "email",
-          "label": "Customer email",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.674Z",
-          "updated_at": "2026-11-12T04:55:03.674Z"
-        }
-      ],
-      "count": 1,
-      "offset": 0,
-      "limit": 50
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_list_q": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_labels": [
-        {
-          "id": "plbl_01M771QZQT3Y7558CK7D1W8XFX",
-          "entity": "Order",
-          "property": "email",
-          "label": "Customer email",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.674Z",
-          "updated_at": "2026-11-12T04:55:03.674Z"
-        }
-      ],
-      "count": 1,
-      "offset": 0,
-      "limit": 50
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_list_paged": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_labels": [
-        {
-          "id": "plbl_01M771QZQT3Y7558CK7D1W8XFX",
-          "entity": "Order",
-          "property": "email",
-          "label": "Customer email",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.674Z",
-          "updated_at": "2026-11-12T04:55:03.674Z"
-        }
-      ],
-      "count": 3,
-      "offset": 1,
-      "limit": 1
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_list_bad_limit": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Expected type: 'number' for field 'limit', got: 'abc'"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_list_unknown": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Unrecognized fields: 'label'"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_get": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_label": {
-        "id": "plbl_01M771QZQKKKM7N8P6M07EEF96",
-        "entity": "Order",
-        "property": "display_id",
-        "label": "Order number",
-        "description": "Shown in tables",
-        "created_at": "2026-11-12T04:55:03.668Z",
-        "updated_at": "2026-11-12T04:55:03.668Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_get_fields": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_label": {
-        "label": "Order number",
-        "description": "Shown in tables",
-        "id": "plbl_01M771QZQKKKM7N8P6M07EEF96"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_get_missing": {
@@ -1421,76 +787,55 @@
     },
     "body": {
       "type": "not_found",
-      "message": "Property label with id: plbl_missing not found"
+      "message": "Route not found"
     }
   },
   "pl_update": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_label": {
-        "id": "plbl_01M771QZQKKKM7N8P6M07EEF96",
-        "entity": "Order",
-        "property": "display_id",
-        "label": "Display ID",
-        "description": "Shown in tables",
-        "created_at": "2026-11-12T04:55:03.668Z",
-        "updated_at": "2026-11-12T04:55:03.745Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_update_desc": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_label": {
-        "id": "plbl_01M771QZQKKKM7N8P6M07EEF96",
-        "entity": "Order",
-        "property": "display_id",
-        "label": "Display ID",
-        "description": "Updated",
-        "created_at": "2026-11-12T04:55:03.668Z",
-        "updated_at": "2026-11-12T04:55:03.752Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_update_null_desc": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_label": {
-        "id": "plbl_01M771QZQKKKM7N8P6M07EEF96",
-        "entity": "Order",
-        "property": "display_id",
-        "label": "Display ID",
-        "description": "Updated",
-        "created_at": "2026-11-12T04:55:03.668Z",
-        "updated_at": "2026-11-12T04:55:03.752Z"
-      }
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_update_empty_label": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Value for field 'label' too small, expected at least: '1'"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_update_missing": {
@@ -1502,78 +847,43 @@
     },
     "body": {
       "type": "not_found",
-      "message": "PropertyLabel with id \"plbl_missing\" not found"
+      "message": "Route not found"
     }
   },
   "pl_batch": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "created": [
-        {
-          "id": "plbl_01M771QZV57SNM19VWN1FDER6G",
-          "entity": "Product",
-          "property": "title",
-          "label": "Name",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.781Z",
-          "updated_at": "2026-11-12T04:55:03.781Z"
-        }
-      ],
-      "updated": [
-        {
-          "id": "plbl_01M771QZQT3Y7558CK7D1W8XFX",
-          "entity": "Order",
-          "property": "email",
-          "label": "Email address",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.674Z",
-          "updated_at": "2026-11-12T04:55:03.782Z"
-        }
-      ],
-      "deleted": [
-        {
-          "id": "plbl_01M771QZQKKKM7N8P6M07EEF96",
-          "object": "property_label",
-          "deleted": true
-        }
-      ]
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_batch_empty": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "created": [],
-      "updated": [],
-      "deleted": []
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_batch_delete_missing": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "created": [],
-      "updated": [],
-      "deleted": [
-        {
-          "id": "plbl_missing",
-          "object": "property_label",
-          "deleted": true
-        }
-      ]
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_batch_update_missing": {
@@ -1585,120 +895,67 @@
     },
     "body": {
       "type": "not_found",
-      "message": "PropertyLabel with id \"plbl_missing\" not found"
+      "message": "Route not found"
     }
   },
   "pl_batch_invalid": {
-    "status": 400,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "type": "invalid_data",
-      "message": "Invalid request: Field 'create, 0, property' is required; Field 'create, 0, label' is required"
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_list_after_batch": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_labels": [
-        {
-          "id": "plbl_01M771QZQT3Y7558CK7D1W8XFX",
-          "entity": "Order",
-          "property": "email",
-          "label": "Email address",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.674Z",
-          "updated_at": "2026-11-12T04:55:03.782Z"
-        },
-        {
-          "id": "plbl_01M771QZS5J1MXF4VGBMFR3YXS",
-          "entity": "Customer",
-          "property": "first_name",
-          "label": "First name",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.718Z",
-          "updated_at": "2026-11-12T04:55:03.718Z"
-        },
-        {
-          "id": "plbl_01M771QZV57SNM19VWN1FDER6G",
-          "entity": "Product",
-          "property": "title",
-          "label": "Name",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.781Z",
-          "updated_at": "2026-11-12T04:55:03.781Z"
-        }
-      ],
-      "count": 3,
-      "offset": 0,
-      "limit": 50
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_delete": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "id": "plbl_01M771QZQT3Y7558CK7D1W8XFX",
-      "object": "property_label",
-      "deleted": true
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_delete_missing": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "id": "plbl_missing",
-      "object": "property_label",
-      "deleted": true
+      "type": "not_found",
+      "message": "Route not found"
     }
   },
   "pl_list_final": {
-    "status": 200,
+    "status": 404,
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
       "Vary": "Origin"
     },
     "body": {
-      "property_labels": [
-        {
-          "id": "plbl_01M771QZS5J1MXF4VGBMFR3YXS",
-          "entity": "Customer",
-          "property": "first_name",
-          "label": "First name",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.718Z",
-          "updated_at": "2026-11-12T04:55:03.718Z"
-        },
-        {
-          "id": "plbl_01M771QZV57SNM19VWN1FDER6G",
-          "entity": "Product",
-          "property": "title",
-          "label": "Name",
-          "description": null,
-          "created_at": "2026-11-12T04:55:03.781Z",
-          "updated_at": "2026-11-12T04:55:03.781Z"
-        }
-      ],
-      "count": 2,
-      "offset": 0,
-      "limit": 50
+      "type": "not_found",
+      "message": "Route not found"
     }
   }
 }

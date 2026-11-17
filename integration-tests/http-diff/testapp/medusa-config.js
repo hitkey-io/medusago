@@ -25,7 +25,16 @@ const indexOptions = indexSchemaName
     }
   : undefined
 
-module.exports = defineConfig({
+// The Medusa Cloud plugin is loaded by default; MedusaGo does not have it.
+const noCloud = (config) => ({
+  ...config,
+  plugins: [
+    ...(config.plugins || []),
+    { resolve: "@medusajs/cloud", options: { disabled: true } },
+  ],
+})
+
+module.exports = defineConfig(noCloud({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
     databaseLogging: process.env.MEDUSA_DB_LOGGING === "true",
@@ -39,17 +48,14 @@ module.exports = defineConfig({
   },
   admin: { disable: true },
   // Flag-gated modules need both the feature flag and the module entry
-  // (index engine, translation); the brand test module (custom module and
+  // (index engine); the brand test module (custom module and
   // links) is enabled with MEDUSA_TEST_BRAND.
   modules: [
     ...(process.env.MEDUSA_FF_INDEX_ENGINE === "true"
       ? [{ resolve: "@medusajs/index", options: indexOptions }]
       : []),
-    ...(process.env.MEDUSA_FF_TRANSLATION === "true"
-      ? [{ resolve: "@medusajs/medusa/translation" }]
-      : []),
     ...(process.env.MEDUSA_TEST_BRAND === "true"
       ? [{ resolve: "./src/modules/brand" }]
       : []),
   ],
-})
+}))

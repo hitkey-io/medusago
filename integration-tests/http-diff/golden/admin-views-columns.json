@@ -7,7 +7,7 @@
       "Vary": "Origin"
     },
     "body": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ1MDUwNDAsImV4cCI6MTc5NDU5MTQ0MH0.Tq9cW6Y-Mmpe9wAfbBpaIimNg-I62rPveXZatcA5_o8"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5MzU3MTYsImV4cCI6MTc5NTAyMjExNn0.B4XznG0dhzmOB3qatvaGuRzIcUjkc0vFfShRYR7wttI"
     }
   },
   "orders": {
@@ -6822,6 +6822,38 @@
           "custom_label": false
         },
         {
+          "id": "translations_filter",
+          "name": "Translations",
+          "field": "translations.id",
+          "sortable": false,
+          "hideable": true,
+          "default_visible": false,
+          "data_type": "string",
+          "semantic_type": "relationship",
+          "context": "filter",
+          "render_mode": "text",
+          "default_order": 980,
+          "category": "relationship",
+          "filter": {
+            "enabled": true,
+            "operators": [
+              "in"
+            ],
+            "relationship": {
+              "entity": "Translation",
+              "value_field": "id",
+              "display_field": "reference_id",
+              "multiple": true,
+              "endpoint": "/admin/translations"
+            }
+          },
+          "source": {
+            "module": "product",
+            "entity": "Product"
+          },
+          "custom_label": false
+        },
+        {
           "id": "sales_channels_filter",
           "name": "Sales Channels",
           "field": "sales_channels.id",
@@ -9310,6 +9342,38 @@
               "display_field": "title",
               "multiple": true,
               "endpoint": "/admin/order-line-items"
+            }
+          },
+          "source": {
+            "module": "product",
+            "entity": "ProductVariant"
+          },
+          "custom_label": false
+        },
+        {
+          "id": "translations_filter",
+          "name": "Translations",
+          "field": "translations.id",
+          "sortable": false,
+          "hideable": true,
+          "default_visible": false,
+          "data_type": "string",
+          "semantic_type": "relationship",
+          "context": "filter",
+          "render_mode": "text",
+          "default_order": 980,
+          "category": "relationship",
+          "filter": {
+            "enabled": true,
+            "operators": [
+              "in"
+            ],
+            "relationship": {
+              "entity": "Translation",
+              "value_field": "id",
+              "display_field": "reference_id",
+              "multiple": true,
+              "endpoint": "/admin/translations"
             }
           },
           "source": {
@@ -15103,6 +15167,38 @@
             "entity": "ProductCollection"
           },
           "custom_label": false
+        },
+        {
+          "id": "translations_filter",
+          "name": "Translations",
+          "field": "translations.id",
+          "sortable": false,
+          "hideable": true,
+          "default_visible": false,
+          "data_type": "string",
+          "semantic_type": "relationship",
+          "context": "filter",
+          "render_mode": "text",
+          "default_order": 980,
+          "category": "relationship",
+          "filter": {
+            "enabled": true,
+            "operators": [
+              "in"
+            ],
+            "relationship": {
+              "entity": "Translation",
+              "value_field": "id",
+              "display_field": "reference_id",
+              "multiple": true,
+              "endpoint": "/admin/translations"
+            }
+          },
+          "source": {
+            "module": "product",
+            "entity": "ProductCollection"
+          },
+          "custom_label": false
         }
       ]
     }
@@ -15404,6 +15500,38 @@
               "display_field": "value",
               "multiple": true,
               "endpoint": "/admin/product-option-values"
+            }
+          },
+          "source": {
+            "module": "product",
+            "entity": "ProductOption"
+          },
+          "custom_label": false
+        },
+        {
+          "id": "translations_filter",
+          "name": "Translations",
+          "field": "translations.id",
+          "sortable": false,
+          "hideable": true,
+          "default_visible": false,
+          "data_type": "string",
+          "semantic_type": "relationship",
+          "context": "filter",
+          "render_mode": "text",
+          "default_order": 980,
+          "category": "relationship",
+          "filter": {
+            "enabled": true,
+            "operators": [
+              "in"
+            ],
+            "relationship": {
+              "entity": "Translation",
+              "value_field": "id",
+              "display_field": "reference_id",
+              "multiple": true,
+              "endpoint": "/admin/translations"
             }
           },
           "source": {
@@ -18318,6 +18446,38 @@
             "entity": "ProductCategory"
           },
           "custom_label": false
+        },
+        {
+          "id": "translations_filter",
+          "name": "Translations",
+          "field": "translations.id",
+          "sortable": false,
+          "hideable": true,
+          "default_visible": false,
+          "data_type": "string",
+          "semantic_type": "relationship",
+          "context": "filter",
+          "render_mode": "text",
+          "default_order": 980,
+          "category": "relationship",
+          "filter": {
+            "enabled": true,
+            "operators": [
+              "in"
+            ],
+            "relationship": {
+              "entity": "Translation",
+              "value_field": "id",
+              "display_field": "reference_id",
+              "multiple": true,
+              "endpoint": "/admin/translations"
+            }
+          },
+          "source": {
+            "module": "product",
+            "entity": "ProductCategory"
+          },
+          "custom_label": false
         }
       ]
     }
@@ -18633,13 +18793,13 @@
     },
     "body": {
       "property_label": {
-        "id": "plbl_01M78DBRB28JF0TMTSRATANER1",
+        "id": "plbl_01M7N82ZB3EX0D71N5SBNKZQS2",
         "entity": "Product",
         "property": "title",
         "label": "Name",
         "description": "The product name",
-        "created_at": "2026-11-12T17:37:20.226Z",
-        "updated_at": "2026-11-12T17:37:20.226Z"
+        "created_at": "2026-11-17T17:15:17.219Z",
+        "updated_at": "2026-11-17T17:15:17.219Z"
       }
     }
   },
@@ -18652,13 +18812,13 @@
     },
     "body": {
       "property_label": {
-        "id": "plbl_01M78DBRBBRA62PJDA115PQ7Q1",
+        "id": "plbl_01M7N82ZBFP0N6FD6TFNDH1E6T",
         "entity": "Product",
         "property": "collection.title",
         "label": "Collection",
         "description": null,
-        "created_at": "2026-11-12T17:37:20.235Z",
-        "updated_at": "2026-11-12T17:37:20.235Z"
+        "created_at": "2026-11-17T17:15:17.231Z",
+        "updated_at": "2026-11-17T17:15:17.231Z"
       }
     }
   },
@@ -18671,13 +18831,13 @@
     },
     "body": {
       "property_label": {
-        "id": "plbl_01M78DBRBJQFAHH3NC18CRT8P9",
+        "id": "plbl_01M7N82ZBV0JK9WENVNMTK2E5Y",
         "entity": "Product",
         "property": "product_display",
         "label": "Item",
         "description": "Title and image",
-        "created_at": "2026-11-12T17:37:20.242Z",
-        "updated_at": "2026-11-12T17:37:20.242Z"
+        "created_at": "2026-11-17T17:15:17.243Z",
+        "updated_at": "2026-11-17T17:15:17.243Z"
       }
     }
   },
@@ -18690,13 +18850,13 @@
     },
     "body": {
       "property_label": {
-        "id": "plbl_01M78DBRBSP6T07QG1KMK3H0AK",
+        "id": "plbl_01M7N82ZC41S1TMD35D0E14D27",
         "entity": "Product",
         "property": "tags",
         "label": "Labels",
         "description": null,
-        "created_at": "2026-11-12T17:37:20.249Z",
-        "updated_at": "2026-11-12T17:37:20.249Z"
+        "created_at": "2026-11-17T17:15:17.252Z",
+        "updated_at": "2026-11-17T17:15:17.252Z"
       }
     }
   },
@@ -18709,13 +18869,13 @@
     },
     "body": {
       "property_label": {
-        "id": "plbl_01M78DBRBYAB2ZTFF83GJRYP8K",
+        "id": "plbl_01M7N82ZCCHNP6ZW0ZVZDTRDWE",
         "entity": "Order",
         "property": "email",
         "label": "Mail",
         "description": null,
-        "created_at": "2026-11-12T17:37:20.254Z",
-        "updated_at": "2026-11-12T17:37:20.254Z"
+        "created_at": "2026-11-17T17:15:17.261Z",
+        "updated_at": "2026-11-17T17:15:17.261Z"
       }
     }
   },
@@ -18760,7 +18920,7 @@
             "entity": "Product"
           },
           "custom_label": true,
-          "label_id": "plbl_01M78DBRBJQFAHH3NC18CRT8P9"
+          "label_id": "plbl_01M7N82ZBV0JK9WENVNMTK2E5Y"
         },
         {
           "id": "collection.title",
@@ -18792,7 +18952,7 @@
             "entity": "Product"
           },
           "custom_label": true,
-          "label_id": "plbl_01M78DBRBBRA62PJDA115PQ7Q1"
+          "label_id": "plbl_01M7N82ZBFP0N6FD6TFNDH1E6T"
         },
         {
           "id": "sales_channels_display",
@@ -18994,7 +19154,7 @@
             "entity": "Product"
           },
           "custom_label": true,
-          "label_id": "plbl_01M78DBRB28JF0TMTSRATANER1"
+          "label_id": "plbl_01M7N82ZB3EX0D71N5SBNKZQS2"
         },
         {
           "id": "handle",
@@ -20206,7 +20366,7 @@
             "entity": "Product"
           },
           "custom_label": true,
-          "label_id": "plbl_01M78DBRBSP6T07QG1KMK3H0AK"
+          "label_id": "plbl_01M7N82ZC41S1TMD35D0E14D27"
         },
         {
           "id": "variants_filter",
@@ -20296,6 +20456,38 @@
               "display_field": "url",
               "multiple": true,
               "endpoint": "/admin/product-images"
+            }
+          },
+          "source": {
+            "module": "product",
+            "entity": "Product"
+          },
+          "custom_label": false
+        },
+        {
+          "id": "translations_filter",
+          "name": "Translations",
+          "field": "translations.id",
+          "sortable": false,
+          "hideable": true,
+          "default_visible": false,
+          "data_type": "string",
+          "semantic_type": "relationship",
+          "context": "filter",
+          "render_mode": "text",
+          "default_order": 980,
+          "category": "relationship",
+          "filter": {
+            "enabled": true,
+            "operators": [
+              "in"
+            ],
+            "relationship": {
+              "entity": "Translation",
+              "value_field": "id",
+              "display_field": "reference_id",
+              "multiple": true,
+              "endpoint": "/admin/translations"
             }
           },
           "source": {
