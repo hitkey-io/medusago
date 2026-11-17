@@ -83,7 +83,7 @@ function findGoRoute(method, specPath) {
 
 // Enterprise operations (RBAC roles/policies and SSO): never published.
 function isEnterprise(specPath, op) {
-  if (/(^|\/)(roles?|rbac|policies|policy)(\/|$)/i.test(specPath)) return true
+  if (/(^|\/)(roles?|rbac|policies|policy|audit-logs?)(\/|$)/i.test(specPath)) return true
   // POST /auth/{auth_provider}/user (SSO user creation), not /auth/user/{auth_provider}
   if (/^\/auth\/\{auth_provider\}\/user$/.test(specPath)) return true
   return false
@@ -164,7 +164,7 @@ function makeSchemaTools(spec, area) {
     return { name, schema: schemas[name] }
   }
 
-  const FLAG_KEYS = { index: "index_engine", index_engine: "index_engine", translation: "translation", view_configurations: "view_configurations" }
+  const FLAG_KEYS = { index: "index_engine", index_engine: "index_engine", view_configurations: "view_configurations" }
 
   const quote = (v) => (typeof v === "string" ? JSON.stringify(v) : String(v))
 
@@ -934,11 +934,7 @@ function localizationSection() {
   const mod = siteLink("Translation Module", "/resources/commerce-modules/translation")
   return `## Localization
 
-<Note>
-
-Localization requires the \`translation\` feature flag. Set the \`MEDUSA_FF_TRANSLATION\` environment variable to \`true\` to enable it. See the ${mod} documentation.
-
-</Note>
+Refer to the ${mod} documentation to learn how localization works.
 
 The Store API routes can return translated data. By default, they return the original data without localization.
 

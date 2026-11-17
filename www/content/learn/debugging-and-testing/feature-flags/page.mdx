@@ -50,17 +50,6 @@ The following feature flags are available:
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        `translation`
-      </Table.Cell>
-      <Table.Cell>
-        `MEDUSA_FF_TRANSLATION`
-      </Table.Cell>
-      <Table.Cell>
-        Enables the Translation Module, its Admin API routes, and the translation of Store API responses based on the request's locale.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
         `view_configurations`
       </Table.Cell>
       <Table.Cell>
@@ -110,7 +99,7 @@ If a flag is set in both, the environment variable wins.
 
 The `FeatureFlags` field of the configuration is a `map[string]any` to toggle feature flags. Its keys are the feature flags' keys, and its values are booleans indicating whether the feature is enabled.
 
-For example, to enable the translation feature flag in `medusa-config.go`:
+For example, to enable the index engine feature flag in `medusa-config.go`:
 
 ```go title="medusa-config.go" file="config/feature-flags.go" region="feature-flags"
 ```

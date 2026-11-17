@@ -6,13 +6,12 @@ import (
 	featureflags "github.com/hitkey-io/medusago/packages/medusa/src/feature-flags"
 )
 
-// FeatureFlagsExample enables the index engine and the translation flags.
+// FeatureFlagsExample enables the index engine flag.
 func FeatureFlagsExample() config.InputConfig {
 	// region: feature-flags
 	return config.InputConfig{
 		FeatureFlags: map[string]any{
 			"index_engine": true,
-			"translation":  true,
 		},
 	}
 	// endregion: feature-flags

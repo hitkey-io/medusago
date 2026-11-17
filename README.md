@@ -5,7 +5,7 @@ backend. It is API-compatible with Medusa v2, so the original Medusa Admin
 dashboard, `@medusajs/js-sdk` and Medusa storefronts work against it unchanged,
 and it runs on the same database as a Node.js Medusa application.
 
-Baseline: Medusa `v2.22.6`.
+Baseline: Medusa `v2.22.7`.
 
 Documentation: [medusago.hitkey.io](https://medusago.hitkey.io/)
 
@@ -56,7 +56,7 @@ The admin is served by the backend at `/app`.
 
 ### Using an existing Medusa database
 
-MedusaGo reads and writes the database of a Medusa `v2.22.6` application as is,
+MedusaGo reads and writes the database of a Medusa `v2.22.7` application as is,
 and Medusa can take over a database MedusaGo has used. Stop the Node.js server
 before starting MedusaGo on the same database: workflow executions that are in
 progress are not carried over.

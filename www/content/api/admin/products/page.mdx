@@ -444,7 +444,7 @@ Manage products to create, update, or delete them.
         { name: "tags", type: "`object[]`", optional: true, description: "The product's tags.", children: [
             { name: "id", type: "`string`", optional: false, description: "The tag's ID." }
           ] },
-        { name: "variants", type: "`object[]`", optional: true, description: "The product's variants. You can add new variants or update existing ones, passing their IDs in the object.", children: [
+        { name: "variants", type: "`object[]`", optional: true, description: "The product's variants. This replaces the product's full variant list, so existing variants that aren't included are deleted. Pass a variant's `id` to update it, or omit the `id` to create a new variant.", children: [
             { name: "title", type: "`string`", optional: true, description: "The variant's title." },
             { name: "sku", type: "`string`", optional: true, description: "The variant's SKU." },
             { name: "ean", type: "`string`", optional: true, description: "The variant's EAN." },
@@ -1153,7 +1153,7 @@ curl 'http://localhost:9000/admin/products/{id}' \
 
 **Update a Product**
 
-Update a product's details.
+Update a product's details. If you pass `variants` in the request body, they replace the product's full variant list, and existing variants that aren't included are deleted.
 
 **Authentication:** secret API key (HTTP Basic authorization), cookie session, JWT bearer token.
 
@@ -1204,7 +1204,7 @@ Update a product's details.
         { name: "is_exclusive", type: "`boolean`", optional: true, description: "Whether the product option is exclusive to the product. If disabled, the product option can be used by other products." },
         { name: "metadata", type: "`object`", optional: true, description: "Key-value pairs that hold additional information about the product option." }
       ] },
-    { name: "variants", type: "`object[]`", optional: true, description: "The product's variants. You can add new variants or update existing ones, passing their IDs in the object.", children: [
+    { name: "variants", type: "`object[]`", optional: true, description: "The product's variants. This replaces the product's full variant list, so existing variants that aren't included are deleted. Pass a variant's `id` to update it, or omit the `id` to create a new variant.", children: [
         { name: "title", type: "`string`", optional: true, description: "The variant's title." },
         { name: "sku", type: "`string`", optional: true, description: "The variant's SKU." },
         { name: "ean", type: "`string`", optional: true, description: "The variant's EAN." },
