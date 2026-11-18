@@ -641,4 +641,34 @@ export const shots = [
   { id: "draft-form-email", page: `${UG}/orders/draft-orders/manage`, alt: "Edit email in draft order form", route: draftRoute("/email"), clip: modalClip },
   { id: "draft-form-shipping-address", page: `${UG}/orders/draft-orders/manage`, alt: "Edit shipping address in draft order form", route: draftRoute("/shipping-address"), clip: modalClip },
   { id: "draft-form-billing-address", page: `${UG}/orders/draft-orders/manage`, alt: "Edit billing address in draft order form", route: draftRoute("/billing-address"), clip: modalClip },
+
+  // admin components (resources/admin-components): the sections of the product pages the components build
+  { id: "ac-action-menu", page: "resources/admin-components/archive/action-menu", alt: "Example of an action menu in the Medusa Admin", route: tshirtRoute(), run: async (page) => {
+    await page.locator("div.shadow-elevation-card-rest").first().locator("button").first().click()
+    await page.waitForTimeout(500)
+  }, clip: async (page) => {
+    const b = await page.locator("div.shadow-elevation-card-rest").first().boundingBox()
+    const menu = await page.getByRole("menu").boundingBox()
+    const m = 24
+    const right = Math.max(b.x + b.width, menu.x + menu.width)
+    return { x: b.x - m, y: b.y - m, width: right - b.x + 2 * m, height: Math.max(menu.y + menu.height - b.y, 300) + 2 * m }
+  } },
+  { id: "ac-json-view", page: "resources/admin-components/archive/json-view-section", alt: "Example of a JSON section in the admin", route: tshirtRoute(), el: card("JSON") },
+  { id: "ac-section-row", page: "resources/admin-components/archive/section-row", alt: "Example of a section row in the Medusa Admin", route: tshirtRoute(), el: (p) => p.locator("div.shadow-elevation-card-rest").first() },
+  { id: "ac-single-column", page: "resources/admin-components/archive/single-column-layout", alt: "An example of an admin page with a single column", route: "/products" },
+  { id: "ac-two-column", page: "resources/admin-components/archive/two-column-layout", alt: "An example of an admin page with two columns", route: tshirtRoute() },
+  { id: "ac-container", page: "resources/admin-components/guides/container", alt: "Example of a container in the Medusa Admin", route: tshirtRoute(), el: (p) => p.locator("div.shadow-elevation-card-rest").first() },
+  { id: "ac-data-table", page: "resources/admin-components/guides/data-table", alt: "Example of a table in the product listing page", route: "/products", el: (p) => p.locator("div.shadow-elevation-card-rest").first() },
+  { id: "ac-header", page: "resources/admin-components/guides/header", alt: "Example of a header in a section", route: "/products", clip: async (page) => {
+    const b = await page.locator("div.shadow-elevation-card-rest").first().boundingBox()
+    const m = 12
+    return { x: b.x - m, y: b.y - m, width: b.width + 2 * m, height: 74 + m }
+  } },
+  // the admin pictures of the returns guide of the Next.js starter are the same screens as in the user guide
+  { file: "form-create-shipping-option-1", page: "resources/nextjs-starter/guides/storefront-returns", alt: "Form to create a return shipping option in the Medusa Admin" },
+  { file: "form-create-return-reason", page: "resources/nextjs-starter/guides/storefront-returns", alt: "Form to create a return reason in the Medusa Admin" },
+  { file: "order-fulfillment-section", page: "resources/nextjs-starter/guides/storefront-returns", alt: 'Order details page in the Medusa Admin showing the fulfillment status as "Delivered"' },
+  { file: "return-activity", page: "resources/nextjs-starter/guides/storefront-returns", alt: "Order details page in the Medusa Admin showing the requested return in the Activity section" },
+  { file: "form-mark-received", page: "resources/nextjs-starter/guides/storefront-returns", alt: "Form to mark return items as received in the Medusa Admin" },
+  { file: "return-outstanding", page: "resources/nextjs-starter/guides/storefront-returns", alt: "Button to refund the outstanding amount in the Medusa Admin" },
 ]
