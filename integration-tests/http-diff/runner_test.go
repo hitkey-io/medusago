@@ -337,6 +337,9 @@ var recordedHeaders = []string{
 	"Access-Control-Allow-Methods",
 	"Access-Control-Allow-Headers",
 	"Vary",
+	"X-Content-Type-Options",
+	"X-Frame-Options",
+	"Content-Security-Policy",
 }
 
 // Response is the recorded form of a response.
