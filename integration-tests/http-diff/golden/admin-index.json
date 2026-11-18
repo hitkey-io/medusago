@@ -4,10 +4,13 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5NDE4NDgsImV4cCI6MTc5NTAyODI0OH0.sS0H0DjRMHOleKFkwsPsDFuhyhF1_ZzJJjzKf_UWGdY"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5ODIzOTQsImV4cCI6MTc5NTA2ODc5NH0.437EH4H-HttiGorR_HDjki5kMiKLBS-FiYWe4DmnOlk"
     }
   },
   "details": {
@@ -15,22 +18,15 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "metadata": [
         {
-          "id": "idxmeta_01M7NDXXFYCHHGAKNGP5072DZ2",
-          "entity": "PriceSet",
-          "status": "done",
-          "fields": [
-            "id"
-          ],
-          "updated_at": "2026-11-17T18:57:22.977Z",
-          "last_synced_key": "pset_01M70Y0015WAMJ741KRV0MC7H5"
-        },
-        {
-          "id": "idxmeta_01M7NDXXFYCV3S8ZV72RJKCR0E",
+          "id": "idxmeta_01M7PMK9093702RFZ03BHHQATT",
           "entity": "ProductVariant",
           "status": "done",
           "fields": [
@@ -39,11 +35,23 @@
             "product_id",
             "sku"
           ],
-          "updated_at": "2026-11-17T18:57:23.007Z",
+          "updated_at": "2026-11-18T06:13:08.957Z",
           "last_synced_key": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
         },
         {
-          "id": "idxmeta_01M7NDXXFYEFCSE96DYMEZ7J69",
+          "id": "idxmeta_01M7PMK9098YN9S766J955Q33J",
+          "entity": "LinkProductSalesChannel",
+          "status": "done",
+          "fields": [
+            "id",
+            "product_id",
+            "sales_channel_id"
+          ],
+          "updated_at": "2026-11-18T06:13:09.037Z",
+          "last_synced_key": "prodsc_01M70Y0002YTTWN2T1HYEKBZMB"
+        },
+        {
+          "id": "idxmeta_01M7PMK909AWRJDMF31Y9T90R5",
           "entity": "Price",
           "status": "done",
           "fields": [
@@ -53,11 +61,22 @@
             "price_list_id",
             "price_set.id"
           ],
-          "updated_at": "2026-11-17T18:57:23.030Z",
+          "updated_at": "2026-11-18T06:13:09.099Z",
           "last_synced_key": "price_01M70Y005DJ7YX0G85JA4YC01F"
         },
         {
-          "id": "idxmeta_01M7NDXXFYN055CQSVP67QR7BE",
+          "id": "idxmeta_01M7PMK909CCWE52NPGY9BW03H",
+          "entity": "SalesChannel",
+          "status": "done",
+          "fields": [
+            "id",
+            "is_disabled"
+          ],
+          "updated_at": "2026-11-18T06:13:09.149Z",
+          "last_synced_key": "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+        },
+        {
+          "id": "idxmeta_01M7PMK909DWJ2CER4GNREPHVR",
           "entity": "Product",
           "status": "done",
           "fields": [
@@ -72,22 +91,21 @@
             "type_id",
             "updated_at"
           ],
-          "updated_at": "2026-11-17T18:57:23.051Z",
+          "updated_at": "2026-11-18T06:13:09.203Z",
           "last_synced_key": "prod_01M70XZZZ4QCEP179PD336GCSV"
         },
         {
-          "id": "idxmeta_01M7NDXXFYSWYA9P0YKYXAC1A3",
-          "entity": "SalesChannel",
+          "id": "idxmeta_01M7PMK909NR4FDT96K4J6H3CC",
+          "entity": "PriceSet",
           "status": "done",
           "fields": [
-            "id",
-            "is_disabled"
+            "id"
           ],
-          "updated_at": "2026-11-17T18:57:23.068Z",
-          "last_synced_key": "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+          "updated_at": "2026-11-18T06:13:09.253Z",
+          "last_synced_key": "pset_01M70Y0015WAMJ741KRV0MC7H5"
         },
         {
-          "id": "idxmeta_01M7NDXXFYTFJDAJHX1FP76T4Y",
+          "id": "idxmeta_01M7PMK909Y2XV1GMG5T2SA26W",
           "entity": "LinkProductVariantPriceSet",
           "status": "done",
           "fields": [
@@ -95,20 +113,8 @@
             "price_set_id",
             "variant_id"
           ],
-          "updated_at": "2026-11-17T18:57:23.090Z",
+          "updated_at": "2026-11-18T06:13:09.322Z",
           "last_synced_key": "pvps_01M70Y001K043N5D6XPV0P5P6Y"
-        },
-        {
-          "id": "idxmeta_01M7NDXXFYXJSXW7BX838TQZXW",
-          "entity": "LinkProductSalesChannel",
-          "status": "done",
-          "fields": [
-            "id",
-            "product_id",
-            "sales_channel_id"
-          ],
-          "updated_at": "2026-11-17T18:57:23.106Z",
-          "last_synced_key": "prodsc_01M70Y0002YTTWN2T1HYEKBZMB"
         }
       ]
     }
@@ -118,7 +124,10 @@
     "headers": {
       "Content-Type": "text/plain; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": "OK"
   },
@@ -127,7 +136,10 @@
     "headers": {
       "Content-Type": "text/plain; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": "OK"
   },
@@ -136,7 +148,10 @@
     "headers": {
       "Content-Type": "text/plain; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": "OK"
   },
@@ -145,7 +160,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -157,7 +175,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -169,7 +190,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "message": "Unauthorized"
@@ -180,22 +204,15 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "metadata": [
         {
-          "id": "idxmeta_01M7NDXXFYCHHGAKNGP5072DZ2",
-          "entity": "PriceSet",
-          "status": "done",
-          "fields": [
-            "id"
-          ],
-          "updated_at": "2026-11-17T18:57:22.977Z",
-          "last_synced_key": "pset_01M70Y0015WAMJ741KRV0MC7H5"
-        },
-        {
-          "id": "idxmeta_01M7NDXXFYCV3S8ZV72RJKCR0E",
+          "id": "idxmeta_01M7PMK9093702RFZ03BHHQATT",
           "entity": "ProductVariant",
           "status": "done",
           "fields": [
@@ -204,11 +221,23 @@
             "product_id",
             "sku"
           ],
-          "updated_at": "2026-11-17T18:57:23.007Z",
+          "updated_at": "2026-11-18T06:13:08.957Z",
           "last_synced_key": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
         },
         {
-          "id": "idxmeta_01M7NDXXFYEFCSE96DYMEZ7J69",
+          "id": "idxmeta_01M7PMK9098YN9S766J955Q33J",
+          "entity": "LinkProductSalesChannel",
+          "status": "done",
+          "fields": [
+            "id",
+            "product_id",
+            "sales_channel_id"
+          ],
+          "updated_at": "2026-11-18T06:13:09.037Z",
+          "last_synced_key": "prodsc_01M70Y0002YTTWN2T1HYEKBZMB"
+        },
+        {
+          "id": "idxmeta_01M7PMK909AWRJDMF31Y9T90R5",
           "entity": "Price",
           "status": "done",
           "fields": [
@@ -218,11 +247,22 @@
             "price_list_id",
             "price_set.id"
           ],
-          "updated_at": "2026-11-17T18:57:23.030Z",
+          "updated_at": "2026-11-18T06:13:09.099Z",
           "last_synced_key": "price_01M70Y005DJ7YX0G85JA4YC01F"
         },
         {
-          "id": "idxmeta_01M7NDXXFYN055CQSVP67QR7BE",
+          "id": "idxmeta_01M7PMK909CCWE52NPGY9BW03H",
+          "entity": "SalesChannel",
+          "status": "done",
+          "fields": [
+            "id",
+            "is_disabled"
+          ],
+          "updated_at": "2026-11-18T06:13:09.149Z",
+          "last_synced_key": "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+        },
+        {
+          "id": "idxmeta_01M7PMK909DWJ2CER4GNREPHVR",
           "entity": "Product",
           "status": "done",
           "fields": [
@@ -237,22 +277,21 @@
             "type_id",
             "updated_at"
           ],
-          "updated_at": "2026-11-17T18:57:23.051Z",
+          "updated_at": "2026-11-18T06:13:09.203Z",
           "last_synced_key": "prod_01M70XZZZ4QCEP179PD336GCSV"
         },
         {
-          "id": "idxmeta_01M7NDXXFYSWYA9P0YKYXAC1A3",
-          "entity": "SalesChannel",
+          "id": "idxmeta_01M7PMK909NR4FDT96K4J6H3CC",
+          "entity": "PriceSet",
           "status": "done",
           "fields": [
-            "id",
-            "is_disabled"
+            "id"
           ],
-          "updated_at": "2026-11-17T18:57:23.068Z",
-          "last_synced_key": "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+          "updated_at": "2026-11-18T06:13:09.253Z",
+          "last_synced_key": "pset_01M70Y0015WAMJ741KRV0MC7H5"
         },
         {
-          "id": "idxmeta_01M7NDXXFYTFJDAJHX1FP76T4Y",
+          "id": "idxmeta_01M7PMK909Y2XV1GMG5T2SA26W",
           "entity": "LinkProductVariantPriceSet",
           "status": "done",
           "fields": [
@@ -260,20 +299,8 @@
             "price_set_id",
             "variant_id"
           ],
-          "updated_at": "2026-11-17T18:57:23.090Z",
+          "updated_at": "2026-11-18T06:13:09.322Z",
           "last_synced_key": "pvps_01M70Y001K043N5D6XPV0P5P6Y"
-        },
-        {
-          "id": "idxmeta_01M7NDXXFYXJSXW7BX838TQZXW",
-          "entity": "LinkProductSalesChannel",
-          "status": "done",
-          "fields": [
-            "id",
-            "product_id",
-            "sales_channel_id"
-          ],
-          "updated_at": "2026-11-17T18:57:23.106Z",
-          "last_synced_key": "prodsc_01M70Y0002YTTWN2T1HYEKBZMB"
         }
       ]
     }
@@ -283,7 +310,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -307,7 +337,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -338,7 +371,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -358,7 +394,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -378,7 +417,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -408,7 +450,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [],
@@ -423,7 +468,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -443,7 +491,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [],
@@ -458,7 +509,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -478,7 +532,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [],
@@ -493,7 +550,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -513,7 +573,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -538,7 +601,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -558,7 +624,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -583,7 +652,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -1217,7 +1289,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -1245,7 +1320,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -1265,7 +1343,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -1285,7 +1366,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -1307,7 +1391,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "values": [
@@ -1327,7 +1414,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "values": [
@@ -1347,7 +1437,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "values": [
@@ -1370,7 +1463,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -1394,7 +1490,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -1424,7 +1523,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -1443,7 +1545,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -1900,7 +2005,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "results": [
@@ -2277,7 +2385,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "results": [
@@ -2316,7 +2427,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "results": [
@@ -2366,7 +2480,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "results": [
@@ -2399,7 +2516,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "not_found",
@@ -2411,7 +2531,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -2423,7 +2546,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -2435,7 +2561,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -2447,7 +2576,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -2459,7 +2591,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "search_indexes": [],
@@ -2471,7 +2606,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "not_found",
@@ -2483,7 +2621,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "not_found",
@@ -2495,7 +2636,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "not_found",
@@ -2507,7 +2651,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "not_found",
@@ -2519,7 +2666,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -2531,7 +2681,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -2543,7 +2696,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",

@@ -4,16 +4,22 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5MzY1MzUsImV4cCI6MTc5NTAyMjkzNX0.mVrX_j3Ks8Fqld-n5YjkSjlgOJ_wN0w6VNvekRC3pq4"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5ODQxOTEsImV4cCI6MTc5NTA3MDU5MX0.iBzWzk2XUlXL4l6OBdSHgrH8fFoqiOtPY8UiOq9ijlU"
     }
   },
   "events_start": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -24,19 +30,22 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_location": {
-        "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9",
+        "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC",
         "name": "London Hub",
         "metadata": {
           "a": 1
         },
-        "created_at": "2026-11-17T17:28:55.615Z",
-        "updated_at": "2026-11-17T17:28:55.615Z",
+        "created_at": "2026-11-18T06:43:11.446Z",
+        "updated_at": "2026-11-18T06:43:11.446Z",
         "address": {
-          "id": "laddr_01M7N8VYHZ7PFPMYXDTWGPFVDH",
+          "id": "laddr_01M7PPA9EPGDVGG753F63H9NPQ",
           "address_1": "1 Test Street",
           "address_2": null,
           "city": "London",
@@ -54,20 +63,23 @@
   "events__create": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "stock_location.stock-location-address.created",
           "data": {
-            "id": "laddr_01M7N8VYHZ7PFPMYXDTWGPFVDH"
+            "id": "laddr_01M7PPA9EPGDVGG753F63H9NPQ"
           },
           "metadata": {
             "source": "stock_location",
             "object": "stock_location_address",
             "action": "created",
-            "eventGroupId": "01M7N8VYHKYTYVM8E99NH3K3FD"
+            "eventGroupId": "01M7PPA9EHNDQK37T2ACYB65XF"
           },
           "options": {
             "internal": true
@@ -76,13 +88,13 @@
         {
           "name": "stock_location.stock-location.created",
           "data": {
-            "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9"
+            "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC"
           },
           "metadata": {
             "source": "stock_location",
             "object": "stock_location",
             "action": "created",
-            "eventGroupId": "01M7N8VYHKYTYVM8E99NH3K3FD"
+            "eventGroupId": "01M7PPA9EHNDQK37T2ACYB65XF"
           },
           "options": {
             "internal": true
@@ -94,7 +106,10 @@
   "events_reset__create": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -105,11 +120,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_location": {
-        "id": "sloc_01M7N8VYJMGV4N14K1PMR4DTB2",
+        "id": "sloc_01M7PPA9FX7BJ29BX6Q0H59NB3",
         "name": "Paris",
         "address": null
       }
@@ -118,20 +136,23 @@
   "events__create_plain": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "stock_location.stock-location.created",
           "data": {
-            "id": "sloc_01M7N8VYJMGV4N14K1PMR4DTB2"
+            "id": "sloc_01M7PPA9FX7BJ29BX6Q0H59NB3"
           },
           "metadata": {
             "source": "stock_location",
             "object": "stock_location",
             "action": "created",
-            "eventGroupId": "01M7N8VYJJ9H0M6E1PG61YW2XN"
+            "eventGroupId": "01M7PPA9FTE2JXQMJFMGZP0DT0"
           },
           "options": {
             "internal": true
@@ -143,7 +164,10 @@
   "events_reset__create_plain": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -154,7 +178,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -164,7 +191,10 @@
   "events__create_invalid": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -173,7 +203,10 @@
   "events_reset__create_invalid": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -184,14 +217,17 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_location": {
         "name": "London Hub",
-        "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9",
+        "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC",
         "address": {
-          "id": "laddr_01M7N8VYHZ7PFPMYXDTWGPFVDH",
+          "id": "laddr_01M7PPA9EPGDVGG753F63H9NPQ",
           "address_1": "1 Test Street",
           "address_2": null,
           "company": null,
@@ -203,8 +239,8 @@
           "metadata": {
             "dock": 3
           },
-          "created_at": "2026-11-17T17:28:55.615Z",
-          "updated_at": "2026-11-17T17:28:55.615Z",
+          "created_at": "2026-11-18T06:43:11.446Z",
+          "updated_at": "2026-11-18T06:43:11.446Z",
           "deleted_at": null
         }
       }
@@ -215,19 +251,22 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_location": {
-        "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9",
+        "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC",
         "name": "London Main",
         "metadata": {
           "a": 1
         },
-        "created_at": "2026-11-17T17:28:55.615Z",
-        "updated_at": "2026-11-17T17:28:55.674Z",
+        "created_at": "2026-11-18T06:43:11.446Z",
+        "updated_at": "2026-11-18T06:43:11.538Z",
         "address": {
-          "id": "laddr_01M7N8VYHZ7PFPMYXDTWGPFVDH",
+          "id": "laddr_01M7PPA9EPGDVGG753F63H9NPQ",
           "address_1": "2 Test Street",
           "address_2": null,
           "city": null,
@@ -245,20 +284,23 @@
   "events__update": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "stock_location.stock-location-address.updated",
           "data": {
-            "id": "laddr_01M7N8VYHZ7PFPMYXDTWGPFVDH"
+            "id": "laddr_01M7PPA9EPGDVGG753F63H9NPQ"
           },
           "metadata": {
             "source": "stock_location",
             "object": "stock_location_address",
             "action": "updated",
-            "eventGroupId": "01M7N8VYK8Y7SZPV3JHWR5SN9A"
+            "eventGroupId": "01M7PPA9GJBVWCXFQ8NAP7VAS3"
           },
           "options": {
             "internal": true
@@ -267,13 +309,13 @@
         {
           "name": "stock_location.stock-location.updated",
           "data": {
-            "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9"
+            "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC"
           },
           "metadata": {
             "source": "stock_location",
             "object": "stock_location",
             "action": "updated",
-            "eventGroupId": "01M7N8VYK8Y7SZPV3JHWR5SN9A"
+            "eventGroupId": "01M7PPA9GJBVWCXFQ8NAP7VAS3"
           },
           "options": {
             "internal": true
@@ -285,7 +327,10 @@
   "events_reset__update": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -296,11 +341,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_location": {
-        "id": "sloc_01M7N8VYJMGV4N14K1PMR4DTB2",
+        "id": "sloc_01M7PPA9FX7BJ29BX6Q0H59NB3",
         "name": "Paris",
         "address": null
       }
@@ -309,20 +357,23 @@
   "events__update_no_address": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "stock_location.stock-location-address.created",
           "data": {
-            "id": "laddr_01M7N8VYM84FET5EJ9HRRPC98P"
+            "id": "laddr_01M7PPA9JB4JC7C0JV3J49EBY7"
           },
           "metadata": {
             "source": "stock_location",
             "object": "stock_location_address",
             "action": "created",
-            "eventGroupId": "01M7N8VYM4N18XQC39318TVJCH"
+            "eventGroupId": "01M7PPA9J1T6WQ9XSD0VEK50J7"
           },
           "options": {
             "internal": true
@@ -331,13 +382,13 @@
         {
           "name": "stock_location.stock-location.updated",
           "data": {
-            "id": "sloc_01M7N8VYJMGV4N14K1PMR4DTB2"
+            "id": "sloc_01M7PPA9FX7BJ29BX6Q0H59NB3"
           },
           "metadata": {
             "source": "stock_location",
             "object": "stock_location",
             "action": "updated",
-            "eventGroupId": "01M7N8VYM4N18XQC39318TVJCH"
+            "eventGroupId": "01M7PPA9J1T6WQ9XSD0VEK50J7"
           },
           "options": {
             "internal": true
@@ -349,7 +400,10 @@
   "events_reset__update_no_address": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -360,11 +414,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_location": {
-        "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9",
+        "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC",
         "sales_channels": [
           {
             "name": "Default Sales Channel",
@@ -377,20 +434,23 @@
   "events__link_sc": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "LinkSalesChannelStockLocation.attached",
           "data": {
-            "id": "scloc_01M7N8VYMT8RSMF2CZAXWZGYAQ"
+            "id": "scloc_01M7PPA9K32N06G6KTFEGSZVXQ"
           },
           "metadata": {
             "source": "SalesChannelSalesChannelStockLocationLocationLink",
             "object": "LinkSalesChannelStockLocation",
             "action": "attached",
-            "eventGroupId": "01M7N8VYMN17BY1PJVFE6AHF96"
+            "eventGroupId": "01M7PPA9JZQ2W9MD3B14QQMJQ5"
           },
           "options": {
             "internal": true
@@ -402,7 +462,10 @@
   "events_reset__link_sc": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -413,11 +476,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_location": {
-        "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9",
+        "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC",
         "fulfillment_providers": [
           {
             "id": "manual_manual"
@@ -429,20 +495,23 @@
   "events__link_fp": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "LinkLocationFulfillmentProvider.attached",
           "data": {
-            "id": "locfp_01M7N8VYNDV55TE680WSKF6A01"
+            "id": "locfp_01M7PPA9KYBAAX4T19N21B6JW4"
           },
           "metadata": {
             "source": "StockLocationStockLocationFulfillmentFulfillmentProviderLink",
             "object": "LinkLocationFulfillmentProvider",
             "action": "attached",
-            "eventGroupId": "01M7N8VYNA3YXBWXB11K57B9DN"
+            "eventGroupId": "01M7PPA9KTAPYPT0P49WN2TDSK"
           },
           "options": {
             "internal": true
@@ -454,7 +523,10 @@
   "events_reset__link_fp": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -465,7 +537,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_locations": [
@@ -475,7 +550,7 @@
         },
         {
           "name": "London Main",
-          "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9"
+          "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC"
         }
       ],
       "count": 2,
@@ -488,11 +563,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_location": {
-        "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9",
+        "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC",
         "sales_channels": []
       }
     }
@@ -500,20 +578,23 @@
   "events__unlink_sc": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "LinkSalesChannelStockLocation.detached",
           "data": {
-            "id": "scloc_01M7N8VYMT8RSMF2CZAXWZGYAQ"
+            "id": "scloc_01M7PPA9K32N06G6KTFEGSZVXQ"
           },
           "metadata": {
             "source": "SalesChannelSalesChannelStockLocationLocationLink",
             "object": "LinkSalesChannelStockLocation",
             "action": "detached",
-            "eventGroupId": "01M7N8VYP33NYB0ZNKNVZTCF63"
+            "eventGroupId": "01M7PPA9NG6J8EY11FW8X1SW1M"
           },
           "options": {
             "internal": true
@@ -525,7 +606,10 @@
   "events_reset__unlink_sc": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -536,11 +620,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_location": {
-        "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9",
+        "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC",
         "fulfillment_providers": []
       }
     }
@@ -548,20 +635,23 @@
   "events__unlink_fp": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "LinkLocationFulfillmentProvider.detached",
           "data": {
-            "id": "locfp_01M7N8VYNDV55TE680WSKF6A01"
+            "id": "locfp_01M7PPA9KYBAAX4T19N21B6JW4"
           },
           "metadata": {
             "source": "StockLocationStockLocationFulfillmentFulfillmentProviderLink",
             "object": "LinkLocationFulfillmentProvider",
             "action": "detached",
-            "eventGroupId": "01M7N8VYPKE30JBZ471J9VHQ88"
+            "eventGroupId": "01M7PPA9P9HJ43FR5C3AVCGQC8"
           },
           "options": {
             "internal": true
@@ -573,7 +663,10 @@
   "events_reset__unlink_fp": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -584,31 +677,37 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_location": {
-        "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9"
+        "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC"
       }
     }
   },
   "events__relink_sc": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "LinkSalesChannelStockLocation.attached",
           "data": {
-            "id": "scloc_01M7N8VYQ7KZ94VKE90T1XA6SF"
+            "id": "scloc_01M7PPA9PY53QDSZ0N4DVZH39J"
           },
           "metadata": {
             "source": "SalesChannelSalesChannelStockLocationLocationLink",
             "object": "LinkSalesChannelStockLocation",
             "action": "attached",
-            "eventGroupId": "01M7N8VYQ4F6XXRPR6VX51DZR6"
+            "eventGroupId": "01M7PPA9PWMCXQH4AVCF4GWNA4"
           },
           "options": {
             "internal": true
@@ -620,7 +719,10 @@
   "events_reset__relink_sc": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -631,10 +733,13 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
-      "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9",
+      "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC",
       "object": "stock_location",
       "deleted": true
     }
@@ -642,20 +747,23 @@
   "events__delete": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "stock_location.stock-location.deleted",
           "data": {
-            "id": "sloc_01M7N8VYHZEMWCRH8JBB1SAZD9"
+            "id": "sloc_01M7PPA9EP8C9T881WKKBY3MPC"
           },
           "metadata": {
             "source": "stock_location",
             "object": "stock_location",
             "action": "deleted",
-            "eventGroupId": "01M7N8VYQK2DGEQNSDYTNAW3QV"
+            "eventGroupId": "01M7PPA9Q9HHMXV7FA9MD2SVWW"
           },
           "options": {
             "internal": true
@@ -664,13 +772,13 @@
         {
           "name": "stock_location.stock-location-address.deleted",
           "data": {
-            "id": "laddr_01M7N8VYHZ7PFPMYXDTWGPFVDH"
+            "id": "laddr_01M7PPA9EPGDVGG753F63H9NPQ"
           },
           "metadata": {
             "source": "stock_location",
             "object": "stock_location_address",
             "action": "deleted",
-            "eventGroupId": "01M7N8VYQK2DGEQNSDYTNAW3QV"
+            "eventGroupId": "01M7PPA9Q9HHMXV7FA9MD2SVWW"
           },
           "options": {
             "internal": true
@@ -679,13 +787,13 @@
         {
           "name": "LinkSalesChannelStockLocation.detached",
           "data": {
-            "id": "scloc_01M7N8VYQ7KZ94VKE90T1XA6SF"
+            "id": "scloc_01M7PPA9PY53QDSZ0N4DVZH39J"
           },
           "metadata": {
             "source": "SalesChannelSalesChannelStockLocationLocationLink",
             "object": "LinkSalesChannelStockLocation",
             "action": "detached",
-            "eventGroupId": "01M7N8VYQK2DGEQNSDYTNAW3QV"
+            "eventGroupId": "01M7PPA9Q9HHMXV7FA9MD2SVWW"
           },
           "options": {
             "internal": true
@@ -697,7 +805,10 @@
   "events_reset__delete": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -708,11 +819,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "not_found",
-      "message": "Stock location with id: sloc_01M7N8VYHZEMWCRH8JBB1SAZD9 was not found"
+      "message": "Stock location with id: sloc_01M7PPA9EP8C9T881WKKBY3MPC was not found"
     }
   },
   "sc_locations": {
@@ -720,7 +834,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "sales_channel": {
@@ -739,7 +856,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "stock_locations": [
@@ -764,7 +884,7 @@
         },
         {
           "name": "Paris",
-          "id": "sloc_01M7N8VYJMGV4N14K1PMR4DTB2"
+          "id": "sloc_01M7PPA9FX7BJ29BX6Q0H59NB3"
         }
       ],
       "count": 2,

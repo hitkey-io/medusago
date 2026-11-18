@@ -4,10 +4,13 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5Mzc2ODEsImV4cCI6MTc5NTAyNDA4MX0.h_eliPUq5g5Tttu_4oRzbHV9xwEJzu7qKeHvu7uzSFQ"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5ODQ5MjIsImV4cCI6MTc5NTA3MTMyMn0.VS9D_hn58MQl1Vo5whVEYgSF8LV6D-Z_F-h_s6QvpMA"
     }
   },
   "variants": {
@@ -15,7 +18,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "variants": [
@@ -34,65 +40,68 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "create-price-lists",
-          "transaction_id": "auto-01M7N9YYQ2DJKVTNVR19CEQS0H"
+          "transaction_id": "auto-01M7PQ0MWV209ZX1F72N409EZA"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-price-lists",
-          "transaction_id": "auto-01M7N9YYQ2DJKVTNVR19CEQS0H",
+          "transaction_id": "auto-01M7PQ0MWV209ZX1F72N409EZA",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links",
-            "uuid": "01M7N9YTYZPM0CMP4STF2N9BQ1",
+            "uuid": "01M7PQ0GE2T1Z4A8SEZDBXK3RC",
             "depth": 1,
             "definition": {
               "action": "validate-variant-price-links",
-              "uuid": "01M7N9YTYZPM0CMP4STF2N9BQ1",
+              "uuid": "01M7PQ0GE2T1Z4A8SEZDBXK3RC",
               "noCompensation": true,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937682661,
+            "lastAttempt": 1794984924071,
             "next": [
               "_root.validate-variant-price-links.create-price-lists"
             ],
             "_v": 0,
-            "startedAt": 1794937682661
+            "startedAt": 1794984924071
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-price-lists",
-          "transaction_id": "auto-01M7N9YYQ2DJKVTNVR19CEQS0H",
+          "transaction_id": "auto-01M7PQ0MWV209ZX1F72N409EZA",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links",
-            "uuid": "01M7N9YTYZPM0CMP4STF2N9BQ1",
+            "uuid": "01M7PQ0GE2T1Z4A8SEZDBXK3RC",
             "depth": 1,
             "definition": {
               "action": "validate-variant-price-links",
-              "uuid": "01M7N9YTYZPM0CMP4STF2N9BQ1",
+              "uuid": "01M7PQ0GE2T1Z4A8SEZDBXK3RC",
               "noCompensation": true,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937682661,
+            "lastAttempt": 1794984924071,
             "next": [
               "_root.validate-variant-price-links.create-price-lists"
             ],
             "_v": 0,
-            "startedAt": 1794937682661
+            "startedAt": 1794984924071
           },
           "response": {
             "variant_01M70Y000GM1QZKX7G9P8G7G1S": "pset_01M70Y0015KG6TB5NVSGRSMH4X"
@@ -101,57 +110,57 @@
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-price-lists",
-          "transaction_id": "auto-01M7N9YYQ2DJKVTNVR19CEQS0H",
+          "transaction_id": "auto-01M7PQ0MWV209ZX1F72N409EZA",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links.create-price-lists",
-            "uuid": "01M7N9YTZ1Y2PW6RX55S8SDPY5",
+            "uuid": "01M7PQ0GE2CRHP6MS7Q3M7YRCW",
             "depth": 2,
             "definition": {
               "action": "create-price-lists",
-              "uuid": "01M7N9YTZ1Y2PW6RX55S8SDPY5",
+              "uuid": "01M7PQ0GE2CRHP6MS7Q3M7YRCW",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937682664,
+            "lastAttempt": 1794984924077,
             "next": [
               "_root.validate-variant-price-links.create-price-lists.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937682664
+            "startedAt": 1794984924077
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-price-lists",
-          "transaction_id": "auto-01M7N9YYQ2DJKVTNVR19CEQS0H",
+          "transaction_id": "auto-01M7PQ0MWV209ZX1F72N409EZA",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links.create-price-lists",
-            "uuid": "01M7N9YTZ1Y2PW6RX55S8SDPY5",
+            "uuid": "01M7PQ0GE2CRHP6MS7Q3M7YRCW",
             "depth": 2,
             "definition": {
               "action": "create-price-lists",
-              "uuid": "01M7N9YTZ1Y2PW6RX55S8SDPY5",
+              "uuid": "01M7PQ0GE2CRHP6MS7Q3M7YRCW",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937682664,
+            "lastAttempt": 1794984924077,
             "next": [
               "_root.validate-variant-price-links.create-price-lists.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937682664
+            "startedAt": 1794984924077
           },
           "response": [
             {
-              "id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+              "id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
               "title": "WF PL",
               "description": "wf list",
               "status": "active",
@@ -160,25 +169,25 @@
               "ends_at": null,
               "rules_count": 0,
               "metadata": null,
-              "created_at": "2026-11-17T17:48:02.666Z",
-              "updated_at": "2026-11-17T17:48:02.666Z",
+              "created_at": "2026-11-18T06:55:24.080Z",
+              "updated_at": "2026-11-18T06:55:24.080Z",
               "deleted_at": null,
               "prices": [
                 {
-                  "id": "price_01M7N9YYQA4KX7Y2JWF81ATJKH",
+                  "id": "price_01M7PQ0MXGNQJ15EBEJP95W8Q6",
                   "title": null,
                   "currency_code": "eur",
                   "rules_count": 0,
                   "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
-                  "price_list_id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+                  "price_list_id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
                   "raw_amount": {
                     "value": "5",
                     "precision": 20
                   },
                   "raw_min_quantity": null,
                   "raw_max_quantity": null,
-                  "created_at": "2026-11-17T17:48:02.666Z",
-                  "updated_at": "2026-11-17T17:48:02.666Z",
+                  "created_at": "2026-11-18T06:55:24.080Z",
+                  "updated_at": "2026-11-18T06:55:24.080Z",
                   "deleted_at": null,
                   "price_rules": [],
                   "amount": 5,
@@ -193,62 +202,62 @@
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-price-lists",
-          "transaction_id": "auto-01M7N9YYQ2DJKVTNVR19CEQS0H",
+          "transaction_id": "auto-01M7PQ0MWV209ZX1F72N409EZA",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links.create-price-lists.emit-event-step",
-            "uuid": "01M7N9YTZ195DPFHT0FTN89ZNX",
+            "uuid": "01M7PQ0GE3CV5XY8H9C5SCM6YH",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9YTZ195DPFHT0FTN89ZNX",
+              "uuid": "01M7PQ0GE3CV5XY8H9C5SCM6YH",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937682678,
+            "lastAttempt": 1794984924095,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937682678
+            "startedAt": 1794984924095
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-price-lists",
-          "transaction_id": "auto-01M7N9YYQ2DJKVTNVR19CEQS0H",
+          "transaction_id": "auto-01M7PQ0MWV209ZX1F72N409EZA",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links.create-price-lists.emit-event-step",
-            "uuid": "01M7N9YTZ195DPFHT0FTN89ZNX",
+            "uuid": "01M7PQ0GE3CV5XY8H9C5SCM6YH",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9YTZ195DPFHT0FTN89ZNX",
+              "uuid": "01M7PQ0GE3CV5XY8H9C5SCM6YH",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937682678,
+            "lastAttempt": 1794984924095,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937682678
+            "startedAt": 1794984924095
           },
           "response": {
-            "eventGroupId": "01M7N9YYQ27K6YKDTKER0SR0T0",
+            "eventGroupId": "01M7PQ0MWV9PDEXQBXYEDW7RAJ",
             "eventName": "price-list.created"
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "create-price-lists",
-          "transaction_id": "auto-01M7N9YYQ2DJKVTNVR19CEQS0H",
+          "transaction_id": "auto-01M7PQ0MWV209ZX1F72N409EZA",
           "result": [
             {
-              "id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+              "id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
               "title": "WF PL",
               "description": "wf list",
               "status": "active",
@@ -257,25 +266,25 @@
               "ends_at": null,
               "rules_count": 0,
               "metadata": null,
-              "created_at": "2026-11-17T17:48:02.666Z",
-              "updated_at": "2026-11-17T17:48:02.666Z",
+              "created_at": "2026-11-18T06:55:24.080Z",
+              "updated_at": "2026-11-18T06:55:24.080Z",
               "deleted_at": null,
               "prices": [
                 {
-                  "id": "price_01M7N9YYQA4KX7Y2JWF81ATJKH",
+                  "id": "price_01M7PQ0MXGNQJ15EBEJP95W8Q6",
                   "title": null,
                   "currency_code": "eur",
                   "rules_count": 0,
                   "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
-                  "price_list_id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+                  "price_list_id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
                   "raw_amount": {
                     "value": "5",
                     "precision": 20
                   },
                   "raw_min_quantity": null,
                   "raw_max_quantity": null,
-                  "created_at": "2026-11-17T17:48:02.666Z",
-                  "updated_at": "2026-11-17T17:48:02.666Z",
+                  "created_at": "2026-11-18T06:55:24.080Z",
+                  "updated_at": "2026-11-18T06:55:24.080Z",
                   "deleted_at": null,
                   "price_rules": [],
                   "amount": 5,
@@ -296,11 +305,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9YYQ2DJKVTNVR19CEQS0H",
+        "transactionId": "auto-01M7PQ0MWV209ZX1F72N409EZA",
         "workflowId": "create-price-lists",
         "hasFinished": true,
         "hasFailed": false
@@ -312,16 +324,19 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "price_lists": [
         {
-          "id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+          "id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
           "title": "WF PL",
           "prices": [
             {
-              "id": "price_01M7N9YYQA4KX7Y2JWF81ATJKH"
+              "id": "price_01M7PQ0MXGNQJ15EBEJP95W8Q6"
             }
           ]
         }
@@ -336,69 +351,72 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z071V2JNYQVGPHJJR78H"
+          "transaction_id": "auto-01M7PQ0PE49QZWQ0XZJR995QFF"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z071V2JNYQVGPHJJR78H",
+          "transaction_id": "auto-01M7PQ0PE49QZWQ0XZJR995QFF",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-price-lists",
-            "uuid": "01M7N9YTZ2YSX8Q4GH1DYBMS7A",
+            "uuid": "01M7PQ0GE3CR19D268F32MPWWQ",
             "depth": 1,
             "definition": {
               "action": "validate-price-lists",
-              "uuid": "01M7N9YTZ2YSX8Q4GH1DYBMS7A",
+              "uuid": "01M7PQ0GE3CR19D268F32MPWWQ",
               "noCompensation": true,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937684194,
+            "lastAttempt": 1794984925643,
             "next": [
               "_root.validate-price-lists.update-price-lists"
             ],
             "_v": 0,
-            "startedAt": 1794937684194
+            "startedAt": 1794984925643
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z071V2JNYQVGPHJJR78H",
+          "transaction_id": "auto-01M7PQ0PE49QZWQ0XZJR995QFF",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-price-lists",
-            "uuid": "01M7N9YTZ2YSX8Q4GH1DYBMS7A",
+            "uuid": "01M7PQ0GE3CR19D268F32MPWWQ",
             "depth": 1,
             "definition": {
               "action": "validate-price-lists",
-              "uuid": "01M7N9YTZ2YSX8Q4GH1DYBMS7A",
+              "uuid": "01M7PQ0GE3CR19D268F32MPWWQ",
               "noCompensation": true,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937684194,
+            "lastAttempt": 1794984925643,
             "next": [
               "_root.validate-price-lists.update-price-lists"
             ],
             "_v": 0,
-            "startedAt": 1794937684194
+            "startedAt": 1794984925643
           },
           "response": {
-            "plist_01M7N9YYQAN3Z9511VTMCGMBNM": {
-              "id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+            "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D": {
+              "id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
               "title": "WF PL",
               "description": "wf list",
               "status": "active",
@@ -407,8 +425,8 @@
               "ends_at": null,
               "rules_count": 0,
               "metadata": null,
-              "created_at": "2026-11-17T17:48:02.666Z",
-              "updated_at": "2026-11-17T17:48:02.666Z",
+              "created_at": "2026-11-18T06:55:24.080Z",
+              "updated_at": "2026-11-18T06:55:24.080Z",
               "deleted_at": null
             }
           }
@@ -416,57 +434,57 @@
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z071V2JNYQVGPHJJR78H",
+          "transaction_id": "auto-01M7PQ0PE49QZWQ0XZJR995QFF",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-price-lists.update-price-lists",
-            "uuid": "01M7N9YTZ2VRRF047KSA6W0AMY",
+            "uuid": "01M7PQ0GE3TTHHH60WMKN70AKN",
             "depth": 2,
             "definition": {
               "action": "update-price-lists",
-              "uuid": "01M7N9YTZ2VRRF047KSA6W0AMY",
+              "uuid": "01M7PQ0GE3TTHHH60WMKN70AKN",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937684195,
+            "lastAttempt": 1794984925647,
             "next": [
               "_root.validate-price-lists.update-price-lists.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937684195
+            "startedAt": 1794984925647
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z071V2JNYQVGPHJJR78H",
+          "transaction_id": "auto-01M7PQ0PE49QZWQ0XZJR995QFF",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-price-lists.update-price-lists",
-            "uuid": "01M7N9YTZ2VRRF047KSA6W0AMY",
+            "uuid": "01M7PQ0GE3TTHHH60WMKN70AKN",
             "depth": 2,
             "definition": {
               "action": "update-price-lists",
-              "uuid": "01M7N9YTZ2VRRF047KSA6W0AMY",
+              "uuid": "01M7PQ0GE3TTHHH60WMKN70AKN",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937684195,
+            "lastAttempt": 1794984925647,
             "next": [
               "_root.validate-price-lists.update-price-lists.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937684195
+            "startedAt": 1794984925647
           },
           "response": [
             {
-              "id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+              "id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
               "title": "WF PL 2",
               "status": "draft"
             }
@@ -475,59 +493,59 @@
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z071V2JNYQVGPHJJR78H",
+          "transaction_id": "auto-01M7PQ0PE49QZWQ0XZJR995QFF",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-price-lists.update-price-lists.emit-event-step",
-            "uuid": "01M7N9YTZ2D6WS3D3ZEYGWPQHD",
+            "uuid": "01M7PQ0GE32DZHAHRGVGZM6CDA",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9YTZ2D6WS3D3ZEYGWPQHD",
+              "uuid": "01M7PQ0GE32DZHAHRGVGZM6CDA",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937684206,
+            "lastAttempt": 1794984925675,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937684206
+            "startedAt": 1794984925675
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z071V2JNYQVGPHJJR78H",
+          "transaction_id": "auto-01M7PQ0PE49QZWQ0XZJR995QFF",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-price-lists.update-price-lists.emit-event-step",
-            "uuid": "01M7N9YTZ2D6WS3D3ZEYGWPQHD",
+            "uuid": "01M7PQ0GE32DZHAHRGVGZM6CDA",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9YTZ2D6WS3D3ZEYGWPQHD",
+              "uuid": "01M7PQ0GE32DZHAHRGVGZM6CDA",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937684206,
+            "lastAttempt": 1794984925675,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937684206
+            "startedAt": 1794984925675
           },
           "response": {
-            "eventGroupId": "01M7N9Z0713WEG5PQKQGKCM04Z",
+            "eventGroupId": "01M7PQ0PE4T96HCSX3640DH3S2",
             "eventName": "price-list.updated"
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z071V2JNYQVGPHJJR78H",
+          "transaction_id": "auto-01M7PQ0PE49QZWQ0XZJR995QFF",
           "errors": []
         }
       ]
@@ -538,11 +556,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9Z071V2JNYQVGPHJJR78H",
+        "transactionId": "auto-01M7PQ0PE49QZWQ0XZJR995QFF",
         "workflowId": "update-price-lists",
         "hasFinished": true,
         "hasFailed": false
@@ -554,63 +575,66 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z1PKAMH4Y8B4SMSTYZYT"
+          "transaction_id": "auto-01M7PQ0QYGSC12Z658F6N7GA3P"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z1PKAMH4Y8B4SMSTYZYT",
+          "transaction_id": "auto-01M7PQ0QYGSC12Z658F6N7GA3P",
           "step": {
             "id": "_root.validate-price-lists",
-            "uuid": "01M7N9YTZ2YSX8Q4GH1DYBMS7A",
+            "uuid": "01M7PQ0GE3CR19D268F32MPWWQ",
             "depth": 1,
             "definition": {
               "action": "validate-price-lists",
-              "uuid": "01M7N9YTZ2YSX8Q4GH1DYBMS7A",
+              "uuid": "01M7PQ0GE3CR19D268F32MPWWQ",
               "noCompensation": true,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937685721,
+            "lastAttempt": 1794984927190,
             "next": [
               "_root.validate-price-lists.update-price-lists"
             ],
             "_v": 0,
-            "startedAt": 1794937685721
+            "startedAt": 1794984927190
           }
         },
         {
           "event_type": "onStepFailure",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z1PKAMH4Y8B4SMSTYZYT",
+          "transaction_id": "auto-01M7PQ0QYGSC12Z658F6N7GA3P",
           "step": {
             "id": "_root.validate-price-lists",
-            "uuid": "01M7N9YTZ2YSX8Q4GH1DYBMS7A",
+            "uuid": "01M7PQ0GE3CR19D268F32MPWWQ",
             "depth": 1,
             "definition": {
               "action": "validate-price-lists",
-              "uuid": "01M7N9YTZ2YSX8Q4GH1DYBMS7A",
+              "uuid": "01M7PQ0GE3CR19D268F32MPWWQ",
               "noCompensation": true,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937685735,
+            "lastAttempt": 1794984927198,
             "next": [
               "_root.validate-price-lists.update-price-lists"
             ],
             "_v": 0,
-            "startedAt": 1794937685721
+            "startedAt": 1794984927190
           },
           "errors": [
             {
@@ -621,7 +645,7 @@
                 "name": "Error",
                 "__isMedusaError": true,
                 "type": "not_found",
-                "date": "2026-11-17T17:48:05.726Z"
+                "date": "2026-11-18T06:55:27.193Z"
               }
             }
           ]
@@ -629,12 +653,12 @@
         {
           "event_type": "onCompensateBegin",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z1PKAMH4Y8B4SMSTYZYT"
+          "transaction_id": "auto-01M7PQ0QYGSC12Z658F6N7GA3P"
         },
         {
           "event_type": "onFinish",
           "workflow_id": "update-price-lists",
-          "transaction_id": "auto-01M7N9Z1PKAMH4Y8B4SMSTYZYT",
+          "transaction_id": "auto-01M7PQ0QYGSC12Z658F6N7GA3P",
           "errors": [
             {
               "action": "validate-price-lists",
@@ -644,7 +668,7 @@
                 "name": "Error",
                 "__isMedusaError": true,
                 "type": "not_found",
-                "date": "2026-11-17T17:48:05.726Z"
+                "date": "2026-11-18T06:55:27.193Z"
               }
             }
           ]
@@ -657,7 +681,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "not_found",
@@ -669,197 +696,200 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "batch-price-list-prices",
-          "transaction_id": "auto-01M7N9Z367Z42AGXX0TTD5ADPN"
+          "transaction_id": "auto-01M7PQ0SE05BNW0PE52W9E4S6Y"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "batch-price-list-prices",
-          "transaction_id": "auto-01M7N9Z367Z42AGXX0TTD5ADPN",
+          "transaction_id": "auto-01M7PQ0SE05BNW0PE52W9E4S6Y",
           "step": {
             "stepFailed": false,
             "id": "_root.create-price-list-prices-as-step",
-            "uuid": "01M7N9YTYZXNX8YGM2TB1Y4AA5",
+            "uuid": "01M7PQ0GDXWDDSJKKHK3036V2W",
             "depth": 1,
             "definition": {
               "action": "create-price-list-prices-as-step",
               "name": "create-price-list-prices-as-step",
               "async": false,
               "nested": false,
-              "uuid": "01M7N9YTYZXNX8YGM2TB1Y4AA5",
+              "uuid": "01M7PQ0GDXWDDSJKKHK3036V2W",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937687241,
+            "lastAttempt": 1794984928711,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937687241
+            "startedAt": 1794984928711
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "batch-price-list-prices",
-          "transaction_id": "auto-01M7N9Z367Z42AGXX0TTD5ADPN",
+          "transaction_id": "auto-01M7PQ0SE05BNW0PE52W9E4S6Y",
           "step": {
             "stepFailed": false,
             "id": "_root.update-price-list-prices-as-step",
-            "uuid": "01M7N9YTYZB8AHAPQS9TFDD1D0",
+            "uuid": "01M7PQ0GDX036NV0MKH8VP65X4",
             "depth": 1,
             "definition": {
               "action": "update-price-list-prices-as-step",
               "name": "update-price-list-prices-as-step",
               "async": false,
               "nested": false,
-              "uuid": "01M7N9YTYZB8AHAPQS9TFDD1D0",
+              "uuid": "01M7PQ0GDX036NV0MKH8VP65X4",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937687241,
+            "lastAttempt": 1794984928711,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937687241
+            "startedAt": 1794984928711
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "batch-price-list-prices",
-          "transaction_id": "auto-01M7N9Z367Z42AGXX0TTD5ADPN",
+          "transaction_id": "auto-01M7PQ0SE05BNW0PE52W9E4S6Y",
           "step": {
             "stepFailed": false,
             "id": "_root.remove-price-list-prices-as-step",
-            "uuid": "01M7N9YTYZJ0P4Z09WPK63QYV3",
+            "uuid": "01M7PQ0GDXX5JF5EW463NX84HQ",
             "depth": 1,
             "definition": {
               "action": "remove-price-list-prices-as-step",
               "name": "remove-price-list-prices-as-step",
               "async": false,
               "nested": false,
-              "uuid": "01M7N9YTYZJ0P4Z09WPK63QYV3",
+              "uuid": "01M7PQ0GDXX5JF5EW463NX84HQ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937687241,
+            "lastAttempt": 1794984928711,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937687241
+            "startedAt": 1794984928711
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "batch-price-list-prices",
-          "transaction_id": "auto-01M7N9Z367Z42AGXX0TTD5ADPN",
+          "transaction_id": "auto-01M7PQ0SE05BNW0PE52W9E4S6Y",
           "step": {
             "stepFailed": false,
             "id": "_root.remove-price-list-prices-as-step",
-            "uuid": "01M7N9YTYZJ0P4Z09WPK63QYV3",
+            "uuid": "01M7PQ0GDXX5JF5EW463NX84HQ",
             "depth": 1,
             "definition": {
               "action": "remove-price-list-prices-as-step",
               "name": "remove-price-list-prices-as-step",
               "async": false,
               "nested": false,
-              "uuid": "01M7N9YTYZJ0P4Z09WPK63QYV3",
+              "uuid": "01M7PQ0GDXX5JF5EW463NX84HQ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937687241,
+            "lastAttempt": 1794984928711,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937687241
+            "startedAt": 1794984928711
           },
           "response": []
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "batch-price-list-prices",
-          "transaction_id": "auto-01M7N9Z367Z42AGXX0TTD5ADPN",
+          "transaction_id": "auto-01M7PQ0SE05BNW0PE52W9E4S6Y",
           "step": {
             "stepFailed": false,
             "id": "_root.create-price-list-prices-as-step",
-            "uuid": "01M7N9YTYZXNX8YGM2TB1Y4AA5",
+            "uuid": "01M7PQ0GDXWDDSJKKHK3036V2W",
             "depth": 1,
             "definition": {
               "action": "create-price-list-prices-as-step",
               "name": "create-price-list-prices-as-step",
               "async": false,
               "nested": false,
-              "uuid": "01M7N9YTYZXNX8YGM2TB1Y4AA5",
+              "uuid": "01M7PQ0GDXWDDSJKKHK3036V2W",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937687241,
+            "lastAttempt": 1794984928711,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937687241
+            "startedAt": 1794984928711
           },
           "response": [
             {
               "amount": 7,
               "currency_code": "usd",
               "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
-              "price_list_id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+              "price_list_id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
               "raw_amount": {
                 "value": "7",
                 "precision": 20
               },
-              "id": "price_01M7N9Z36RGH1T63JVRYR1RZ0X"
+              "id": "price_01M7PQ0SF5MQG7127YDCE62E5J"
             }
           ]
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "batch-price-list-prices",
-          "transaction_id": "auto-01M7N9Z367Z42AGXX0TTD5ADPN",
+          "transaction_id": "auto-01M7PQ0SE05BNW0PE52W9E4S6Y",
           "step": {
             "stepFailed": false,
             "id": "_root.update-price-list-prices-as-step",
-            "uuid": "01M7N9YTYZB8AHAPQS9TFDD1D0",
+            "uuid": "01M7PQ0GDX036NV0MKH8VP65X4",
             "depth": 1,
             "definition": {
               "action": "update-price-list-prices-as-step",
               "name": "update-price-list-prices-as-step",
               "async": false,
               "nested": false,
-              "uuid": "01M7N9YTYZB8AHAPQS9TFDD1D0",
+              "uuid": "01M7PQ0GDX036NV0MKH8VP65X4",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937687241,
+            "lastAttempt": 1794984928711,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937687241
+            "startedAt": 1794984928711
           },
           "response": [
             {
-              "id": "price_01M7N9YYQA4KX7Y2JWF81ATJKH",
+              "id": "price_01M7PQ0MXGNQJ15EBEJP95W8Q6",
               "amount": 6,
               "currency_code": "eur",
               "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
-              "price_list_id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+              "price_list_id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
               "raw_amount": {
                 "value": "6",
                 "precision": 20
@@ -870,28 +900,28 @@
         {
           "event_type": "onFinish",
           "workflow_id": "batch-price-list-prices",
-          "transaction_id": "auto-01M7N9Z367Z42AGXX0TTD5ADPN",
+          "transaction_id": "auto-01M7PQ0SE05BNW0PE52W9E4S6Y",
           "result": {
             "created": [
               {
                 "amount": 7,
                 "currency_code": "usd",
                 "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
-                "price_list_id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+                "price_list_id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
                 "raw_amount": {
                   "value": "7",
                   "precision": 20
                 },
-                "id": "price_01M7N9Z36RGH1T63JVRYR1RZ0X"
+                "id": "price_01M7PQ0SF5MQG7127YDCE62E5J"
               }
             ],
             "updated": [
               {
-                "id": "price_01M7N9YYQA4KX7Y2JWF81ATJKH",
+                "id": "price_01M7PQ0MXGNQJ15EBEJP95W8Q6",
                 "amount": 6,
                 "currency_code": "eur",
                 "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
-                "price_list_id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+                "price_list_id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
                 "raw_amount": {
                   "value": "6",
                   "precision": 20
@@ -910,11 +940,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9Z367Z42AGXX0TTD5ADPN",
+        "transactionId": "auto-01M7PQ0SE05BNW0PE52W9E4S6Y",
         "workflowId": "batch-price-list-prices",
         "hasFinished": true,
         "hasFailed": false
@@ -926,91 +959,94 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "create-price-list-prices",
-          "transaction_id": "auto-01M7N9Z4P3XXM34JDNZJJGEHZ5"
+          "transaction_id": "auto-01M7PQ0TZ5KS7B7W8563NM57V9"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-price-list-prices",
-          "transaction_id": "auto-01M7N9Z4P3XXM34JDNZJJGEHZ5",
+          "transaction_id": "auto-01M7PQ0TZ5KS7B7W8563NM57V9",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-price-lists",
-            "uuid": "01M7N9YTYY04HWDMV2APAK9EC0",
+            "uuid": "01M7PQ0GDW4NY1VM4YNMDN8QAM",
             "depth": 1,
             "definition": {
               "action": "validate-price-lists",
-              "uuid": "01M7N9YTYY04HWDMV2APAK9EC0",
+              "uuid": "01M7PQ0GDW4NY1VM4YNMDN8QAM",
               "noCompensation": true,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937688775,
+            "lastAttempt": 1794984930286,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937688775
+            "startedAt": 1794984930286
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-price-list-prices",
-          "transaction_id": "auto-01M7N9Z4P3XXM34JDNZJJGEHZ5",
+          "transaction_id": "auto-01M7PQ0TZ5KS7B7W8563NM57V9",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links",
-            "uuid": "01M7N9YTYYFA7Q4GEF2SN68SQ9",
+            "uuid": "01M7PQ0GDW9EXAC26W54DSPWPT",
             "depth": 1,
             "definition": {
               "action": "validate-variant-price-links",
-              "uuid": "01M7N9YTYYFA7Q4GEF2SN68SQ9",
+              "uuid": "01M7PQ0GDW9EXAC26W54DSPWPT",
               "noCompensation": true,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937688775,
+            "lastAttempt": 1794984930286,
             "next": [
               "_root.validate-variant-price-links.create-price-list-prices"
             ],
             "_v": 0,
-            "startedAt": 1794937688775
+            "startedAt": 1794984930286
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-price-list-prices",
-          "transaction_id": "auto-01M7N9Z4P3XXM34JDNZJJGEHZ5",
+          "transaction_id": "auto-01M7PQ0TZ5KS7B7W8563NM57V9",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-price-lists",
-            "uuid": "01M7N9YTYY04HWDMV2APAK9EC0",
+            "uuid": "01M7PQ0GDW4NY1VM4YNMDN8QAM",
             "depth": 1,
             "definition": {
               "action": "validate-price-lists",
-              "uuid": "01M7N9YTYY04HWDMV2APAK9EC0",
+              "uuid": "01M7PQ0GDW4NY1VM4YNMDN8QAM",
               "noCompensation": true,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937688775,
+            "lastAttempt": 1794984930286,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937688775
+            "startedAt": 1794984930286
           },
           "response": {
-            "plist_01M7N9YYQAN3Z9511VTMCGMBNM": {
-              "id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+            "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D": {
+              "id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
               "title": "WF PL 2",
               "description": "wf list",
               "status": "draft",
@@ -1019,8 +1055,8 @@
               "ends_at": null,
               "rules_count": 0,
               "metadata": null,
-              "created_at": "2026-11-17T17:48:02.666Z",
-              "updated_at": "2026-11-17T17:48:04.200Z",
+              "created_at": "2026-11-18T06:55:24.080Z",
+              "updated_at": "2026-11-18T06:55:25.659Z",
               "deleted_at": null
             }
           }
@@ -1028,27 +1064,27 @@
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-price-list-prices",
-          "transaction_id": "auto-01M7N9Z4P3XXM34JDNZJJGEHZ5",
+          "transaction_id": "auto-01M7PQ0TZ5KS7B7W8563NM57V9",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links",
-            "uuid": "01M7N9YTYYFA7Q4GEF2SN68SQ9",
+            "uuid": "01M7PQ0GDW9EXAC26W54DSPWPT",
             "depth": 1,
             "definition": {
               "action": "validate-variant-price-links",
-              "uuid": "01M7N9YTYYFA7Q4GEF2SN68SQ9",
+              "uuid": "01M7PQ0GDW9EXAC26W54DSPWPT",
               "noCompensation": true,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937688775,
+            "lastAttempt": 1794984930286,
             "next": [
               "_root.validate-variant-price-links.create-price-list-prices"
             ],
             "_v": 0,
-            "startedAt": 1794937688775
+            "startedAt": 1794984930286
           },
           "response": {
             "variant_01M70Y000GM1QZKX7G9P8G7G1S": "pset_01M70Y0015KG6TB5NVSGRSMH4X"
@@ -1057,135 +1093,135 @@
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-price-list-prices",
-          "transaction_id": "auto-01M7N9Z4P3XXM34JDNZJJGEHZ5",
+          "transaction_id": "auto-01M7PQ0TZ5KS7B7W8563NM57V9",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links.create-price-list-prices",
-            "uuid": "01M7N9YTYYAGGGRP28DMHY47B5",
+            "uuid": "01M7PQ0GDWPAHMXRH4QJAT2BK9",
             "depth": 2,
             "definition": {
               "action": "create-price-list-prices",
-              "uuid": "01M7N9YTYYAGGGRP28DMHY47B5",
+              "uuid": "01M7PQ0GDWPAHMXRH4QJAT2BK9",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937688780,
+            "lastAttempt": 1794984930292,
             "next": [
               "_root.validate-variant-price-links.create-price-list-prices.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937688780
+            "startedAt": 1794984930292
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-price-list-prices",
-          "transaction_id": "auto-01M7N9Z4P3XXM34JDNZJJGEHZ5",
+          "transaction_id": "auto-01M7PQ0TZ5KS7B7W8563NM57V9",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links.create-price-list-prices",
-            "uuid": "01M7N9YTYYAGGGRP28DMHY47B5",
+            "uuid": "01M7PQ0GDWPAHMXRH4QJAT2BK9",
             "depth": 2,
             "definition": {
               "action": "create-price-list-prices",
-              "uuid": "01M7N9YTYYAGGGRP28DMHY47B5",
+              "uuid": "01M7PQ0GDWPAHMXRH4QJAT2BK9",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937688780,
+            "lastAttempt": 1794984930292,
             "next": [
               "_root.validate-variant-price-links.create-price-list-prices.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937688780
+            "startedAt": 1794984930292
           },
           "response": [
             {
               "amount": 9,
               "currency_code": "dkk",
               "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
-              "price_list_id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+              "price_list_id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
               "raw_amount": {
                 "value": "9",
                 "precision": 20
               },
-              "id": "price_01M7N9Z4PF4T301X1GKMTATC7Z"
+              "id": "price_01M7PQ0TZW1HNA48AG0RGWKWEW"
             }
           ]
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-price-list-prices",
-          "transaction_id": "auto-01M7N9Z4P3XXM34JDNZJJGEHZ5",
+          "transaction_id": "auto-01M7PQ0TZ5KS7B7W8563NM57V9",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links.create-price-list-prices.emit-event-step",
-            "uuid": "01M7N9YTYY8QFSDVGS1D7RMFPR",
+            "uuid": "01M7PQ0GDWDTKR398PFF2QGN66",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9YTYY8QFSDVGS1D7RMFPR",
+              "uuid": "01M7PQ0GDWDTKR398PFF2QGN66",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937688787,
+            "lastAttempt": 1794984930318,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937688787
+            "startedAt": 1794984930318
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-price-list-prices",
-          "transaction_id": "auto-01M7N9Z4P3XXM34JDNZJJGEHZ5",
+          "transaction_id": "auto-01M7PQ0TZ5KS7B7W8563NM57V9",
           "step": {
             "stepFailed": false,
             "id": "_root.validate-variant-price-links.create-price-list-prices.emit-event-step",
-            "uuid": "01M7N9YTYY8QFSDVGS1D7RMFPR",
+            "uuid": "01M7PQ0GDWDTKR398PFF2QGN66",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9YTYY8QFSDVGS1D7RMFPR",
+              "uuid": "01M7PQ0GDWDTKR398PFF2QGN66",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937688787,
+            "lastAttempt": 1794984930318,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937688787
+            "startedAt": 1794984930318
           },
           "response": {
-            "eventGroupId": "01M7N9Z4P37JHRAX24ABB1SGD9",
+            "eventGroupId": "01M7PQ0TZ56B92BD59PWV6HV33",
             "eventName": "price-list.prices_added"
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "create-price-list-prices",
-          "transaction_id": "auto-01M7N9Z4P3XXM34JDNZJJGEHZ5",
+          "transaction_id": "auto-01M7PQ0TZ5KS7B7W8563NM57V9",
           "result": [
             {
               "amount": 9,
               "currency_code": "dkk",
               "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X",
-              "price_list_id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+              "price_list_id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
               "raw_amount": {
                 "value": "9",
                 "precision": 20
               },
-              "id": "price_01M7N9Z4PF4T301X1GKMTATC7Z"
+              "id": "price_01M7PQ0TZW1HNA48AG0RGWKWEW"
             }
           ],
           "errors": []
@@ -1198,11 +1234,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9Z4P3XXM34JDNZJJGEHZ5",
+        "transactionId": "auto-01M7PQ0TZ5KS7B7W8563NM57V9",
         "workflowId": "create-price-list-prices",
         "hasFinished": true,
         "hasFailed": false
@@ -1214,27 +1253,30 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "remove-price-list-prices",
-          "transaction_id": "auto-01M7N9Z65KKHMAHR44GFXZZY6S"
+          "transaction_id": "auto-01M7PQ0WFKAC0014PGQYFJAWHR"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "remove-price-list-prices",
-          "transaction_id": "auto-01M7N9Z65KKHMAHR44GFXZZY6S",
+          "transaction_id": "auto-01M7PQ0WFKAC0014PGQYFJAWHR",
           "step": {
             "stepFailed": false,
             "id": "_root.get-price-list-prices-to-remove",
-            "uuid": "01M7N9YTYZSAV288K83201V09Q",
+            "uuid": "01M7PQ0GDXA7XPYH2A4PWEHVQC",
             "depth": 1,
             "definition": {
               "action": "get-price-list-prices-to-remove",
-              "uuid": "01M7N9YTYZSAV288K83201V09Q",
+              "uuid": "01M7PQ0GDXA7XPYH2A4PWEHVQC",
               "noCompensation": true,
               "async": false,
               "compensateAsync": false,
@@ -1243,26 +1285,26 @@
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937690293,
+            "lastAttempt": 1794984931832,
             "next": [
               "_root.get-price-list-prices-to-remove.remove-price-list-prices"
             ],
             "_v": 0,
-            "startedAt": 1794937690293
+            "startedAt": 1794984931832
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "remove-price-list-prices",
-          "transaction_id": "auto-01M7N9Z65KKHMAHR44GFXZZY6S",
+          "transaction_id": "auto-01M7PQ0WFKAC0014PGQYFJAWHR",
           "step": {
             "stepFailed": false,
             "id": "_root.get-price-list-prices-to-remove",
-            "uuid": "01M7N9YTYZSAV288K83201V09Q",
+            "uuid": "01M7PQ0GDXA7XPYH2A4PWEHVQC",
             "depth": 1,
             "definition": {
               "action": "get-price-list-prices-to-remove",
-              "uuid": "01M7N9YTYZSAV288K83201V09Q",
+              "uuid": "01M7PQ0GDXA7XPYH2A4PWEHVQC",
               "noCompensation": true,
               "async": false,
               "compensateAsync": false,
@@ -1271,18 +1313,18 @@
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937690293,
+            "lastAttempt": 1794984931832,
             "next": [
               "_root.get-price-list-prices-to-remove.remove-price-list-prices"
             ],
             "_v": 0,
-            "startedAt": 1794937690293
+            "startedAt": 1794984931832
           },
           "response": {
             "data": [
               {
-                "id": "price_01M7N9YYQA4KX7Y2JWF81ATJKH",
-                "price_list_id": "plist_01M7N9YYQAN3Z9511VTMCGMBNM",
+                "id": "price_01M7PQ0MXGNQJ15EBEJP95W8Q6",
+                "price_list_id": "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D",
                 "price_set_id": "pset_01M70Y0015KG6TB5NVSGRSMH4X"
               }
             ]
@@ -1291,116 +1333,116 @@
         {
           "event_type": "onStepBegin",
           "workflow_id": "remove-price-list-prices",
-          "transaction_id": "auto-01M7N9Z65KKHMAHR44GFXZZY6S",
+          "transaction_id": "auto-01M7PQ0WFKAC0014PGQYFJAWHR",
           "step": {
             "stepFailed": false,
             "id": "_root.get-price-list-prices-to-remove.remove-price-list-prices",
-            "uuid": "01M7N9YTYZ0TRV9BYPJERHXWCZ",
+            "uuid": "01M7PQ0GDX30EKX0YVSTG5M28K",
             "depth": 2,
             "definition": {
               "action": "remove-price-list-prices",
-              "uuid": "01M7N9YTYZ0TRV9BYPJERHXWCZ",
+              "uuid": "01M7PQ0GDX30EKX0YVSTG5M28K",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937690296,
+            "lastAttempt": 1794984931837,
             "next": [
               "_root.get-price-list-prices-to-remove.remove-price-list-prices.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937690296
+            "startedAt": 1794984931837
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "remove-price-list-prices",
-          "transaction_id": "auto-01M7N9Z65KKHMAHR44GFXZZY6S",
+          "transaction_id": "auto-01M7PQ0WFKAC0014PGQYFJAWHR",
           "step": {
             "stepFailed": false,
             "id": "_root.get-price-list-prices-to-remove.remove-price-list-prices",
-            "uuid": "01M7N9YTYZ0TRV9BYPJERHXWCZ",
+            "uuid": "01M7PQ0GDX30EKX0YVSTG5M28K",
             "depth": 2,
             "definition": {
               "action": "remove-price-list-prices",
-              "uuid": "01M7N9YTYZ0TRV9BYPJERHXWCZ",
+              "uuid": "01M7PQ0GDX30EKX0YVSTG5M28K",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937690296,
+            "lastAttempt": 1794984931837,
             "next": [
               "_root.get-price-list-prices-to-remove.remove-price-list-prices.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937690296
+            "startedAt": 1794984931837
           },
           "response": [
-            "price_01M7N9YYQA4KX7Y2JWF81ATJKH"
+            "price_01M7PQ0MXGNQJ15EBEJP95W8Q6"
           ]
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "remove-price-list-prices",
-          "transaction_id": "auto-01M7N9Z65KKHMAHR44GFXZZY6S",
+          "transaction_id": "auto-01M7PQ0WFKAC0014PGQYFJAWHR",
           "step": {
             "stepFailed": false,
             "id": "_root.get-price-list-prices-to-remove.remove-price-list-prices.emit-event-step",
-            "uuid": "01M7N9YTYZQPMDF3RKSG180ZBS",
+            "uuid": "01M7PQ0GDX61CRK2CRD2R46B9K",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9YTYZQPMDF3RKSG180ZBS",
+              "uuid": "01M7PQ0GDX61CRK2CRD2R46B9K",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937690306,
+            "lastAttempt": 1794984931856,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937690306
+            "startedAt": 1794984931856
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "remove-price-list-prices",
-          "transaction_id": "auto-01M7N9Z65KKHMAHR44GFXZZY6S",
+          "transaction_id": "auto-01M7PQ0WFKAC0014PGQYFJAWHR",
           "step": {
             "stepFailed": false,
             "id": "_root.get-price-list-prices-to-remove.remove-price-list-prices.emit-event-step",
-            "uuid": "01M7N9YTYZQPMDF3RKSG180ZBS",
+            "uuid": "01M7PQ0GDX61CRK2CRD2R46B9K",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9YTYZQPMDF3RKSG180ZBS",
+              "uuid": "01M7PQ0GDX61CRK2CRD2R46B9K",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937690306,
+            "lastAttempt": 1794984931856,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937690306
+            "startedAt": 1794984931856
           },
           "response": {
-            "eventGroupId": "01M7N9Z65K64T26SYJG7CXJMMD",
+            "eventGroupId": "01M7PQ0WFKF85JRRXJJZK40VA7",
             "eventName": "price-list.prices_removed"
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "remove-price-list-prices",
-          "transaction_id": "auto-01M7N9Z65KKHMAHR44GFXZZY6S",
+          "transaction_id": "auto-01M7PQ0WFKAC0014PGQYFJAWHR",
           "result": [
-            "price_01M7N9YYQA4KX7Y2JWF81ATJKH"
+            "price_01M7PQ0MXGNQJ15EBEJP95W8Q6"
           ],
           "errors": []
         }
@@ -1412,11 +1454,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9Z65KKHMAHR44GFXZZY6S",
+        "transactionId": "auto-01M7PQ0WFKAC0014PGQYFJAWHR",
         "workflowId": "remove-price-list-prices",
         "hasFinished": true,
         "hasFailed": false
@@ -1428,122 +1473,125 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "delete-price-lists",
-          "transaction_id": "auto-01M7N9Z7N27F3T8Q91NGRXERP0"
+          "transaction_id": "auto-01M7PQ0XZPJA2PBR87EBDBBB4M"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "delete-price-lists",
-          "transaction_id": "auto-01M7N9Z7N27F3T8Q91NGRXERP0",
+          "transaction_id": "auto-01M7PQ0XZPJA2PBR87EBDBBB4M",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-price-lists",
-            "uuid": "01M7N9YTZ141XJKQQNHME9XM14",
+            "uuid": "01M7PQ0GE39S37Q8B8N27Z1PBT",
             "depth": 1,
             "definition": {
               "action": "delete-price-lists",
-              "uuid": "01M7N9YTZ141XJKQQNHME9XM14",
+              "uuid": "01M7PQ0GE39S37Q8B8N27Z1PBT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937691811,
+            "lastAttempt": 1794984933371,
             "next": [
               "_root.delete-price-lists.remove-remote-links"
             ],
             "_v": 0,
-            "startedAt": 1794937691811
+            "startedAt": 1794984933371
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "delete-price-lists",
-          "transaction_id": "auto-01M7N9Z7N27F3T8Q91NGRXERP0",
+          "transaction_id": "auto-01M7PQ0XZPJA2PBR87EBDBBB4M",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-price-lists",
-            "uuid": "01M7N9YTZ141XJKQQNHME9XM14",
+            "uuid": "01M7PQ0GE39S37Q8B8N27Z1PBT",
             "depth": 1,
             "definition": {
               "action": "delete-price-lists",
-              "uuid": "01M7N9YTZ141XJKQQNHME9XM14",
+              "uuid": "01M7PQ0GE39S37Q8B8N27Z1PBT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937691811,
+            "lastAttempt": 1794984933371,
             "next": [
               "_root.delete-price-lists.remove-remote-links"
             ],
             "_v": 0,
-            "startedAt": 1794937691811
+            "startedAt": 1794984933371
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "delete-price-lists",
-          "transaction_id": "auto-01M7N9Z7N27F3T8Q91NGRXERP0",
+          "transaction_id": "auto-01M7PQ0XZPJA2PBR87EBDBBB4M",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-price-lists.remove-remote-links",
-            "uuid": "01M7N9YTZ1MGP87KFQ19GFEFCN",
+            "uuid": "01M7PQ0GE3EYAMKMPRAPK33GM0",
             "depth": 2,
             "definition": {
               "action": "remove-remote-links",
-              "uuid": "01M7N9YTZ1MGP87KFQ19GFEFCN",
+              "uuid": "01M7PQ0GE3EYAMKMPRAPK33GM0",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937691823,
+            "lastAttempt": 1794984933440,
             "next": [
               "_root.delete-price-lists.remove-remote-links.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937691823
+            "startedAt": 1794984933440
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "delete-price-lists",
-          "transaction_id": "auto-01M7N9Z7N27F3T8Q91NGRXERP0",
+          "transaction_id": "auto-01M7PQ0XZPJA2PBR87EBDBBB4M",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-price-lists.remove-remote-links",
-            "uuid": "01M7N9YTZ1MGP87KFQ19GFEFCN",
+            "uuid": "01M7PQ0GE3EYAMKMPRAPK33GM0",
             "depth": 2,
             "definition": {
               "action": "remove-remote-links",
-              "uuid": "01M7N9YTZ1MGP87KFQ19GFEFCN",
+              "uuid": "01M7PQ0GE3EYAMKMPRAPK33GM0",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937691823,
+            "lastAttempt": 1794984933440,
             "next": [
               "_root.delete-price-lists.remove-remote-links.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937691823
+            "startedAt": 1794984933440
           },
           "response": {
             "pricing": {
               "price_list_id": [
-                "plist_01M7N9YYQAN3Z9511VTMCGMBNM"
+                "plist_01M7PQ0MXG5G3GHKJ3DG0RFJ2D"
               ]
             }
           }
@@ -1551,59 +1599,59 @@
         {
           "event_type": "onStepBegin",
           "workflow_id": "delete-price-lists",
-          "transaction_id": "auto-01M7N9Z7N27F3T8Q91NGRXERP0",
+          "transaction_id": "auto-01M7PQ0XZPJA2PBR87EBDBBB4M",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-price-lists.remove-remote-links.emit-event-step",
-            "uuid": "01M7N9YTZ15SZ0SNN2PP5W6YBR",
+            "uuid": "01M7PQ0GE3N0QDQ4TKH0633TQ9",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9YTZ15SZ0SNN2PP5W6YBR",
+              "uuid": "01M7PQ0GE3N0QDQ4TKH0633TQ9",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937691823,
+            "lastAttempt": 1794984933441,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937691823
+            "startedAt": 1794984933441
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "delete-price-lists",
-          "transaction_id": "auto-01M7N9Z7N27F3T8Q91NGRXERP0",
+          "transaction_id": "auto-01M7PQ0XZPJA2PBR87EBDBBB4M",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-price-lists.remove-remote-links.emit-event-step",
-            "uuid": "01M7N9YTZ15SZ0SNN2PP5W6YBR",
+            "uuid": "01M7PQ0GE3N0QDQ4TKH0633TQ9",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9YTZ15SZ0SNN2PP5W6YBR",
+              "uuid": "01M7PQ0GE3N0QDQ4TKH0633TQ9",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937691823,
+            "lastAttempt": 1794984933441,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937691823
+            "startedAt": 1794984933441
           },
           "response": {
-            "eventGroupId": "01M7N9Z7N2Y1626PWH3Y8RNMQ1",
+            "eventGroupId": "01M7PQ0XZQ6FSSBF9N7WZQ26GS",
             "eventName": "price-list.deleted"
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "delete-price-lists",
-          "transaction_id": "auto-01M7N9Z7N27F3T8Q91NGRXERP0",
+          "transaction_id": "auto-01M7PQ0XZPJA2PBR87EBDBBB4M",
           "errors": []
         }
       ]
@@ -1614,11 +1662,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9Z7N27F3T8Q91NGRXERP0",
+        "transactionId": "auto-01M7PQ0XZPJA2PBR87EBDBBB4M",
         "workflowId": "delete-price-lists",
         "hasFinished": true,
         "hasFailed": false
@@ -1630,70 +1681,73 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "create-price-preferences",
-          "transaction_id": "auto-01M7N9Z94F3NXSF57BM003AQPA"
+          "transaction_id": "auto-01M7PQ0ZH46S23N0D1K5ZYCFXE"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-price-preferences",
-          "transaction_id": "auto-01M7N9Z94F3NXSF57BM003AQPA",
+          "transaction_id": "auto-01M7PQ0ZH46S23N0D1K5ZYCFXE",
           "step": {
             "stepFailed": false,
             "id": "_root.create-price-preferences",
-            "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+            "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
             "depth": 1,
             "definition": {
               "action": "create-price-preferences",
-              "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+              "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937693328,
+            "lastAttempt": 1794984934949,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937693328
+            "startedAt": 1794984934949
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-price-preferences",
-          "transaction_id": "auto-01M7N9Z94F3NXSF57BM003AQPA",
+          "transaction_id": "auto-01M7PQ0ZH46S23N0D1K5ZYCFXE",
           "step": {
             "stepFailed": false,
             "id": "_root.create-price-preferences",
-            "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+            "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
             "depth": 1,
             "definition": {
               "action": "create-price-preferences",
-              "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+              "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937693328,
+            "lastAttempt": 1794984934949,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937693328
+            "startedAt": 1794984934949
           },
           "response": [
             {
-              "id": "prpref_01M7N9Z94HC5H0BEPP7AEFCTGH",
+              "id": "prpref_01M7PQ0ZH7EPQKK3A8WQM0AG9H",
               "attribute": "currency_code",
               "value": "jpy",
               "is_tax_inclusive": true,
-              "created_at": "2026-11-17T17:48:13.329Z",
-              "updated_at": "2026-11-17T17:48:13.329Z",
+              "created_at": "2026-11-18T06:55:34.951Z",
+              "updated_at": "2026-11-18T06:55:34.951Z",
               "deleted_at": null
             }
           ]
@@ -1701,15 +1755,15 @@
         {
           "event_type": "onFinish",
           "workflow_id": "create-price-preferences",
-          "transaction_id": "auto-01M7N9Z94F3NXSF57BM003AQPA",
+          "transaction_id": "auto-01M7PQ0ZH46S23N0D1K5ZYCFXE",
           "result": [
             {
-              "id": "prpref_01M7N9Z94HC5H0BEPP7AEFCTGH",
+              "id": "prpref_01M7PQ0ZH7EPQKK3A8WQM0AG9H",
               "attribute": "currency_code",
               "value": "jpy",
               "is_tax_inclusive": true,
-              "created_at": "2026-11-17T17:48:13.329Z",
-              "updated_at": "2026-11-17T17:48:13.329Z",
+              "created_at": "2026-11-18T06:55:34.951Z",
+              "updated_at": "2026-11-18T06:55:34.951Z",
               "deleted_at": null
             }
           ],
@@ -1723,11 +1777,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9Z94F3NXSF57BM003AQPA",
+        "transactionId": "auto-01M7PQ0ZH46S23N0D1K5ZYCFXE",
         "workflowId": "create-price-preferences",
         "hasFinished": true,
         "hasFailed": false
@@ -1739,12 +1796,15 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "price_preferences": [
         {
-          "id": "prpref_01M7N9Z94HC5H0BEPP7AEFCTGH"
+          "id": "prpref_01M7PQ0ZH7EPQKK3A8WQM0AG9H"
         }
       ],
       "count": 1,
@@ -1757,59 +1817,62 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "create-price-preferences",
-          "transaction_id": "auto-01M7N9ZAKS1NSV2PAWM7M7YG6H"
+          "transaction_id": "auto-01M7PQ110XTBNDY56HKMJCMES9"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-price-preferences",
-          "transaction_id": "auto-01M7N9ZAKS1NSV2PAWM7M7YG6H",
+          "transaction_id": "auto-01M7PQ110XTBNDY56HKMJCMES9",
           "step": {
             "id": "_root.create-price-preferences",
-            "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+            "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
             "depth": 1,
             "definition": {
               "action": "create-price-preferences",
-              "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+              "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937694844,
+            "lastAttempt": 1794984936486,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937694844
+            "startedAt": 1794984936486
           }
         },
         {
           "event_type": "onStepFailure",
           "workflow_id": "create-price-preferences",
-          "transaction_id": "auto-01M7N9ZAKS1NSV2PAWM7M7YG6H",
+          "transaction_id": "auto-01M7PQ110XTBNDY56HKMJCMES9",
           "step": {
             "id": "_root.create-price-preferences",
-            "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+            "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
             "depth": 1,
             "definition": {
               "action": "create-price-preferences",
-              "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+              "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937694852,
+            "lastAttempt": 1794984936509,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937694844
+            "startedAt": 1794984936486
           },
           "errors": [
             {
@@ -1820,7 +1883,7 @@
                 "name": "Error",
                 "__isMedusaError": true,
                 "type": "invalid_data",
-                "date": "2026-11-17T17:48:14.849Z"
+                "date": "2026-11-18T06:55:36.503Z"
               }
             }
           ]
@@ -1828,59 +1891,59 @@
         {
           "event_type": "onCompensateBegin",
           "workflow_id": "create-price-preferences",
-          "transaction_id": "auto-01M7N9ZAKS1NSV2PAWM7M7YG6H"
+          "transaction_id": "auto-01M7PQ110XTBNDY56HKMJCMES9"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-price-preferences",
-          "transaction_id": "auto-01M7N9ZAKS1NSV2PAWM7M7YG6H",
+          "transaction_id": "auto-01M7PQ110XTBNDY56HKMJCMES9",
           "step": {
             "id": "_root.create-price-preferences",
-            "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+            "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
             "depth": 1,
             "definition": {
               "action": "create-price-preferences",
-              "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+              "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937694852,
+            "lastAttempt": 1794984936509,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937694844
+            "startedAt": 1794984936486
           }
         },
         {
           "event_type": "onCompensateStepSuccess",
           "workflow_id": "create-price-preferences",
-          "transaction_id": "auto-01M7N9ZAKS1NSV2PAWM7M7YG6H",
+          "transaction_id": "auto-01M7PQ110XTBNDY56HKMJCMES9",
           "step": {
             "id": "_root.create-price-preferences",
-            "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+            "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
             "depth": 1,
             "definition": {
               "action": "create-price-preferences",
-              "uuid": "01M7N9YTVYKFY7JDMWFEDWESE5",
+              "uuid": "01M7PQ0G94JNTE1AS755K4P4XT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937694852,
+            "lastAttempt": 1794984936509,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937694844
+            "startedAt": 1794984936486
           },
           "response": {}
         },
         {
           "event_type": "onFinish",
           "workflow_id": "create-price-preferences",
-          "transaction_id": "auto-01M7N9ZAKS1NSV2PAWM7M7YG6H",
+          "transaction_id": "auto-01M7PQ110XTBNDY56HKMJCMES9",
           "errors": [
             {
               "action": "create-price-preferences",
@@ -1890,7 +1953,7 @@
                 "name": "Error",
                 "__isMedusaError": true,
                 "type": "invalid_data",
-                "date": "2026-11-17T17:48:14.849Z"
+                "date": "2026-11-18T06:55:36.503Z"
               }
             }
           ]
@@ -1903,7 +1966,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -1915,70 +1981,73 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "update-price-preferences",
-          "transaction_id": "auto-01M7N9ZC35PGJBXVMZSBVJAF8N"
+          "transaction_id": "auto-01M7PQ12H4DB9SQPJND5Q53KRV"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-price-preferences",
-          "transaction_id": "auto-01M7N9ZC35PGJBXVMZSBVJAF8N",
+          "transaction_id": "auto-01M7PQ12H4DB9SQPJND5Q53KRV",
           "step": {
             "stepFailed": false,
             "id": "_root.update-price-preferences",
-            "uuid": "01M7N9YTVYQR6XER12VAX0TEZ2",
+            "uuid": "01M7PQ0G948JD8J5RXCNTEE196",
             "depth": 1,
             "definition": {
               "action": "update-price-preferences",
-              "uuid": "01M7N9YTVYQR6XER12VAX0TEZ2",
+              "uuid": "01M7PQ0G948JD8J5RXCNTEE196",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937696365,
+            "lastAttempt": 1794984938025,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937696365
+            "startedAt": 1794984938025
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-price-preferences",
-          "transaction_id": "auto-01M7N9ZC35PGJBXVMZSBVJAF8N",
+          "transaction_id": "auto-01M7PQ12H4DB9SQPJND5Q53KRV",
           "step": {
             "stepFailed": false,
             "id": "_root.update-price-preferences",
-            "uuid": "01M7N9YTVYQR6XER12VAX0TEZ2",
+            "uuid": "01M7PQ0G948JD8J5RXCNTEE196",
             "depth": 1,
             "definition": {
               "action": "update-price-preferences",
-              "uuid": "01M7N9YTVYQR6XER12VAX0TEZ2",
+              "uuid": "01M7PQ0G948JD8J5RXCNTEE196",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937696365,
+            "lastAttempt": 1794984938025,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937696365
+            "startedAt": 1794984938025
           },
           "response": [
             {
-              "id": "prpref_01M7N9Z94HC5H0BEPP7AEFCTGH",
+              "id": "prpref_01M7PQ0ZH7EPQKK3A8WQM0AG9H",
               "attribute": "currency_code",
               "value": "jpy",
               "is_tax_inclusive": false,
-              "created_at": "2026-11-17T17:48:13.329Z",
-              "updated_at": "2026-11-17T17:48:16.383Z",
+              "created_at": "2026-11-18T06:55:34.951Z",
+              "updated_at": "2026-11-18T06:55:38.031Z",
               "deleted_at": null
             }
           ]
@@ -1986,15 +2055,15 @@
         {
           "event_type": "onFinish",
           "workflow_id": "update-price-preferences",
-          "transaction_id": "auto-01M7N9ZC35PGJBXVMZSBVJAF8N",
+          "transaction_id": "auto-01M7PQ12H4DB9SQPJND5Q53KRV",
           "result": [
             {
-              "id": "prpref_01M7N9Z94HC5H0BEPP7AEFCTGH",
+              "id": "prpref_01M7PQ0ZH7EPQKK3A8WQM0AG9H",
               "attribute": "currency_code",
               "value": "jpy",
               "is_tax_inclusive": false,
-              "created_at": "2026-11-17T17:48:13.329Z",
-              "updated_at": "2026-11-17T17:48:16.383Z",
+              "created_at": "2026-11-18T06:55:34.951Z",
+              "updated_at": "2026-11-18T06:55:38.031Z",
               "deleted_at": null
             }
           ],
@@ -2008,11 +2077,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9ZC35PGJBXVMZSBVJAF8N",
+        "transactionId": "auto-01M7PQ12H4DB9SQPJND5Q53KRV",
         "workflowId": "update-price-preferences",
         "hasFinished": true,
         "hasFailed": false
@@ -2024,118 +2096,121 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "delete-price-preferences",
-          "transaction_id": "auto-01M7N9ZDKK15ZYQERMWY6W5CHZ"
+          "transaction_id": "auto-01M7PQ140YWQ5CJ0FW6DMTAKS7"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "delete-price-preferences",
-          "transaction_id": "auto-01M7N9ZDKK15ZYQERMWY6W5CHZ",
+          "transaction_id": "auto-01M7PQ140YWQ5CJ0FW6DMTAKS7",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-price-preferences",
-            "uuid": "01M7N9YTVYXKY45N40Z32EMPGA",
+            "uuid": "01M7PQ0G943M2SG4AAGJETB3X6",
             "depth": 1,
             "definition": {
               "action": "delete-price-preferences",
-              "uuid": "01M7N9YTVYXKY45N40Z32EMPGA",
+              "uuid": "01M7PQ0G943M2SG4AAGJETB3X6",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937697910,
+            "lastAttempt": 1794984939555,
             "next": [
               "_root.delete-price-preferences.remove-remote-links"
             ],
             "_v": 0,
-            "startedAt": 1794937697910
+            "startedAt": 1794984939555
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "delete-price-preferences",
-          "transaction_id": "auto-01M7N9ZDKK15ZYQERMWY6W5CHZ",
+          "transaction_id": "auto-01M7PQ140YWQ5CJ0FW6DMTAKS7",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-price-preferences",
-            "uuid": "01M7N9YTVYXKY45N40Z32EMPGA",
+            "uuid": "01M7PQ0G943M2SG4AAGJETB3X6",
             "depth": 1,
             "definition": {
               "action": "delete-price-preferences",
-              "uuid": "01M7N9YTVYXKY45N40Z32EMPGA",
+              "uuid": "01M7PQ0G943M2SG4AAGJETB3X6",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937697910,
+            "lastAttempt": 1794984939555,
             "next": [
               "_root.delete-price-preferences.remove-remote-links"
             ],
             "_v": 0,
-            "startedAt": 1794937697910
+            "startedAt": 1794984939555
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "delete-price-preferences",
-          "transaction_id": "auto-01M7N9ZDKK15ZYQERMWY6W5CHZ",
+          "transaction_id": "auto-01M7PQ140YWQ5CJ0FW6DMTAKS7",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-price-preferences.remove-remote-links",
-            "uuid": "01M7N9YTVYQZDA29GTDC45ZQ18",
+            "uuid": "01M7PQ0G94NX9X8MEYJT12V385",
             "depth": 2,
             "definition": {
               "action": "remove-remote-links",
-              "uuid": "01M7N9YTVYQZDA29GTDC45ZQ18",
+              "uuid": "01M7PQ0G94NX9X8MEYJT12V385",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937697916,
+            "lastAttempt": 1794984939577,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937697916
+            "startedAt": 1794984939577
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "delete-price-preferences",
-          "transaction_id": "auto-01M7N9ZDKK15ZYQERMWY6W5CHZ",
+          "transaction_id": "auto-01M7PQ140YWQ5CJ0FW6DMTAKS7",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-price-preferences.remove-remote-links",
-            "uuid": "01M7N9YTVYQZDA29GTDC45ZQ18",
+            "uuid": "01M7PQ0G94NX9X8MEYJT12V385",
             "depth": 2,
             "definition": {
               "action": "remove-remote-links",
-              "uuid": "01M7N9YTVYQZDA29GTDC45ZQ18",
+              "uuid": "01M7PQ0G94NX9X8MEYJT12V385",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937697916,
+            "lastAttempt": 1794984939577,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937697916
+            "startedAt": 1794984939577
           },
           "response": {
             "pricing": {
               "price_preference_id": [
-                "prpref_01M7N9Z94HC5H0BEPP7AEFCTGH"
+                "prpref_01M7PQ0ZH7EPQKK3A8WQM0AG9H"
               ]
             }
           }
@@ -2143,7 +2218,7 @@
         {
           "event_type": "onFinish",
           "workflow_id": "delete-price-preferences",
-          "transaction_id": "auto-01M7N9ZDKK15ZYQERMWY6W5CHZ",
+          "transaction_id": "auto-01M7PQ140YWQ5CJ0FW6DMTAKS7",
           "errors": []
         }
       ]
@@ -2154,11 +2229,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9ZDKK15ZYQERMWY6W5CHZ",
+        "transactionId": "auto-01M7PQ140YWQ5CJ0FW6DMTAKS7",
         "workflowId": "delete-price-preferences",
         "hasFinished": true,
         "hasFailed": false
@@ -2170,7 +2248,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "price_lists": [],

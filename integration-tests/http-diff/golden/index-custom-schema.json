@@ -4,10 +4,13 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5MzQ4MjYsImV4cCI6MTc5NTAyMTIyNn0.j-3LlFEtVD47df_Im8p_cY16NKMKakZEQemT124-guk"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5ODMzMDMsImV4cCI6MTc5NTA2OTcwM30.GlZbxeaboeUNBdTP-K0h4TyF_xJXskjvOvGTEsmoaoo"
     }
   },
   "details": {
@@ -15,24 +18,64 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "metadata": [
         {
-          "id": "idxmeta_01M7N778KP0J3R210E4NJZSZ5N",
-          "entity": "LinkProductVariantInventoryItem",
+          "id": "idxmeta_01M7PNF1NK38A9YYNPZ4K11AJ5",
+          "entity": "SalesChannel",
           "status": "done",
           "fields": [
             "id",
-            "inventory_item_id",
-            "variant_id"
+            "is_disabled",
+            "name"
           ],
-          "updated_at": "2026-11-17T17:00:09.788Z",
-          "last_synced_key": "pvitem_01M70Y0010SJHDKR8HHD1RZH9R"
+          "updated_at": "2026-11-18T06:28:18.826Z",
+          "last_synced_key": "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
         },
         {
-          "id": "idxmeta_01M7N778KP27ZHQ435KKAB44WJ",
+          "id": "idxmeta_01M7PNF1NK4CM0F3FGN1471ACE",
+          "entity": "Price",
+          "status": "done",
+          "fields": [
+            "amount",
+            "currency_code",
+            "id",
+            "price_list_id",
+            "price_set.id"
+          ],
+          "updated_at": "2026-11-18T06:28:18.908Z",
+          "last_synced_key": "price_01M70Y005DJ7YX0G85JA4YC01F"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NK9FA3ZHD3774SR7R5",
+          "entity": "ProductCollection",
+          "status": "done",
+          "fields": [
+            "handle",
+            "id",
+            "products.id",
+            "title"
+          ],
+          "updated_at": "2026-11-18T06:28:19.001Z",
+          "last_synced_key": "pcol_01M70XZZYG2EDQEDPZXZAWBP3Q"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NKCJM3MZQAKR69KE68",
+          "entity": "PriceSet",
+          "status": "done",
+          "fields": [
+            "id"
+          ],
+          "updated_at": "2026-11-18T06:28:19.085Z",
+          "last_synced_key": "pset_01M70Y0015WAMJ741KRV0MC7H5"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NKEJ8RC5M6832TZXGK",
           "entity": "LinkProductSalesChannel",
           "status": "done",
           "fields": [
@@ -40,47 +83,11 @@
             "product_id",
             "sales_channel_id"
           ],
-          "updated_at": "2026-11-17T17:00:10.061Z",
+          "updated_at": "2026-11-18T06:28:19.118Z",
           "last_synced_key": "prodsc_01M70Y0002YTTWN2T1HYEKBZMB"
         },
         {
-          "id": "idxmeta_01M7N778KP3P94SC55T0ZNDNBT",
-          "entity": "ProductVariant",
-          "status": "done",
-          "fields": [
-            "id",
-            "product.id",
-            "product_id",
-            "sku",
-            "title"
-          ],
-          "updated_at": "2026-11-17T17:00:10.153Z",
-          "last_synced_key": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
-        },
-        {
-          "id": "idxmeta_01M7N778KP60DXCZ2GX5QFG2NM",
-          "entity": "ProductTag",
-          "status": "done",
-          "fields": [
-            "id",
-            "products.id",
-            "value"
-          ],
-          "updated_at": "2026-11-17T17:00:10.218Z",
-          "last_synced_key": "ptag_01M70XZZYMKZWGDM4XE7RYZ5N8"
-        },
-        {
-          "id": "idxmeta_01M7N778KPA5X9B2T0FC77CDE9",
-          "entity": "PriceSet",
-          "status": "done",
-          "fields": [
-            "id"
-          ],
-          "updated_at": "2026-11-17T17:00:10.260Z",
-          "last_synced_key": "pset_01M70Y0015WAMJ741KRV0MC7H5"
-        },
-        {
-          "id": "idxmeta_01M7N778KPD2ZESK45VZG3C3XM",
+          "id": "idxmeta_01M7PNF1NKH5T2DC5PH8PN8AKQ",
           "entity": "Product",
           "status": "done",
           "fields": [
@@ -95,24 +102,11 @@
             "type_id",
             "updated_at"
           ],
-          "updated_at": "2026-11-17T17:00:10.592Z",
+          "updated_at": "2026-11-18T06:28:19.165Z",
           "last_synced_key": "prod_01M70XZZZ4QCEP179PD336GCSV"
         },
         {
-          "id": "idxmeta_01M7N778KPD7WA7ZMWFQFPEQ3Q",
-          "entity": "ProductCollection",
-          "status": "done",
-          "fields": [
-            "handle",
-            "id",
-            "products.id",
-            "title"
-          ],
-          "updated_at": "2026-11-17T17:00:11.042Z",
-          "last_synced_key": "pcol_01M70XZZYG2EDQEDPZXZAWBP3Q"
-        },
-        {
-          "id": "idxmeta_01M7N778KPK4G2F5MCRF4J0QHF",
+          "id": "idxmeta_01M7PNF1NKJ9Q6G8BRMQCG0FM1",
           "entity": "LinkProductVariantPriceSet",
           "status": "done",
           "fields": [
@@ -120,11 +114,25 @@
             "price_set_id",
             "variant_id"
           ],
-          "updated_at": "2026-11-17T17:00:11.123Z",
+          "updated_at": "2026-11-18T06:28:19.199Z",
           "last_synced_key": "pvps_01M70Y001K043N5D6XPV0P5P6Y"
         },
         {
-          "id": "idxmeta_01M7N778KPMP5YPHPT5HB9VSAA",
+          "id": "idxmeta_01M7PNF1NKRCZ68797YQW88C97",
+          "entity": "ProductVariant",
+          "status": "done",
+          "fields": [
+            "id",
+            "product.id",
+            "product_id",
+            "sku",
+            "title"
+          ],
+          "updated_at": "2026-11-18T06:28:19.242Z",
+          "last_synced_key": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NKT0XKD3B9AEZTQN11",
           "entity": "InventoryItem",
           "status": "done",
           "fields": [
@@ -132,34 +140,32 @@
             "sku",
             "title"
           ],
-          "updated_at": "2026-11-17T17:00:11.220Z",
+          "updated_at": "2026-11-18T06:28:19.303Z",
           "last_synced_key": "iitem_01M70Y000RZ502C3BB7AG00VH9"
         },
         {
-          "id": "idxmeta_01M7N778KPWPFCM4FP08VVNEX8",
-          "entity": "Price",
+          "id": "idxmeta_01M7PNF1NKWRGWQH13APH68DNM",
+          "entity": "ProductTag",
           "status": "done",
           "fields": [
-            "amount",
-            "currency_code",
             "id",
-            "price_list_id",
-            "price_set.id"
+            "products.id",
+            "value"
           ],
-          "updated_at": "2026-11-17T17:00:11.313Z",
-          "last_synced_key": "price_01M70Y005DJ7YX0G85JA4YC01F"
+          "updated_at": "2026-11-18T06:28:19.647Z",
+          "last_synced_key": "ptag_01M70XZZYMKZWGDM4XE7RYZ5N8"
         },
         {
-          "id": "idxmeta_01M7N778KPXXEMQKD6Z973Z31Z",
-          "entity": "SalesChannel",
+          "id": "idxmeta_01M7PNF1NKZZ07HMZ87GVFFG9F",
+          "entity": "LinkProductVariantInventoryItem",
           "status": "done",
           "fields": [
             "id",
-            "is_disabled",
-            "name"
+            "inventory_item_id",
+            "variant_id"
           ],
-          "updated_at": "2026-11-17T17:00:11.424Z",
-          "last_synced_key": "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+          "updated_at": "2026-11-18T06:28:19.881Z",
+          "last_synced_key": "pvitem_01M70Y0010SJHDKR8HHD1RZH9R"
         }
       ]
     }
@@ -167,7 +173,10 @@
   "module_products": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -252,7 +261,10 @@
   "module_collections": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -267,7 +279,10 @@
   "module_inventory_items": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -297,7 +312,10 @@
   "module_paginated": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -320,7 +338,10 @@
   "graph_collection": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -344,7 +365,10 @@
   "graph_tags": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -358,7 +382,10 @@
   "graph_inventory": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -372,7 +399,10 @@
   "graph_sales_channel_name": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -388,7 +418,10 @@
   "graph_subtitle": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -407,7 +440,10 @@
   "graph_not_indexed_entity": {
     "status": 500,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "code": "unknown_error",
@@ -418,7 +454,10 @@
   "graph_not_indexed_field": {
     "status": 500,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "code": "unknown_error",
@@ -431,7 +470,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -455,7 +497,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -475,7 +520,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -499,7 +547,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "collection": {
@@ -511,7 +562,10 @@
   "live_collection": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -537,7 +591,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "product_tag": {
@@ -549,7 +606,10 @@
   "live_tag": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -565,7 +625,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "inventory_item": {
@@ -577,7 +640,10 @@
   "live_inventory_item": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -593,11 +659,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "collection": {
-        "id": "pcol_01M7N77TCS8KX97QVQAH6NYEYM",
+        "id": "pcol_01M7PNF7F0Y0HXCJYY0DGE1NHP",
         "title": "Winter",
         "handle": "winter"
       }
@@ -606,12 +675,15 @@
   "live_collection_created": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
         {
-          "id": "pcol_01M7N77TCS8KX97QVQAH6NYEYM",
+          "id": "pcol_01M7PNF7F0Y0HXCJYY0DGE1NHP",
           "title": "Winter"
         }
       ]
@@ -622,24 +694,30 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "collection": {
-        "id": "pcol_01M7N77TCS8KX97QVQAH6NYEYM"
+        "id": "pcol_01M7PNF7F0Y0HXCJYY0DGE1NHP"
       }
     }
   },
   "live_product_collection_id": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
         {
           "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
-          "collection_id": "pcol_01M7N77TCS8KX97QVQAH6NYEYM",
+          "collection_id": "pcol_01M7PNF7F0Y0HXCJYY0DGE1NHP",
           "collection": {
             "id": "pcol_01M70XZZYG2EDQEDPZXZAWBP3Q",
             "title": "Summer Sale"
@@ -653,7 +731,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "id": "ptag_01M70XZZYMKZWGDM4XE7RYZ5N8",
@@ -664,7 +745,10 @@
   "live_tag_deleted": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": []
@@ -673,13 +757,16 @@
   "module_products_live": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
         {
           "id": "prod_01M70XZZZ4QCEP179PD336GCSV",
-          "collection_id": "pcol_01M7N77TCS8KX97QVQAH6NYEYM",
+          "collection_id": "pcol_01M7PNF7F0Y0HXCJYY0DGE1NHP",
           "title": "Medusa Sweatpants",
           "collection": {
             "id": "pcol_01M70XZZYG2EDQEDPZXZAWBP3Q",
@@ -742,24 +829,64 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "metadata": [
         {
-          "id": "idxmeta_01M7N778KP0J3R210E4NJZSZ5N",
-          "entity": "LinkProductVariantInventoryItem",
+          "id": "idxmeta_01M7PNF1NK38A9YYNPZ4K11AJ5",
+          "entity": "SalesChannel",
           "status": "done",
           "fields": [
             "id",
-            "inventory_item_id",
-            "variant_id"
+            "is_disabled",
+            "name"
           ],
-          "updated_at": "2026-11-17T17:00:09.788Z",
-          "last_synced_key": "pvitem_01M70Y0010SJHDKR8HHD1RZH9R"
+          "updated_at": "2026-11-18T06:28:18.826Z",
+          "last_synced_key": "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
         },
         {
-          "id": "idxmeta_01M7N778KP27ZHQ435KKAB44WJ",
+          "id": "idxmeta_01M7PNF1NK4CM0F3FGN1471ACE",
+          "entity": "Price",
+          "status": "done",
+          "fields": [
+            "amount",
+            "currency_code",
+            "id",
+            "price_list_id",
+            "price_set.id"
+          ],
+          "updated_at": "2026-11-18T06:28:18.908Z",
+          "last_synced_key": "price_01M70Y005DJ7YX0G85JA4YC01F"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NK9FA3ZHD3774SR7R5",
+          "entity": "ProductCollection",
+          "status": "done",
+          "fields": [
+            "handle",
+            "id",
+            "products.id",
+            "title"
+          ],
+          "updated_at": "2026-11-18T06:28:19.001Z",
+          "last_synced_key": "pcol_01M70XZZYG2EDQEDPZXZAWBP3Q"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NKCJM3MZQAKR69KE68",
+          "entity": "PriceSet",
+          "status": "done",
+          "fields": [
+            "id"
+          ],
+          "updated_at": "2026-11-18T06:28:19.085Z",
+          "last_synced_key": "pset_01M70Y0015WAMJ741KRV0MC7H5"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NKEJ8RC5M6832TZXGK",
           "entity": "LinkProductSalesChannel",
           "status": "done",
           "fields": [
@@ -767,47 +894,11 @@
             "product_id",
             "sales_channel_id"
           ],
-          "updated_at": "2026-11-17T17:00:10.061Z",
+          "updated_at": "2026-11-18T06:28:19.118Z",
           "last_synced_key": "prodsc_01M70Y0002YTTWN2T1HYEKBZMB"
         },
         {
-          "id": "idxmeta_01M7N778KP3P94SC55T0ZNDNBT",
-          "entity": "ProductVariant",
-          "status": "done",
-          "fields": [
-            "id",
-            "product.id",
-            "product_id",
-            "sku",
-            "title"
-          ],
-          "updated_at": "2026-11-17T17:00:10.153Z",
-          "last_synced_key": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
-        },
-        {
-          "id": "idxmeta_01M7N778KP60DXCZ2GX5QFG2NM",
-          "entity": "ProductTag",
-          "status": "done",
-          "fields": [
-            "id",
-            "products.id",
-            "value"
-          ],
-          "updated_at": "2026-11-17T17:00:10.218Z",
-          "last_synced_key": "ptag_01M70XZZYMKZWGDM4XE7RYZ5N8"
-        },
-        {
-          "id": "idxmeta_01M7N778KPA5X9B2T0FC77CDE9",
-          "entity": "PriceSet",
-          "status": "done",
-          "fields": [
-            "id"
-          ],
-          "updated_at": "2026-11-17T17:00:10.260Z",
-          "last_synced_key": "pset_01M70Y0015WAMJ741KRV0MC7H5"
-        },
-        {
-          "id": "idxmeta_01M7N778KPD2ZESK45VZG3C3XM",
+          "id": "idxmeta_01M7PNF1NKH5T2DC5PH8PN8AKQ",
           "entity": "Product",
           "status": "done",
           "fields": [
@@ -822,24 +913,11 @@
             "type_id",
             "updated_at"
           ],
-          "updated_at": "2026-11-17T17:00:10.592Z",
+          "updated_at": "2026-11-18T06:28:19.165Z",
           "last_synced_key": "prod_01M70XZZZ4QCEP179PD336GCSV"
         },
         {
-          "id": "idxmeta_01M7N778KPD7WA7ZMWFQFPEQ3Q",
-          "entity": "ProductCollection",
-          "status": "done",
-          "fields": [
-            "handle",
-            "id",
-            "products.id",
-            "title"
-          ],
-          "updated_at": "2026-11-17T17:00:11.042Z",
-          "last_synced_key": "pcol_01M70XZZYG2EDQEDPZXZAWBP3Q"
-        },
-        {
-          "id": "idxmeta_01M7N778KPK4G2F5MCRF4J0QHF",
+          "id": "idxmeta_01M7PNF1NKJ9Q6G8BRMQCG0FM1",
           "entity": "LinkProductVariantPriceSet",
           "status": "done",
           "fields": [
@@ -847,85 +925,11 @@
             "price_set_id",
             "variant_id"
           ],
-          "updated_at": "2026-11-17T17:00:11.123Z",
+          "updated_at": "2026-11-18T06:28:19.199Z",
           "last_synced_key": "pvps_01M70Y001K043N5D6XPV0P5P6Y"
         },
         {
-          "id": "idxmeta_01M7N778KPMP5YPHPT5HB9VSAA",
-          "entity": "InventoryItem",
-          "status": "done",
-          "fields": [
-            "id",
-            "sku",
-            "title"
-          ],
-          "updated_at": "2026-11-17T17:00:11.220Z",
-          "last_synced_key": "iitem_01M70Y000RZ502C3BB7AG00VH9"
-        },
-        {
-          "id": "idxmeta_01M7N778KPWPFCM4FP08VVNEX8",
-          "entity": "Price",
-          "status": "done",
-          "fields": [
-            "amount",
-            "currency_code",
-            "id",
-            "price_list_id",
-            "price_set.id"
-          ],
-          "updated_at": "2026-11-17T17:00:11.313Z",
-          "last_synced_key": "price_01M70Y005DJ7YX0G85JA4YC01F"
-        },
-        {
-          "id": "idxmeta_01M7N778KPXXEMQKD6Z973Z31Z",
-          "entity": "SalesChannel",
-          "status": "done",
-          "fields": [
-            "id",
-            "is_disabled",
-            "name"
-          ],
-          "updated_at": "2026-11-17T17:00:11.424Z",
-          "last_synced_key": "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
-        }
-      ]
-    }
-  },
-  "details_after_restart": {
-    "status": 200,
-    "headers": {
-      "Content-Type": "application/json; charset=utf-8",
-      "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
-    },
-    "body": {
-      "metadata": [
-        {
-          "id": "idxmeta_01M7N778KP0J3R210E4NJZSZ5N",
-          "entity": "LinkProductVariantInventoryItem",
-          "status": "done",
-          "fields": [
-            "id",
-            "inventory_item_id",
-            "variant_id"
-          ],
-          "updated_at": "2026-11-17T17:00:09.788Z",
-          "last_synced_key": "pvitem_01M70Y0010SJHDKR8HHD1RZH9R"
-        },
-        {
-          "id": "idxmeta_01M7N778KP27ZHQ435KKAB44WJ",
-          "entity": "LinkProductSalesChannel",
-          "status": "done",
-          "fields": [
-            "id",
-            "product_id",
-            "sales_channel_id"
-          ],
-          "updated_at": "2026-11-17T17:00:10.061Z",
-          "last_synced_key": "prodsc_01M70Y0002YTTWN2T1HYEKBZMB"
-        },
-        {
-          "id": "idxmeta_01M7N778KP3P94SC55T0ZNDNBT",
+          "id": "idxmeta_01M7PNF1NKRCZ68797YQW88C97",
           "entity": "ProductVariant",
           "status": "done",
           "fields": [
@@ -935,21 +939,122 @@
             "sku",
             "title"
           ],
-          "updated_at": "2026-11-17T17:00:10.153Z",
+          "updated_at": "2026-11-18T06:28:19.242Z",
           "last_synced_key": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
         },
         {
-          "id": "idxmeta_01M7N778KPA5X9B2T0FC77CDE9",
+          "id": "idxmeta_01M7PNF1NKT0XKD3B9AEZTQN11",
+          "entity": "InventoryItem",
+          "status": "done",
+          "fields": [
+            "id",
+            "sku",
+            "title"
+          ],
+          "updated_at": "2026-11-18T06:28:19.303Z",
+          "last_synced_key": "iitem_01M70Y000RZ502C3BB7AG00VH9"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NKWRGWQH13APH68DNM",
+          "entity": "ProductTag",
+          "status": "done",
+          "fields": [
+            "id",
+            "products.id",
+            "value"
+          ],
+          "updated_at": "2026-11-18T06:28:19.647Z",
+          "last_synced_key": "ptag_01M70XZZYMKZWGDM4XE7RYZ5N8"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NKZZ07HMZ87GVFFG9F",
+          "entity": "LinkProductVariantInventoryItem",
+          "status": "done",
+          "fields": [
+            "id",
+            "inventory_item_id",
+            "variant_id"
+          ],
+          "updated_at": "2026-11-18T06:28:19.881Z",
+          "last_synced_key": "pvitem_01M70Y0010SJHDKR8HHD1RZH9R"
+        }
+      ]
+    }
+  },
+  "details_after_restart": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json; charset=utf-8",
+      "Access-Control-Allow-Credentials": "true",
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
+    },
+    "body": {
+      "metadata": [
+        {
+          "id": "idxmeta_01M7PNF1NK38A9YYNPZ4K11AJ5",
+          "entity": "SalesChannel",
+          "status": "done",
+          "fields": [
+            "id",
+            "is_disabled",
+            "name"
+          ],
+          "updated_at": "2026-11-18T06:28:18.826Z",
+          "last_synced_key": "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NK4CM0F3FGN1471ACE",
+          "entity": "Price",
+          "status": "done",
+          "fields": [
+            "amount",
+            "currency_code",
+            "id",
+            "price_list_id",
+            "price_set.id"
+          ],
+          "updated_at": "2026-11-18T06:28:18.908Z",
+          "last_synced_key": "price_01M70Y005DJ7YX0G85JA4YC01F"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NK9FA3ZHD3774SR7R5",
+          "entity": "ProductCollection",
+          "status": "done",
+          "fields": [
+            "id",
+            "products.id",
+            "title"
+          ],
+          "updated_at": "2026-11-18T06:28:27.324Z",
+          "last_synced_key": "pcol_01M7PNF7F0Y0HXCJYY0DGE1NHP"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NKCJM3MZQAKR69KE68",
           "entity": "PriceSet",
           "status": "done",
           "fields": [
             "id"
           ],
-          "updated_at": "2026-11-17T17:00:10.260Z",
+          "updated_at": "2026-11-18T06:28:19.085Z",
           "last_synced_key": "pset_01M70Y0015WAMJ741KRV0MC7H5"
         },
         {
-          "id": "idxmeta_01M7N778KPD2ZESK45VZG3C3XM",
+          "id": "idxmeta_01M7PNF1NKEJ8RC5M6832TZXGK",
+          "entity": "LinkProductSalesChannel",
+          "status": "done",
+          "fields": [
+            "id",
+            "product_id",
+            "sales_channel_id"
+          ],
+          "updated_at": "2026-11-18T06:28:19.118Z",
+          "last_synced_key": "prodsc_01M70Y0002YTTWN2T1HYEKBZMB"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NKH5T2DC5PH8PN8AKQ",
           "entity": "Product",
           "status": "done",
           "fields": [
@@ -963,23 +1068,11 @@
             "type_id",
             "updated_at"
           ],
-          "updated_at": "2026-11-17T17:00:38.279Z",
+          "updated_at": "2026-11-18T06:28:27.374Z",
           "last_synced_key": "prod_01M70XZZZ4QCEP179PD336GCSV"
         },
         {
-          "id": "idxmeta_01M7N778KPD7WA7ZMWFQFPEQ3Q",
-          "entity": "ProductCollection",
-          "status": "done",
-          "fields": [
-            "id",
-            "products.id",
-            "title"
-          ],
-          "updated_at": "2026-11-17T17:00:38.328Z",
-          "last_synced_key": "pcol_01M7N77TCS8KX97QVQAH6NYEYM"
-        },
-        {
-          "id": "idxmeta_01M7N778KPK4G2F5MCRF4J0QHF",
+          "id": "idxmeta_01M7PNF1NKJ9Q6G8BRMQCG0FM1",
           "entity": "LinkProductVariantPriceSet",
           "status": "done",
           "fields": [
@@ -987,11 +1080,25 @@
             "price_set_id",
             "variant_id"
           ],
-          "updated_at": "2026-11-17T17:00:11.123Z",
+          "updated_at": "2026-11-18T06:28:19.199Z",
           "last_synced_key": "pvps_01M70Y001K043N5D6XPV0P5P6Y"
         },
         {
-          "id": "idxmeta_01M7N778KPMP5YPHPT5HB9VSAA",
+          "id": "idxmeta_01M7PNF1NKRCZ68797YQW88C97",
+          "entity": "ProductVariant",
+          "status": "done",
+          "fields": [
+            "id",
+            "product.id",
+            "product_id",
+            "sku",
+            "title"
+          ],
+          "updated_at": "2026-11-18T06:28:19.242Z",
+          "last_synced_key": "variant_01M70Y000GVS02WWBRV8TTXVZ4"
+        },
+        {
+          "id": "idxmeta_01M7PNF1NKT0XKD3B9AEZTQN11",
           "entity": "InventoryItem",
           "status": "done",
           "fields": [
@@ -999,37 +1106,23 @@
             "sku",
             "title"
           ],
-          "updated_at": "2026-11-17T17:00:11.220Z",
+          "updated_at": "2026-11-18T06:28:19.303Z",
           "last_synced_key": "iitem_01M70Y000RZ502C3BB7AG00VH9"
         },
         {
-          "id": "idxmeta_01M7N778KPWPFCM4FP08VVNEX8",
-          "entity": "Price",
-          "status": "done",
-          "fields": [
-            "amount",
-            "currency_code",
-            "id",
-            "price_list_id",
-            "price_set.id"
-          ],
-          "updated_at": "2026-11-17T17:00:11.313Z",
-          "last_synced_key": "price_01M70Y005DJ7YX0G85JA4YC01F"
-        },
-        {
-          "id": "idxmeta_01M7N778KPXXEMQKD6Z973Z31Z",
-          "entity": "SalesChannel",
+          "id": "idxmeta_01M7PNF1NKZZ07HMZ87GVFFG9F",
+          "entity": "LinkProductVariantInventoryItem",
           "status": "done",
           "fields": [
             "id",
-            "is_disabled",
-            "name"
+            "inventory_item_id",
+            "variant_id"
           ],
-          "updated_at": "2026-11-17T17:00:11.424Z",
-          "last_synced_key": "sc_01M70XZZXA6H8R3VPGTTWJMHK3"
+          "updated_at": "2026-11-18T06:28:19.881Z",
+          "last_synced_key": "pvitem_01M70Y0010SJHDKR8HHD1RZH9R"
         },
         {
-          "id": "idxmeta_01M7N784XATBXCFAQWTTN5FT15",
+          "id": "idxmeta_01M7PNF9YJ011VV6ZAT2VBGTEX",
           "entity": "ProductType",
           "status": "done",
           "fields": [
@@ -1037,7 +1130,7 @@
             "products.id",
             "value"
           ],
-          "updated_at": "2026-11-17T17:00:38.367Z",
+          "updated_at": "2026-11-18T06:28:27.471Z",
           "last_synced_key": "ptyp_01M70XZZYC1YA9MY5K0S9BK6T7"
         }
       ]
@@ -1046,7 +1139,10 @@
   "module_products_after_restart": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -1110,7 +1206,10 @@
   "module_collections_after_restart": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -1119,7 +1218,7 @@
           "title": "Summer Sale"
         },
         {
-          "id": "pcol_01M7N77TCS8KX97QVQAH6NYEYM",
+          "id": "pcol_01M7PNF7F0Y0HXCJYY0DGE1NHP",
           "title": "Winter"
         }
       ]
@@ -1128,7 +1227,10 @@
   "module_dropped_field": {
     "status": 500,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "code": "unknown_error",
@@ -1139,7 +1241,10 @@
   "graph_type": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -1156,7 +1261,10 @@
   "graph_dropped_entity": {
     "status": 500,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "code": "unknown_error",
@@ -1167,7 +1275,10 @@
   "graph_dropped_product_field": {
     "status": 500,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "code": "unknown_error",
@@ -1180,7 +1291,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "product_type": {
@@ -1192,7 +1306,10 @@
   "live_type": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -1211,7 +1328,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "product": {
@@ -1223,7 +1343,10 @@
   "live_material": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "data": [
@@ -1239,7 +1362,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -1263,7 +1389,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [

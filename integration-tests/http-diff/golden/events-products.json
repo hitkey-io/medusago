@@ -4,10 +4,13 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5NDIxMjYsImV4cCI6MTc5NTAyODUyNn0.hl0bKSMih3mw1o_eNS9t8nqx3PhArcxkNIjIE4e0t-k"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5ODQzMDksImV4cCI6MTc5NTA3MDcwOX0.Q3ug7ZFBmLMgsXQ48dt3Cdf1qhjs7r0F4YsVn2evM0Q"
     }
   },
   "refs": {
@@ -15,7 +18,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "products": [
@@ -103,7 +109,10 @@
   "capture_create": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -114,14 +123,17 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "product": {
-        "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9",
+        "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8",
         "variants": [
           {
-            "id": "variant_01M7NE6J6GD4HA48JYYX8JMVS8"
+            "id": "variant_01M7PPDWYTXGJJS8VV4R2SC4AC"
           }
         ]
       }
@@ -130,20 +142,23 @@
   "events_create": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "product.product-option.created",
           "data": {
-            "id": "opt_01M7NE6J4KVVG01YWVPK2N4T85"
+            "id": "opt_01M7PPDWSYG1B2K6BJSYVJ4M26"
           },
           "metadata": {
             "source": "product",
             "object": "product_option",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -152,13 +167,13 @@
         {
           "name": "product.product-option-value.created",
           "data": {
-            "id": "optval_01M7NE6J4NJF28DXQ64GX7QKSM"
+            "id": "optval_01M7PPDWT0BEGSRGW9HRAB2EHR"
           },
           "metadata": {
             "source": "product",
             "object": "product_option_value",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -167,13 +182,13 @@
         {
           "name": "product.product-option-value.created",
           "data": {
-            "id": "optval_01M7NE6J4N5ECRWMAQKZMREJ67"
+            "id": "optval_01M7PPDWT0GCHWKPRKDM6G6090"
           },
           "metadata": {
             "source": "product",
             "object": "product_option_value",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -182,13 +197,13 @@
         {
           "name": "product.product.created",
           "data": {
-            "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+            "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
           },
           "metadata": {
             "source": "product",
             "object": "product",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -197,13 +212,13 @@
         {
           "name": "product.product-image.created",
           "data": {
-            "id": "img_01M7NE6J4M83MGDY8APZJDK083"
+            "id": "img_01M7PPDWSZ8C889VWPN8GD3MN9"
           },
           "metadata": {
             "source": "product",
             "object": "product_image",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -212,13 +227,13 @@
         {
           "name": "product.product-product-option.created",
           "data": {
-            "id": "prodopt_01M7NE6J51PEC41RF5MQARTC45"
+            "id": "prodopt_01M7PPDWV3711XFZ7C4HQNZRWJ"
           },
           "metadata": {
             "source": "product",
             "object": "product_product_option",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -227,13 +242,13 @@
         {
           "name": "product.product-product-option-value.created",
           "data": {
-            "id": "prodoptval_01M7NE6J51A3VQEXDWGHDQZY2C"
+            "id": "prodoptval_01M7PPDWV37CXKD418AD10488J"
           },
           "metadata": {
             "source": "product",
             "object": "product_product_option_value",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -242,13 +257,13 @@
         {
           "name": "product.product-product-option-value.created",
           "data": {
-            "id": "prodoptval_01M7NE6J51PP244CNT15WGQ6PM"
+            "id": "prodoptval_01M7PPDWV3HCHK55WNYZV90NQ1"
           },
           "metadata": {
             "source": "product",
             "object": "product_product_option_value",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -257,13 +272,13 @@
         {
           "name": "LinkProductSalesChannel.attached",
           "data": {
-            "id": "prodsc_01M7NE6J60VDVCR5WD6YPMFGPD"
+            "id": "prodsc_01M7PPDWWR8BR97CA4G3CDZ17Y"
           },
           "metadata": {
             "source": "ProductProductSalesChannelSalesChannelLink",
             "object": "LinkProductSalesChannel",
             "action": "attached",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -272,13 +287,13 @@
         {
           "name": "LinkProductShippingProfile.attached",
           "data": {
-            "id": "prodsp_01M7NE6J67RRS192YEQYHT1K5Z"
+            "id": "prodsp_01M7PPDWXSW0SM1FKZJ633PQ2E"
           },
           "metadata": {
             "source": "ProductProductFulfillmentShippingProfileLink",
             "object": "LinkProductShippingProfile",
             "action": "attached",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -287,13 +302,13 @@
         {
           "name": "product.product-variant.created",
           "data": {
-            "id": "variant_01M7NE6J6GD4HA48JYYX8JMVS8"
+            "id": "variant_01M7PPDWYTXGJJS8VV4R2SC4AC"
           },
           "metadata": {
             "source": "product",
             "object": "product_variant",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -302,13 +317,13 @@
         {
           "name": "inventory.inventory-item.created",
           "data": {
-            "id": "iitem_01M7NE6J6QJ6GMADG8WNQST48M"
+            "id": "iitem_01M7PPDX00WAB18Z71AQF6KZER"
           },
           "metadata": {
             "source": "inventory",
             "object": "inventory_item",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -317,23 +332,23 @@
         {
           "name": "inventory-item.created",
           "data": {
-            "id": "iitem_01M7NE6J6QJ6GMADG8WNQST48M"
+            "id": "iitem_01M7PPDX00WAB18Z71AQF6KZER"
           },
           "metadata": {
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {}
         },
         {
           "name": "LinkProductVariantInventoryItem.attached",
           "data": {
-            "id": "pvitem_01M7NE6J6ZPRVPBP00XGDRZ5DF"
+            "id": "pvitem_01M7PPDX169JAPDZ77MNJSVZRJ"
           },
           "metadata": {
             "source": "ProductVariantInventoryInventoryItemLink",
             "object": "LinkProductVariantInventoryItem",
             "action": "attached",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -342,13 +357,13 @@
         {
           "name": "pricing.price-set.created",
           "data": {
-            "id": "pset_01M7NE6J73NX0ZR62MNESZ3M42"
+            "id": "pset_01M7PPDX1J94DNG812DFCWC5K1"
           },
           "metadata": {
             "source": "pricing",
             "object": "price_set",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -357,13 +372,13 @@
         {
           "name": "pricing.price.created",
           "data": {
-            "id": "price_01M7NE6J734YVHXQ5RM3VDH9HT"
+            "id": "price_01M7PPDX1JNQN4RS5TW69TT7D3"
           },
           "metadata": {
             "source": "pricing",
             "object": "price",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -372,13 +387,13 @@
         {
           "name": "pricing.price.created",
           "data": {
-            "id": "price_01M7NE6J73CQVYVBX7P3SQQHZJ"
+            "id": "price_01M7PPDX1JQ3513XTAX20YWMA9"
           },
           "metadata": {
             "source": "pricing",
             "object": "price",
             "action": "created",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -387,13 +402,13 @@
         {
           "name": "LinkProductVariantPriceSet.attached",
           "data": {
-            "id": "pvps_01M7NE6J7EXYVXQ38QBFJF48VG"
+            "id": "pvps_01M7PPDX38F0KDQBSWGQE6KS33"
           },
           "metadata": {
             "source": "ProductVariantPricingPriceSetLink",
             "object": "LinkProductVariantPriceSet",
             "action": "attached",
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {
             "internal": true
@@ -402,20 +417,20 @@
         {
           "name": "product-variant.created",
           "data": {
-            "id": "variant_01M7NE6J6GD4HA48JYYX8JMVS8"
+            "id": "variant_01M7PPDWYTXGJJS8VV4R2SC4AC"
           },
           "metadata": {
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {}
         },
         {
           "name": "product.created",
           "data": {
-            "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+            "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
           },
           "metadata": {
-            "eventGroupId": "01M7NE6J4C1V3KS2JVNCKMTHF1"
+            "eventGroupId": "01M7PPDWSKRASXFR6E40162SDN"
           },
           "options": {}
         }
@@ -425,7 +440,10 @@
   "capture_update": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -436,31 +454,37 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "product": {
-        "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+        "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
       }
     }
   },
   "events_update": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "product.product.updated",
           "data": {
-            "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+            "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
           },
           "metadata": {
             "source": "product",
             "object": "product",
             "action": "updated",
-            "eventGroupId": "01M7NE6J7WJWJDFQA3NXHCBY3B"
+            "eventGroupId": "01M7PPDX45FZYPBS4ETWRW7N6V"
           },
           "options": {
             "internal": true
@@ -469,10 +493,10 @@
         {
           "name": "product.updated",
           "data": {
-            "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+            "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
           },
           "metadata": {
-            "eventGroupId": "01M7NE6J7WJWJDFQA3NXHCBY3B"
+            "eventGroupId": "01M7PPDX45FZYPBS4ETWRW7N6V"
           },
           "options": {}
         }
@@ -482,7 +506,10 @@
   "capture_update_noop": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -493,28 +520,34 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "product": {
-        "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+        "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
       }
     }
   },
   "events_update_noop": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "product.updated",
           "data": {
-            "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+            "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
           },
           "metadata": {
-            "eventGroupId": "01M7NE6J8X03QZ0X13JR7REN87"
+            "eventGroupId": "01M7PPDX62ZYZJG498WKGAMR3S"
           },
           "options": {}
         }
@@ -524,7 +557,10 @@
   "capture_add_variant": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -535,17 +571,20 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "product": {
-        "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9",
+        "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8",
         "variants": [
           {
-            "id": "variant_01M7NE6J6GD4HA48JYYX8JMVS8"
+            "id": "variant_01M7PPDWYTXGJJS8VV4R2SC4AC"
           },
           {
-            "id": "variant_01M7NE6J9T35CVTG1TEJ2JVYNC"
+            "id": "variant_01M7PPDX7D6KW7RQKYWH9WAGFG"
           }
         ]
       }
@@ -554,20 +593,23 @@
   "events_add_variant": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "product.product-variant.created",
           "data": {
-            "id": "variant_01M7NE6J9T35CVTG1TEJ2JVYNC"
+            "id": "variant_01M7PPDX7D6KW7RQKYWH9WAGFG"
           },
           "metadata": {
             "source": "product",
             "object": "product_variant",
             "action": "created",
-            "eventGroupId": "01M7NE6J9K7CBAXMKDXDS684QK"
+            "eventGroupId": "01M7PPDX72TD2AY8GJP59W9MG8"
           },
           "options": {
             "internal": true
@@ -576,13 +618,13 @@
         {
           "name": "pricing.price-set.created",
           "data": {
-            "id": "pset_01M7NE6JA3YHQT3QYKCDAYJXBR"
+            "id": "pset_01M7PPDX8V71CJEBES2SKG92ZW"
           },
           "metadata": {
             "source": "pricing",
             "object": "price_set",
             "action": "created",
-            "eventGroupId": "01M7NE6J9K7CBAXMKDXDS684QK"
+            "eventGroupId": "01M7PPDX72TD2AY8GJP59W9MG8"
           },
           "options": {
             "internal": true
@@ -591,13 +633,13 @@
         {
           "name": "pricing.price.created",
           "data": {
-            "id": "price_01M7NE6JA3RQ3DBC7FJMNYCSK4"
+            "id": "price_01M7PPDX8VC1AGPZ7FEH8RF4ZR"
           },
           "metadata": {
             "source": "pricing",
             "object": "price",
             "action": "created",
-            "eventGroupId": "01M7NE6J9K7CBAXMKDXDS684QK"
+            "eventGroupId": "01M7PPDX72TD2AY8GJP59W9MG8"
           },
           "options": {
             "internal": true
@@ -606,13 +648,13 @@
         {
           "name": "LinkProductVariantPriceSet.attached",
           "data": {
-            "id": "pvps_01M7NE6JABMXTPATKC1GYC6K2R"
+            "id": "pvps_01M7PPDX9JX4882VHGY8E5ZT5A"
           },
           "metadata": {
             "source": "ProductVariantPricingPriceSetLink",
             "object": "LinkProductVariantPriceSet",
             "action": "attached",
-            "eventGroupId": "01M7NE6J9K7CBAXMKDXDS684QK"
+            "eventGroupId": "01M7PPDX72TD2AY8GJP59W9MG8"
           },
           "options": {
             "internal": true
@@ -621,10 +663,10 @@
         {
           "name": "product-variant.created",
           "data": {
-            "id": "variant_01M7NE6J9T35CVTG1TEJ2JVYNC"
+            "id": "variant_01M7PPDX7D6KW7RQKYWH9WAGFG"
           },
           "metadata": {
-            "eventGroupId": "01M7NE6J9K7CBAXMKDXDS684QK"
+            "eventGroupId": "01M7PPDX72TD2AY8GJP59W9MG8"
           },
           "options": {}
         }
@@ -634,7 +676,10 @@
   "capture_update_variant": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -645,31 +690,37 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "product": {
-        "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+        "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
       }
     }
   },
   "events_update_variant": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "product.product-variant.updated",
           "data": {
-            "id": "variant_01M7NE6J6GD4HA48JYYX8JMVS8"
+            "id": "variant_01M7PPDWYTXGJJS8VV4R2SC4AC"
           },
           "metadata": {
             "source": "product",
             "object": "product_variant",
             "action": "updated",
-            "eventGroupId": "01M7NE6JAMR1PJFNW95WYTC4R5"
+            "eventGroupId": "01M7PPDXA0ZWFZ4WAE7FBTKR0N"
           },
           "options": {
             "internal": true
@@ -678,13 +729,13 @@
         {
           "name": "pricing.price.deleted",
           "data": {
-            "id": "price_01M7NE6J734YVHXQ5RM3VDH9HT"
+            "id": "price_01M7PPDX1JNQN4RS5TW69TT7D3"
           },
           "metadata": {
             "source": "pricing",
             "object": "price",
             "action": "deleted",
-            "eventGroupId": "01M7NE6JAMR1PJFNW95WYTC4R5"
+            "eventGroupId": "01M7PPDXA0ZWFZ4WAE7FBTKR0N"
           },
           "options": {
             "internal": true
@@ -693,13 +744,13 @@
         {
           "name": "pricing.price.deleted",
           "data": {
-            "id": "price_01M7NE6J73CQVYVBX7P3SQQHZJ"
+            "id": "price_01M7PPDX1JQ3513XTAX20YWMA9"
           },
           "metadata": {
             "source": "pricing",
             "object": "price",
             "action": "deleted",
-            "eventGroupId": "01M7NE6JAMR1PJFNW95WYTC4R5"
+            "eventGroupId": "01M7PPDXA0ZWFZ4WAE7FBTKR0N"
           },
           "options": {
             "internal": true
@@ -708,13 +759,13 @@
         {
           "name": "pricing.price.created",
           "data": {
-            "id": "price_01M7NE6JB5R0R2R5BGSJK388NC"
+            "id": "price_01M7PPDXAYAJ0PXEZ96R63VVDH"
           },
           "metadata": {
             "source": "pricing",
             "object": "price",
             "action": "created",
-            "eventGroupId": "01M7NE6JAMR1PJFNW95WYTC4R5"
+            "eventGroupId": "01M7PPDXA0ZWFZ4WAE7FBTKR0N"
           },
           "options": {
             "internal": true
@@ -723,10 +774,10 @@
         {
           "name": "product-variant.updated",
           "data": {
-            "id": "variant_01M7NE6J6GD4HA48JYYX8JMVS8"
+            "id": "variant_01M7PPDWYTXGJJS8VV4R2SC4AC"
           },
           "metadata": {
-            "eventGroupId": "01M7NE6JAMR1PJFNW95WYTC4R5"
+            "eventGroupId": "01M7PPDXA0ZWFZ4WAE7FBTKR0N"
           },
           "options": {}
         }
@@ -736,7 +787,10 @@
   "capture_delete_variant": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -747,34 +801,40 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
-      "id": "variant_01M7NE6J6GD4HA48JYYX8JMVS8",
+      "id": "variant_01M7PPDWYTXGJJS8VV4R2SC4AC",
       "object": "variant",
       "deleted": true,
       "parent": {
-        "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+        "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
       }
     }
   },
   "events_delete_variant": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "LinkProductVariantInventoryItem.detached",
           "data": {
-            "id": "pvitem_01M7NE6J6ZPRVPBP00XGDRZ5DF"
+            "id": "pvitem_01M7PPDX169JAPDZ77MNJSVZRJ"
           },
           "metadata": {
             "source": "ProductVariantInventoryInventoryItemLink",
             "object": "LinkProductVariantInventoryItem",
             "action": "detached",
-            "eventGroupId": "01M7NE6JBHFGN229BFWZB042WV"
+            "eventGroupId": "01M7PPDXBJV2NVWD1P2K09BE74"
           },
           "options": {
             "internal": true
@@ -783,13 +843,13 @@
         {
           "name": "LinkProductVariantPriceSet.detached",
           "data": {
-            "id": "pvps_01M7NE6J7EXYVXQ38QBFJF48VG"
+            "id": "pvps_01M7PPDX38F0KDQBSWGQE6KS33"
           },
           "metadata": {
             "source": "ProductVariantPricingPriceSetLink",
             "object": "LinkProductVariantPriceSet",
             "action": "detached",
-            "eventGroupId": "01M7NE6JBHFGN229BFWZB042WV"
+            "eventGroupId": "01M7PPDXBJV2NVWD1P2K09BE74"
           },
           "options": {
             "internal": true
@@ -798,13 +858,13 @@
         {
           "name": "pricing.price-set.deleted",
           "data": {
-            "id": "pset_01M7NE6J73NX0ZR62MNESZ3M42"
+            "id": "pset_01M7PPDX1J94DNG812DFCWC5K1"
           },
           "metadata": {
             "source": "pricing",
             "object": "price_set",
             "action": "deleted",
-            "eventGroupId": "01M7NE6JBHFGN229BFWZB042WV"
+            "eventGroupId": "01M7PPDXBJV2NVWD1P2K09BE74"
           },
           "options": {
             "internal": true
@@ -813,13 +873,13 @@
         {
           "name": "pricing.price.deleted",
           "data": {
-            "id": "price_01M7NE6JB5R0R2R5BGSJK388NC"
+            "id": "price_01M7PPDXAYAJ0PXEZ96R63VVDH"
           },
           "metadata": {
             "source": "pricing",
             "object": "price",
             "action": "deleted",
-            "eventGroupId": "01M7NE6JBHFGN229BFWZB042WV"
+            "eventGroupId": "01M7PPDXBJV2NVWD1P2K09BE74"
           },
           "options": {
             "internal": true
@@ -828,13 +888,13 @@
         {
           "name": "inventory.inventory-item.deleted",
           "data": {
-            "id": "iitem_01M7NE6J6QJ6GMADG8WNQST48M"
+            "id": "iitem_01M7PPDX00WAB18Z71AQF6KZER"
           },
           "metadata": {
             "source": "inventory",
             "object": "inventory_item",
             "action": "deleted",
-            "eventGroupId": "01M7NE6JBHFGN229BFWZB042WV"
+            "eventGroupId": "01M7PPDXBJV2NVWD1P2K09BE74"
           },
           "options": {
             "internal": true
@@ -843,23 +903,23 @@
         {
           "name": "inventory-item.deleted",
           "data": {
-            "id": "iitem_01M7NE6J6QJ6GMADG8WNQST48M"
+            "id": "iitem_01M7PPDX00WAB18Z71AQF6KZER"
           },
           "metadata": {
-            "eventGroupId": "01M7NE6JBHFGN229BFWZB042WV"
+            "eventGroupId": "01M7PPDXBJV2NVWD1P2K09BE74"
           },
           "options": {}
         },
         {
           "name": "product.product-variant.deleted",
           "data": {
-            "id": "variant_01M7NE6J6GD4HA48JYYX8JMVS8"
+            "id": "variant_01M7PPDWYTXGJJS8VV4R2SC4AC"
           },
           "metadata": {
             "source": "product",
             "object": "product_variant",
             "action": "deleted",
-            "eventGroupId": "01M7NE6JBHFGN229BFWZB042WV"
+            "eventGroupId": "01M7PPDXBJV2NVWD1P2K09BE74"
           },
           "options": {
             "internal": true
@@ -868,10 +928,10 @@
         {
           "name": "product-variant.deleted",
           "data": {
-            "id": "variant_01M7NE6J6GD4HA48JYYX8JMVS8"
+            "id": "variant_01M7PPDWYTXGJJS8VV4R2SC4AC"
           },
           "metadata": {
-            "eventGroupId": "01M7NE6JBHFGN229BFWZB042WV"
+            "eventGroupId": "01M7PPDXBJV2NVWD1P2K09BE74"
           },
           "options": {}
         }
@@ -883,21 +943,27 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
-      "id": "variant_01M7NE6J9T35CVTG1TEJ2JVYNC",
+      "id": "variant_01M7PPDX7D6KW7RQKYWH9WAGFG",
       "object": "variant",
       "deleted": true,
       "parent": {
-        "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+        "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
       }
     }
   },
   "capture_delete": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": []
@@ -908,10 +974,13 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
-      "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9",
+      "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8",
       "object": "product",
       "deleted": true
     }
@@ -919,20 +988,23 @@
   "events_delete": {
     "status": 200,
     "headers": {
-      "Content-Type": "application/json; charset=utf-8"
+      "Content-Type": "application/json; charset=utf-8",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "name": "LinkProductSalesChannel.detached",
           "data": {
-            "id": "prodsc_01M7NE6J60VDVCR5WD6YPMFGPD"
+            "id": "prodsc_01M7PPDWWR8BR97CA4G3CDZ17Y"
           },
           "metadata": {
             "source": "ProductProductSalesChannelSalesChannelLink",
             "object": "LinkProductSalesChannel",
             "action": "detached",
-            "eventGroupId": "01M7NE6JDXN42QGBW76AKVMTZM"
+            "eventGroupId": "01M7PPDXJ2312PNM4F94A9R58B"
           },
           "options": {
             "internal": true
@@ -941,13 +1013,13 @@
         {
           "name": "LinkProductShippingProfile.detached",
           "data": {
-            "id": "prodsp_01M7NE6J67RRS192YEQYHT1K5Z"
+            "id": "prodsp_01M7PPDWXSW0SM1FKZJ633PQ2E"
           },
           "metadata": {
             "source": "ProductProductFulfillmentShippingProfileLink",
             "object": "LinkProductShippingProfile",
             "action": "detached",
-            "eventGroupId": "01M7NE6JDXN42QGBW76AKVMTZM"
+            "eventGroupId": "01M7PPDXJ2312PNM4F94A9R58B"
           },
           "options": {
             "internal": true
@@ -956,13 +1028,13 @@
         {
           "name": "product.product.deleted",
           "data": {
-            "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+            "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
           },
           "metadata": {
             "source": "product",
             "object": "product",
             "action": "deleted",
-            "eventGroupId": "01M7NE6JDXN42QGBW76AKVMTZM"
+            "eventGroupId": "01M7PPDXJ2312PNM4F94A9R58B"
           },
           "options": {
             "internal": true
@@ -971,13 +1043,13 @@
         {
           "name": "product.product-image.deleted",
           "data": {
-            "id": "img_01M7NE6J4M83MGDY8APZJDK083"
+            "id": "img_01M7PPDWSZ8C889VWPN8GD3MN9"
           },
           "metadata": {
             "source": "product",
             "object": "product_image",
             "action": "deleted",
-            "eventGroupId": "01M7NE6JDXN42QGBW76AKVMTZM"
+            "eventGroupId": "01M7PPDXJ2312PNM4F94A9R58B"
           },
           "options": {
             "internal": true
@@ -986,13 +1058,13 @@
         {
           "name": "product.product-variant.updated",
           "data": {
-            "id": "variant_01M7NE6J6GD4HA48JYYX8JMVS8"
+            "id": "variant_01M7PPDWYTXGJJS8VV4R2SC4AC"
           },
           "metadata": {
             "source": "product",
             "object": "product_variant",
             "action": "updated",
-            "eventGroupId": "01M7NE6JDXN42QGBW76AKVMTZM"
+            "eventGroupId": "01M7PPDXJ2312PNM4F94A9R58B"
           },
           "options": {
             "internal": true
@@ -1001,13 +1073,13 @@
         {
           "name": "product.product-variant.updated",
           "data": {
-            "id": "variant_01M7NE6J9T35CVTG1TEJ2JVYNC"
+            "id": "variant_01M7PPDX7D6KW7RQKYWH9WAGFG"
           },
           "metadata": {
             "source": "product",
             "object": "product_variant",
             "action": "updated",
-            "eventGroupId": "01M7NE6JDXN42QGBW76AKVMTZM"
+            "eventGroupId": "01M7PPDXJ2312PNM4F94A9R58B"
           },
           "options": {
             "internal": true
@@ -1016,20 +1088,20 @@
         {
           "name": "product-option.deleted",
           "data": {
-            "id": "opt_01M7NE6J4KVVG01YWVPK2N4T85"
+            "id": "opt_01M7PPDWSYG1B2K6BJSYVJ4M26"
           },
           "metadata": {
-            "eventGroupId": "01M7NE6JDXN42QGBW76AKVMTZM"
+            "eventGroupId": "01M7PPDXJ2312PNM4F94A9R58B"
           },
           "options": {}
         },
         {
           "name": "product.deleted",
           "data": {
-            "id": "prod_01M7NE6J4KN0MB9F197V0NM0T9"
+            "id": "prod_01M7PPDWSYVC7NNCCDED8ZVPX8"
           },
           "metadata": {
-            "eventGroupId": "01M7NE6JDXN42QGBW76AKVMTZM"
+            "eventGroupId": "01M7PPDXJ2312PNM4F94A9R58B"
           },
           "options": {}
         }

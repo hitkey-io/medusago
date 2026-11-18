@@ -4,10 +4,13 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5Mzc1OTAsImV4cCI6MTc5NTAyMzk5MH0.jd8iKMZpQiCYoX5uWTozsGRsW2eeITa326nUbDgSg2A"
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3Rvcl9pZCI6InVzZXJfMDFNNzBZMDFTUFJZNkFXWVRKS1pLOVlFRVMiLCJhY3Rvcl90eXBlIjoidXNlciIsImF1dGhfaWRlbnRpdHlfaWQiOiJhdXRoaWRfMDFNNzBZMDFWQU5IOVc4WEVTS1FNNjg1RkoiLCJhdXRoX3Byb3ZpZGVyIjoiZW1haWxwYXNzIiwibWZhX2VuYWJsZWQiOmZhbHNlLCJtZmFfY2hhbGxlbmdlX2NvbXBsZXRlZF9hdCI6bnVsbCwiYXBwX21ldGFkYXRhIjp7InVzZXJfaWQiOiJ1c2VyXzAxTTcwWTAxU1BSWTZBV1lUSktaSzlZRUVTIn0sInVzZXJfbWV0YWRhdGEiOnt9LCJpYXQiOjE3OTQ5ODQ4NzQsImV4cCI6MTc5NTA3MTI3NH0.X1wwVdMAWBg_xGe6tpomg5hXLja-ux20fsgVGZDeYu8"
     }
   },
   "events_run_create": {
@@ -15,69 +18,72 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W5WMSZ07D4KH04R0T73R"
+          "transaction_id": "auto-01M7PPZ5QHKEED9XGXFK5HH9C6"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W5WMSZ07D4KH04R0T73R",
+          "transaction_id": "auto-01M7PPZ5QHKEED9XGXFK5HH9C6",
           "step": {
             "stepFailed": false,
             "id": "_root.create-customers",
-            "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+            "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
             "depth": 1,
             "definition": {
               "action": "create-customers",
-              "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+              "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937591708,
+            "lastAttempt": 1794984875767,
             "next": [
               "_root.create-customers.customersCreated"
             ],
             "_v": 0,
-            "startedAt": 1794937591708
+            "startedAt": 1794984875767
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W5WMSZ07D4KH04R0T73R",
+          "transaction_id": "auto-01M7PPZ5QHKEED9XGXFK5HH9C6",
           "step": {
             "stepFailed": false,
             "id": "_root.create-customers",
-            "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+            "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
             "depth": 1,
             "definition": {
               "action": "create-customers",
-              "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+              "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937591708,
+            "lastAttempt": 1794984875767,
             "next": [
               "_root.create-customers.customersCreated"
             ],
             "_v": 0,
-            "startedAt": 1794937591708
+            "startedAt": 1794984875767
           },
           "response": [
             {
-              "id": "cus_01M7N9W5WZC2CJ7Q334XADKFA6",
+              "id": "cus_01M7PPZ5QTJ8X0D1PQ14H437HD",
               "company_name": null,
               "first_name": "Wf",
               "last_name": "Cust",
@@ -88,8 +94,8 @@
                 "k": "v"
               },
               "created_by": null,
-              "created_at": "2026-11-17T17:46:31.712Z",
-              "updated_at": "2026-11-17T17:46:31.712Z",
+              "created_at": "2026-11-18T06:54:35.770Z",
+              "updated_at": "2026-11-18T06:54:35.770Z",
               "deleted_at": null,
               "groups": [],
               "addresses": []
@@ -99,114 +105,114 @@
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W5WMSZ07D4KH04R0T73R",
+          "transaction_id": "auto-01M7PPZ5QHKEED9XGXFK5HH9C6",
           "step": {
             "stepFailed": false,
             "id": "_root.create-customers.customersCreated",
-            "uuid": "01M7N9VV9DKBERJVHXFCS6819V",
+            "uuid": "01M7PPZ1TS8KVSTDANMSNGH36G",
             "depth": 2,
             "definition": {
               "action": "customersCreated",
-              "uuid": "01M7N9VV9DKBERJVHXFCS6819V",
+              "uuid": "01M7PPZ1TS8KVSTDANMSNGH36G",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937591722,
+            "lastAttempt": 1794984875780,
             "next": [
               "_root.create-customers.customersCreated.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937591722
+            "startedAt": 1794984875780
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W5WMSZ07D4KH04R0T73R",
+          "transaction_id": "auto-01M7PPZ5QHKEED9XGXFK5HH9C6",
           "step": {
             "stepFailed": false,
             "id": "_root.create-customers.customersCreated",
-            "uuid": "01M7N9VV9DKBERJVHXFCS6819V",
+            "uuid": "01M7PPZ1TS8KVSTDANMSNGH36G",
             "depth": 2,
             "definition": {
               "action": "customersCreated",
-              "uuid": "01M7N9VV9DKBERJVHXFCS6819V",
+              "uuid": "01M7PPZ1TS8KVSTDANMSNGH36G",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937591722,
+            "lastAttempt": 1794984875780,
             "next": [
               "_root.create-customers.customersCreated.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937591722
+            "startedAt": 1794984875780
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W5WMSZ07D4KH04R0T73R",
+          "transaction_id": "auto-01M7PPZ5QHKEED9XGXFK5HH9C6",
           "step": {
             "stepFailed": false,
             "id": "_root.create-customers.customersCreated.emit-event-step",
-            "uuid": "01M7N9VV9DXK6PQAYV0P8V86AZ",
+            "uuid": "01M7PPZ1TSHVFYRXNJ69A33PC2",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9VV9DXK6PQAYV0P8V86AZ",
+              "uuid": "01M7PPZ1TSHVFYRXNJ69A33PC2",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937591723,
+            "lastAttempt": 1794984875780,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937591723
+            "startedAt": 1794984875780
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W5WMSZ07D4KH04R0T73R",
+          "transaction_id": "auto-01M7PPZ5QHKEED9XGXFK5HH9C6",
           "step": {
             "stepFailed": false,
             "id": "_root.create-customers.customersCreated.emit-event-step",
-            "uuid": "01M7N9VV9DXK6PQAYV0P8V86AZ",
+            "uuid": "01M7PPZ1TSHVFYRXNJ69A33PC2",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9VV9DXK6PQAYV0P8V86AZ",
+              "uuid": "01M7PPZ1TSHVFYRXNJ69A33PC2",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937591723,
+            "lastAttempt": 1794984875780,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937591723
+            "startedAt": 1794984875780
           },
           "response": {
-            "eventGroupId": "01M7N9W5WN5D3729V2P60PJ89Y",
+            "eventGroupId": "01M7PPZ5QJP2T78NQR6E2YZY62",
             "eventName": "customer.created"
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W5WMSZ07D4KH04R0T73R",
+          "transaction_id": "auto-01M7PPZ5QHKEED9XGXFK5HH9C6",
           "result": [
             {
-              "id": "cus_01M7N9W5WZC2CJ7Q334XADKFA6",
+              "id": "cus_01M7PPZ5QTJ8X0D1PQ14H437HD",
               "company_name": null,
               "first_name": "Wf",
               "last_name": "Cust",
@@ -217,8 +223,8 @@
                 "k": "v"
               },
               "created_by": null,
-              "created_at": "2026-11-17T17:46:31.712Z",
-              "updated_at": "2026-11-17T17:46:31.712Z",
+              "created_at": "2026-11-18T06:54:35.770Z",
+              "updated_at": "2026-11-18T06:54:35.770Z",
               "deleted_at": null,
               "groups": [],
               "addresses": []
@@ -234,11 +240,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9W5WMSZ07D4KH04R0T73R",
+        "transactionId": "auto-01M7PPZ5QHKEED9XGXFK5HH9C6",
         "workflowId": "create-customers",
         "hasFinished": true,
         "hasFailed": false
@@ -250,12 +259,15 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "customers": [
         {
-          "id": "cus_01M7N9W5WZC2CJ7Q334XADKFA6",
+          "id": "cus_01M7PPZ5QTJ8X0D1PQ14H437HD",
           "email": "wf-cust@example.test"
         }
       ],
@@ -269,63 +281,66 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W7CQ31EKJJVSVDRZB56Y"
+          "transaction_id": "auto-01M7PPZ77WB014DWEDNWKE4CJF"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W7CQ31EKJJVSVDRZB56Y",
+          "transaction_id": "auto-01M7PPZ77WB014DWEDNWKE4CJF",
           "step": {
             "id": "_root.create-customers",
-            "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+            "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
             "depth": 1,
             "definition": {
               "action": "create-customers",
-              "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+              "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937593243,
+            "lastAttempt": 1794984877320,
             "next": [
               "_root.create-customers.customersCreated"
             ],
             "_v": 0,
-            "startedAt": 1794937593243
+            "startedAt": 1794984877320
           }
         },
         {
           "event_type": "onStepFailure",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W7CQ31EKJJVSVDRZB56Y",
+          "transaction_id": "auto-01M7PPZ77WB014DWEDNWKE4CJF",
           "step": {
             "id": "_root.create-customers",
-            "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+            "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
             "depth": 1,
             "definition": {
               "action": "create-customers",
-              "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+              "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937593262,
+            "lastAttempt": 1794984877336,
             "next": [
               "_root.create-customers.customersCreated"
             ],
             "_v": 0,
-            "startedAt": 1794937593243
+            "startedAt": 1794984877320
           },
           "errors": [
             {
@@ -336,7 +351,7 @@
                 "name": "Error",
                 "__isMedusaError": true,
                 "type": "invalid_data",
-                "date": "2026-11-17T17:46:33.251Z"
+                "date": "2026-11-18T06:54:37.333Z"
               }
             }
           ]
@@ -344,63 +359,63 @@
         {
           "event_type": "onCompensateBegin",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W7CQ31EKJJVSVDRZB56Y"
+          "transaction_id": "auto-01M7PPZ77WB014DWEDNWKE4CJF"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W7CQ31EKJJVSVDRZB56Y",
+          "transaction_id": "auto-01M7PPZ77WB014DWEDNWKE4CJF",
           "step": {
             "id": "_root.create-customers",
-            "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+            "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
             "depth": 1,
             "definition": {
               "action": "create-customers",
-              "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+              "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937593262,
+            "lastAttempt": 1794984877336,
             "next": [
               "_root.create-customers.customersCreated"
             ],
             "_v": 0,
-            "startedAt": 1794937593243
+            "startedAt": 1794984877320
           }
         },
         {
           "event_type": "onCompensateStepSuccess",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W7CQ31EKJJVSVDRZB56Y",
+          "transaction_id": "auto-01M7PPZ77WB014DWEDNWKE4CJF",
           "step": {
             "id": "_root.create-customers",
-            "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+            "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
             "depth": 1,
             "definition": {
               "action": "create-customers",
-              "uuid": "01M7N9VV9DS3VMEJPN67Y1QAD1",
+              "uuid": "01M7PPZ1TS1B95H7Z64V2N70ZJ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937593262,
+            "lastAttempt": 1794984877336,
             "next": [
               "_root.create-customers.customersCreated"
             ],
             "_v": 0,
-            "startedAt": 1794937593243
+            "startedAt": 1794984877320
           },
           "response": {}
         },
         {
           "event_type": "onFinish",
           "workflow_id": "create-customers",
-          "transaction_id": "auto-01M7N9W7CQ31EKJJVSVDRZB56Y",
+          "transaction_id": "auto-01M7PPZ77WB014DWEDNWKE4CJF",
           "errors": [
             {
               "action": "create-customers",
@@ -410,7 +425,7 @@
                 "name": "Error",
                 "__isMedusaError": true,
                 "type": "invalid_data",
-                "date": "2026-11-17T17:46:33.251Z"
+                "date": "2026-11-18T06:54:37.333Z"
               }
             }
           ]
@@ -423,7 +438,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -435,69 +453,72 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "update-customers",
-          "transaction_id": "auto-01M7N9W8WFY744MWMSKF34XNC4"
+          "transaction_id": "auto-01M7PPZ8QVHXXW7RDMAJ9VC7XK"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-customers",
-          "transaction_id": "auto-01M7N9W8WFY744MWMSKF34XNC4",
+          "transaction_id": "auto-01M7PPZ8QVHXXW7RDMAJ9VC7XK",
           "step": {
             "stepFailed": false,
             "id": "_root.update-customer",
-            "uuid": "01M7N9VV9H92HE0FBAW1V1YBCF",
+            "uuid": "01M7PPZ1TVE6R4EYZHB5GBF5BT",
             "depth": 1,
             "definition": {
               "action": "update-customer",
-              "uuid": "01M7N9VV9H92HE0FBAW1V1YBCF",
+              "uuid": "01M7PPZ1TVE6R4EYZHB5GBF5BT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937594768,
+            "lastAttempt": 1794984878846,
             "next": [
               "_root.update-customer.customersUpdated"
             ],
             "_v": 0,
-            "startedAt": 1794937594768
+            "startedAt": 1794984878846
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-customers",
-          "transaction_id": "auto-01M7N9W8WFY744MWMSKF34XNC4",
+          "transaction_id": "auto-01M7PPZ8QVHXXW7RDMAJ9VC7XK",
           "step": {
             "stepFailed": false,
             "id": "_root.update-customer",
-            "uuid": "01M7N9VV9H92HE0FBAW1V1YBCF",
+            "uuid": "01M7PPZ1TVE6R4EYZHB5GBF5BT",
             "depth": 1,
             "definition": {
               "action": "update-customer",
-              "uuid": "01M7N9VV9H92HE0FBAW1V1YBCF",
+              "uuid": "01M7PPZ1TVE6R4EYZHB5GBF5BT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937594768,
+            "lastAttempt": 1794984878846,
             "next": [
               "_root.update-customer.customersUpdated"
             ],
             "_v": 0,
-            "startedAt": 1794937594768
+            "startedAt": 1794984878846
           },
           "response": [
             {
-              "id": "cus_01M7N9W5WZC2CJ7Q334XADKFA6",
+              "id": "cus_01M7PPZ5QTJ8X0D1PQ14H437HD",
               "company_name": "ACME",
               "first_name": "Updated",
               "last_name": "Cust",
@@ -508,8 +529,8 @@
                 "k": "v"
               },
               "created_by": null,
-              "created_at": "2026-11-17T17:46:31.712Z",
-              "updated_at": "2026-11-17T17:46:34.773Z",
+              "created_at": "2026-11-18T06:54:35.770Z",
+              "updated_at": "2026-11-18T06:54:38.853Z",
               "deleted_at": null
             }
           ]
@@ -517,114 +538,114 @@
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-customers",
-          "transaction_id": "auto-01M7N9W8WFY744MWMSKF34XNC4",
+          "transaction_id": "auto-01M7PPZ8QVHXXW7RDMAJ9VC7XK",
           "step": {
             "stepFailed": false,
             "id": "_root.update-customer.customersUpdated",
-            "uuid": "01M7N9VV9HJQBWZ0J19NX72SEE",
+            "uuid": "01M7PPZ1TWEA0QFMSBPMHN9H4X",
             "depth": 2,
             "definition": {
               "action": "customersUpdated",
-              "uuid": "01M7N9VV9HJQBWZ0J19NX72SEE",
+              "uuid": "01M7PPZ1TWEA0QFMSBPMHN9H4X",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937594777,
+            "lastAttempt": 1794984879011,
             "next": [
               "_root.update-customer.customersUpdated.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937594777
+            "startedAt": 1794984879011
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-customers",
-          "transaction_id": "auto-01M7N9W8WFY744MWMSKF34XNC4",
+          "transaction_id": "auto-01M7PPZ8QVHXXW7RDMAJ9VC7XK",
           "step": {
             "stepFailed": false,
             "id": "_root.update-customer.customersUpdated",
-            "uuid": "01M7N9VV9HJQBWZ0J19NX72SEE",
+            "uuid": "01M7PPZ1TWEA0QFMSBPMHN9H4X",
             "depth": 2,
             "definition": {
               "action": "customersUpdated",
-              "uuid": "01M7N9VV9HJQBWZ0J19NX72SEE",
+              "uuid": "01M7PPZ1TWEA0QFMSBPMHN9H4X",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937594777,
+            "lastAttempt": 1794984879011,
             "next": [
               "_root.update-customer.customersUpdated.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937594777
+            "startedAt": 1794984879011
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-customers",
-          "transaction_id": "auto-01M7N9W8WFY744MWMSKF34XNC4",
+          "transaction_id": "auto-01M7PPZ8QVHXXW7RDMAJ9VC7XK",
           "step": {
             "stepFailed": false,
             "id": "_root.update-customer.customersUpdated.emit-event-step",
-            "uuid": "01M7N9VV9HMH29XVPFX8Z8EB9G",
+            "uuid": "01M7PPZ1TW4M9HK04KC8NV2AAQ",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9VV9HMH29XVPFX8Z8EB9G",
+              "uuid": "01M7PPZ1TW4M9HK04KC8NV2AAQ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937594777,
+            "lastAttempt": 1794984879011,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937594777
+            "startedAt": 1794984879011
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-customers",
-          "transaction_id": "auto-01M7N9W8WFY744MWMSKF34XNC4",
+          "transaction_id": "auto-01M7PPZ8QVHXXW7RDMAJ9VC7XK",
           "step": {
             "stepFailed": false,
             "id": "_root.update-customer.customersUpdated.emit-event-step",
-            "uuid": "01M7N9VV9HMH29XVPFX8Z8EB9G",
+            "uuid": "01M7PPZ1TW4M9HK04KC8NV2AAQ",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9VV9HMH29XVPFX8Z8EB9G",
+              "uuid": "01M7PPZ1TW4M9HK04KC8NV2AAQ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937594777,
+            "lastAttempt": 1794984879011,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937594777
+            "startedAt": 1794984879011
           },
           "response": {
-            "eventGroupId": "01M7N9W8WFFXZF9KHDS1Q6N89M",
+            "eventGroupId": "01M7PPZ8QVHBVCTMKAXGJJCQH8",
             "eventName": "customer.updated"
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "update-customers",
-          "transaction_id": "auto-01M7N9W8WFY744MWMSKF34XNC4",
+          "transaction_id": "auto-01M7PPZ8QVHXXW7RDMAJ9VC7XK",
           "result": [
             {
-              "id": "cus_01M7N9W5WZC2CJ7Q334XADKFA6",
+              "id": "cus_01M7PPZ5QTJ8X0D1PQ14H437HD",
               "company_name": "ACME",
               "first_name": "Updated",
               "last_name": "Cust",
@@ -635,8 +656,8 @@
                 "k": "v"
               },
               "created_by": null,
-              "created_at": "2026-11-17T17:46:31.712Z",
-              "updated_at": "2026-11-17T17:46:34.773Z",
+              "created_at": "2026-11-18T06:54:35.770Z",
+              "updated_at": "2026-11-18T06:54:38.853Z",
               "deleted_at": null
             }
           ],
@@ -650,11 +671,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9W8WFY744MWMSKF34XNC4",
+        "transactionId": "auto-01M7PPZ8QVHXXW7RDMAJ9VC7XK",
         "workflowId": "update-customers",
         "hasFinished": true,
         "hasFailed": false
@@ -666,169 +690,172 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "create-customer-addresses",
-          "transaction_id": "auto-01M7N9WABS27W7FJW0667GKJ1T"
+          "transaction_id": "auto-01M7PPZAC5W713ENZP0DSZ45W0"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customer-addresses",
-          "transaction_id": "auto-01M7N9WABS27W7FJW0667GKJ1T",
+          "transaction_id": "auto-01M7PPZAC5W713ENZP0DSZ45W0",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-shipping-customer-addresses",
-            "uuid": "01M7N9VV9DAJ28WR426GCEA9CW",
+            "uuid": "01M7PPZ1TS8F0Q5J5RGNK8981W",
             "depth": 1,
             "definition": {
               "action": "maybe-unset-default-shipping-customer-addresses",
-              "uuid": "01M7N9VV9DAJ28WR426GCEA9CW",
+              "uuid": "01M7PPZ1TS8F0Q5J5RGNK8981W",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937596282,
+            "lastAttempt": 1794984880519,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937596282
+            "startedAt": 1794984880519
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customer-addresses",
-          "transaction_id": "auto-01M7N9WABS27W7FJW0667GKJ1T",
+          "transaction_id": "auto-01M7PPZAC5W713ENZP0DSZ45W0",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses",
-            "uuid": "01M7N9VV9DMJHYNG21ESYN9M04",
+            "uuid": "01M7PPZ1TSB35RR8EK4CRKTRYE",
             "depth": 1,
             "definition": {
               "action": "maybe-unset-default-billing-customer-addresses",
-              "uuid": "01M7N9VV9DMJHYNG21ESYN9M04",
+              "uuid": "01M7PPZ1TSB35RR8EK4CRKTRYE",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937596282,
+            "lastAttempt": 1794984880519,
             "next": [
               "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses"
             ],
             "_v": 0,
-            "startedAt": 1794937596282
+            "startedAt": 1794984880519
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-customer-addresses",
-          "transaction_id": "auto-01M7N9WABS27W7FJW0667GKJ1T",
-          "step": {
-            "stepFailed": false,
-            "id": "_root.maybe-unset-default-shipping-customer-addresses",
-            "uuid": "01M7N9VV9DAJ28WR426GCEA9CW",
-            "depth": 1,
-            "definition": {
-              "action": "maybe-unset-default-shipping-customer-addresses",
-              "uuid": "01M7N9VV9DAJ28WR426GCEA9CW",
-              "noCompensation": false,
-              "store": false
-            },
-            "saveResponse": true,
-            "attempts": 1,
-            "failures": 0,
-            "lastAttempt": 1794937596282,
-            "next": [],
-            "_v": 0,
-            "startedAt": 1794937596282
-          }
-        },
-        {
-          "event_type": "onStepSuccess",
-          "workflow_id": "create-customer-addresses",
-          "transaction_id": "auto-01M7N9WABS27W7FJW0667GKJ1T",
+          "transaction_id": "auto-01M7PPZAC5W713ENZP0DSZ45W0",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses",
-            "uuid": "01M7N9VV9DMJHYNG21ESYN9M04",
+            "uuid": "01M7PPZ1TSB35RR8EK4CRKTRYE",
             "depth": 1,
             "definition": {
               "action": "maybe-unset-default-billing-customer-addresses",
-              "uuid": "01M7N9VV9DMJHYNG21ESYN9M04",
+              "uuid": "01M7PPZ1TSB35RR8EK4CRKTRYE",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937596282,
+            "lastAttempt": 1794984880519,
             "next": [
               "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses"
             ],
             "_v": 0,
-            "startedAt": 1794937596282
+            "startedAt": 1794984880519
+          }
+        },
+        {
+          "event_type": "onStepSuccess",
+          "workflow_id": "create-customer-addresses",
+          "transaction_id": "auto-01M7PPZAC5W713ENZP0DSZ45W0",
+          "step": {
+            "stepFailed": false,
+            "id": "_root.maybe-unset-default-shipping-customer-addresses",
+            "uuid": "01M7PPZ1TS8F0Q5J5RGNK8981W",
+            "depth": 1,
+            "definition": {
+              "action": "maybe-unset-default-shipping-customer-addresses",
+              "uuid": "01M7PPZ1TS8F0Q5J5RGNK8981W",
+              "noCompensation": false,
+              "store": false
+            },
+            "saveResponse": true,
+            "attempts": 1,
+            "failures": 0,
+            "lastAttempt": 1794984880519,
+            "next": [],
+            "_v": 0,
+            "startedAt": 1794984880519
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customer-addresses",
-          "transaction_id": "auto-01M7N9WABS27W7FJW0667GKJ1T",
+          "transaction_id": "auto-01M7PPZAC5W713ENZP0DSZ45W0",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses",
-            "uuid": "01M7N9VV9DDNBMXG1YJ2R8TBBG",
+            "uuid": "01M7PPZ1TSBZ2YX3QK3F2DW5FT",
             "depth": 2,
             "definition": {
               "action": "create-customer-addresses",
-              "uuid": "01M7N9VV9DDNBMXG1YJ2R8TBBG",
+              "uuid": "01M7PPZ1TSBZ2YX3QK3F2DW5FT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937596287,
+            "lastAttempt": 1794984880532,
             "next": [
               "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses.addressesCreated"
             ],
             "_v": 0,
-            "startedAt": 1794937596287
+            "startedAt": 1794984880532
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-customer-addresses",
-          "transaction_id": "auto-01M7N9WABS27W7FJW0667GKJ1T",
+          "transaction_id": "auto-01M7PPZAC5W713ENZP0DSZ45W0",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses",
-            "uuid": "01M7N9VV9DDNBMXG1YJ2R8TBBG",
+            "uuid": "01M7PPZ1TSBZ2YX3QK3F2DW5FT",
             "depth": 2,
             "definition": {
               "action": "create-customer-addresses",
-              "uuid": "01M7N9VV9DDNBMXG1YJ2R8TBBG",
+              "uuid": "01M7PPZ1TSBZ2YX3QK3F2DW5FT",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937596287,
+            "lastAttempt": 1794984880532,
             "next": [
               "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses.addressesCreated"
             ],
             "_v": 0,
-            "startedAt": 1794937596287
+            "startedAt": 1794984880532
           },
           "response": [
             {
-              "id": "cuaddr_01M7N9WAC0JKF99DHP1F7XD5KN",
+              "id": "cuaddr_01M7PPZACP58VB1Z6A41ZER45V",
               "address_name": "Home",
               "is_default_shipping": true,
               "is_default_billing": false,
@@ -843,9 +870,9 @@
               "postal_code": null,
               "phone": null,
               "metadata": null,
-              "customer_id": "cus_01M7N9W5WZC2CJ7Q334XADKFA6",
-              "created_at": "2026-11-17T17:46:36.288Z",
-              "updated_at": "2026-11-17T17:46:36.288Z",
+              "customer_id": "cus_01M7PPZ5QTJ8X0D1PQ14H437HD",
+              "created_at": "2026-11-18T06:54:40.534Z",
+              "updated_at": "2026-11-18T06:54:40.534Z",
               "deleted_at": null
             }
           ]
@@ -853,58 +880,58 @@
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customer-addresses",
-          "transaction_id": "auto-01M7N9WABS27W7FJW0667GKJ1T",
+          "transaction_id": "auto-01M7PPZAC5W713ENZP0DSZ45W0",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses.addressesCreated",
-            "uuid": "01M7N9VV9DQPXAC0SKN0KAKDG9",
+            "uuid": "01M7PPZ1TSSCHR5MVVM6NX8Z9N",
             "depth": 3,
             "definition": {
               "action": "addressesCreated",
-              "uuid": "01M7N9VV9DQPXAC0SKN0KAKDG9",
+              "uuid": "01M7PPZ1TSSCHR5MVVM6NX8Z9N",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937596292,
+            "lastAttempt": 1794984880557,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937596292
+            "startedAt": 1794984880557
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-customer-addresses",
-          "transaction_id": "auto-01M7N9WABS27W7FJW0667GKJ1T",
+          "transaction_id": "auto-01M7PPZAC5W713ENZP0DSZ45W0",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses.create-customer-addresses.addressesCreated",
-            "uuid": "01M7N9VV9DQPXAC0SKN0KAKDG9",
+            "uuid": "01M7PPZ1TSSCHR5MVVM6NX8Z9N",
             "depth": 3,
             "definition": {
               "action": "addressesCreated",
-              "uuid": "01M7N9VV9DQPXAC0SKN0KAKDG9",
+              "uuid": "01M7PPZ1TSSCHR5MVVM6NX8Z9N",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937596292,
+            "lastAttempt": 1794984880557,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937596292
+            "startedAt": 1794984880557
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "create-customer-addresses",
-          "transaction_id": "auto-01M7N9WABS27W7FJW0667GKJ1T",
+          "transaction_id": "auto-01M7PPZAC5W713ENZP0DSZ45W0",
           "result": [
             {
-              "id": "cuaddr_01M7N9WAC0JKF99DHP1F7XD5KN",
+              "id": "cuaddr_01M7PPZACP58VB1Z6A41ZER45V",
               "address_name": "Home",
               "is_default_shipping": true,
               "is_default_billing": false,
@@ -919,9 +946,9 @@
               "postal_code": null,
               "phone": null,
               "metadata": null,
-              "customer_id": "cus_01M7N9W5WZC2CJ7Q334XADKFA6",
-              "created_at": "2026-11-17T17:46:36.288Z",
-              "updated_at": "2026-11-17T17:46:36.288Z",
+              "customer_id": "cus_01M7PPZ5QTJ8X0D1PQ14H437HD",
+              "created_at": "2026-11-18T06:54:40.534Z",
+              "updated_at": "2026-11-18T06:54:40.534Z",
               "deleted_at": null
             }
           ],
@@ -935,11 +962,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9WABS27W7FJW0667GKJ1T",
+        "transactionId": "auto-01M7PPZAC5W713ENZP0DSZ45W0",
         "workflowId": "create-customer-addresses",
         "hasFinished": true,
         "hasFailed": false
@@ -951,12 +981,15 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "addresses": [
         {
-          "id": "cuaddr_01M7N9WAC0JKF99DHP1F7XD5KN",
+          "id": "cuaddr_01M7PPZACP58VB1Z6A41ZER45V",
           "address_name": "Home"
         }
       ],
@@ -970,169 +1003,172 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "update-customer-addresses",
-          "transaction_id": "auto-01M7N9WBV73ZSWFPATB68CAGKW"
+          "transaction_id": "auto-01M7PPZBWM1D8RRNN85X2NHH46"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-customer-addresses",
-          "transaction_id": "auto-01M7N9WBV73ZSWFPATB68CAGKW",
+          "transaction_id": "auto-01M7PPZBWM1D8RRNN85X2NHH46",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-shipping-customer-addresses",
-            "uuid": "01M7N9VV9G0CY57JZSW35YDVX3",
+            "uuid": "01M7PPZ1TVN6MEWFF0Y18GRJQ3",
             "depth": 1,
             "definition": {
               "action": "maybe-unset-default-shipping-customer-addresses",
-              "uuid": "01M7N9VV9G0CY57JZSW35YDVX3",
+              "uuid": "01M7PPZ1TVN6MEWFF0Y18GRJQ3",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937597803,
+            "lastAttempt": 1794984882070,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937597803
+            "startedAt": 1794984882070
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-customer-addresses",
-          "transaction_id": "auto-01M7N9WBV73ZSWFPATB68CAGKW",
+          "transaction_id": "auto-01M7PPZBWM1D8RRNN85X2NHH46",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses",
-            "uuid": "01M7N9VV9GYH359T9HRWHHDEXX",
+            "uuid": "01M7PPZ1TVPR4387VTPXQZ9M5N",
             "depth": 1,
             "definition": {
               "action": "maybe-unset-default-billing-customer-addresses",
-              "uuid": "01M7N9VV9GYH359T9HRWHHDEXX",
+              "uuid": "01M7PPZ1TVPR4387VTPXQZ9M5N",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937597803,
+            "lastAttempt": 1794984882070,
             "next": [
               "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses"
             ],
             "_v": 0,
-            "startedAt": 1794937597803
+            "startedAt": 1794984882070
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-customer-addresses",
-          "transaction_id": "auto-01M7N9WBV73ZSWFPATB68CAGKW",
+          "transaction_id": "auto-01M7PPZBWM1D8RRNN85X2NHH46",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-shipping-customer-addresses",
-            "uuid": "01M7N9VV9G0CY57JZSW35YDVX3",
+            "uuid": "01M7PPZ1TVN6MEWFF0Y18GRJQ3",
             "depth": 1,
             "definition": {
               "action": "maybe-unset-default-shipping-customer-addresses",
-              "uuid": "01M7N9VV9G0CY57JZSW35YDVX3",
+              "uuid": "01M7PPZ1TVN6MEWFF0Y18GRJQ3",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937597803,
+            "lastAttempt": 1794984882070,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937597803
+            "startedAt": 1794984882070
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-customer-addresses",
-          "transaction_id": "auto-01M7N9WBV73ZSWFPATB68CAGKW",
+          "transaction_id": "auto-01M7PPZBWM1D8RRNN85X2NHH46",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses",
-            "uuid": "01M7N9VV9GYH359T9HRWHHDEXX",
+            "uuid": "01M7PPZ1TVPR4387VTPXQZ9M5N",
             "depth": 1,
             "definition": {
               "action": "maybe-unset-default-billing-customer-addresses",
-              "uuid": "01M7N9VV9GYH359T9HRWHHDEXX",
+              "uuid": "01M7PPZ1TVPR4387VTPXQZ9M5N",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937597803,
+            "lastAttempt": 1794984882070,
             "next": [
               "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses"
             ],
             "_v": 0,
-            "startedAt": 1794937597803
+            "startedAt": 1794984882070
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-customer-addresses",
-          "transaction_id": "auto-01M7N9WBV73ZSWFPATB68CAGKW",
+          "transaction_id": "auto-01M7PPZBWM1D8RRNN85X2NHH46",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses",
-            "uuid": "01M7N9VV9GM9KC9MWK4VD956NS",
+            "uuid": "01M7PPZ1TV9VKFJ7EGK5G0ZH7A",
             "depth": 2,
             "definition": {
               "action": "update-customer-addresses",
-              "uuid": "01M7N9VV9GM9KC9MWK4VD956NS",
+              "uuid": "01M7PPZ1TV9VKFJ7EGK5G0ZH7A",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937597808,
+            "lastAttempt": 1794984882076,
             "next": [
               "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses.addressesUpdated"
             ],
             "_v": 0,
-            "startedAt": 1794937597808
+            "startedAt": 1794984882076
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-customer-addresses",
-          "transaction_id": "auto-01M7N9WBV73ZSWFPATB68CAGKW",
+          "transaction_id": "auto-01M7PPZBWM1D8RRNN85X2NHH46",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses",
-            "uuid": "01M7N9VV9GM9KC9MWK4VD956NS",
+            "uuid": "01M7PPZ1TV9VKFJ7EGK5G0ZH7A",
             "depth": 2,
             "definition": {
               "action": "update-customer-addresses",
-              "uuid": "01M7N9VV9GM9KC9MWK4VD956NS",
+              "uuid": "01M7PPZ1TV9VKFJ7EGK5G0ZH7A",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937597808,
+            "lastAttempt": 1794984882076,
             "next": [
               "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses.addressesUpdated"
             ],
             "_v": 0,
-            "startedAt": 1794937597808
+            "startedAt": 1794984882076
           },
           "response": [
             {
-              "id": "cuaddr_01M7N9WAC0JKF99DHP1F7XD5KN",
+              "id": "cuaddr_01M7PPZACP58VB1Z6A41ZER45V",
               "address_name": "Home",
               "is_default_shipping": true,
               "is_default_billing": true,
@@ -1147,12 +1183,12 @@
               "postal_code": null,
               "phone": null,
               "metadata": null,
-              "customer_id": "cus_01M7N9W5WZC2CJ7Q334XADKFA6",
+              "customer_id": "cus_01M7PPZ5QTJ8X0D1PQ14H437HD",
               "customer": {
-                "id": "cus_01M7N9W5WZC2CJ7Q334XADKFA6"
+                "id": "cus_01M7PPZ5QTJ8X0D1PQ14H437HD"
               },
-              "created_at": "2026-11-17T17:46:36.288Z",
-              "updated_at": "2026-11-17T17:46:37.811Z",
+              "created_at": "2026-11-18T06:54:40.534Z",
+              "updated_at": "2026-11-18T06:54:42.080Z",
               "deleted_at": null
             }
           ]
@@ -1160,58 +1196,58 @@
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-customer-addresses",
-          "transaction_id": "auto-01M7N9WBV73ZSWFPATB68CAGKW",
+          "transaction_id": "auto-01M7PPZBWM1D8RRNN85X2NHH46",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses.addressesUpdated",
-            "uuid": "01M7N9VV9G3B4VW3Z219N9GNVV",
+            "uuid": "01M7PPZ1TVE2N0TQDJG0EGB99C",
             "depth": 3,
             "definition": {
               "action": "addressesUpdated",
-              "uuid": "01M7N9VV9G3B4VW3Z219N9GNVV",
+              "uuid": "01M7PPZ1TVE2N0TQDJG0EGB99C",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937597819,
+            "lastAttempt": 1794984882085,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937597819
+            "startedAt": 1794984882085
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-customer-addresses",
-          "transaction_id": "auto-01M7N9WBV73ZSWFPATB68CAGKW",
+          "transaction_id": "auto-01M7PPZBWM1D8RRNN85X2NHH46",
           "step": {
             "stepFailed": false,
             "id": "_root.maybe-unset-default-billing-customer-addresses.update-customer-addresses.addressesUpdated",
-            "uuid": "01M7N9VV9G3B4VW3Z219N9GNVV",
+            "uuid": "01M7PPZ1TVE2N0TQDJG0EGB99C",
             "depth": 3,
             "definition": {
               "action": "addressesUpdated",
-              "uuid": "01M7N9VV9G3B4VW3Z219N9GNVV",
+              "uuid": "01M7PPZ1TVE2N0TQDJG0EGB99C",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937597819,
+            "lastAttempt": 1794984882085,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937597819
+            "startedAt": 1794984882085
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "update-customer-addresses",
-          "transaction_id": "auto-01M7N9WBV73ZSWFPATB68CAGKW",
+          "transaction_id": "auto-01M7PPZBWM1D8RRNN85X2NHH46",
           "result": [
             {
-              "id": "cuaddr_01M7N9WAC0JKF99DHP1F7XD5KN",
+              "id": "cuaddr_01M7PPZACP58VB1Z6A41ZER45V",
               "address_name": "Home",
               "is_default_shipping": true,
               "is_default_billing": true,
@@ -1226,12 +1262,12 @@
               "postal_code": null,
               "phone": null,
               "metadata": null,
-              "customer_id": "cus_01M7N9W5WZC2CJ7Q334XADKFA6",
+              "customer_id": "cus_01M7PPZ5QTJ8X0D1PQ14H437HD",
               "customer": {
-                "id": "cus_01M7N9W5WZC2CJ7Q334XADKFA6"
+                "id": "cus_01M7PPZ5QTJ8X0D1PQ14H437HD"
               },
-              "created_at": "2026-11-17T17:46:36.288Z",
-              "updated_at": "2026-11-17T17:46:37.811Z",
+              "created_at": "2026-11-18T06:54:40.534Z",
+              "updated_at": "2026-11-18T06:54:42.080Z",
               "deleted_at": null
             }
           ],
@@ -1245,11 +1281,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9WBV73ZSWFPATB68CAGKW",
+        "transactionId": "auto-01M7PPZBWM1D8RRNN85X2NHH46",
         "workflowId": "update-customer-addresses",
         "hasFinished": true,
         "hasFailed": false
@@ -1261,119 +1300,122 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "delete-customer-addresses",
-          "transaction_id": "auto-01M7N9WDATRZJEDBGK7RG9HCPN"
+          "transaction_id": "auto-01M7PPZDCB7F9XY8JQZWQ1H6YX"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "delete-customer-addresses",
-          "transaction_id": "auto-01M7N9WDATRZJEDBGK7RG9HCPN",
+          "transaction_id": "auto-01M7PPZDCB7F9XY8JQZWQ1H6YX",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customer-addresses",
-            "uuid": "01M7N9VV9D4JDBC8PV86HKCVT0",
+            "uuid": "01M7PPZ1TT2GFP2YW2HDF9MW5A",
             "depth": 1,
             "definition": {
               "action": "delete-customer-addresses",
-              "uuid": "01M7N9VV9D4JDBC8PV86HKCVT0",
+              "uuid": "01M7PPZ1TT2GFP2YW2HDF9MW5A",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937599324,
+            "lastAttempt": 1794984883601,
             "next": [
               "_root.delete-customer-addresses.addressesDeleted"
             ],
             "_v": 0,
-            "startedAt": 1794937599324
+            "startedAt": 1794984883601
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "delete-customer-addresses",
-          "transaction_id": "auto-01M7N9WDATRZJEDBGK7RG9HCPN",
+          "transaction_id": "auto-01M7PPZDCB7F9XY8JQZWQ1H6YX",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customer-addresses",
-            "uuid": "01M7N9VV9D4JDBC8PV86HKCVT0",
+            "uuid": "01M7PPZ1TT2GFP2YW2HDF9MW5A",
             "depth": 1,
             "definition": {
               "action": "delete-customer-addresses",
-              "uuid": "01M7N9VV9D4JDBC8PV86HKCVT0",
+              "uuid": "01M7PPZ1TT2GFP2YW2HDF9MW5A",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937599324,
+            "lastAttempt": 1794984883601,
             "next": [
               "_root.delete-customer-addresses.addressesDeleted"
             ],
             "_v": 0,
-            "startedAt": 1794937599324
+            "startedAt": 1794984883601
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "delete-customer-addresses",
-          "transaction_id": "auto-01M7N9WDATRZJEDBGK7RG9HCPN",
+          "transaction_id": "auto-01M7PPZDCB7F9XY8JQZWQ1H6YX",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customer-addresses.addressesDeleted",
-            "uuid": "01M7N9VV9DVE54F792E56PFD73",
+            "uuid": "01M7PPZ1TTY5FF1GHRQKEASD62",
             "depth": 2,
             "definition": {
               "action": "addressesDeleted",
-              "uuid": "01M7N9VV9DVE54F792E56PFD73",
+              "uuid": "01M7PPZ1TTY5FF1GHRQKEASD62",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937599331,
+            "lastAttempt": 1794984883613,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937599331
+            "startedAt": 1794984883613
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "delete-customer-addresses",
-          "transaction_id": "auto-01M7N9WDATRZJEDBGK7RG9HCPN",
+          "transaction_id": "auto-01M7PPZDCB7F9XY8JQZWQ1H6YX",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customer-addresses.addressesDeleted",
-            "uuid": "01M7N9VV9DVE54F792E56PFD73",
+            "uuid": "01M7PPZ1TTY5FF1GHRQKEASD62",
             "depth": 2,
             "definition": {
               "action": "addressesDeleted",
-              "uuid": "01M7N9VV9DVE54F792E56PFD73",
+              "uuid": "01M7PPZ1TTY5FF1GHRQKEASD62",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937599331,
+            "lastAttempt": 1794984883613,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937599331
+            "startedAt": 1794984883613
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "delete-customer-addresses",
-          "transaction_id": "auto-01M7N9WDATRZJEDBGK7RG9HCPN",
+          "transaction_id": "auto-01M7PPZDCB7F9XY8JQZWQ1H6YX",
           "errors": []
         }
       ]
@@ -1384,11 +1426,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9WDATRZJEDBGK7RG9HCPN",
+        "transactionId": "auto-01M7PPZDCB7F9XY8JQZWQ1H6YX",
         "workflowId": "delete-customer-addresses",
         "hasFinished": true,
         "hasFailed": false
@@ -1400,72 +1445,75 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "create-customer-groups",
-          "transaction_id": "auto-01M7N9WET2Y2H1NGFPK4BB3DPZ"
+          "transaction_id": "auto-01M7PPZEW3WKYV2ZXM685GWC7S"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customer-groups",
-          "transaction_id": "auto-01M7N9WET2Y2H1NGFPK4BB3DPZ",
+          "transaction_id": "auto-01M7PPZEW3WKYV2ZXM685GWC7S",
           "step": {
             "stepFailed": false,
             "id": "_root.create-customer-groups",
-            "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+            "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
             "depth": 1,
             "definition": {
               "action": "create-customer-groups",
-              "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+              "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937600836,
+            "lastAttempt": 1794984885127,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937600836
+            "startedAt": 1794984885127
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "create-customer-groups",
-          "transaction_id": "auto-01M7N9WET2Y2H1NGFPK4BB3DPZ",
+          "transaction_id": "auto-01M7PPZEW3WKYV2ZXM685GWC7S",
           "step": {
             "stepFailed": false,
             "id": "_root.create-customer-groups",
-            "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+            "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
             "depth": 1,
             "definition": {
               "action": "create-customer-groups",
-              "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+              "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937600836,
+            "lastAttempt": 1794984885127,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937600836
+            "startedAt": 1794984885127
           },
           "response": [
             {
-              "id": "cusgroup_01M7N9WET8MAAM25HHSWB5WZN7",
+              "id": "cusgroup_01M7PPZEWA6CE60WH6Q7B3N6XP",
               "name": "WF VIP",
               "metadata": {
                 "tier": 1
               },
               "created_by": null,
-              "created_at": "2026-11-17T17:46:40.840Z",
-              "updated_at": "2026-11-17T17:46:40.840Z",
+              "created_at": "2026-11-18T06:54:45.130Z",
+              "updated_at": "2026-11-18T06:54:45.130Z",
               "deleted_at": null,
               "customers": []
             }
@@ -1474,17 +1522,17 @@
         {
           "event_type": "onFinish",
           "workflow_id": "create-customer-groups",
-          "transaction_id": "auto-01M7N9WET2Y2H1NGFPK4BB3DPZ",
+          "transaction_id": "auto-01M7PPZEW3WKYV2ZXM685GWC7S",
           "result": [
             {
-              "id": "cusgroup_01M7N9WET8MAAM25HHSWB5WZN7",
+              "id": "cusgroup_01M7PPZEWA6CE60WH6Q7B3N6XP",
               "name": "WF VIP",
               "metadata": {
                 "tier": 1
               },
               "created_by": null,
-              "created_at": "2026-11-17T17:46:40.840Z",
-              "updated_at": "2026-11-17T17:46:40.840Z",
+              "created_at": "2026-11-18T06:54:45.130Z",
+              "updated_at": "2026-11-18T06:54:45.130Z",
               "deleted_at": null,
               "customers": []
             }
@@ -1499,11 +1547,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9WET2Y2H1NGFPK4BB3DPZ",
+        "transactionId": "auto-01M7PPZEW3WKYV2ZXM685GWC7S",
         "workflowId": "create-customer-groups",
         "hasFinished": true,
         "hasFailed": false
@@ -1515,12 +1566,15 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "customer_groups": [
         {
-          "id": "cusgroup_01M7N9WET8MAAM25HHSWB5WZN7",
+          "id": "cusgroup_01M7PPZEWA6CE60WH6Q7B3N6XP",
           "name": "WF VIP"
         }
       ],
@@ -1534,59 +1588,62 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "create-customer-groups",
-          "transaction_id": "auto-01M7N9WG9GJWSC25F78YCZR9KX"
+          "transaction_id": "auto-01M7PPZGC2QM987MKSM62NH7J9"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customer-groups",
-          "transaction_id": "auto-01M7N9WG9GJWSC25F78YCZR9KX",
+          "transaction_id": "auto-01M7PPZGC2QM987MKSM62NH7J9",
           "step": {
             "id": "_root.create-customer-groups",
-            "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+            "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
             "depth": 1,
             "definition": {
               "action": "create-customer-groups",
-              "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+              "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937602354,
+            "lastAttempt": 1794984886661,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937602354
+            "startedAt": 1794984886661
           }
         },
         {
           "event_type": "onStepFailure",
           "workflow_id": "create-customer-groups",
-          "transaction_id": "auto-01M7N9WG9GJWSC25F78YCZR9KX",
+          "transaction_id": "auto-01M7PPZGC2QM987MKSM62NH7J9",
           "step": {
             "id": "_root.create-customer-groups",
-            "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+            "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
             "depth": 1,
             "definition": {
               "action": "create-customer-groups",
-              "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+              "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937602358,
+            "lastAttempt": 1794984886667,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937602354
+            "startedAt": 1794984886661
           },
           "errors": [
             {
@@ -1597,7 +1654,7 @@
                 "name": "Error",
                 "__isMedusaError": true,
                 "type": "invalid_data",
-                "date": "2026-11-17T17:46:42.356Z"
+                "date": "2026-11-18T06:54:46.666Z"
               }
             }
           ]
@@ -1605,59 +1662,59 @@
         {
           "event_type": "onCompensateBegin",
           "workflow_id": "create-customer-groups",
-          "transaction_id": "auto-01M7N9WG9GJWSC25F78YCZR9KX"
+          "transaction_id": "auto-01M7PPZGC2QM987MKSM62NH7J9"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "create-customer-groups",
-          "transaction_id": "auto-01M7N9WG9GJWSC25F78YCZR9KX",
+          "transaction_id": "auto-01M7PPZGC2QM987MKSM62NH7J9",
           "step": {
             "id": "_root.create-customer-groups",
-            "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+            "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
             "depth": 1,
             "definition": {
               "action": "create-customer-groups",
-              "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+              "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937602358,
+            "lastAttempt": 1794984886667,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937602354
+            "startedAt": 1794984886661
           }
         },
         {
           "event_type": "onCompensateStepSuccess",
           "workflow_id": "create-customer-groups",
-          "transaction_id": "auto-01M7N9WG9GJWSC25F78YCZR9KX",
+          "transaction_id": "auto-01M7PPZGC2QM987MKSM62NH7J9",
           "step": {
             "id": "_root.create-customer-groups",
-            "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+            "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
             "depth": 1,
             "definition": {
               "action": "create-customer-groups",
-              "uuid": "01M7N9VV9KMH4RXC9WRVGQYK0Z",
+              "uuid": "01M7PPZ1TXWD6826YHZD3CBZEQ",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937602358,
+            "lastAttempt": 1794984886667,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937602354
+            "startedAt": 1794984886661
           },
           "response": {}
         },
         {
           "event_type": "onFinish",
           "workflow_id": "create-customer-groups",
-          "transaction_id": "auto-01M7N9WG9GJWSC25F78YCZR9KX",
+          "transaction_id": "auto-01M7PPZGC2QM987MKSM62NH7J9",
           "errors": [
             {
               "action": "create-customer-groups",
@@ -1667,7 +1724,7 @@
                 "name": "Error",
                 "__isMedusaError": true,
                 "type": "invalid_data",
-                "date": "2026-11-17T17:46:42.356Z"
+                "date": "2026-11-18T06:54:46.666Z"
               }
             }
           ]
@@ -1680,7 +1737,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "type": "invalid_data",
@@ -1692,72 +1752,75 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "update-customer-groups",
-          "transaction_id": "auto-01M7N9WHRP1FV9DA4JP26V947A"
+          "transaction_id": "auto-01M7PPZHVGGV0XMZRH1AMHCCCX"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "update-customer-groups",
-          "transaction_id": "auto-01M7N9WHRP1FV9DA4JP26V947A",
+          "transaction_id": "auto-01M7PPZHVGGV0XMZRH1AMHCCCX",
           "step": {
             "stepFailed": false,
             "id": "_root.update-customer-groups",
-            "uuid": "01M7N9VV9JNCPGHF4X36D8ECEB",
+            "uuid": "01M7PPZ1TXK22CXNEMMJMM4XZG",
             "depth": 1,
             "definition": {
               "action": "update-customer-groups",
-              "uuid": "01M7N9VV9JNCPGHF4X36D8ECEB",
+              "uuid": "01M7PPZ1TXK22CXNEMMJMM4XZG",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937603866,
+            "lastAttempt": 1794984888181,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937603866
+            "startedAt": 1794984888181
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "update-customer-groups",
-          "transaction_id": "auto-01M7N9WHRP1FV9DA4JP26V947A",
+          "transaction_id": "auto-01M7PPZHVGGV0XMZRH1AMHCCCX",
           "step": {
             "stepFailed": false,
             "id": "_root.update-customer-groups",
-            "uuid": "01M7N9VV9JNCPGHF4X36D8ECEB",
+            "uuid": "01M7PPZ1TXK22CXNEMMJMM4XZG",
             "depth": 1,
             "definition": {
               "action": "update-customer-groups",
-              "uuid": "01M7N9VV9JNCPGHF4X36D8ECEB",
+              "uuid": "01M7PPZ1TXK22CXNEMMJMM4XZG",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937603866,
+            "lastAttempt": 1794984888181,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937603866
+            "startedAt": 1794984888181
           },
           "response": [
             {
-              "id": "cusgroup_01M7N9WET8MAAM25HHSWB5WZN7",
+              "id": "cusgroup_01M7PPZEWA6CE60WH6Q7B3N6XP",
               "name": "WF VIP 2",
               "metadata": {
                 "tier": 1
               },
               "created_by": null,
-              "created_at": "2026-11-17T17:46:40.840Z",
-              "updated_at": "2026-11-17T17:46:43.868Z",
+              "created_at": "2026-11-18T06:54:45.130Z",
+              "updated_at": "2026-11-18T06:54:48.187Z",
               "deleted_at": null
             }
           ]
@@ -1765,17 +1828,17 @@
         {
           "event_type": "onFinish",
           "workflow_id": "update-customer-groups",
-          "transaction_id": "auto-01M7N9WHRP1FV9DA4JP26V947A",
+          "transaction_id": "auto-01M7PPZHVGGV0XMZRH1AMHCCCX",
           "result": [
             {
-              "id": "cusgroup_01M7N9WET8MAAM25HHSWB5WZN7",
+              "id": "cusgroup_01M7PPZEWA6CE60WH6Q7B3N6XP",
               "name": "WF VIP 2",
               "metadata": {
                 "tier": 1
               },
               "created_by": null,
-              "created_at": "2026-11-17T17:46:40.840Z",
-              "updated_at": "2026-11-17T17:46:43.868Z",
+              "created_at": "2026-11-18T06:54:45.130Z",
+              "updated_at": "2026-11-18T06:54:48.187Z",
               "deleted_at": null
             }
           ],
@@ -1789,11 +1852,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9WHRP1FV9DA4JP26V947A",
+        "transactionId": "auto-01M7PPZHVGGV0XMZRH1AMHCCCX",
         "workflowId": "update-customer-groups",
         "hasFinished": true,
         "hasFailed": false
@@ -1805,67 +1871,70 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "link-customers-to-customer-group",
-          "transaction_id": "auto-01M7N9WK9F6FSWKMKT5KHN1NKJ"
+          "transaction_id": "auto-01M7PPZKB6KVCP137TRHNR5XEC"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "link-customers-to-customer-group",
-          "transaction_id": "auto-01M7N9WK9F6FSWKMKT5KHN1NKJ",
+          "transaction_id": "auto-01M7PPZKB6KVCP137TRHNR5XEC",
           "step": {
             "stepFailed": false,
             "id": "_root.link-customers-to-customer-group",
-            "uuid": "01M7N9VV9KNJFWT1RBFZG3R212",
+            "uuid": "01M7PPZ1TXFZQ5JY4PBASJ00Q8",
             "depth": 1,
             "definition": {
               "action": "link-customers-to-customer-group",
-              "uuid": "01M7N9VV9KNJFWT1RBFZG3R212",
+              "uuid": "01M7PPZ1TXFZQ5JY4PBASJ00Q8",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937605425,
+            "lastAttempt": 1794984889707,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937605425
+            "startedAt": 1794984889707
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "link-customers-to-customer-group",
-          "transaction_id": "auto-01M7N9WK9F6FSWKMKT5KHN1NKJ",
+          "transaction_id": "auto-01M7PPZKB6KVCP137TRHNR5XEC",
           "step": {
             "stepFailed": false,
             "id": "_root.link-customers-to-customer-group",
-            "uuid": "01M7N9VV9KNJFWT1RBFZG3R212",
+            "uuid": "01M7PPZ1TXFZQ5JY4PBASJ00Q8",
             "depth": 1,
             "definition": {
               "action": "link-customers-to-customer-group",
-              "uuid": "01M7N9VV9KNJFWT1RBFZG3R212",
+              "uuid": "01M7PPZ1TXFZQ5JY4PBASJ00Q8",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937605425,
+            "lastAttempt": 1794984889707,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937605425
+            "startedAt": 1794984889707
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "link-customers-to-customer-group",
-          "transaction_id": "auto-01M7N9WK9F6FSWKMKT5KHN1NKJ",
+          "transaction_id": "auto-01M7PPZKB6KVCP137TRHNR5XEC",
           "errors": []
         }
       ]
@@ -1876,11 +1945,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9WK9F6FSWKMKT5KHN1NKJ",
+        "transactionId": "auto-01M7PPZKB6KVCP137TRHNR5XEC",
         "workflowId": "link-customers-to-customer-group",
         "hasFinished": true,
         "hasFailed": false
@@ -1892,67 +1964,70 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "link-customer-groups-to-customer",
-          "transaction_id": "auto-01M7N9WMRQN3QXGFCFVPGAVY4Q"
+          "transaction_id": "auto-01M7PPZMTV03R1GP9QMESGW5EE"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "link-customer-groups-to-customer",
-          "transaction_id": "auto-01M7N9WMRQN3QXGFCFVPGAVY4Q",
+          "transaction_id": "auto-01M7PPZMTV03R1GP9QMESGW5EE",
           "step": {
             "stepFailed": false,
             "id": "_root.link-customers-to-customer-group",
-            "uuid": "01M7N9VV9KJNJ4KJBR13Y1YM71",
+            "uuid": "01M7PPZ1TXZ04RMJ0CRDGYS6WE",
             "depth": 1,
             "definition": {
               "action": "link-customers-to-customer-group",
-              "uuid": "01M7N9VV9KJNJ4KJBR13Y1YM71",
+              "uuid": "01M7PPZ1TXZ04RMJ0CRDGYS6WE",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937606936,
+            "lastAttempt": 1794984891232,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937606936
+            "startedAt": 1794984891232
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "link-customer-groups-to-customer",
-          "transaction_id": "auto-01M7N9WMRQN3QXGFCFVPGAVY4Q",
+          "transaction_id": "auto-01M7PPZMTV03R1GP9QMESGW5EE",
           "step": {
             "stepFailed": false,
             "id": "_root.link-customers-to-customer-group",
-            "uuid": "01M7N9VV9KJNJ4KJBR13Y1YM71",
+            "uuid": "01M7PPZ1TXZ04RMJ0CRDGYS6WE",
             "depth": 1,
             "definition": {
               "action": "link-customers-to-customer-group",
-              "uuid": "01M7N9VV9KJNJ4KJBR13Y1YM71",
+              "uuid": "01M7PPZ1TXZ04RMJ0CRDGYS6WE",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937606936,
+            "lastAttempt": 1794984891232,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937606936
+            "startedAt": 1794984891232
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "link-customer-groups-to-customer",
-          "transaction_id": "auto-01M7N9WMRQN3QXGFCFVPGAVY4Q",
+          "transaction_id": "auto-01M7PPZMTV03R1GP9QMESGW5EE",
           "errors": []
         }
       ]
@@ -1963,11 +2038,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9WMRQN3QXGFCFVPGAVY4Q",
+        "transactionId": "auto-01M7PPZMTV03R1GP9QMESGW5EE",
         "workflowId": "link-customer-groups-to-customer",
         "hasFinished": true,
         "hasFailed": false
@@ -1979,67 +2057,70 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "delete-customer-groups",
-          "transaction_id": "auto-01M7N9WPGQK52S21JADHQGXQ6J"
+          "transaction_id": "auto-01M7PPZPANM869JW0H3RFE29YY"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "delete-customer-groups",
-          "transaction_id": "auto-01M7N9WPGQK52S21JADHQGXQ6J",
+          "transaction_id": "auto-01M7PPZPANM869JW0H3RFE29YY",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customer-groups",
-            "uuid": "01M7N9VV9J67RRXY07BYAJ0HXK",
+            "uuid": "01M7PPZ1TXTHZ21AVTYJPA473S",
             "depth": 1,
             "definition": {
               "action": "delete-customer-groups",
-              "uuid": "01M7N9VV9J67RRXY07BYAJ0HXK",
+              "uuid": "01M7PPZ1TXTHZ21AVTYJPA473S",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937608729,
+            "lastAttempt": 1794984892763,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937608729
+            "startedAt": 1794984892763
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "delete-customer-groups",
-          "transaction_id": "auto-01M7N9WPGQK52S21JADHQGXQ6J",
+          "transaction_id": "auto-01M7PPZPANM869JW0H3RFE29YY",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customer-groups",
-            "uuid": "01M7N9VV9J67RRXY07BYAJ0HXK",
+            "uuid": "01M7PPZ1TXTHZ21AVTYJPA473S",
             "depth": 1,
             "definition": {
               "action": "delete-customer-groups",
-              "uuid": "01M7N9VV9J67RRXY07BYAJ0HXK",
+              "uuid": "01M7PPZ1TXTHZ21AVTYJPA473S",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937608729,
+            "lastAttempt": 1794984892763,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937608729
+            "startedAt": 1794984892763
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "delete-customer-groups",
-          "transaction_id": "auto-01M7N9WPGQK52S21JADHQGXQ6J",
+          "transaction_id": "auto-01M7PPZPANM869JW0H3RFE29YY",
           "errors": []
         }
       ]
@@ -2050,11 +2131,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9WPGQK52S21JADHQGXQ6J",
+        "transactionId": "auto-01M7PPZPANM869JW0H3RFE29YY",
         "workflowId": "delete-customer-groups",
         "hasFinished": true,
         "hasFailed": false
@@ -2066,175 +2150,178 @@
     "headers": {
       "Content-Type": "text/event-stream",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "events": [
         {
           "event_type": "onBegin",
           "workflow_id": "delete-customers",
-          "transaction_id": "auto-01M7N9WR01J9PWTVC3FF2EH4N8"
+          "transaction_id": "auto-01M7PPZQT9N4XD52FCFHGBQX2B"
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "delete-customers",
-          "transaction_id": "auto-01M7N9WR01J9PWTVC3FF2EH4N8",
+          "transaction_id": "auto-01M7PPZQT9N4XD52FCFHGBQX2B",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customers",
-            "uuid": "01M7N9VV9E589T66JGM7NRPKD7",
+            "uuid": "01M7PPZ1TTA67F0JQTFDZMR760",
             "depth": 1,
             "definition": {
               "action": "delete-customers",
-              "uuid": "01M7N9VV9E589T66JGM7NRPKD7",
+              "uuid": "01M7PPZ1TTA67F0JQTFDZMR760",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937610243,
+            "lastAttempt": 1794984894284,
             "next": [
               "_root.delete-customers.customersDeleted"
             ],
             "_v": 0,
-            "startedAt": 1794937610243
+            "startedAt": 1794984894284
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "delete-customers",
-          "transaction_id": "auto-01M7N9WR01J9PWTVC3FF2EH4N8",
+          "transaction_id": "auto-01M7PPZQT9N4XD52FCFHGBQX2B",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customers",
-            "uuid": "01M7N9VV9E589T66JGM7NRPKD7",
+            "uuid": "01M7PPZ1TTA67F0JQTFDZMR760",
             "depth": 1,
             "definition": {
               "action": "delete-customers",
-              "uuid": "01M7N9VV9E589T66JGM7NRPKD7",
+              "uuid": "01M7PPZ1TTA67F0JQTFDZMR760",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937610243,
+            "lastAttempt": 1794984894284,
             "next": [
               "_root.delete-customers.customersDeleted"
             ],
             "_v": 0,
-            "startedAt": 1794937610243
+            "startedAt": 1794984894284
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "delete-customers",
-          "transaction_id": "auto-01M7N9WR01J9PWTVC3FF2EH4N8",
+          "transaction_id": "auto-01M7PPZQT9N4XD52FCFHGBQX2B",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customers.customersDeleted",
-            "uuid": "01M7N9VV9ENFKC8G5DYFR0PE4Y",
+            "uuid": "01M7PPZ1TTABG2V4SKBMR7G6ME",
             "depth": 2,
             "definition": {
               "action": "customersDeleted",
-              "uuid": "01M7N9VV9ENFKC8G5DYFR0PE4Y",
+              "uuid": "01M7PPZ1TTABG2V4SKBMR7G6ME",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937610253,
+            "lastAttempt": 1794984894292,
             "next": [
               "_root.delete-customers.customersDeleted.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937610253
+            "startedAt": 1794984894292
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "delete-customers",
-          "transaction_id": "auto-01M7N9WR01J9PWTVC3FF2EH4N8",
+          "transaction_id": "auto-01M7PPZQT9N4XD52FCFHGBQX2B",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customers.customersDeleted",
-            "uuid": "01M7N9VV9ENFKC8G5DYFR0PE4Y",
+            "uuid": "01M7PPZ1TTABG2V4SKBMR7G6ME",
             "depth": 2,
             "definition": {
               "action": "customersDeleted",
-              "uuid": "01M7N9VV9ENFKC8G5DYFR0PE4Y",
+              "uuid": "01M7PPZ1TTABG2V4SKBMR7G6ME",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937610253,
+            "lastAttempt": 1794984894292,
             "next": [
               "_root.delete-customers.customersDeleted.emit-event-step"
             ],
             "_v": 0,
-            "startedAt": 1794937610253
+            "startedAt": 1794984894292
           }
         },
         {
           "event_type": "onStepBegin",
           "workflow_id": "delete-customers",
-          "transaction_id": "auto-01M7N9WR01J9PWTVC3FF2EH4N8",
+          "transaction_id": "auto-01M7PPZQT9N4XD52FCFHGBQX2B",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customers.customersDeleted.emit-event-step",
-            "uuid": "01M7N9VV9E251VMCJB2184KW0J",
+            "uuid": "01M7PPZ1TTE3RWYWZFHQ0GVP7P",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9VV9E251VMCJB2184KW0J",
+              "uuid": "01M7PPZ1TTE3RWYWZFHQ0GVP7P",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937610253,
+            "lastAttempt": 1794984894292,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937610253
+            "startedAt": 1794984894292
           }
         },
         {
           "event_type": "onStepSuccess",
           "workflow_id": "delete-customers",
-          "transaction_id": "auto-01M7N9WR01J9PWTVC3FF2EH4N8",
+          "transaction_id": "auto-01M7PPZQT9N4XD52FCFHGBQX2B",
           "step": {
             "stepFailed": false,
             "id": "_root.delete-customers.customersDeleted.emit-event-step",
-            "uuid": "01M7N9VV9E251VMCJB2184KW0J",
+            "uuid": "01M7PPZ1TTE3RWYWZFHQ0GVP7P",
             "depth": 3,
             "definition": {
               "action": "emit-event-step",
-              "uuid": "01M7N9VV9E251VMCJB2184KW0J",
+              "uuid": "01M7PPZ1TTE3RWYWZFHQ0GVP7P",
               "noCompensation": false,
               "store": false
             },
             "saveResponse": true,
             "attempts": 1,
             "failures": 0,
-            "lastAttempt": 1794937610253,
+            "lastAttempt": 1794984894292,
             "next": [],
             "_v": 0,
-            "startedAt": 1794937610253
+            "startedAt": 1794984894292
           },
           "response": {
-            "eventGroupId": "01M7N9WR01J7BD14JF8FSEHYFX",
+            "eventGroupId": "01M7PPZQT93Z0QZHX6WNYNQ80D",
             "eventName": "customer.deleted"
           }
         },
         {
           "event_type": "onFinish",
           "workflow_id": "delete-customers",
-          "transaction_id": "auto-01M7N9WR01J9PWTVC3FF2EH4N8",
+          "transaction_id": "auto-01M7PPZQT9N4XD52FCFHGBQX2B",
           "errors": []
         }
       ]
@@ -2245,11 +2332,14 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "acknowledgement": {
-        "transactionId": "auto-01M7N9WR01J9PWTVC3FF2EH4N8",
+        "transactionId": "auto-01M7PPZQT9N4XD52FCFHGBQX2B",
         "workflowId": "delete-customers",
         "hasFinished": true,
         "hasFailed": false
@@ -2261,7 +2351,10 @@
     "headers": {
       "Content-Type": "application/json; charset=utf-8",
       "Access-Control-Allow-Credentials": "true",
-      "Vary": "Origin"
+      "Vary": "Origin",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      "Content-Security-Policy": "frame-ancestors 'self'"
     },
     "body": {
       "customers": [],
