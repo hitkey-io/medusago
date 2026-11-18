@@ -3,6 +3,7 @@ import { globalConfig } from "docs-ui"
 import { generatedSidebars as userGuideSidebars } from "~/generated/user-guide-sidebar.mjs"
 import { generatedSidebars as resourcesSidebars } from "~/generated/resources-sidebar.mjs"
 import { generatedSidebars as learnSidebars } from "~/generated/learn-sidebar.mjs"
+import releaseVersion from "~/generated/version.json"
 import { generatedSidebars as apiSidebars } from "~/generated/api-sidebar.mjs"
 
 // Links are relative to the host that serves the site (local preview, staging or
@@ -16,7 +17,7 @@ const common = {
   breadcrumbOptions: {
     startItems: [{ title: "Documentation", link: "/" }],
   },
-  version: { ...globalConfig.version, hide: true },
+  version: releaseVersion,
   contentMenuSections: { products: true, whatsNew: false, cloudStatus: false },
 }
 

@@ -20,7 +20,7 @@ export const MainNavVersion = () => {
         "px-docs_0.5 py-docs_0.25 hover:bg-medusa-button-transparent-hover rounded-docs_sm"
       )}
     >
-      <Tooltip html="View the release notes<br/>on GitHub">
+      <Tooltip html="View this release<br/>on GitHub">
         <span className="relative text-compact-small-plus block">
           <span className="flex justify-center items-center">
             v{version.number}
