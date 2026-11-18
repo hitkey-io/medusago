@@ -10,6 +10,8 @@ products:
 
 import { Prerequisites, CodeTabs, CodeTab, Details } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/storefront.mjs"
+
 export const metadata = {
   title: `Third-Party or Social Login in Storefront`,
 }
@@ -26,6 +28,8 @@ By following the steps in this guide, you'll learn how to:
 - Create a callback page that the third-party service redirects to after authentication. This page receives query parameters from the third-party service and uses them to validate the authentication in MedusaGo.
 
 These are the pages you need in your storefront to allow customers to log in or create an account using a third-party service.
+
+<Diagram alt="Diagram with a summary of the third-party login flow in the storefront." spec={diagramPages["resources/storefront-development/customers/third-party-login"][0]} />
 
 <Prerequisites
   items={[
@@ -598,6 +602,8 @@ const validateCallback = async () => {
 In this section, you'll find a general overview of the third-party login flow in the storefront. This is useful if you're not using the JS SDK or want to understand the flow better.
 
 If you already set up the Auth Module Provider in your MedusaGo application, you can log in a customer with a third-party service, such as Google or GitHub, using the following flow:
+
+<Diagram alt="Diagram illustrating the authentication flow between the storefront, MedusaGo application, and the third-party service." spec={diagramPages["resources/storefront-development/customers/third-party-login"][2]} />
 
 1. Authenticate the customer with the [Authenticate Customer API route](!api!/store/auth). It may return:
     - A URL in a `location` property to authenticate with a third-party service, such as Google. When you receive this property, redirect to the returned location.

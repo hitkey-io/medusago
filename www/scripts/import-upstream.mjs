@@ -198,7 +198,8 @@ for (const page of pages) {
       if (known) known.status = "done"
       else images.push({ page: file, alt, upstream: url, status: "done" })
       diagramImport = `import { pages as diagramPages } from "diagrams/${diagrams.module}"\n`
-      return `<Diagram alt=${JSON.stringify(applyTerms(alt))} spec={diagramPages[${JSON.stringify(file)}][${ordinal}]} />\n`
+      const comp = diagrams.specs[ordinal].tree || diagrams.specs[ordinal].trees ? "FileTree" : "Diagram"
+      return `<${comp} alt=${JSON.stringify(applyTerms(alt))} spec={diagramPages[${JSON.stringify(file)}][${ordinal}]} />\n`
     }
     const own = ownShots.get(`${file}|${alt}`)
     const known = images.find((i) => i.page === file && i.upstream === url)

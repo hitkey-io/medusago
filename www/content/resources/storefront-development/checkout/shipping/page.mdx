@@ -10,6 +10,8 @@ products:
 
 import { CodeTabs, CodeTab } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/storefront.mjs"
+
 export const metadata = {
   title: `Checkout Step 3: Choose Shipping Method`,
 }
@@ -21,6 +23,8 @@ In this guide, you'll learn how to implement the third step of the checkout flow
 ## Shipping Flow in Storefront Checkout
 
 To allow the customer to choose a shipping method, you:
+
+<Diagram alt="Diagram showing the different steps of the shipping flow in storefront checkout" spec={diagramPages["resources/storefront-development/checkout/shipping"][0]} />
 
 1. Retrieve the available shipping options for the cart using the [List Shipping Options API route](!api!/store/shipping-options) and show them to the customer.
 2. For shipping options whose `price_type=calculated`, you retrieve their calculated price using the [Calculate Shipping Option Price API Route](!api!/store/shipping-options).

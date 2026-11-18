@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/trees.mjs"
+
 export const metadata = {
   title: `Remove Country Code Prefix in Next.js Starter Storefront`,
 }
@@ -210,6 +212,8 @@ Next, you need to restructure the routes in the Next.js Starter Storefront to re
 Currently, there are two directories under `src/app/[countryCode]`: `(checkout)` and `(main)`. These directories contain all routes that include the country code prefix.
 
 To remove the country code prefix, move the `(checkout)` and `(main)` directories directly under `src/app`, then delete the `[countryCode]` directory. Make sure to update any imports or references to and from the routes in these directories accordingly.
+
+<FileTree alt="Diagram illustrating the directory structure before and after removing the country code prefix." spec={diagramPages["resources/nextjs-starter/guides/remove-country-code"][0]} />
 
 ---
 

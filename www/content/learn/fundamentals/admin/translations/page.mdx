@@ -1,5 +1,7 @@
 import { CodeTabs, CodeTab } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/trees.mjs"
+
 export const metadata = {
   title: `${pageNumber} Translate Admin Customizations`,
 }
@@ -38,6 +40,8 @@ English is the default language for Medusa Admin, so it's recommended to always 
 
 </Note>
 
+<FileTree alt="Directory structure showing where to place translation files" spec={diagramPages["learn/fundamentals/admin/translations"][0]} />
+
 
 ```json title="src/admin/i18n/json/en.json"
 {
@@ -50,6 +54,8 @@ English is the default language for Medusa Admin, so it's recommended to always 
 ```
 
 You can create additional translation files for other languages by following the same structure. For example, for Spanish, create `src/admin/i18n/json/es.json`:
+
+<FileTree alt="Directory structure showing where to place translation files" spec={diagramPages["learn/fundamentals/admin/translations"][1]} />
 
 
 ```json title="src/admin/i18n/json/es.json"
@@ -65,6 +71,8 @@ You can create additional translation files for other languages by following the
 ### Step 2: Load Translation Files
 
 Next, to load the translation files, create the file `src/admin/i18n/index.ts` with the following content:
+
+<FileTree alt="Directory structure showing i18n index file" spec={diagramPages["learn/fundamentals/admin/translations"][2]} />
 
 
 ```ts title="src/admin/i18n/index.ts"

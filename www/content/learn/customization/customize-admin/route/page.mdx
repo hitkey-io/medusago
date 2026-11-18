@@ -4,6 +4,8 @@ rewritten: true
 
 import { Prerequisites } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/trees.mjs"
+
 export const metadata = {
   title: `${pageNumber} Create Brands UI Route in Admin`,
 }
@@ -86,6 +88,8 @@ In your custom UI route, you'll retrieve the brands by sending a request to the 
 
 If you didn't follow the [previous chapter](../widget/page.mdx), create the file `src/admin/lib/sdk.ts` with the following content:
 
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["learn/customization/customize-admin/route"][0]} />
+
 
 ```ts title="src/admin/lib/sdk.ts"
 import Medusa from "@medusajs/js-sdk"
@@ -128,6 +132,8 @@ Refer to the [UI Routes](../../../fundamentals/admin/ui-routes/page.mdx) chapter
 </Note>
 
 So, to add the UI route at the `localhost:9000/app/brands` path, create the file `src/admin/routes/brands/page.tsx` with the following content:
+
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["learn/customization/customize-admin/route"][1]} />
 
 
 export const uiRouteHighlights = [

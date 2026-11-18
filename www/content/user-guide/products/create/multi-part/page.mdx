@@ -8,6 +8,8 @@ products:
   - inventory
 ---
 
+import { pages as diagramPages } from "diagrams/user-guide.mjs"
+
 export const metadata = {
   title: `Create Multi-Part Product in Medusa Admin`,
 }
@@ -23,6 +25,8 @@ Consider a bicycle that consists of a frame, wheels, and handlebars. Each of the
 MedusaGo supports variants with inventory kits, which is a collection of inventory items that make up the variant's part. In addition, the variant can require a specific quantity of each inventory item to be available in stock.
 
 For example, a bicycle product variant needs two wheels, one frame, and one handlebar to be available in stock. If any of these inventory items are out of stock, the variant is not purchasable. Also, when the variant is purchased, the inventory items are automatically deducted from the stock based on the required quantity.
+
+<Diagram alt="Multi-part Product Diagram" spec={diagramPages["user-guide/products/create/multi-part"][0]} />
 
 ---
 

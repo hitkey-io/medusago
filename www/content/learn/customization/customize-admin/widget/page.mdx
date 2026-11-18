@@ -5,6 +5,8 @@ products:
 
 import { Prerequisites } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/trees.mjs"
+
 export const metadata = {
   title: `${pageNumber} Guide: Add Product's Brand Widget in Admin`,
 }
@@ -27,6 +29,8 @@ In this chapter, you'll customize the product details page of the Medusa Admin d
 In your custom widget, you'll retrieve the product's brand by sending a request to the MedusaGo server. Medusa has a [JS SDK](!resources!/js-sdk) that simplifies sending requests to the server's API routes.
 
 So, you'll start by configuring the JS SDK. Create the file `src/admin/lib/sdk.ts` with the following content:
+
+<FileTree alt="The directory structure of the MedusaGo application after adding the file" spec={diagramPages["learn/customization/customize-admin/widget"][0]} />
 
 
 ```ts title="src/admin/lib/sdk.ts"
@@ -64,6 +68,8 @@ Refer to the [JS SDK Reference](!resources!/js-sdk) to learn more about the it, 
 You'll now add a widget to the product-details page. A [widget](../../../fundamentals/admin/widgets/page.mdx) is a React component that's injected into pre-defined zones in the Medusa Admin dashboard. It's created in a `.tsx` file under the `src/admin/widgets` directory.
 
 To create a widget that shows a product's brand in its details page, create the file `src/admin/widgets/product-brand.tsx` with the following content:
+
+<FileTree alt="Directory structure of the MedusaGo application after adding the widget" spec={diagramPages["learn/customization/customize-admin/widget"][1]} />
 
 
 export const highlights = [

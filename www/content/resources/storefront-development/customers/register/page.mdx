@@ -10,6 +10,8 @@ products:
 
 import { CodeTabs, CodeTab } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/storefront.mjs"
+
 export const metadata = {
   title: `Register Customer in Storefront`,
 }
@@ -28,6 +30,8 @@ In this guide, you'll learn how to register a customer in your storefront.
 ## Register Customer Flow
 
 To register a customer, you implement the following steps:
+
+<Diagram alt="A diagram illustrating the flow of the register customer flow" spec={diagramPages["resources/storefront-development/customers/register"][0]} />
 
 1. Show the customer a form to enter their details.
 2. Send a `POST` request to the `/auth/customer/emailpass/register` [Get Registration Token](!api!/store/auth) API route to obtain a registration JWT token.

@@ -10,6 +10,8 @@ products:
 
 import { CodeTabs, CodeTab } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/storefront.mjs"
+
 export const metadata = {
   title: `Checkout Step 4: Choose Payment Provider`,
 }
@@ -21,6 +23,8 @@ In this guide, you'll learn how to implement the last step of the checkout flow,
 ## Payment Step Flow in Storefront Checkout
 
 The payment step requires implementing the following flow:
+
+<Diagram alt="Storefront payment checkout flow diagram illustrating the complete payment process: retrieving available payment providers, customer selection of payment method, payment collection creation, session initialization, and showing the necessary UI to complete the payment" spec={diagramPages["resources/storefront-development/checkout/payment"][0]} />
 
 1. Retrieve the payment providers using the [List Payment Providers API route](!api!/store/payment-providers).
 2. Customer chooses the payment provider to use.

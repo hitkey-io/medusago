@@ -1,5 +1,7 @@
 import { Prerequisites, CodeTab, CodeTabs } from "docs-ui"
 
+import { pages as diagramPages } from "diagrams/trees.mjs"
+
 export const metadata = {
   title: `${pageNumber} Admin UI Routes`,
 }
@@ -30,6 +32,8 @@ You can create a UI route directly in your MedusaGo application, or in a [plugin
 You create a UI route in a `page.tsx` file under a sub-directory of `src/admin/routes` directory. The file's path relative to `src/admin/routes` determines its path in the dashboard. The file’s default export must be the UI route’s React component.
 
 For example, create the file `src/admin/routes/custom/page.tsx` with the following content:
+
+<FileTree alt="Example of UI route file in the application's directory structure" spec={diagramPages["learn/fundamentals/admin/ui-routes"][0]} />
 
 
 ```tsx title="src/admin/routes/custom/page.tsx"
@@ -190,6 +194,8 @@ MedusaGo also applies the same sorting logic to UI routes at the nested level. L
 
 Consider that alongside the UI route above at `src/admin/routes/custom/page.tsx` you create a nested UI route at `src/admin/routes/custom/nested/page.tsx` that also exports route configurations:
 
+<FileTree alt="Example of nested UI route file in the application's directory structure" spec={diagramPages["learn/fundamentals/admin/ui-routes"][1]} />
+
 
 ```tsx title="src/admin/routes/custom/nested/page.tsx"
 import { defineRouteConfig } from "@medusajs/admin-sdk"
@@ -284,6 +290,8 @@ To create a page under the settings section of the admin dashboard, create a UI 
 
 For example, create a UI route at `src/admin/routes/settings/custom/page.tsx`:
 
+<FileTree alt="Example of settings UI route file in the application's directory structure" spec={diagramPages["learn/fundamentals/admin/ui-routes"][2]} />
+
 
 ```tsx title="src/admin/routes/settings/custom/page.tsx"
 import { defineRouteConfig } from "@medusajs/admin-sdk"
@@ -315,6 +323,8 @@ This adds a page under the path `/app/settings/custom`. An item is also added to
 A UI route can accept path parameters if the name of any of the directories in its path is of the format `[param]`.
 
 For example, create the file `src/admin/routes/custom/[id]/page.tsx` with the following content:
+
+<FileTree alt="Example of UI route file with path parameters in the application's directory structure" spec={diagramPages["learn/fundamentals/admin/ui-routes"][3]} />
 
 
 ```tsx title="src/admin/routes/custom/[id]/page.tsx" highlights={[["5", "", "Retrieve the path parameter."], ["10", "{id}", "Show the path parameter."]]}

@@ -28,6 +28,7 @@ import {
   LearningPath,
 } from "docs-ui"
 import { Diagram } from "./Diagram"
+import { FileTree } from "./FileTree"
 
 // The same set the upstream sites use, minus the Enterprise-only components
 // (EnterpriseNotice, PermissionsBadge).
@@ -36,6 +37,7 @@ export const mdxComponents: MDXComponentsType = {
   InlineIcon,
   InlineThemeImage,
   Diagram,
+  FileTree,
   TypeList,
   WorkflowDiagram,
   SourceCodeLink,

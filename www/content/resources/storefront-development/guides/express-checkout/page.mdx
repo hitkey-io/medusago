@@ -23,6 +23,8 @@ products:
 import { Card, Prerequisites, Details } from "docs-ui"
 import { Github } from "@medusajs/icons"
 
+import { pages as diagramPages } from "diagrams/trees.mjs"
+
 export const ogImage = "https://res.cloudinary.com/dza7lstvk/image/upload/v1739360151/Medusa%20Resources/Express_Checkout_Guide_2025_yizn34.jpg"
 
 export const metadata = {
@@ -255,6 +257,8 @@ Aside from the SDK, you also install the `@medusajs/types` package, which provid
 
 Next, to use the SDK, you'll export a configured instance and re-use it across your application. So, create the file `lib/sdk.ts` with the following content:
 
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][1]} />
+
 
 export const sdkHighlights = [
   ["6", "NEXT_PUBLIC_MEDUSA_BACKEND_URL", "Set the backend URL from an environment variable."],
@@ -297,6 +301,8 @@ To easily access and manage these resources, you'll wrap your storefront with tw
 ### Create Region Provider
 
 To create the region provider, create the file `providers/region.tsx` with the following content:
+
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][3]} />
 
 
 export const regionProviderHighlights1 = [
@@ -486,6 +492,8 @@ You export a `useRegion` hook that returns the region context. You'll use this h
 ### Create Cart Provider
 
 Next, you'll create the cart provider that allows you to access the customer's cart across components. Create the file `providers/cart.tsx` with the following content:
+
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][4]} />
 
 
 export const cartProviderHighlights1 = [
@@ -837,6 +845,8 @@ Before creating the layout, you'll create the second column that's consistent ac
 
 To create the component, create the file `components/SecondCol/index.tsx` with the following content:
 
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][5]} />
+
 
 export const secondColHighlights = [
   ["7", "region", "The selected region"],
@@ -1011,6 +1021,8 @@ Each product in Medusa has a `handle` property, which is a slug-like value that 
 
 To manage the routing between the express-checkout-flow steps, you'll create a `Router` component that will render the correct step based on the cart's state and the `step` query parameter. So, create the file `components/Router/index.tsx` with the following content:
 
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][6]} />
+
 
 export const routerHighlights = [
   ["14", "handle", "Receive the product's handle as a prop"],
@@ -1094,6 +1106,8 @@ You'll render the components for each step as you create them next.
 
 To create the page that shows the express checkout page, create the file `app/[handle]/page.tsx` with the following content:
 
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][7]} />
+
 
 ```tsx title="app/[handle]/page.tsx"
 import { Router } from "../../components/Router"
@@ -1135,6 +1149,8 @@ The first step in the express checkout flow is the product selection step. In th
 Before creating the component that displays the product selection step, you'll create a `Card` component that will wrap each step's components in the same styling.
 
 Create the file `components/Card/index.tsx` with the following content:
+
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][8]} />
 
 
 export const cardHighlights = [
@@ -1213,6 +1229,8 @@ You'll wrap each step component you'll create next with this `Card` component.
 You'll now create the component that shows the product selection step.
 
 Create the file `components/Product/index.tsx` with the following content:
+
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][9]} />
 
 
 export const productHighlights1 = [
@@ -1369,6 +1387,8 @@ You create a `selectedVariant` memoized variable that holds the selected variant
 Next, you'll set the price to show to the customer. The MedusaGo application returns the price as a number. To display it with currency, you'll create a utility that you'll re-use whenever you show a price.
 
 Create the file `lib/price.ts` with the following content:
+
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][10]} />
 
 
 ```ts title="lib/price.ts"
@@ -1676,6 +1696,8 @@ The second step in the express checkout flow is the address details step. In thi
 
 To create the component of this step, create the file `components/Address/index.tsx` with the following content:
 
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][12]} />
+
 
 export const addressHighlights1 = [
   ["19", "cart", "The customer's cart from the cart context."],
@@ -1977,6 +1999,8 @@ You can input your address details then click on the "Continue" button. The addr
 The third step in the express checkout flow is the shipping method selection step. In this step, the customer will choose a shipping method to deliver their order.
 
 To create the component of this step, create the file `components/Shipping/index.tsx` with the following content:
+
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][14]} />
 
 
 export const shippingHighlights1 = [
@@ -2317,6 +2341,8 @@ You can select a shipping option then click on the "Go to payment" button. The s
 The fourth and last step in the express checkout flow is the payment method selection step. In this step, the customer will choose a payment method and complete their cart, placing an order.
 
 To create the component of this step, create the file `components/Payment/index.tsx` with the following content:
+
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][16]} />
 
 
 export const paymentHighlights1 = [
@@ -2705,6 +2731,8 @@ After the customer places an order, you redirect them to a confirmation page tha
 The confirmation page will receive the order's ID as a path parameter. Then, it'll retrieve the order's details from the MedusaGo application and shows those details to the customer.
 
 To create the confirmation page, create the file `app/confirmation/[id]/page.tsx` with the following content:
+
+<FileTree alt="Directory structure after adding the file" spec={diagramPages["resources/storefront-development/guides/express-checkout"][18]} />
 
 
 export const confirmationHighlights = [

@@ -1,3 +1,5 @@
+import { pages as diagramPages } from "diagrams/learn.mjs"
+
 export const metadata = {
   title: `${pageNumber} Admin Routing Customizations`,
 }
@@ -118,6 +120,8 @@ Then, in the `CustomPage` route component, you use the `useLoaderData` hook from
 Route loaders block the rendering of your UI route until the data is fetched, which may negatively impact the user experience. So, only use route loaders when the route component needs essential data before rendering, or if you're preparing data that doesn't require sending API requests.
 
 Otherwise, use the JS SDK with Tanstack (React) Query in the UI route component as explained in the [Tips](../tips/page.mdx#send-requests-to-api-routes) chapter to fetch data asynchronously and update the UI when the data is available.
+
+<Diagram alt="Timeline comparison of a UI route with and without a route loader" spec={diagramPages["learn/fundamentals/admin/routing"][0]} />
 
 
 ### Access Route Parameters in Loader
