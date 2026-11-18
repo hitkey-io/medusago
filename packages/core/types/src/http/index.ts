@@ -1,6 +1,5 @@
 export * from "./address"
 export * from "./api-key"
-export * from "./audit-log"
 export * from "./auth"
 export * from "./campaign"
 export * from "./cart"

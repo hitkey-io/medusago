@@ -98,6 +98,36 @@ for fp in "${FRONTEND_PATHS[@]}"; do
   rsync -a --delete "${EXCLUDES[@]}" "$UPSTREAM/$fp/" "$ROOT/$fp/"
 done
 
+# Audit module material (Medusa Enterprise Edition) that lives inside the MIT
+# packages: removed after every sync, together with the lines that reference it.
+PRUNE_PATHS=(
+  packages/core/types/src/audit
+  packages/core/types/src/http/audit-log
+  packages/core/js-sdk/src/admin/audit-log.ts
+)
+PRUNE_LINES=(
+  'packages/core/types/src/index.ts|^export \* from "\./audit"$'
+  'packages/core/types/src/bundles.ts|^export \* as AuditTypes from "\./audit"$'
+  'packages/core/types/src/http/index.ts|^export \* from "\./audit-log"$'
+  'packages/core/js-sdk/src/admin/index.ts|^import \{ AuditLog \} from "\./audit-log\.js"$'
+  'packages/core/js-sdk/src/admin/index.ts|^    this\.auditLog = new AuditLog\(client\)$'
+)
+for p in "${PRUNE_PATHS[@]}"; do rm -rf "${ROOT:?}/$p"; done
+for entry in "${PRUNE_LINES[@]}"; do
+  f="$ROOT/${entry%%|*}"
+  tmp="$(mktemp)"
+  grep -vE "${entry#*|}" "$f" > "$tmp" || true
+  mv "$tmp" "$f"
+done
+# The auditLog property declaration (doc comment + field) in the JS SDK client.
+python3 - "$ROOT/packages/core/js-sdk/src/admin/index.ts" <<'PY'
+import re, sys
+path = sys.argv[1]
+s = open(path).read()
+s = re.sub(r"  /\*\*\n   \* @tags audit\n   \*/\n  public auditLog: AuditLog\n", "", s)
+open(path, "w").write(s)
+PY
+
 for rf in "${ROOT_FILES[@]}"; do
   if [[ -d "$UPSTREAM/$rf" ]]; then
     mkdir -p "$ROOT/$rf"
